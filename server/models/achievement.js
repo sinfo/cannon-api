@@ -2,12 +2,14 @@ var mongoose = require('mongoose');
 
 var achievementSchema = new mongoose.Schema({
   id: {type: String, unique: true},
-  group: String,
+  category: String,
   name: String,
   description: String,
   instructions: String,
   img: String,
-  points: Number,
-  created: { type: Date, default: Date.now },
-  updated: { type: Date, default: Date.now }
+  value: Number,
+  created: Date,
+  updated: Date
 });
+
+var Achievement = module.exports = mongoose.model('Achievement', achievementSchema);

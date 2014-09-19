@@ -5,5 +5,8 @@ var fileSchema = new mongoose.Schema({
   name: String,
   kind: String,
   extension: String,
-  date: { type: Date, default: Date.now }
+  created: Date,
+  updated: Date
 });
+
+var File = module.exports = mongoose.model('File', fileSchema);

@@ -9,6 +9,8 @@ var userSchema = new mongoose.Schema({
   points: Number,
   achievements: [{
     id: String,
-    date: { type: Date, default: Date.now }
+    date: Date
   }]
-}
+});
+
+var User = module.exports = mongoose.model('User', userSchema);

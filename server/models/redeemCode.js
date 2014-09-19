@@ -1,9 +1,11 @@
 var mongoose = require('mongoose');
 
 var redeemCodeSchema = new mongoose.Schema({
-  code: String,
+  id: String,
   achievement: String,
-  entries: Number,
-  created: { type: Date, default: Date.now },
-  duedate: Date,
+  entries: { type: Number, default: 1 },
+  created: Date,
+  expires: Date
 });
+
+var RedeemCode = module.exports = mongoose.model('RedeemCode', redeemCodeSchema);
