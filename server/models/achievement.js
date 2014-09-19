@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 
-var achievmentSchema = new mongoose.Schema({
+var achievementSchema = new mongoose.Schema({
   id: {type: String, unique: true},
   group: String,
   name: String,
