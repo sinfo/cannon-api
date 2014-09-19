@@ -3,6 +3,10 @@ var config = {
   port: process.env.CANNON_PORT || 8080,
 };
 
+config.upload = {
+  path: process.env.CANNON_UPLOAD_PATH || 'root/cannon_uploads'
+};
+
 config.mongo = {
   url: process.env.CANNON_MONGO_URL || 'mongodb://localhost/cannon'
 };
