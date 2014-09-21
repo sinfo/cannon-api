@@ -9,7 +9,7 @@ var userSchema = new mongoose.Schema({
   points: Number,
   achievements: [{
     id: String,
-    date: { type: Date, default: Date.now }
+    date: Date
   }]
 });
 
@@ -20,6 +20,5 @@ userSchema.statics.find = function (query, cb) {
 userSchema.statics.del = function (query, cb) {
   this.remove(query, cb);
 };
-
 
 var User = module.exports = mongoose.model('User', userSchema);

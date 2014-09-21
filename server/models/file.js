@@ -5,8 +5,8 @@ var fileSchema = new mongoose.Schema({
   name: String,
   kind: String,
   extension: String,
-  user: String,
-  date: { type: Date, default: Date.now }
+  created: Date,
+  updated: Date
 });
 
 fileSchema.statics.find = function (query, cb) {
@@ -16,6 +16,5 @@ fileSchema.statics.find = function (query, cb) {
 fileSchema.statics.del = function (query, cb) {
   this.remove(query, cb);
 };
-
 
 var File = module.exports = mongoose.model('File', fileSchema);
