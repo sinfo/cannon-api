@@ -32,5 +32,9 @@ config.bunyan = {
   level: process.env.CANNON_LOG_LEVEL || 'trace'
 };
 
+config.logs = {
+  path: process.env.CANNON_LOG_PATH || '/tmp/logs/',
+};
+
 
 module.exports = config;

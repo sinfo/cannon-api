@@ -8,7 +8,7 @@ log.error('### Starting Cannon ###');
 
 var db = require('./models');
 
-var server = module.exports.hapi = new Hapi.Server(port, options);
+var server = module.exports.hapi = new Hapi.Server(port, options.server);
 
 server.pack.require('hapi-auth-cookie', function (err) {
 
@@ -17,6 +17,16 @@ server.pack.require('hapi-auth-cookie', function (err) {
     password: cookieConfig.password,
     ttl: 2592000000,
     isSecure: false,
+  });
+
+  server.pack.register({
+      plugin: require('good'),
+      options: options.log
+    }, function (err) {
+       if (err) {
+          log.error(err);
+          return;
+       }
   });
 
   server.start(function () {
