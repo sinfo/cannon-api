@@ -21,9 +21,7 @@ server.route({
   config: {
     handler: handlers.get,
     auth: true,
-    validate: {
-      validators.get
-    }
+    validate: validators.get
   }
 });
 
@@ -33,9 +31,7 @@ server.route({
   config: {
     handler: handlers.update,
     auth: true,
-    validate: {
-      validators.update
-    }
+    validate: validators.update
   }
 });
 
@@ -45,8 +41,6 @@ server.route({
   config: {
     handler: handlers.create,
     auth: true,
-    validate: {
-      validators.create
-    }
+    validate: validators.create
   }
 });

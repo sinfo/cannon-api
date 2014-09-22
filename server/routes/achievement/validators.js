@@ -5,12 +5,12 @@ var achievementValidator = {
 	get: {
 		params: { id: Joi.string().required() },
 		query: false
-	}
+	},
 
 	update:{
 		params: { id: Joi.string().required() },
 		query: false
-	}
+	},
 
 	create: {
 		params: false,
@@ -26,6 +26,6 @@ var achievementValidator = {
 		  value: 				Joi.number().required(),
 		}
 	}
-}
+};
 
 model.exports = achievementValidator;
