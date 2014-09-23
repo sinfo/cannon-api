@@ -1,5 +1,9 @@
 var logConfig = require('../config').logs;
 
+var opsPath = logConfig.path + 'ops/';
+var logPath = logConfig.path + 'logs/';
+
+
 module.exports = {
 	server: {
 	  views: {
@@ -8,12 +12,12 @@ module.exports = {
 	      html: "handlebars"
 	    }
 	  }
-	}
+	},
 	log: {
-		opsInterval : 1800000
+		opsInterval : 1800000,
 		subscribers: {
-      logConfig.path + 'ops/':            ['ops'],
-      logConfig.path + 'logs/':           ['request', 'log', 'error'],
+      opsPath: ['ops'],
+      logPath: ['request', 'log', 'error'],
     }
 	}
 };

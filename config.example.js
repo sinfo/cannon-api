@@ -16,12 +16,6 @@ config.cookie = {
   password: process.env.CANNON_COOKIE_PASSWORD || 'YOUR COOKIE PASSWORD'
 };
 
-config.mailgun = {
-  email: process.env.CANNON_MAILGUN_EMAIL || 'cannon@sinfo.org',
-  api: process.env.CANNON_MAILGUN_API || 'YOUR MAILGUN KEY',
-  publicApi: process.env.CANNON_MAILGUN_PUBLIC_API || 'YOUR MAILGUN PUBLIC KEY'
-};
-
 config.facebook = {
   appId: process.env.CANNON_FACEBOOK_APP_ID || 'YOUR APP ID',
   appSecret: process.env.CANNON_FACEBOOK_APP_SECRET || 'YOUR APP SECRET'

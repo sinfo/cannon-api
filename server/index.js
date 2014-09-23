@@ -1,8 +1,8 @@
-var Hapi         = require('hapi');
-var options      = require('./options');
+var Hapi = require('hapi');
+var options = require('./options');
 var cookieConfig = require('../config').cookie;
-var port         = require('../config').port;
-var log          = require('./helpers/logger');
+var port = require('../config').port;
+var log = require('./helpers/logger');
 
 log.error('### Starting Cannon ###');
 
