@@ -24,6 +24,7 @@
     "hapi-auth-cookie": "^1.3.2",
     "async": "^0.9.0",
     "request": "^2.44.0",
-    "handlebars": "^2.0.0"
+    "handlebars": "^2.0.0",
+    "joi": "^4.7.0"
   }
 }
