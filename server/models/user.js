@@ -24,12 +24,24 @@ var userSchema = new mongoose.Schema({
   }]
 });
 
-userSchema.statics.find = function (query, cb) {
-  this.find(query, cb);
+userSchema.statics.findById = function (id, cb) {
+  this.find({id: id}, cb);
 };
 
-userSchema.statics.del = function (query, cb) {
-  this.remove(query, cb);
+userSchema.statics.findById = function (id, cb) {
+  this.find({id: id}, cb);
+};
+
+userSchema.statics.findByRole = function (role, cb) {
+  this.find({role: role}, cb);
+};
+
+userSchema.statics.findBy = function (role, cb) {
+  this.find({role: role}, cb);
+};
+
+userSchema.statics.del = function (id, cb) {
+  this.remove({id: id}, cb);
 };
 
 var User = module.exports = mongoose.model('User', userSchema);

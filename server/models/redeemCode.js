@@ -8,12 +8,12 @@ var redeemCodeSchema = new mongoose.Schema({
   expires: Date
 });
 
-redeemCodeSchema.statics.find = function (query, cb) {
-  this.find(query, cb);
+redeemCodeSchema.statics.findById = function (id, cb) {
+  this.find({id: id}, cb);
 };
 
-redeemCodeSchema.statics.del = function (query, cb) {
-  this.remove(query, cb);
+redeemCodeSchema.statics.del = function (id, cb) {
+  this.remove({id: id}, cb);
 };
 
 var RedeemCode = module.exports = mongoose.model('RedeemCode', redeemCodeSchema);
