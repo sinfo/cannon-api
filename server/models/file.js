@@ -9,12 +9,24 @@ var fileSchema = new mongoose.Schema({
   updated: Date
 });
 
-fileSchema.statics.find = function (query, cb) {
-  this.find(query, cb);
+fileSchema.statics.findById = function (id, cb) {
+  this.find({id: id}, cb);
 };
 
-fileSchema.statics.del = function (query, cb) {
-  this.remove(query, cb);
+fileSchema.statics.findByName = function (name, cb) {
+  this.find({name: name}, cb);
+};
+
+fileSchema.statics.findByKind = function (kind, cb) {
+  this.find({kind: kind}, cb);
+};
+
+fileSchema.statics.findByExtension = function (extension, cb) {
+  this.find({extension: extension}, cb);
+};
+
+fileSchema.statics.del = function (id, cb) {
+  this.remove({id: id}, cb);
 };
 
 var File = module.exports = mongoose.model('File', fileSchema);

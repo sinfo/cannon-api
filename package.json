@@ -1,0 +1,30 @@
+{
+  "name": "codename-cannon",
+  "version": "0.0.0",
+  "description": "The ultimate web-app for the ultimate event!",
+  "main": "server/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/sinfo/codename-cannon.git"
+  },
+  "author": "SINFO Dev Team <devteam@sinfo.org> (https://github.com/sinfo)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sinfo/codename-cannon/issues"
+  },
+  "homepage": "https://github.com/sinfo/codename-cannon",
+  "dependencies": {
+    "bunyan": "^1.1.0",
+    "mongoose": "^3.8.16",
+    "hapi": "^6.9.0",
+    "good": "^2.3.0",
+    "async": "^0.9.0",
+    "request": "^2.44.0",
+    "handlebars": "^2.0.0",
+    "joi": "^4.7.0",
+    "hapi-auth-hawk": "^1.1.1"
+  }
+}

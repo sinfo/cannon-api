@@ -21,7 +21,7 @@ var validators = {
 			entries: Joi.number().required(),
 			created: Joi.date().required(),
 			expires: Joi.date().required(),
-			}
+		}
 	}
 };
 

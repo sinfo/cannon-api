@@ -13,12 +13,20 @@ var achievementSchema = new mongoose.Schema({
   updated: Date
 });
 
-achievementSchema.statics.find = function (query, cb) {
-  this.find(query, cb);
+achievementSchema.statics.findById = function (id, cb) {
+  this.find({id: id}, cb);
 };
 
-achievementSchema.statics.del = function (query, cb) {
-  this.remove(query, cb);
+achievementSchema.statics.findByCategory = function (category, cb) {
+  this.find({category: category}, cb);
+};
+
+achievementSchema.statics.findByEvent = function (event, cb) {
+  this.find({event: event}, cb);
+};
+
+achievementSchema.statics.del = function (id, cb) {
+  this.remove({id: id}, cb);
 };
 
 var Achievement = module.exports = mongoose.model('Achievement', achievementSchema);

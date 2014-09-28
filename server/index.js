@@ -10,13 +10,13 @@ var db = require('./models');
 
 var server = module.exports.hapi = new Hapi.Server(port, options.server);
 
-server.pack.require('hapi-auth-cookie', function (err) {
+server.pack.require('hapi-auth-hawk', function (err) {
 
-  server.auth.strategy('session', 'cookie', {
-    cookie: cookieConfig.name,
+  server.auth.strategy('session', 'hawk', {
+    /*cookie: cookieConfig.name,
     password: cookieConfig.password,
     ttl: 2592000000,
-    isSecure: false,
+    isSecure: false,*/
   });
 
   server.pack.register({
@@ -24,7 +24,7 @@ server.pack.require('hapi-auth-cookie', function (err) {
       options: options.log
     }, function (err) {
        if (err) {
-          log.error(err);
+          log.error('[good] problem registering good', err);
           return;
        }
   });
