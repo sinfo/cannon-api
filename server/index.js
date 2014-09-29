@@ -3,6 +3,7 @@ var options = require('./options');
 var cookieConfig = require('../config').cookie;
 var port = require('../config').port;
 var log = require('./helpers/logger');
+var getCredentials = require('./helpers/credentialsFunc');
 
 log.error('### Starting Cannon ###');
 
@@ -12,12 +13,14 @@ var server = module.exports.hapi = new Hapi.Server(port, options.server);
 
 server.pack.require('hapi-auth-hawk', function (err) {
 
-  server.auth.strategy('session', 'hawk', {
-    /*cookie: cookieConfig.name,
-    password: cookieConfig.password,
-    ttl: 2592000000,
-    isSecure: false,*/
+  server.auth.strategy('session', 'hawk', function (err) {
+    if (err) {
+      log.error('[hawk] problem setting auth strategy', err);
+      return;
+    }
+    server.auth.strategy('default', 'hawk', { getCredentialsFunc: getCredentials });
   });
+
 
   server.pack.register({
       plugin: require('good'),
@@ -30,7 +33,7 @@ server.pack.require('hapi-auth-hawk', function (err) {
   });
 
   server.start(function () {
-    log.info('Server started at: ' + server.info.uri);
+    log.info('### Server started at: ' + server.info.uri + ' ###');
     var routes = require('./routes');
   });
 
