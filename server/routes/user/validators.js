@@ -28,11 +28,11 @@ var validators = {
 				token: Joi.string().required(),
 				refreshToken: Joi.string().required(),
 			  },
-			  role: Joi.string().required(),,
-			  mail: Joi.string().required(),,
+			  role: Joi.string().required(),
+			  mail: Joi.string().required(),
 			  points:{
-				available: entries: Joi.number().required(),
-				total: entries: Joi.number().required(),
+				available:{ entries: Joi.number().required()},
+				total:{ entries: Joi.number().required()}
 			  },
 			  achievements: [{
 				id: Joi.string().required(),

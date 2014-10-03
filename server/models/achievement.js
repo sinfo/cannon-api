@@ -13,6 +13,10 @@ var achievementSchema = new mongoose.Schema({
   updated: Date
 });
 
+achievementSchema.statics.findAll = function (cb) {
+  this.find({}, cb);
+};
+
 achievementSchema.statics.findById = function (id, cb) {
   this.find({id: id}, cb);
 };

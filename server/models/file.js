@@ -9,6 +9,11 @@ var fileSchema = new mongoose.Schema({
   updated: Date
 });
 
+fileSchema.statics.findAll = function (cb) {
+  this.find({}, cb);
+};
+
+
 fileSchema.statics.findById = function (id, cb) {
   this.find({id: id}, cb);
 };

@@ -2,7 +2,10 @@ var mongoose = require('mongoose');
 
 var userSchema = new mongoose.Schema({
   id: {type: String, unique: true},
-  key: {type: String, unique: true},
+  hawk: {
+    id: {type: String, unique: true},
+    key: {type: String, unique: true},
+  },
   name: String,
   facebook: {
     id: String,
@@ -24,6 +27,10 @@ var userSchema = new mongoose.Schema({
     date: Date
   }]
 });
+
+userSchema.statics.findAll = function (cb) {
+  this.find({}, cb);
+};
 
 userSchema.statics.findById = function (id, cb) {
   this.find({id: id}, cb);
