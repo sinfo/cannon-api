@@ -2,6 +2,11 @@ var Joi = require('joi');
 
 var validators = {
 	
+	list: {
+		params: false,
+		query: false
+	},
+
 	get: {
 		params: { id: Joi.string().required() },
 		query: false
