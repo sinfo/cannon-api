@@ -11,3 +11,13 @@ server.route({
     validate: validators.generate
   }
 });
+
+server.route({
+  method: 'GET',
+  path: '/r/{id}',
+  config: {
+    handler: handlers.redirect,
+    auth: false,
+    validate: validators.redirect
+  }
+});

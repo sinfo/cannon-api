@@ -10,4 +10,8 @@ handlers.generate = function generate(request, reply) {
   reply(image);
 };
 
+handlers.redirect = function redirect(request, reply) {
+  reply().redirect(config.url+'/redeem/'+request.params.id);
+};
+
 module.exports = handlers;

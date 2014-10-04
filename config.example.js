@@ -1,5 +1,5 @@
 var config = {
-  url: process.env.CANNON_URL || 'https://localhost:8080',
+  url: process.env.CANNON_URL || 'http://localhost:8080',
   port: process.env.CANNON_PORT || 8080,
 };
 

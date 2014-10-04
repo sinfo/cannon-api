@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 
-var userSchema = new mongoose.Schema({
+var schema = new mongoose.Schema({
   id: {type: String, unique: true},
   hawk: {
     id: {type: String, unique: true},
@@ -28,20 +28,20 @@ var userSchema = new mongoose.Schema({
   }]
 });
 
-userSchema.statics.findAll = function (cb) {
+schema.statics.findAll = function (cb) {
   this.find({}, cb);
 };
 
-userSchema.statics.findById = function (id, cb) {
+schema.statics.findById = function (id, cb) {
   this.find({id: id}, cb);
 };
 
-userSchema.statics.findByRole = function (role, cb) {
+schema.statics.findByRole = function (role, cb) {
   this.find({role: role}, cb);
 };
 
-userSchema.statics.del = function (id, cb) {
+schema.statics.del = function (id, cb) {
   this.remove({id: id}, cb);
 };
 
-var User = module.exports = mongoose.model('User', userSchema);
+var User = module.exports = mongoose.model('User', schema);

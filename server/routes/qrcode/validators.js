@@ -6,6 +6,10 @@ var validators = {
     params: { id: Joi.string().required() }
   },
 
+  redirect: {
+    params: { id: Joi.string().required() }
+  },
+
 };
 
 module.exports = validators;

@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 
-var achievementSchema = new mongoose.Schema({
+var schema = new mongoose.Schema({
   id: {type: String, unique: true},
   event: String,
   category: String,
@@ -13,24 +13,24 @@ var achievementSchema = new mongoose.Schema({
   updated: Date
 });
 
-achievementSchema.statics.findAll = function (cb) {
+schema.statics.findAll = function (cb) {
   this.find({}, cb);
 };
 
-achievementSchema.statics.findById = function (id, cb) {
+schema.statics.findById = function (id, cb) {
   this.find({id: id}, cb);
 };
 
-achievementSchema.statics.findByCategory = function (category, cb) {
+schema.statics.findByCategory = function (category, cb) {
   this.find({category: category}, cb);
 };
 
-achievementSchema.statics.findByEvent = function (event, cb) {
+schema.statics.findByEvent = function (event, cb) {
   this.find({event: event}, cb);
 };
 
-achievementSchema.statics.del = function (id, cb) {
+schema.statics.del = function (id, cb) {
   this.remove({id: id}, cb);
 };
 
-var Achievement = module.exports = mongoose.model('Achievement', achievementSchema);
+var Achievement = module.exports = mongoose.model('Achievement', schema);
