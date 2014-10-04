@@ -1,4 +1,4 @@
-var logConfig = require('config').logs;
+var logConfig = require('../config').logs;
 
 var opsPath = logConfig.path + 'ops/';
 var logPath = logConfig.path + 'logs/';
@@ -24,7 +24,10 @@ module.exports = {
 		credentials: {
       algorithm: 'sha256',
       id: 'user',
-      key: 'werxhqb98rpaxn39848xrunpaw3489ruxnpa98w4rxn'
+      hawk:{
+        id: 'user-hawk-pub-id',
+        key: 'werxhqb98rpaxn39848xrunpaw3489ruxnpa98w4rxn'
+      }
     }
 	}
 };

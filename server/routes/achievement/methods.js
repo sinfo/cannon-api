@@ -19,7 +19,7 @@ function create(achievement, cb) {
 
     cb(null, _achievement);
   });
-};
+}
 
 function update(id, achievement, cb) {
   Achievement.findOneAndUpdate({id: id}, achievement, function(err, _achievement) {
@@ -34,7 +34,7 @@ function update(id, achievement, cb) {
 
     cb(null, _achievement);
   });
-};
+}
 
 function get(id, cb) {
   Achievement.findOne({id: id}, function(err, achievement) {
@@ -49,7 +49,7 @@ function get(id, cb) {
 
     cb(null, achievement);
   });
-};
+}
 
 function list(cb) {
   Achievement.find({}, function(err, achievements) {
@@ -60,7 +60,7 @@ function list(cb) {
     
     cb(null, achievements);
   });
-};
+}
 
 function remove(id, cb) {
   Achievement.findOneAndRemove({id: id}, function(err, achievement){
@@ -75,7 +75,7 @@ function remove(id, cb) {
 
     return cb(null, achievement);
   });
-};
+}
 
 
 

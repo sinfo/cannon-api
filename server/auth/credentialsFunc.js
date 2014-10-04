@@ -1,5 +1,5 @@
 var User = require('../models/user');
-var log = require('./logger');
+var log = require('../helpers/logger');
 var credentials = require('../options').auth.credentials;
 
 
