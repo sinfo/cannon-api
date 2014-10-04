@@ -1,4 +1,5 @@
 require('./achievement');
-require('./file');
-require('./redeemCode');
-require('./user');
+// require('./file');
+// require('./redeem');
+// require('./user');
+require('./qrcode');

@@ -4,7 +4,7 @@ var validators = require('./validators');
 
 server.route({
   method: 'GET',
-  path: '/api/file',
+  path: '/api/user',
   config: {
     handler: handlers.list,
     auth: true,
@@ -17,7 +17,7 @@ server.route({
 
 server.route({
   method: 'GET',
-  path: '/api/file/{id}',
+  path: '/api/user/{id}',
   config: {
     handler: handlers.get,
     auth: true,
@@ -27,7 +27,7 @@ server.route({
 
 server.route({
   method: 'PUT',
-  path: '/api/file/{id}',
+  path: '/api/user/{id}',
   config: {
     handler: handlers.update,
     auth: true,
@@ -37,7 +37,7 @@ server.route({
 
 server.route({
   method: 'POST',
-  path: '/api/file',
+  path: '/api/user',
   config: {
     handler: handlers.create,
     auth: true,

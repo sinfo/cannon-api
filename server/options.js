@@ -14,10 +14,17 @@ module.exports = {
 	  }
 	},
 	log: {
-		opsInterval : 1800000,
+		opsInterval: 1800000,
 		subscribers: {
       opsPath: ['ops'],
       logPath: ['request', 'log', 'error'],
+    }
+	},
+	auth: {
+		credentials: {
+      algorithm: 'sha256',
+      id: 'user',
+      key: 'werxhqb98rpaxn39848xrunpaw3489ruxnpa98w4rxn'
     }
 	}
 };

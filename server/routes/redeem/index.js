@@ -1,10 +1,10 @@
-var server     = require('../../index').hapi;
+var server     = require('server').hapi;
 var handlers   = require('./handlers');
 var validators = require('./validators');
 
 server.route({
   method: 'GET',
-  path: '/api/redeemCode',
+  path: '/api/redeem',
   config: {
     handler: handlers.list,
     auth: true,
@@ -17,7 +17,7 @@ server.route({
 
 server.route({
   method: 'GET',
-  path: '/api/redeemCode/{id}',
+  path: '/api/redeem/{id}',
   config: {
     handler: handlers.get,
     auth: true,
@@ -27,7 +27,7 @@ server.route({
 
 server.route({
   method: 'PUT',
-  path: '/api/redeemCode/{id}',
+  path: '/api/redeem/{id}',
   config: {
     handler: handlers.update,
     auth: true,
@@ -37,7 +37,7 @@ server.route({
 
 server.route({
   method: 'POST',
-  path: '/api/redeemCode',
+  path: '/api/redeem',
   config: {
     handler: handlers.create,
     auth: true,

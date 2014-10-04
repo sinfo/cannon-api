@@ -17,13 +17,10 @@ var validators = {
 		query: false,
 		payload: {
 			id: Joi.string().required(),
-		  event: Joi.string().required(),
-		  category: Joi.string().required(),
-		  name: Joi.string().required(),
-		  description: Joi.string().required(),
-		  instructions: Joi.string().required(),
-		  img: Joi.string().required(),
-		  value: Joi.number().required(),
+			achievement: Joi.string().required(),
+			entries: Joi.number().required(),
+			created: Joi.date().required(),
+			expires: Joi.date().required(),
 		}
 	}
 };
