@@ -1,4 +1,4 @@
-// require('./achievement');
+require('./achievement');
 // require('./file');
 // require('./redeem');
 // require('./user');

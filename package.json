@@ -29,7 +29,9 @@
     "joi": "^4.7.0",
     "hapi-auth-hawk": "^1.1.1",
     "qr-image": "~2.0.0",
-    "lout": "~5.1.1"
+    "lout": "~5.1.1",
+    "slug": "~0.7.1",
+    "boom": "~2.5.1"
   },
   "devDependencies": {
     "nodemon": "~1.2.1"

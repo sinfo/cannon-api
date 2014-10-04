@@ -18,7 +18,7 @@ schema.statics.findAll = function (cb) {
 };
 
 schema.statics.findById = function (id, cb) {
-  this.find({id: id}, cb);
+  this.findOne({id: id}, cb);
 };
 
 schema.statics.findByCategory = function (category, cb) {
