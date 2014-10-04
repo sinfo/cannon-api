@@ -32,9 +32,13 @@ var server = module.exports.hapi = new Hapi.Server(port);
   //      }
   // });
 
-  server.start(function () {
-    log.info('### Server started at: ' + server.info.uri + ' ###');
-    var routes = require('./routes');
+  server.pack.register({ 
+    plugin: require('lout') 
+  }, function() {
+    server.start(function () {
+      log.info('### Server started at: ' + server.info.uri + ' ###');
+      var routes = require('./routes');
+    });
   });
 
 // });
