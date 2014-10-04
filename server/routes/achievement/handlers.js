@@ -1,5 +1,5 @@
-var Achievement = require('../../models/achievement');
-var log = require('../../helpers/logger');
+var Achievement = require('server/models/achievement');
+var log = require('server/helpers/logger');
 
 var handlers = module.exports;
 

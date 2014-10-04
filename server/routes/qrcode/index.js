@@ -1,4 +1,4 @@
-var server     = require('../../index').hapi;
+var server     = require('server').hapi;
 var handlers   = require('./handlers');
 var validators = require('./validators');
 

@@ -1,6 +1,6 @@
 var qr = require('qr-image');
-var log = require('../../helpers/logger');
-var config = require('../../../config');
+var log = require('server/helpers/logger');
+var config = require('config');
 
 var handlers = module.exports;
 
