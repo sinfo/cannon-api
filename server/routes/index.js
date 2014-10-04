@@ -1,5 +1,5 @@
 require('./achievement');
 // require('./file');
 // require('./redeem');
-// require('./user');
+require('./user');
 require('./qrcode');

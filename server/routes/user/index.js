@@ -1,46 +1,34 @@
-var server     = require('server').hapi;
-var handlers   = require('./handlers');
-var validators = require('./validators');
+var server = require('server').hapi;
+var handlers = require('./handlers');
+
+require('./methods');
 
 server.route({
-  method: 'GET',
+  method: 'POST',
   path: '/api/user',
-  config: {
-    handler: handlers.list,
-    auth: true,
-    validate: {
-      params: false,
-      query: false
-    }
-  }
-});
-
-server.route({
-  method: 'GET',
-  path: '/api/user/{id}',
-  config: {
-    handler: handlers.get,
-    auth: true,
-    validate: validators.get
-  }
+  config: handlers.create
 });
 
 server.route({
   method: 'PUT',
   path: '/api/user/{id}',
-  config: {
-    handler: handlers.update,
-    auth: true,
-    validate: validators.update
-  }
+  config: handlers.update
 });
 
 server.route({
-  method: 'POST',
+  method: 'GET',
+  path: '/api/user/{id}',
+  config: handlers.get
+});
+
+server.route({
+  method: 'GET',
   path: '/api/user',
-  config: {
-    handler: handlers.create,
-    auth: true,
-    validate: validators.create
-  }
+  config: handlers.list
+});
+
+server.route({
+  method: 'DELETE',
+  path: '/api/user/{id}',
+  config: handlers.remove
 });

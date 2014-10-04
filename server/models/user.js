@@ -2,10 +2,6 @@ var mongoose = require('mongoose');
 
 var schema = new mongoose.Schema({
   id: {type: String, unique: true},
-  hawk: {
-    id: {type: String, unique: true},
-    key: {type: String, unique: true},
-  },
   name: String,
   facebook: {
     id: String,
@@ -17,7 +13,7 @@ var schema = new mongoose.Schema({
     refreshToken: String
   },
   role: String,
-  mail: String,
+  mail: {type: String, unique: true},
   points:{
     available: Number,
     total: Number
