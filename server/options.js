@@ -1,4 +1,4 @@
-var logConfig = require('../config').logs;
+var logConfig = require('config').logs;
 
 var opsPath = logConfig.path + 'ops/';
 var logPath = logConfig.path + 'logs/';
