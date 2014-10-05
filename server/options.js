@@ -1,18 +1,11 @@
-var logConfig = require('../config').logs;
+var logConfig = require('config').logs;
+var validate = require('server/auth/validate');
 
 var opsPath = logConfig.path + 'ops/';
 var logPath = logConfig.path + 'logs/';
 
 
 module.exports = {
-	server: {
-	  views: {
-	    path: "templates",
-	    engines: {
-	      html: "handlebars"
-	    }
-	  }
-	},
 	log: {
 		opsInterval: 1800000,
 		subscribers: {
@@ -21,13 +14,9 @@ module.exports = {
     }
 	},
 	auth: {
-		credentials: {
-      algorithm: 'sha256',
-      id: 'user',
-      hawk:{
-        id: 'user-hawk-pub-id',
-        key: 'werxhqb98rpaxn39848xrunpaw3489ruxnpa98w4rxn'
-      }
-    }
+		allowQueryToken: false,
+    allowMultipleHeaders: false,
+    accessTokenName: 'access_token',
+    validateFunc: validate
 	}
 };

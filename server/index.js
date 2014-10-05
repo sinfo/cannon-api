@@ -2,7 +2,6 @@ var Hapi = require('hapi');
 var options = require('server/options');
 var port = require('config').port;
 var log = require('server/helpers/logger');
-var getCredentials = require('./auth/credentialsFunc');
 
 log.error('### Starting Cannon ###');
 
@@ -10,14 +9,14 @@ var db = require('./models');
 
 var server = module.exports.hapi = new Hapi.Server(port);
 
-server.pack.register(require('hapi-auth-hawk'), function (err) {
+server.pack.register(require('hapi-auth-bearer-token'), function (err) {
 
   if (err) {
-    log.error('[hawk] problem setting hawk auth', err);
+    log.error({err: err},'[bearer] problem setting bearer token auth');
     return;
   }
 
-  server.auth.strategy('default', 'hawk', { getCredentialsFunc: getCredentials });
+  server.auth.strategy('default', 'bearer-access-token', options.auth);
 
 
   server.pack.register({
