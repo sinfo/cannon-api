@@ -24,8 +24,11 @@ exports.create = {
         available: Joi.number(),
         total: Joi.number()
       },
-      achievements: Joi.array().includes(Joi.object().keys({id: Joi.string(), date: Joidate()})),
-      files: Joi.array().includes(joi.string()).description('Array of files of the user')
+      achievements: Joi.array().includes(Joi.object().keys({
+        id: Joi.string(),
+        date: Joi.date()
+      }).required()),
+      files: Joi.array().includes(Joi.string()).description('Array of files of the user')
     }
   },
   pre: [
@@ -61,10 +64,11 @@ exports.update = {
         available: Joi.number(),
         total: Joi.number()
       },
-      achievements: [{
+      achievements: Joi.array().includes(Joi.object().keys({
         id: Joi.string(),
-        date: Joi.date(),
-      }]
+        date: Joi.date()
+      })),
+      files: Joi.array().includes(Joi.string()).description('Array of files of the user')
     }
   },
   pre: [
