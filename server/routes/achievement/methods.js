@@ -2,6 +2,7 @@ var Boom = require('boom');
 var slug = require('slug');
 var server = require('server').hapi;
 var log = require('server/helpers/logger');
+var fieldsParser = require('server/helpers/fieldsParser');
 var Achievement = require('server/models/achievement');
 
 function create(achievement, cb) {
@@ -36,14 +37,16 @@ function update(id, achievement, cb) {
   });
 };
 
-function get(id, cb) {
-  Achievement.findOne({id: id}, function(err, achievement) {
+function get(id, fields, cb) {
+  cb = cb || fields; // fields is optional
+
+  Achievement.findOne({id: id}, fieldsParser(fields), function(err, achievement) {
     if (err) {
       log.error({ err: err, achievement: id}, 'error getting achievement');
       return cb(Boom.internal());
     }
     if (!achievement) {
-      log.error({ err: err, achievement: id}, 'error getting achievement');
+      log.warn({ err: 'not found', achievement: id}, 'error getting achievement');
       return cb(Boom.notFound());
     }
 
@@ -51,8 +54,10 @@ function get(id, cb) {
   });
 };
 
-function list(cb) {
-  Achievement.find({}, function(err, achievements) {
+function list(fields, cb) {
+  cb = cb || fields; // fields is optional
+
+  Achievement.find({}, fieldsParser(fields), function(err, achievements) {
     if (err) {
       log.error({ err: err}, 'error getting all achievements');
       return cb(Boom.internal());
@@ -69,7 +74,7 @@ function remove(id, cb) {
       return cb(Boom.internal());
     }
     if (!achievement) {
-      log.error({ err: err, achievement: id}, 'error deleting achievement');
+      log.warn({ err: 'not found', achievement: id}, 'error deleting achievement');
       return cb(Boom.notFound());
     }
 
