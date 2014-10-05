@@ -11,14 +11,11 @@ config.mongo = {
   url: process.env.CANNON_MONGO_URL || 'mongodb://localhost/cannon'
 };
 
-config.cookie = {
-  name: process.env.CANNON_COOKIE_NAME || 'cannon',
-  password: process.env.CANNON_COOKIE_PASSWORD || 'YOUR COOKIE PASSWORD'
-};
-
 config.facebook = {
-  appId: process.env.CANNON_FACEBOOK_APP_ID || 'YOUR APP ID',
-  appSecret: process.env.CANNON_FACEBOOK_APP_SECRET || 'YOUR APP SECRET'
+  cookie: process.env.CANNON_COOKIE_NAME || 'cannon cookie',
+  password: process.env.CANNON_COOKIE_PASSWORD || 'YOUR COOKIE PASSWORD',
+  clientId: process.env.CANNON_FACEBOOK_APP_ID || 'YOUR APP ID',
+  clientSecret: process.env.CANNON_FACEBOOK_APP_SECRET || 'YOUR APP SECRET',
 };
 
 config.bunyan = {

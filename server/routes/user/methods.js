@@ -11,7 +11,7 @@ function create(user, cb) {
   User.create(user, function(err, _user) {
     if (err) {
       if(err.code == 11000) {
-      	log.warn({err:err, user: user.id}, 'user is a duplicate')
+      	log.warn({user: request.auth.credentials.id, err:err, requestedUser: user.id}, 'user is a duplicate');
         return cb(Boom.conflict(dupKeyParser(err.err)+' is a duplicate'));
       }
 
@@ -21,63 +21,63 @@ function create(user, cb) {
 
     cb(null, _user);
   });
-};
+}
 
 function update(id, user, cb) {
   User.findOneAndUpdate({id: id}, user, function(err, _user) {
     if (err) {
-      log.error({ err: err, user: id}, 'error updating user');
+      log.error({user: request.auth.credentials.id, err: err, requestedUser: id}, 'error updating user');
       return cb(Boom.internal());
     }
     if (!_user) {
-      log.error({ err: err, user: id}, 'error updating user');
+      log.error({user: request.auth.credentials.id, err: err, requestedUser: id}, 'error updating user');
       return cb(Boom.notFound());
     }
 
     cb(null, _user);
   });
-};
+}
 
 function get(id, cb) {
   User.findOne({id: id}, function(err, user) {
     if (err) {
-      log.error({ err: err, user: id}, 'error getting user');
+      log.error({user: request.auth.credentials.id, err: err, requestedUser: id}, 'error getting user');
       return cb(Boom.internal());
     }
     if (!user) {
-      log.error({ err: err, user: id}, 'error getting user');
+      log.error({user: request.auth.credentials.id, err: err, requestedUser: id}, 'error getting user');
       return cb(Boom.notFound());
     }
 
     cb(null, user);
   });
-};
+}
 
 function list(cb) {
   User.find({}, function(err, users) {
     if (err) {
-      log.error({ err: err}, 'error getting all users');
+      log.error({user: request.auth.credentials.id, err: err}, 'error getting all users');
       return cb(Boom.internal());
     }
     
     cb(null, users);
   });
-};
+}
 
 function remove(id, cb) {
   User.findOneAndRemove({id: id}, function(err, user){
     if (err) {
-      log.error({ err: err, user: id}, 'error deleting user');
+      log.error({user: request.auth.credentials.id, err: err, requestedUser: id}, 'error deleting user');
       return cb(Boom.internal());
     }
     if (!user) {
-      log.error({ err: err, user: id}, 'error deleting user');
+      log.error({user: request.auth.credentials.id, err: err, requestedUser: id}, 'error deleting user');
       return cb(Boom.notFound());
     }
 
     return cb(null, user);
   });
-};
+}
 
 
 
