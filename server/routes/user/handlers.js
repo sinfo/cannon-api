@@ -24,10 +24,8 @@ exports.create = {
         available: Joi.number(),
         total: Joi.number()
       },
-      achievements: [{
-        id: Joi.string(),
-        date: Joi.date(),
-      }]
+      achievements: Joi.array().includes(Joi.object().keys({id: Joi.string(), date: Joidate()})),
+      files: Joi.array().includes(joi.string()).description('Array of files of the user')
     }
   },
   pre: [
