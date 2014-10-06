@@ -53,12 +53,15 @@ exports.update = {
 
 exports.get = {
   validate: {
+    query: {
+      fields: Joi.string().description('Fields we want to retrieve'),
+    },
     params: {
       id: Joi.string().required().description('Id of the achievement we want to retrieve'),
     }
   },
   pre: [
-    { method: 'achievement.get(params.id)', assign: 'achievement' }
+    { method: 'achievement.get(params.id, query.fields)', assign: 'achievement' }
   ],
   handler: function (request, reply) {
     reply(request.pre.achievement);
@@ -68,8 +71,13 @@ exports.get = {
 
 
 exports.list = {
+  validate: {
+    query: {
+      fields: Joi.string().default('id,name,img').description('Fields we want to retrieve'),
+    }
+  },
   pre: [
-    { method: 'achievement.list()', assign: 'achievements' }
+    { method: 'achievement.list(query.fields)', assign: 'achievements' }
   ],
   handler: function (request, reply) {
     reply(request.pre.achievements);

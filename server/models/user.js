@@ -2,22 +2,22 @@ var mongoose = require('mongoose');
 
 var schema = new mongoose.Schema({
   id: {type: String, unique: true},
-  hawk: {
-    id: {type: String, unique: true},
-    key: {type: String, unique: true},
-  },
   name: String,
+  bearer: {
+    token: {type: String, unique: true},
+    date: Date
+  },
   facebook: {
     id: String,
-    token: String
+    token: {type: String, unique: true}
   },
   fenix: {
     id: String,
-    token: String,
-    refreshToken: String
+    token: {type: String, unique: true},
+    refreshToken: {type: String, unique: true}
   },
   role: String,
-  mail: String,
+  mail: {type: String, unique: true},
   points:{
     available: Number,
     total: Number
@@ -25,7 +25,8 @@ var schema = new mongoose.Schema({
   achievements: [{
     id: String,
     date: Date
-  }]
+  }],
+  files: [String]
 });
 
 schema.statics.findAll = function (cb) {
