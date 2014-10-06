@@ -3,11 +3,15 @@ var log = require('server/helpers/logger');
 var handlers = module.exports;
 
 exports.facebook = {
+  auth: {
+    strategies: ['default', 'facebook'],
+    mode: 'optional'
+  },
   pre: [
-    //{ method: 'auth.facebook(payload)', assign: 'facebook' }
+    { method: 'auth.facebook(auth)', assign: 'facebook' }
   ],
   handler: function (request, reply) {
-    //reply(request.pre.facebook).created('/api/achievement/'+request.pre.achievement.id);
+     reply(request.pre.facebook).redirect('/');
   },
-  description: 'Creates a new achievement'
+  description: 'Facebook login'
 };

@@ -1,7 +1,7 @@
 var server = require('server').hapi;
 var handlers = require('./handlers');
 
-//require('./methods');
+require('./methods');
 
 server.route({
   method: ['GET', 'POST'],

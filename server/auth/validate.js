@@ -3,7 +3,7 @@ var log = require('../helpers/logger');
 
 
 var validate = function (token, callback) {
-	User.find({token: token}, function(err, result){
+	User.find({bearer: {token: token}}, function(err, result){
     var isValid =  false;
     var credentials = {};
 		if(err){
@@ -12,6 +12,7 @@ var validate = function (token, callback) {
 		else if(result && result.length > 0){
       isValid = true;
       credentials = result[0];
+      //check for date
 		}
     credentials.token = token;
 		callback(err, isValid, credentials);

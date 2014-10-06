@@ -5,6 +5,13 @@ var log = require('server/helpers/logger');
 var fieldsParser = require('server/helpers/fieldsParser');
 var Achievement = require('server/models/achievement');
 
+server.method('achievement.create', create, {});
+server.method('achievement.update', update, {});
+server.method('achievement.get', get, {});
+server.method('achievement.list', list, {});
+server.method('achievement.remove', remove, {});
+
+
 function create(achievement, cb) {
   achievement.id = slug(achievement.name);
 
@@ -81,11 +88,3 @@ function remove(id, cb) {
     return cb(null, achievement);
   });
 }
-
-
-
-server.method('achievement.create', create, {});
-server.method('achievement.update', update, {});
-server.method('achievement.get', get, {});
-server.method('achievement.list', list, {});
-server.method('achievement.remove', remove, {});

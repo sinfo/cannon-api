@@ -27,7 +27,7 @@ exports.create = {
       achievements: Joi.array().includes(Joi.object().keys({
         id: Joi.string(),
         date: Joi.date()
-      }).required()),
+      })),
       files: Joi.array().includes(Joi.string()).description('Array of files of the user')
     }
   },
