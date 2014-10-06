@@ -36,7 +36,8 @@ server.pack.register([
 
   server.start(function () {
     log.info('### Server started at: ' + server.info.uri + ' ###');
-    var routes = require('./routes');
+    require('server/resources');
+    require('server/routes');
   });
 
 });
