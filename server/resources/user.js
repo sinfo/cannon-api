@@ -5,6 +5,12 @@ var log = require('server/helpers/logger');
 var dupKeyParser = require('server/helpers/dupKeyParser');
 var User = require('server/models/user');
 
+server.method('user.create', create, {});
+server.method('user.update', update, {});
+server.method('user.get', get, {});
+server.method('user.list', list, {});
+server.method('user.remove', remove, {});
+
 function create(user, cb) {
   user.id = user.id || slug(user.name).toLowerCase();
 
@@ -39,7 +45,7 @@ function update(id, user, cb) {
 }
 
 function get(id, cb) {
-  User.findOne({id: id}, function(err, user) {
+  User.findOne({$or:[ {id: id}, {facebook: {id: id}} ]}, function(err, user) {
     if (err) {
       log.error({user: request.auth.credentials.id, err: err, requestedUser: id}, 'error getting user');
       return cb(Boom.internal());
@@ -78,11 +84,3 @@ function remove(id, cb) {
     return cb(null, user);
   });
 }
-
-
-
-server.method('user.create', create, {});
-server.method('user.update', update, {});
-server.method('user.get', get, {});
-server.method('user.list', list, {});
-server.method('user.remove', remove, {});

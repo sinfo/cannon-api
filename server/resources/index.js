@@ -1,3 +1,3 @@
-require('achievement');
-require('auth');
-require('user');
+require('./achievement');
+require('./auth');
+require('./user');
