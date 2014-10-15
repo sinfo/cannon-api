@@ -17,7 +17,7 @@ function create(user, cb) {
   User.create(user, function(err, _user) {
     if (err) {
       if(err.code == 11000) {
-      	log.warn({user: request.auth.credentials.id, err:err, requestedUser: user.id}, 'user is a duplicate');
+      	log.warn({err:err, requestedUser: user.id}, 'user is a duplicate');
         return cb(Boom.conflict(dupKeyParser(err.err)+' is a duplicate'));
       }
 
@@ -32,11 +32,11 @@ function create(user, cb) {
 function update(id, user, cb) {
   User.findOneAndUpdate({id: id}, user, function(err, _user) {
     if (err) {
-      log.error({user: request.auth.credentials.id, err: err, requestedUser: id}, 'error updating user');
+      log.error({err: err, requestedUser: id}, 'error updating user');
       return cb(Boom.internal());
     }
     if (!_user) {
-      log.error({user: request.auth.credentials.id, err: err, requestedUser: id}, 'error updating user');
+      log.error({err: err, requestedUser: id}, 'error updating user');
       return cb(Boom.notFound());
     }
 
@@ -47,11 +47,11 @@ function update(id, user, cb) {
 function get(id, cb) {
   User.findOne({$or:[ {id: id}, {facebook: {id: id}} ]}, function(err, user) {
     if (err) {
-      log.error({user: request.auth.credentials.id, err: err, requestedUser: id}, 'error getting user');
+      log.error({err: err, requestedUser: id}, 'error getting user');
       return cb(Boom.internal());
     }
     if (!user) {
-      log.error({user: request.auth.credentials.id, err: err, requestedUser: id}, 'error getting user');
+      log.error({err: err, requestedUser: id}, 'error getting user');
       return cb(Boom.notFound());
     }
 
@@ -62,7 +62,7 @@ function get(id, cb) {
 function list(cb) {
   User.find({}, function(err, users) {
     if (err) {
-      log.error({user: request.auth.credentials.id, err: err}, 'error getting all users');
+      log.error({err: err}, 'error getting all users');
       return cb(Boom.internal());
     }
     
@@ -73,11 +73,11 @@ function list(cb) {
 function remove(id, cb) {
   User.findOneAndRemove({id: id}, function(err, user){
     if (err) {
-      log.error({user: request.auth.credentials.id, err: err, requestedUser: id}, 'error deleting user');
+      log.error({err: err, requestedUser: id}, 'error deleting user');
       return cb(Boom.internal());
     }
     if (!user) {
-      log.error({user: request.auth.credentials.id, err: err, requestedUser: id}, 'error deleting user');
+      log.error({err: err, requestedUser: id}, 'error deleting user');
       return cb(Boom.notFound());
     }
 
