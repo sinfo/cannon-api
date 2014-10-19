@@ -1,22 +1,23 @@
-var User = require('../models/user');
+var server = require('server').hapi;
 var log = require('../helpers/logger');
 
 
-var validate = function (token, callback) {
-	User.find({bearer: {token: token}}, function(err, result){
+var validate = function (token, cb) {
+  server.methods.user.getByToken(token, function (err, result) {
     var isValid =  false;
     var credentials = {};
-		if(err){
-			log.error({err: err, token: token},'[Auth] error finding user by token');
-		}
-		else if(result && result.length > 0){
+    if(err){
+      log.error({err: err, token: token},'[Auth] error finding user by token');
+      return cb(err);
+    }
+    else if(result && !token.revoked){
+      //check date
       isValid = true;
       credentials = result[0];
-      //check for date
-		}
+    }
     credentials.token = token;
-		callback(err, isValid, credentials);
-	});
+    cb(err, isValid, credentials);
+  });
 };
 
 module.exports = validate;

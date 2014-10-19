@@ -8,6 +8,7 @@ var User = require('server/models/user');
 server.method('user.create', create, {});
 server.method('user.update', update, {});
 server.method('user.get', get, {});
+server.method('user.getByToken', getByToken, {});
 server.method('user.list', list, {});
 server.method('user.remove', remove, {});
 
@@ -45,7 +46,22 @@ function update(id, user, cb) {
 }
 
 function get(id, cb) {
-  User.findOne({$or:[ {id: id}, {facebook: {id: id}} ]}, function(err, user) {
+  User.findOne({$or:[ {id: id}, {'facebook.id': id} ]}, function(err, user) {
+    if (err) {
+      log.error({err: err, requestedUser: id}, 'error getting user');
+      return cb(Boom.internal());
+    }
+    if (!user) {
+      log.error({err: err, requestedUser: id}, 'error getting user');
+      return cb(Boom.notFound());
+    }
+
+    cb(null, user);
+  });
+}
+
+function getByToken(token, cb) {
+  User.findOne({'bearer.token': token}, function(err, user) {
     if (err) {
       log.error({err: err, requestedUser: id}, 'error getting user');
       return cb(Boom.internal());

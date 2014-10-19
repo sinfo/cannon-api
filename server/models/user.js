@@ -3,10 +3,11 @@ var mongoose = require('mongoose');
 var schema = new mongoose.Schema({
   id: {type: String, unique: true},
   name: String,
-  bearer: {
+  bearer: [{
     token: {type: String, unique: true},
+    revoked: Boolean,
     date: Date
-  },
+  }],
   facebook: {
     id: String,
     token: {type: String, unique: true}
