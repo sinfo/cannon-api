@@ -10,10 +10,10 @@ server.method('auth.refreshToken', facebook, {});
 function facebook(auth, cb){
   if(auth.credentials.bearer){
       if (!auth.isAuthenticated) {
-        log.error({user: auth.credentials.id }, "[facebook-login] user trying to use invalid bearer auth");
+        log.error({user: auth.credentials.user.id }, "[facebook-login] user trying to use invalid bearer auth");
         return cb(Boom.unauthorized('Bearer authentication invalid: ' + auth.error.message));
       }
-      log.error({user: auth.credentials.id }, "[facebook-login] user already authenticated");
+      log.error({user: auth.credentials.user.id }, "[facebook-login] user already authenticated");
       return cb(Boom.conflict('Already authenticated'));
   }
   if (!auth.isAuthenticated) {
@@ -23,17 +23,19 @@ function facebook(auth, cb){
   else{
     server.methods.user.get(auth.credentials.profile.id, function(err, user){
       if(err){
-        log.error({err: err, user: auth.credentials.id }, "[facebook-login] error getting user");
+        log.error({err: err, user: auth.credentials.profile.id }, "[facebook-login] error getting user");
         return cb(err);
       }
       else{
-        user.facebook.token = auth.credentials.token;
-        user.bearer.push(getToken());
-        server.methods.user.update(user.id, user, function(err, result){
+        var newToken = getToken();
+        var newUser = { $push: {bearer: newToken}, 'facebook.token': auth.credentials.token};
+        server.methods.user.update(user.id, newUser, function(err, result){
           if(err){
             log.error({user: auth.credentials.profile.id }, "[facebook-login] error updating user");
           }
-          log.info({user: user.id}, "[facebook-login] user logged");
+          else{
+            log.info({user: user.id}, "[facebook-login] user logged");
+          }
           return  cb(err, user.bearer);
         });
       }
@@ -50,24 +52,17 @@ function getToken(){
   return token;
 }
 
-function refreshToken(id, token, cb){
-  server.methods.user.get(id, function(err, user){
+function refreshToken(auth, cb){
+  var id = auth.credentials.user.id;
+  var token = auth.credentials.bearer;
+  var newToken = { $pull: {bearer: token}, $push: {bearer: getToken()} };
+  server.methods.user.update(id, newToken, function(err, result){
     if(err){
-      log.error({user: auth.credentials.id, requestedUser: id}, "[bearer] error getting user");
-      return cb(err);
-    }
-    if(user.bearer.token == token && !user.bearer.revoked && !token.revoked){
-      var bearer = {bearer: getToken()};
-      server.methods.user.update(id, bearer, function(err, result){
-        if(err){
-          log.error({user: auth.credentials.profile.id }, "[bearer] error updating user");
-        }
-        log.debug({user: user.id}, "[bearer] user refreshed token");
-        return  cb(err, bearer);
-      });
+      log.error({user: id }, "[bearer] error updating user");
     }
     else{
-      return cb(Boom.unauthorized('Bearer authentication invalid'));
+      log.debug({user: id}, "[bearer] updated token with succcess");
     }
+    return  cb(err, bearer);
   });
 }

@@ -11,10 +11,10 @@ exports.create = {
       name: Joi.string().required().description('Name of the user'),
       role: Joi.string().description('Role of the user'),
       mail: Joi.string().email().required().description('Mail of the user'),
-      bearer: {
+      bearer: Joi.array().includes({
         date: Joi.date(),
         token: Joi.string().token()
-      },
+      }),
       facebook: {
         id: Joi.string(),
         token: Joi.string().token(),

@@ -6,3 +6,9 @@ server.route({
   path: '/login/facebook',
   config: handlers.facebook
 });
+
+server.route({
+  method: ['GET'],
+  path: '/login/refresh',
+  config: handlers.refreshToken
+});

@@ -1,5 +1,5 @@
 var logConfig = require('config').logs;
-var validate = require('server/auth/validate');
+var bearer = require('server/auth/bearer');
 
 var opsPath = logConfig.path + 'ops/';
 var logPath = logConfig.path + 'logs/';
@@ -17,6 +17,6 @@ module.exports = {
 		allowQueryToken: false,
     allowMultipleHeaders: false,
     accessTokenName: 'access_token',
-    validateFunc: validate
+    validateFunc: bearer
 	}
 };
