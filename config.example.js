@@ -29,10 +29,6 @@ config.logs = {
 
 config.token = {
   expiration: process.env.CANNON_TOKEN_EXPIRATION || 2,
-  relogin: {
-    active: process.env.CANNON_TOKEN_RELOGIN_ACT || false,
-    expiration: process.env.CANNON_TOKEN_RELOGIN_EXP || 14
-  }
 };
 
 
