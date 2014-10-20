@@ -2,12 +2,14 @@ var Hapi = require('hapi');
 var options = require('server/options');
 var config =require('config');
 var log = require('server/helpers/logger');
+var tokenSpan = new Date(config.token.expiration * 60 * 60 * 1000);
 
-log.error('### Starting Cannon ###');
+log.info('### Starting Cannon ###');
 
 var db = require('./models');
 
 var server = module.exports.hapi = new Hapi.Server(config.port);
+module.exports.tokenSpan = tokenSpan;
 
 server.pack.register([
   require('hapi-auth-bearer-token'),
