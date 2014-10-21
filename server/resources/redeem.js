@@ -21,7 +21,7 @@ function create(redeem, cb) {
         return cb(Boom.conflict('redeem is a duplicate'));
       }
 
-      log.error({user: request.auth.credentials.id, err: err, redeem: redeem.id}, 'error redeeming');
+      log.error({err: err, redeem: redeem.id}, 'error redeeming');
       return cb(Boom.internal());
     }
 
@@ -32,11 +32,11 @@ function create(redeem, cb) {
 function update(id, redeem, cb) {
   Redeem.findOneAndUpdate({id: id}, redeem, function(err, _redeem) {
     if (err) {
-      log.error({user: request.auth.credentials.id, err: err, redeem: id}, 'error updating redeem');
+      log.error({err: err, redeem: id}, 'error updating redeem');
       return cb(Boom.internal());
     }
     if (!_file) {
-      log.error({user: request.auth.credentials.id, err: err, redeem: id}, 'error updating redeem');
+      log.error({err: err, redeem: id}, 'error updating redeem');
       return cb(Boom.notFound());
     }
 
@@ -49,11 +49,11 @@ function get(id, redeem, cb) {
 
   Redeem.findOne({id: id}, fieldsParser(fields), function(err, redeem) {
     if (err) {
-      log.error({user: request.auth.credentials.id, err: err, redeem: id}, 'error getting redeem');
+      log.error({err: err, redeem: id}, 'error getting redeem');
       return cb(Boom.internal());
     }
     if (!redeem) {
-      log.error({user: request.auth.credentials.id, err: 'not found', redeem: id}, 'error getting redeem');
+      log.error({err: 'not found', redeem: id}, 'error getting redeem');
       return cb(Boom.notFound());
     }
 
@@ -66,7 +66,7 @@ function list(fields, cb) {
 
   Redeem.find({}, fieldsParser(fields), function(err, redeem) {
     if (err) {
-      log.error({user: request.auth.credentials.id, err: err}, 'error getting all redeems');
+      log.error({err: err}, 'error getting all redeems');
       return cb(Boom.internal());
     }
     
@@ -77,11 +77,11 @@ function list(fields, cb) {
 function remove(id, cb) {
   Redeem.findOneAndRemove({id: id}, function(err, redeem){
     if (err) {
-      log.error({user: request.auth.credentials.id, err: err, redeem: id}, 'error deleting redeem');
+      log.error({err: err, redeem: id}, 'error deleting redeem');
       return cb(Boom.internal());
     }
     if (!redeem) {
-      log.error({user: request.auth.credentials.id, err: 'not found', redeem: id}, 'error deleting redeem');
+      log.error({err: 'not found', redeem: id}, 'error deleting redeem');
       return cb(Boom.notFound());
     }
 

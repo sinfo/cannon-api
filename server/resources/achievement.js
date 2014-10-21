@@ -21,7 +21,7 @@ function create(achievement, cb) {
         return cb(Boom.conflict('achievement is a duplicate'));
       }
 
-      log.error({user: request.auth.credentials.id, err: err, achievement: achievement.id}, 'error creating achievement');
+      log.error({err: err, achievement: achievement.id}, 'error creating achievement');
       return cb(Boom.internal());
     }
 
@@ -32,11 +32,11 @@ function create(achievement, cb) {
 function update(id, achievement, cb) {
   Achievement.findOneAndUpdate({id: id}, achievement, function(err, _achievement) {
     if (err) {
-      log.error({user: request.auth.credentials.id, err: err, achievement: id}, 'error updating achievement');
+      log.error({err: err, achievement: id}, 'error updating achievement');
       return cb(Boom.internal());
     }
     if (!_achievement) {
-      log.error({user: request.auth.credentials.id, err: err, achievement: id}, 'error updating achievement');
+      log.error({err: err, achievement: id}, 'error updating achievement');
       return cb(Boom.notFound());
     }
 
@@ -49,11 +49,11 @@ function get(id, fields, cb) {
 
   Achievement.findOne({id: id}, fieldsParser(fields), function(err, achievement) {
     if (err) {
-      log.error({user: request.auth.credentials.id, err: err, achievement: id}, 'error getting achievement');
+      log.error({err: err, achievement: id}, 'error getting achievement');
       return cb(Boom.internal());
     }
     if (!achievement) {
-      log.error({user: request.auth.credentials.id, err: 'not found', achievement: id}, 'error getting achievement');
+      log.error({err: 'not found', achievement: id}, 'error getting achievement');
       return cb(Boom.notFound());
     }
 
@@ -66,7 +66,7 @@ function list(fields, cb) {
 
   Achievement.find({}, fieldsParser(fields), function(err, achievements) {
     if (err) {
-      log.error({user: request.auth.credentials.id, err: err}, 'error getting all achievements');
+      log.error({err: err}, 'error getting all achievements');
       return cb(Boom.internal());
     }
     
@@ -77,11 +77,11 @@ function list(fields, cb) {
 function remove(id, cb) {
   Achievement.findOneAndRemove({id: id}, function(err, achievement){
     if (err) {
-      log.error({user: request.auth.credentials.id, err: err, achievement: id}, 'error deleting achievement');
+      log.error({err: err, achievement: id}, 'error deleting achievement');
       return cb(Boom.internal());
     }
     if (!achievement) {
-      log.error({user: request.auth.credentials.id, err: 'not found', achievement: id}, 'error deleting achievement');
+      log.error({err: 'not found', achievement: id}, 'error deleting achievement');
       return cb(Boom.notFound());
     }
 
