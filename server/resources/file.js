@@ -21,7 +21,7 @@ function create(file, cb) {
         return cb(Boom.conflict('file is a duplicate'));
       }
 
-      log.error({user: request.auth.credentials.id, err: err, file: file.id}, 'error creating file');
+      log.error({err: err, file: file.id}, 'error creating file');
       return cb(Boom.internal());
     }
 
@@ -32,11 +32,11 @@ function create(file, cb) {
 function update(id, file, cb) {
   File.findOneAndUpdate({id: id}, file, function(err, _file) {
     if (err) {
-      log.error({user: request.auth.credentials.id, err: err, file: id}, 'error updating file');
+      log.error({err: err, file: id}, 'error updating file');
       return cb(Boom.internal());
     }
     if (!_file) {
-      log.error({user: request.auth.credentials.id, err: err, file: id}, 'error updating file');
+      log.error({err: err, file: id}, 'error updating file');
       return cb(Boom.notFound());
     }
 
@@ -49,11 +49,11 @@ function get(id, fields, cb) {
 
   File.findOne({id: id}, fieldsParser(fields), function(err, file) {
     if (err) {
-      log.error({user: request.auth.credentials.id, err: err, file: id}, 'error getting file');
+      log.error({err: err, file: id}, 'error getting file');
       return cb(Boom.internal());
     }
     if (!file) {
-      log.error({user: request.auth.credentials.id, err: 'not found', file: id}, 'error getting file');
+      log.error({err: 'not found', file: id}, 'error getting file');
       return cb(Boom.notFound());
     }
 
@@ -66,7 +66,7 @@ function list(fields, cb) {
 
   File.find({}, fieldsParser(fields), function(err, file) {
     if (err) {
-      log.error({user: request.auth.credentials.id, err: err}, 'error getting all files');
+      log.error({err: err}, 'error getting all files');
       return cb(Boom.internal());
     }
     
@@ -77,11 +77,11 @@ function list(fields, cb) {
 function remove(id, cb) {
   File.findOneAndRemove({id: id}, function(err, file){
     if (err) {
-      log.error({user: request.auth.credentials.id, err: err, file: id}, 'error deleting file');
+      log.error({err: err, file: id}, 'error deleting file');
       return cb(Boom.internal());
     }
     if (!file) {
-      log.error({user: request.auth.credentials.id, err: 'not found', file: id}, 'error deleting file');
+      log.error({err: 'not found', file: id}, 'error deleting file');
       return cb(Boom.notFound());
     }
 
