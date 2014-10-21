@@ -15,6 +15,7 @@ server.pack.register([
   require('hapi-auth-bearer-token'),
   require('bell'),
   require('lout'),
+  require('hapi-auth-basic'),
   { plugin: require('good'), options: options.log }],
 
   function (err) {
@@ -24,17 +25,9 @@ server.pack.register([
     return;
   }
 
-  server.auth.strategy('facebook', 'bell', {
-    provider: 'facebook',
-    cookie: config.facebook.cookie,
-    password: config.facebook.password,
-    clientId: config.facebook.clientId,
-    clientSecret: config.facebook.clientSecret,
-    isSecure: false, //while http only
-    //ttl: should define ttl after
-  });
-
-  server.auth.strategy('default', 'bearer-access-token', options.auth);
+  server.auth.strategy('facebook', 'bell', options.auth.facebook);
+  server.auth.strategy('default', 'bearer-access-token', options.auth.default);
+  server.auth.strategy('backup', 'basic', options.auth.backup);
 
   server.start(function () {
     log.info('### Server started at: ' + server.info.uri + ' ###');

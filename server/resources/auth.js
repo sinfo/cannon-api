@@ -1,10 +1,9 @@
 var Boom = require('boom');
 var server = require('server').hapi;
 var log = require('server/helpers/logger');
-var crypto = require('crypto');
+var getToken = require('server/helpers/getToken');
 
 server.method('auth.facebook', facebook, {});
-server.method('auth.getToken', facebook, {});
 server.method('auth.refreshToken', facebook, {});
 
 function facebook(auth, cb){
@@ -41,15 +40,6 @@ function facebook(auth, cb){
       }
     });
   }
-}
-
-function getToken(){
-  var token = {
-    token: crypto.randomBytes(64).toString('hex'),
-    date: Date.now(),
-    revoked: false
-  };
-  return token;
 }
 
 function refreshToken(auth, cb){

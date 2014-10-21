@@ -32,7 +32,8 @@
     "slug": "~0.7.1",
     "boom": "~2.5.1",
     "hapi-auth-bearer-token": "^2.2.2",
-    "bell": "^1.1.0"
+    "bell": "^1.1.0",
+    "hapi-auth-basic": "^1.1.1"
   },
   "devDependencies": {
     "nodemon": "~1.2.1"
