@@ -15,7 +15,7 @@ module.exports = {
 	auth: {
     default: {
       allowQueryToken: false,
-      allowMultipleHeaders: false,
+      allowMultipleHeaders: true,
       accessTokenName: 'access_token',
       validateFunc: auth.bearer
     },

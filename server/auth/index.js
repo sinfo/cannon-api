@@ -7,10 +7,12 @@ var getToken = require('server/helpers/getToken');
 
 
 var basic = function(username, password, cb){
+  log.debug({user: username, password: password}, 'On basic');
   validator(username, password, cb);
 };
 
 var bearer = function(token, cb){
+  log.debug({token: token}, 'On bearer');
   validator(null, token, cb);
 };
 
@@ -53,17 +55,7 @@ function validator(id, token, cb) {
         callback();
       }
       else{
-        var update = { $pull: {bearer: token}, $push: {bearer: getToken()} };
-
-        async.parallel([
-          function(call){
-
-          },
-          function(call){
-
-          }
-        ]);
-
+        var update = { $pull: {bearer: token} };
         User.findOneAndUpdate({id: user}, update, function(err, result) {
           if (err) {
             log.error({err: err, requestedUser: id}, '[Auth] error removing expired token');
