@@ -13,18 +13,19 @@ function getToken(){
 
 }
 
-function getJWT(user,token){
-  var jwtoken = jwt.sign(token, tokenConfig.privateKey, {
+function getJWT(user){
+  var date = Date.now();
+  var jwtoken = jwt.sign({user: user, date: date} , tokenConfig.privateKey, {
     algorithm: tokenConfig.algorithm,
     expiresInMinutes: tokenConfig.span,
-    subject: user,
-    issuer: tokenConfig.issuer
+    issuer: tokenConfig.issuer,
+    audience: tokenConfig.audience
   });
-  return jwtoken;
+  return {token: jwtoken, date: date};
 }
 
 function removeToken(user, token, cb){
-  var update = { $pull: {bearer: token} };
+  var update = { $pull: {bearer: {token: token} } };
   User.findOneAndUpdate({id: user}, update, function(err, result) {
     if (err) {
       log.error({err: err, requestedUser: user}, '[Auth] error removing expired token');

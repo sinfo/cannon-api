@@ -21,52 +21,58 @@ function validator(id, token, cb) {
   var isValid =  false;
   var credentials = {user: null, token: null};
   var user = id;
+  var resultUser;
   var bearerDecoded;
   var query;
 
-  jwt.verify(token, tokenConfig.publicKey, {issuer: tokenConfig.issuer}, function(err, decoded) {
+  jwt.verify(token, tokenConfig.publicKey, {audience: tokenConfig.audience, issuer: tokenConfig.issuer}, function(err, decoded) {
     bearerDecoded = decoded;
   
     log.debug({decoded: bearerDecoded});
 
     if(err){
-      Token.removeToken(user, bearerDecoded, function(error, result){
+      bearerDecoded = jwt.decode(token);
+      Token.removeToken(bearerDecoded.user, token, function(error, result){
         if(error){
           log.error({err: error, token: bearerDecoded}, '[Auth] error removing invalid token');
+          return cb(error);
+        }
+        return cb(err, false);
+      });
+    }
+    else{
+
+      if(user && bearerDecoded.user != user){
+        return cb(Boom.conflict('User does not match token signed user'), false); 
+      }
+
+      query = {$and: [ {id: bearerDecoded.user}, {'bearer.token': token} ]};
+
+      User.findOne(query, function(error, result){
+        if(error){
+          log.error({err: error, token: token},'[Auth] error finding user');
+          return cb(error, false);
+        }
+        else if(result){
+          resultUser = result;
+          var tokens = result.bearer;
+          async.each(tokens, checkToken, function (error){
+            if(error){
+              log.error({err: error},'[Auth] error running throw user tokens');
+              cb(error, false);
+            }
+            return cb(null, isValid, credentials);
+          });
         }
       });
     }
 
-    if(user){
-      query = {$and: [ {id: user}, {'bearer.token': bearerDecoded.token} ]};
-    }
-    else{
-      query = {'bearer.token': bearerDecoded.token};
-    }
-
-    User.findOne(query, function(err, result){
-      if(err){
-        log.error({err: err, token: bearerDecoded.token},'[Auth] error finding user');
-        return cb(err, isValid, credentials);
-      }
-      else if(result){
-        user = result.id;
-        var tokens = result.bearer;
-        async.each(tokens, checkToken, function (err){
-          if(err){
-            log.error({err: err},'[Auth] error running throw user tokens');
-          }
-           return cb(err, isValid, credentials);
-        });
-      }
-    });
-
   });
 
   function checkToken(userToken, callback){
-    if(userToken.token == bearerDecoded.token){
+    if(userToken.token == token){
       isValid = true;
-      credentials.user = result;
+      credentials.user = resultUser;
       credentials.bearer = userToken;
       callback();
     }

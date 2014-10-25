@@ -26,7 +26,7 @@ function facebook(auth, cb){
         return cb(err);
       }
       else{
-        var newToken = Token.getToken();
+        var newToken = Token.getJWT(user.id);
         var newUser = { $push: {bearer: newToken}, 'facebook.token': auth.credentials.token};
         server.methods.user.update(user.id, newUser, function(err, result){
           if(err){
@@ -34,7 +34,7 @@ function facebook(auth, cb){
             return cb(err);
           }
           log.info({user: user.id}, "[facebook-login] user logged");
-          return  cb(err, Token.getJWT(user.id, newToken));
+          return  cb(err, newToken);
         });
       }
     });
