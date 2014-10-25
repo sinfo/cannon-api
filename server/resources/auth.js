@@ -1,7 +1,7 @@
 var Boom = require('boom');
 var server = require('server').hapi;
 var log = require('server/helpers/logger');
-var getToken = require('server/helpers/getToken');
+var Token = require('server/helpers/token');
 
 server.method('auth.facebook', facebook, {});
 server.method('auth.refreshToken', facebook, {});
@@ -26,16 +26,15 @@ function facebook(auth, cb){
         return cb(err);
       }
       else{
-        var newToken = getToken();
+        var newToken = Token.getToken();
         var newUser = { $push: {bearer: newToken}, 'facebook.token': auth.credentials.token};
         server.methods.user.update(user.id, newUser, function(err, result){
           if(err){
             log.error({user: auth.credentials.profile.id }, "[facebook-login] error updating user");
+            return cb(err);
           }
-          else{
-            log.info({user: user.id}, "[facebook-login] user logged");
-          }
-          return  cb(err, user.bearer);
+          log.info({user: user.id}, "[facebook-login] user logged");
+          return  cb(err, Token.getJWT(user.id, newToken));
         });
       }
     });
@@ -45,14 +44,16 @@ function facebook(auth, cb){
 function refreshToken(auth, cb){
   var id = auth.credentials.user.id;
   var token = auth.credentials.bearer;
-  var newToken = { $pull: {bearer: token}, $push: {bearer: getToken()} };
-  server.methods.user.update(id, newToken, function(err, result){
+  var newToken = Token.getToken();
+
+  //NEEDS REPAIR
+  var update = { $pull: {bearer: token}, $push: {bearer: newToken} };
+  server.methods.user.update(id, update, function(err, result){
     if(err){
       log.error({user: id }, "[bearer] error updating user");
+      return cb(err);
     }
-    else{
-      log.debug({user: id}, "[bearer] updated token with succcess");
-    }
-    return  cb(err, bearer);
+    log.debug({user: id}, "[bearer] updated token with succcess");
+    return  cb(err, Token.getJWT(id, newToken));
   });
 }

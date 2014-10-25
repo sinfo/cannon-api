@@ -3,7 +3,6 @@ var auth = require('server/auth');
 var opsPath = config.logs.path + 'ops/';
 var logPath = config.logs.path + 'logs/';
 
-
 module.exports = {
 	log: {
 		opsInterval: 1800000,

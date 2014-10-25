@@ -5,7 +5,6 @@ var schema = new mongoose.Schema({
   name: String,
   bearer: [{
     token: {type: String, unique: true},
-    revoked: Boolean,
     date: Date
   }],
   facebook: {

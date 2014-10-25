@@ -6,6 +6,8 @@
  * @param  {String} fieldsStr  - string of fields (eg: "id,name,img")
  * @return {Object} options    - options object to be used on a mongoose query (eg: {id:1,name:1,img:1})
  */
+console.log("STUFF");
+
 module.exports = function(fieldsStr) {
   var options = {
     _id: 0, // don't show _id by default

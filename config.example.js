@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 var config = {
   url: process.env.CANNON_URL || 'http://localhost:8080',
   port: process.env.CANNON_PORT || 8080,
@@ -28,7 +30,11 @@ config.logs = {
 };
 
 config.token = {
-  expiration: process.env.CANNON_TOKEN_EXPIRATION || 2,
+  expiration: process.env.CANNON_TOKEN_EXPIRATION || 10,
+  privateKey: process.env.CANNON_TOKEN_PRIVATE_KEY || fs.readFileSync('./keys/token'),
+  publicKey: process.env.CANNON_TOKEN_PUBLIC_KEY || fs.readFileSync('./keys/token.pub'),
+  algorithm: process.env.CANNON_TOKEN_ALGORITHM || 'RS256',
+  issuer: process.env.CANNON_TOKEN_ISSUER || 'cannon masters'
 };
 
 

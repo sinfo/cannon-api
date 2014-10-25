@@ -1,9 +1,10 @@
 var Boom = require('boom');
 var User = require('../models/user');
-var tokenSpan = require('server').tokenSpan;
 var log = require('server/helpers/logger');
 var async = require('async');
-var getToken = require('server/helpers/getToken');
+var jwt = require('jsonwebtoken');
+var tokenConfig = require('config').token;
+var Token = require('server/helpers/token');
 
 
 var basic = function(username, password, cb){
@@ -17,57 +18,57 @@ var bearer = function(token, cb){
 };
 
 function validator(id, token, cb) {
-  var query;
   var isValid =  false;
   var credentials = {user: null, token: null};
   var user = id;
+  var bearerDecoded;
+  var query;
 
-  if(user){
-    query = {$and: [ {id: user}, {'bearer.token': token} ]};
-  }
-  else{
-    query = {'bearer.token': token};
-  }
+  jwt.verify(token, tokenConfig.publicKey, {issuer: tokenConfig.issuer}, function(err, decoded) {
+    bearerDecoded = decoded;
+  
+    log.debug({decoded: bearerDecoded});
 
-	User.findOne(query, function(err, result){
-		if(err){
-			log.error({err: err, token: token},'[Auth] error finding user');
-      return cb(err, isValid, credentials);
-		}
-		else if(result){
-      user = result.id;
-      var tokens = result.bearer;
-      async.each(tokens, checkToken, function (err){
-        if(err){
-          log.error({err: err},'[Auth] error running throw user tokens');
+    if(err){
+      Token.removeToken(user, bearerDecoded, function(error, result){
+        if(error){
+          log.error({err: error, token: bearerDecoded}, '[Auth] error removing invalid token');
         }
-         return cb(err, isValid, credentials);
       });
-		}
-	});
+    }
 
-  function checkToken(userToken, callback){
-    if(userToken.token == token){
-      if(!userToken.revoked && userToken.date - new Date() < tokenSpan){
-        isValid = true;
-        credentials.user = result;
-        credentials.bearer = userToken;
-        callback();
+    if(user){
+      query = {$and: [ {id: user}, {'bearer.token': bearerDecoded.token} ]};
+    }
+    else{
+      query = {'bearer.token': bearerDecoded.token};
+    }
+
+    User.findOne(query, function(err, result){
+      if(err){
+        log.error({err: err, token: bearerDecoded.token},'[Auth] error finding user');
+        return cb(err, isValid, credentials);
       }
-      else{
-        var update = { $pull: {bearer: token} };
-        User.findOneAndUpdate({id: user}, update, function(err, result) {
-          if (err) {
-            log.error({err: err, requestedUser: id}, '[Auth] error removing expired token');
-            return callback(Boom.internal());
+      else if(result){
+        user = result.id;
+        var tokens = result.bearer;
+        async.each(tokens, checkToken, function (err){
+          if(err){
+            log.error({err: err},'[Auth] error running throw user tokens');
           }
-          if (!result) {
-            log.error({err: err, requestedUser: id}, '[Auth] error finding required user');
-            return callback(Boom.notFound());
-          }
-          callback(Boom.unauthorized('Expired token'));
+           return cb(err, isValid, credentials);
         });
       }
+    });
+
+  });
+
+  function checkToken(userToken, callback){
+    if(userToken.token == bearerDecoded.token){
+      isValid = true;
+      credentials.user = result;
+      credentials.bearer = userToken;
+      callback();
     }
     else{
       callback();
