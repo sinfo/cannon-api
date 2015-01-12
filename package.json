@@ -7,8 +7,12 @@
     "run": "NODE_PATH=. nodemon server/index.js | bunyan",
     "start": "NODE_PATH=. node server/index.js | bunyan",
     "mon": "NODE_PATH=. nodemon server/index.js | bunyan",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "node_modules/.bin/jshint -c .jshintrc ampersand-collection-io-mixin.js"
   },
+  "pre-commit": [
+    "lint"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/sinfo/codename-cannon.git"
@@ -38,6 +42,8 @@
     "jsonwebtoken": "^1.1.2"
   },
   "devDependencies": {
-    "nodemon": "~1.2.1"
+    "nodemon": "~1.2.1",
+    "jshint": "~2.5.10",
+    "pre-commit": "https://github.com/jgantunes/pre-commit/tarball/master"
   }
 }
