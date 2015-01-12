@@ -10,9 +10,9 @@ var db = require('./models');
 var server = module.exports.hapi = new Hapi.Server(config.port);
 
 server.pack.register([
+  { plugin: require('hapi-swagger'), options: config.swagger },
   require('hapi-auth-bearer-token'),
   require('bell'),
-  require('lout'),
   require('hapi-auth-basic')],
   //{ plugin: require('good'), options: options.log }],
 

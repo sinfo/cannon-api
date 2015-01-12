@@ -6,6 +6,7 @@
   "scripts": {
     "run": "NODE_PATH=. nodemon server/index.js | bunyan",
     "start": "NODE_PATH=. node server/index.js | bunyan",
+    "mon": "NODE_PATH=. nodemon server/index.js | bunyan",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -28,7 +29,7 @@
     "handlebars": "^2.0.0",
     "joi": "^4.7.0",
     "qr-image": "~2.0.0",
-    "lout": "~5.1.1",
+    "hapi-swagger": "~0.4.2",
     "slug": "~0.7.1",
     "boom": "~2.5.1",
     "hapi-auth-bearer-token": "^2.2.2",
