@@ -14,6 +14,8 @@ config.mongo = {
 };
 
 config.facebook = {
+  cookie: process.env.CANNON_COOKIE_NAME || 'cannon cookie',
+  password: process.env.CANNON_COOKIE_PASSWORD || 'YOUR COOKIE PASSWORD',
   clientId: process.env.CANNON_FACEBOOK_APP_ID || 'YOUR APP ID',
   clientSecret: process.env.CANNON_FACEBOOK_APP_SECRET || 'YOUR APP SECRET',
 };
