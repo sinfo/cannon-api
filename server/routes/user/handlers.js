@@ -5,6 +5,9 @@ var log = require('server/helpers/logger');
 var handlers = module.exports;
 
 exports.create = {
+  auth: {
+    strategies: ['default', 'backup'],
+  },
   validate: {
     payload: {
       id: Joi.string().description('Id of the user'),
@@ -46,6 +49,9 @@ exports.create = {
 
 
 exports.update = {
+  auth: {
+    strategies: ['default', 'backup'],
+  },
   validate: {
     params: {
       id: Joi.string().required().description('Id of the user we want to update'),
@@ -86,6 +92,9 @@ exports.update = {
 
 
 exports.get = {
+  auth: {
+    strategies: ['default', 'backup'],
+  },
   validate: {
     params: {
       id: Joi.string().required().description('Id of the user we want to retrieve'),
@@ -102,6 +111,9 @@ exports.get = {
 
 
 exports.list = {
+  auth: {
+    strategies: ['default', 'backup'],
+  },
   pre: [
     { method: 'user.list()', assign: 'users' }
   ],
@@ -113,6 +125,9 @@ exports.list = {
 
 
 exports.remove = {
+  auth: {
+    strategies: ['default', 'backup'],
+  },
   validate: {
     params: {
       id: Joi.string().required().description('Id of the user we want to remove'),

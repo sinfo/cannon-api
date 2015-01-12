@@ -5,6 +5,9 @@ var log = require('server/helpers/logger');
 var handlers = module.exports;
 
 exports.create = {
+  auth: {
+    strategies: ['default', 'backup']
+  },
   validate: {
     payload: {
       name: Joi.string().required().description('Name of the achievement'),
@@ -27,6 +30,9 @@ exports.create = {
 
 
 exports.update = {
+  auth: {
+    strategies: ['default', 'backup'],
+  },
   validate: {
     params: {
       id: Joi.string().required().description('Id of the achievement we want to update'),
@@ -52,6 +58,9 @@ exports.update = {
 
 
 exports.get = {
+  auth: {
+    strategies: ['default', 'backup'],
+  },
   validate: {
     query: {
       fields: Joi.string().description('Fields we want to retrieve'),
@@ -71,6 +80,9 @@ exports.get = {
 
 
 exports.list = {
+  auth: {
+    strategies: ['default', 'backup'],
+  },
   validate: {
     query: {
       fields: Joi.string().default('id,name,img').description('Fields we want to retrieve'),
@@ -87,6 +99,9 @@ exports.list = {
 
 
 exports.remove = {
+  auth: {
+    strategies: ['default', 'backup'],
+  },
   validate: {
     params: {
       id: Joi.string().required().description('Id of the achievement we want to remove'),

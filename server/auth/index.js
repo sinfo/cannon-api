@@ -27,8 +27,6 @@ function validator(id, token, cb) {
 
   jwt.verify(token, tokenConfig.publicKey, {audience: tokenConfig.audience, issuer: tokenConfig.issuer}, function(err, decoded) {
     bearerDecoded = decoded;
-  
-    log.debug({decoded: bearerDecoded});
 
     if(err){
       bearerDecoded = jwt.decode(token);

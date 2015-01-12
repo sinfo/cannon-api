@@ -5,7 +5,6 @@ var handlers = module.exports;
 exports.facebook = {
   auth: {
     strategies: ['default', 'facebook'],
-    mode: 'optional'
   },
   pre: [
     { method: 'auth.facebook(auth)', assign: 'facebook' }

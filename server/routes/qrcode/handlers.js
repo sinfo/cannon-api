@@ -6,6 +6,9 @@ var config = require('config');
 var handlers = module.exports;
 
 exports.generate = {
+  auth: {
+    strategies: ['default', 'backup'],
+  },
   validate: {
     params: {
       id: Joi.string().required().description('id of the qrcode'),
