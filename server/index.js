@@ -13,29 +13,29 @@ server.pack.register([
   require('hapi-auth-bearer-token'),
   require('bell'),
   require('lout'),
-  require('hapi-auth-basic'),
-  { plugin: require('good'), options: options.log }],
+  require('hapi-auth-basic')],
+  //{ plugin: require('good'), options: options.log }],
 
   function (err) {
 
-  if (err) {
-    log.error({err: err},'[hapi-plugins] problem registering hapi plugins');
-    return;
+    if (err) {
+      log.error({err: err},'[hapi-plugins] problem registering hapi plugins');
+      return;
+    }
+
+    server.auth.strategy('facebook', 'bell', options.auth.facebook);
+    server.auth.strategy('default', 'bearer-access-token', options.auth.default);
+    //server.auth.strategy('backup', 'basic', options.auth.backup);
+
+    server.auth.default({
+      strategies: ['backup', 'default'],
+      mode: 'required'
+    });
+
+    server.start(function () {
+      log.info('### Server started at: ' + server.info.uri + ' ###');
+      require('server/resources');
+      require('server/routes');
+    });
   }
-
-  server.auth.strategy('facebook', 'bell', options.auth.facebook);
-  server.auth.strategy('default', 'bearer-access-token', options.auth.default);
-  server.auth.strategy('backup', 'basic', options.auth.backup);
-
-  server.auth.default({
-    strategies: ['backup', 'default'],
-    mode: 'required'
-  });
-
-  server.start(function () {
-    log.info('### Server started at: ' + server.info.uri + ' ###');
-    require('server/resources');
-    require('server/routes');
-  });
-
-});
+);

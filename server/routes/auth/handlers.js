@@ -11,7 +11,7 @@ exports.facebook = {
     { method: 'auth.facebook(auth)', assign: 'facebook' }
   ],
   handler: function (request, reply) {
-     reply(request.pre.facebook).redirect('/');
+     reply(request.pre.facebook);
   },
   description: 'Facebook login'
 };
