@@ -101,7 +101,7 @@ exports.get = {
     }
   },
   pre: [
-    { method: 'user.get(params.id)', assign: 'user' }
+    { method: 'user.get(params.id, query)', assign: 'user' }
   ],
   handler: function (request, reply) {
     reply(request.pre.user);
@@ -115,7 +115,7 @@ exports.list = {
     strategies: ['default', 'backup'],
   },
   pre: [
-    { method: 'user.list()', assign: 'users' }
+    { method: 'user.list(query)', assign: 'users' }
   ],
   handler: function (request, reply) {
     reply(request.pre.users);

@@ -63,7 +63,7 @@ exports.get = {
     }
   },
   pre: [
-    { method: 'redeem.get(params.id)', assign: 'redeem' }
+    { method: 'redeem.get(params.id, query)', assign: 'redeem' }
   ],
   handler: function (request, reply) {
     reply(request.pre.redeem);
@@ -77,7 +77,7 @@ exports.list = {
     strategies: ['default', 'backup'],
   },
   pre: [
-    { method: 'redeem.list()', assign: 'reddems' }
+    { method: 'redeem.list(query)', assign: 'reddems' }
   ],
   handler: function (request, reply) {
     reply(request.pre.redeems);

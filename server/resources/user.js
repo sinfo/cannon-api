@@ -3,6 +3,7 @@ var slug = require('slug');
 var server = require('server').hapi;
 var log = require('server/helpers/logger');
 var dupKeyParser = require('server/helpers/dupKeyParser');
+var fieldsParser = require('server/helpers/fieldsParser');
 var User = require('server/models/user');
 
 server.method('user.create', create, {});
@@ -45,8 +46,12 @@ function update(id, user, cb) {
   });
 }
 
-function get(id, cb) {
-  User.findOne({$or:[ {id: id}, {'facebook.id': id} ]}, function(err, user) {
+function get(id, query, cb) {
+  cb = cb || query; // fields is optional
+
+  var fields = fieldsParser(query.fields);
+
+  User.findOne({$or:[ {id: id}, {'facebook.id': id} ]}, fields, function(err, user) {
     if (err) {
       log.error({err: err, requestedUser: id}, 'error getting user');
       return cb(Boom.internal());
@@ -63,11 +68,11 @@ function get(id, cb) {
 function getByToken(token, cb) {
   User.findOne({'bearer.token': token}, function(err, user) {
     if (err) {
-      log.error({err: err, requestedUser: id}, 'error getting user');
+      log.error({err: err, requestedUser: user}, 'error getting user');
       return cb(Boom.internal());
     }
     if (!user) {
-      log.error({err: err, requestedUser: id}, 'error getting user');
+      log.error({err: err, requestedUser: user}, 'error getting user');
       return cb(Boom.notFound());
     }
 
@@ -75,8 +80,18 @@ function getByToken(token, cb) {
   });
 }
 
-function list(cb) {
-  User.find({}, function(err, users) {
+function list(query, cb) {
+  cb = cb || query; // fields is optional
+
+  var filter = {};
+  var fields = fieldsParser(query.fields);
+  var options = {
+    skip: query.skip,
+    limit: query.limit,
+    sort: fieldsParser(query.sort)
+  };
+
+  User.find(filter, fields, options, function(err, users) {
     if (err) {
       log.error({err: err}, 'error getting all users');
       return cb(Boom.internal());

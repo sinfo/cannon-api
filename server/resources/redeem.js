@@ -13,7 +13,7 @@ server.method('redeem.remove', remove, {});
 
 
 function create(redeem, cb) {
-  Redeem.id = slug(file.name);
+  Redeem.id = slug(redeem.name);
 
   Redeem.create(redeem, function(err, _redeem) {
     if (err) {
@@ -35,7 +35,7 @@ function update(id, redeem, cb) {
       log.error({err: err, redeem: id}, 'error updating redeem');
       return cb(Boom.internal());
     }
-    if (!_file) {
+    if (!_redeem) {
       log.error({err: err, redeem: id}, 'error updating redeem');
       return cb(Boom.notFound());
     }
@@ -44,10 +44,11 @@ function update(id, redeem, cb) {
   });
 }
 
-function get(id, redeem, cb) {
-  cb = cb || fields; // fields is optional
+function get(id, query, cb) {
+  cb = cb || query; // fields is optional
+  var fields = fieldsParser(query.fields);
 
-  Redeem.findOne({id: id}, fieldsParser(fields), function(err, redeem) {
+  Redeem.findOne({id: id}, fields, function(err, redeem) {
     if (err) {
       log.error({err: err, redeem: id}, 'error getting redeem');
       return cb(Boom.internal());
@@ -61,10 +62,18 @@ function get(id, redeem, cb) {
   });
 }
 
-function list(fields, cb) {
-  cb = cb || fields; // fields is optional
+function list(query, cb) {
+  cb = cb || query; // fields is optional
 
-  Redeem.find({}, fieldsParser(fields), function(err, redeem) {
+  var filter = {};
+  var fields = fieldsParser(query.fields);
+  var options = {
+    skip: query.skip,
+    limit: query.limit,
+    sort: fieldsParser(query.sort)
+  };
+
+  Redeem.find(filter, fields, options, function(err, redeem) {
     if (err) {
       log.error({err: err}, 'error getting all redeems');
       return cb(Boom.internal());

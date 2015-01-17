@@ -19,7 +19,7 @@ var bearer = function(token, cb){
 
 function validator(id, token, cb) {
   var isValid =  false;
-  var credentials = {user: null, token: null};
+  var credentials = {};
   var user = id;
   var resultUser;
   var bearerDecoded;
@@ -30,18 +30,19 @@ function validator(id, token, cb) {
 
     if(err){
       bearerDecoded = jwt.decode(token);
-      Token.removeToken(bearerDecoded.user, token, function(error, result){
-        if(error){
-          log.error({err: error, token: bearerDecoded}, '[Auth] error removing invalid token');
-          return cb(error);
-        }
-        return cb(err, false);
-      });
+      if(bearerDecoded){
+        Token.removeToken(bearerDecoded.user, token, function(error, result){
+          if(error){
+            log.error({err: error, token: bearerDecoded}, '[Auth] error removing invalid token');
+          }
+        });
+      }
+      return cb(Boom.unauthorized());
     }
     else{
 
       if(user && bearerDecoded.user != user){
-        return cb(Boom.conflict('User does not match token signed user'), false); 
+        return cb(Boom.unauthorized()); 
       }
 
       query = {$and: [ {id: bearerDecoded.user}, {'bearer.token': token} ]};
@@ -49,7 +50,7 @@ function validator(id, token, cb) {
       User.findOne(query, function(error, result){
         if(error){
           log.error({err: error, token: token},'[Auth] error finding user');
-          return cb(error, false);
+          return cb(Boom.unauthorized());
         }
         else if(result){
           resultUser = result;
@@ -57,7 +58,7 @@ function validator(id, token, cb) {
           async.each(tokens, checkToken, function (error){
             if(error){
               log.error({err: error},'[Auth] error running throw user tokens');
-              cb(error, false);
+              cb(Boom.unauthorized());
             }
             return cb(null, isValid, credentials);
           });
@@ -67,6 +68,7 @@ function validator(id, token, cb) {
 
   });
 
+// aux check token func used in the async
   function checkToken(userToken, callback){
     if(userToken.token == token){
       isValid = true;

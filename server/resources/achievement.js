@@ -44,10 +44,12 @@ function update(id, achievement, cb) {
   });
 }
 
-function get(id, fields, cb) {
-  cb = cb || fields; // fields is optional
+function get(id, query, cb) {
+  cb = cb || query; // fields is optional
+  
+  var fields = fieldsParser(query.fields);
 
-  Achievement.findOne({id: id}, fieldsParser(fields), function(err, achievement) {
+  Achievement.findOne({id: id}, fields, function(err, achievement) {
     if (err) {
       log.error({err: err, achievement: id}, 'error getting achievement');
       return cb(Boom.internal());
@@ -61,10 +63,18 @@ function get(id, fields, cb) {
   });
 }
 
-function list(fields, cb) {
-  cb = cb || fields; // fields is optional
+function list(query, cb) {
+  cb = cb || query; // fields is optional
 
-  Achievement.find({}, fieldsParser(fields), function(err, achievements) {
+  var filter = {};
+  var fields = fieldsParser(query.fields);
+  var options = {
+    skip: query.skip,
+    limit: query.limit,
+    sort: fieldsParser(query.sort)
+  };
+
+  Achievement.find(filter, fields, options, function(err, achievements) {
     if (err) {
       log.error({err: err}, 'error getting all achievements');
       return cb(Boom.internal());

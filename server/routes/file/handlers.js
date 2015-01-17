@@ -65,7 +65,7 @@ exports.get = {
     }
   },
   pre: [
-    { method: 'file.get(params.id)', assign: 'file' }
+    { method: 'file.get(params.id, query)', assign: 'file' }
   ],
   handler: function (request, reply) {
     reply(request.pre.file);
@@ -79,7 +79,7 @@ exports.list = {
     strategies: ['default', 'backup'],
   },
   pre: [
-    { method: 'file.list()', assign: 'files' }
+    { method: 'file.list(query)', assign: 'files' }
   ],
   handler: function (request, reply) {
     reply(request.pre.files);

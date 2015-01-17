@@ -44,10 +44,11 @@ function update(id, file, cb) {
   });
 }
 
-function get(id, fields, cb) {
-  cb = cb || fields; // fields is optional
+function get(id, query, cb) {
+  cb = cb || query; // fields is optional
+  var fields = fieldsParser(query.fields);
 
-  File.findOne({id: id}, fieldsParser(fields), function(err, file) {
+  File.findOne({id: id}, fields, function(err, file) {
     if (err) {
       log.error({err: err, file: id}, 'error getting file');
       return cb(Boom.internal());
@@ -61,10 +62,18 @@ function get(id, fields, cb) {
   });
 }
 
-function list(fields, cb) {
-  cb = cb || fields; // fields is optional
+function list(query, cb) {
+  cb = cb || query; // fields is optional
+  
+  var filter = {};
+  var fields = fieldsParser(query.fields);
+  var options = {
+    skip: query.skip,
+    limit: query.limit,
+    sort: fieldsParser(query.sort)
+  };
 
-  File.find({}, fieldsParser(fields), function(err, file) {
+  File.find(filter, fields, options, function(err, file) {
     if (err) {
       log.error({err: err}, 'error getting all files');
       return cb(Boom.internal());

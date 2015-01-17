@@ -70,7 +70,7 @@ exports.get = {
     }
   },
   pre: [
-    { method: 'achievement.get(params.id, query.fields)', assign: 'achievement' }
+    { method: 'achievement.get(params.id, query)', assign: 'achievement' }
   ],
   handler: function (request, reply) {
     reply(request.pre.achievement);
@@ -89,7 +89,7 @@ exports.list = {
     }
   },
   pre: [
-    { method: 'achievement.list(query.fields)', assign: 'achievements' }
+    { method: 'achievement.list(query)', assign: 'achievements' }
   ],
   handler: function (request, reply) {
     reply(request.pre.achievements);
