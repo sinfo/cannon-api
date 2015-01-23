@@ -1,8 +1,6 @@
 var server = require('server').hapi;
 var handlers = require('./handlers');
 
-require('./methods');
-
 server.route({
   method: 'POST',
   path: '/api/achievement',
@@ -10,7 +8,7 @@ server.route({
 });
 
 server.route({
-  method: 'PUT',
+  method: ['PUT','PATCH'],
   path: '/api/achievement/{id}',
   config: handlers.update
 });

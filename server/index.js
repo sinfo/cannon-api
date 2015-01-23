@@ -1,44 +1,36 @@
 var Hapi = require('hapi');
 var options = require('server/options');
-var cookieConfig = require('config').cookie;
-var port = require('config').port;
+var config =require('config');
 var log = require('server/helpers/logger');
-var getCredentials = {}; // require('./auth/credentialsFunc');
 
-log.error('### Starting Cannon ###');
+log.info('### Starting Cannon ###');
 
-var db = require('./models');
+var db = require('server/db');
 
-var server = module.exports.hapi = new Hapi.Server(port);
+var server = module.exports.hapi = new Hapi.Server(config.port);
 
-// server.pack.require('hapi-auth-hawk', function (err) {
+server.pack.register([
+  { plugin: require('hapi-swagger'), options: config.swagger },
+  require('hapi-auth-bearer-token'),
+  require('bell'),
+  require('hapi-auth-basic')],
+  //{ plugin: require('good'), options: options.log }],
 
-  // server.auth.strategy('session', 'hawk', function (err) {
-  //   if (err) {
-  //     log.error('[hawk] problem setting auth strategy', err);
-  //     return;
-  //   }
-  //   server.auth.strategy('default', 'hawk', { getCredentialsFunc: getCredentials });
-  // });
+  function (err) {
 
+    if (err) {
+      log.error({err: err},'[hapi-plugins] problem registering hapi plugins');
+      return;
+    }
 
-  // server.pack.register({
-  //     plugin: require('good'),
-  //     options: options.log
-  //   }, function (err) {
-  //      if (err) {
-  //         log.error('[good] problem registering good', err);
-  //         return;
-  //      }
-  // });
+    server.auth.strategy('facebook', 'bell', options.auth.facebook);
+    server.auth.strategy('default', 'bearer-access-token', options.auth.default);
+    server.auth.strategy('backup', 'basic', options.auth.backup);
 
-  server.pack.register({ 
-    plugin: require('lout') 
-  }, function() {
     server.start(function () {
       log.info('### Server started at: ' + server.info.uri + ' ###');
-      var routes = require('./routes');
+      require('server/resources');
+      require('server/routes');
     });
-  });
-
-// });
+  }
+);
