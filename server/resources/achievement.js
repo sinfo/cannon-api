@@ -3,7 +3,7 @@ var slug = require('slug');
 var server = require('server').hapi;
 var log = require('server/helpers/logger');
 var fieldsParser = require('server/helpers/fieldsParser');
-var Achievement = require('server/models/achievement');
+var Achievement = require('server/db/achievement');
 
 server.method('achievement.create', create, {});
 server.method('achievement.update', update, {});

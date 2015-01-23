@@ -1,5 +1,5 @@
 var Boom = require('boom');
-var User = require('../models/user');
+var User = require('server/db/user');
 var log = require('server/helpers/logger');
 var async = require('async');
 var jwt = require('jsonwebtoken');

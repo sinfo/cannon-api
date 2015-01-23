@@ -2,7 +2,7 @@ var crypto = require('crypto');
 var jwt = require('jsonwebtoken');
 var Boom = require('boom');
 var log = require('./logger');
-var User = require('server/models/user');
+var User = require('server/db/user');
 var tokenConfig = require('config').token;
 
 function getToken(){
