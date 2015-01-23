@@ -1,41 +1,41 @@
 var fs = require('fs');
 
 var config = {
-  url: process.env.CANNON_URL || 'http://localhost:8090',
-  port: process.env.CANNON_PORT || 8090,
+  url: process.env.EVENTAPP_URL || 'http://localhost:8090',
+  port: process.env.EVENTAPP_PORT || 8090,
 };
 
 config.upload = {
-  path: process.env.CANNON_UPLOAD_PATH || 'root/cannon_uploads'
+  path: process.env.EVENTAPP_UPLOAD_PATH || 'root/cannon_uploads'
 };
 
 config.mongo = {
-  url: process.env.CANNON_MONGO_URL || 'mongodb://localhost/cannon'
+  url: process.env.EVENTAPP_MONGO_URL || 'mongodb://localhost/eventapp'
 };
 
 config.facebook = {
-  cookie: process.env.CANNON_COOKIE_NAME || 'cannon cookie',
-  password: process.env.CANNON_COOKIE_PASSWORD || 'YOUR COOKIE PASSWORD',
-  clientId: process.env.CANNON_FACEBOOK_APP_ID || 'YOUR APP ID',
-  clientSecret: process.env.CANNON_FACEBOOK_APP_SECRET || 'YOUR APP SECRET',
+  cookie: process.env.EVENTAPP_COOKIE_NAME || 'eventapp cookie',
+  password: process.env.EVENTAPP_COOKIE_PASSWORD || 'YOUR COOKIE PASSWORD',
+  clientId: process.env.EVENTAPP_FACEBOOK_APP_ID || 'YOUR APP ID',
+  clientSecret: process.env.EVENTAPP_FACEBOOK_APP_SECRET || 'YOUR APP SECRET',
 };
 
 config.bunyan = {
   name: require('./package.json').name,
-  level: process.env.CANNON_LOG_LEVEL || 'trace'
+  level: process.env.EVENTAPP_LOG_LEVEL || 'trace'
 };
 
 config.logs = {
-  path: process.env.CANNON_LOG_PATH || '/tmp/logs/',
+  path: process.env.EVENTAPP_LOG_PATH || '/tmp/logs/',
 };
 
 config.token = {
-  expiration: process.env.CANNON_TOKEN_EXPIRATION || 10,
-  privateKey:  fs.readFileSync(process.env.CANNON_TOKEN_PRIVATE_KEY || './keys/token'),
-  publicKey: fs.readFileSync(process.env.CANNON_TOKEN_PUBLIC_KEY || './keys/token.pub'),
-  algorithm: process.env.CANNON_TOKEN_ALGORITHM || 'RS256',
-  issuer: process.env.CANNON_TOKEN_ISSUER || 'cannon masters',
-  audience: process.env.CANNON_TOKEN_AUDIENCE || 'audience'
+  expiration: process.env.EVENTAPP_TOKEN_EXPIRATION || 10,
+  privateKey:  fs.readFileSync(process.env.EVENTAPP_TOKEN_PRIVATE_KEY || './keys/token'),
+  publicKey: fs.readFileSync(process.env.EVENTAPP_TOKEN_PUBLIC_KEY || './keys/token.pub'),
+  algorithm: process.env.EVENTAPP_TOKEN_ALGORITHM || 'RS256',
+  issuer: process.env.EVENTAPP_TOKEN_ISSUER || 'eventapp masters',
+  audience: process.env.EVENTAPP_TOKEN_AUDIENCE || 'audience'
 };
 
 

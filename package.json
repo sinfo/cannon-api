@@ -1,5 +1,5 @@
 {
-  "name": "codename-cannon",
+  "name": "eventapp-api",
   "version": "0.0.0",
   "description": "The ultimate web-app for the ultimate event!",
   "main": "server/index.js",
@@ -15,14 +15,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/sinfo/codename-cannon.git"
+    "url": "git://github.com/sinfo/sinfo-app-api.git"
   },
   "author": "SINFO Dev Team <devteam@sinfo.org> (https://github.com/sinfo)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sinfo/codename-cannon/issues"
+    "url": "https://github.com/sinfo/eventapp-api/issues"
   },
-  "homepage": "https://github.com/sinfo/codename-cannon",
+  "homepage": "https://github.com/sinfo/eventapp-api",
   "dependencies": {
     "async": "^0.9.0",
     "bell": "^1.1.0",
@@ -44,6 +44,6 @@
   "devDependencies": {
     "nodemon": "~1.2.1",
     "jshint": "~2.5.10",
-    "pre-commit": "https://github.com/jgantunes/pre-commit/tarball/master"
+    "pre-commit": "^0.0.11"
   }
 }
