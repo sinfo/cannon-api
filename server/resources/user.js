@@ -4,7 +4,7 @@ var server = require('server').hapi;
 var log = require('server/helpers/logger');
 var dupKeyParser = require('server/helpers/dupKeyParser');
 var fieldsParser = require('server/helpers/fieldsParser');
-var User = require('server/models/user');
+var User = require('server/db/user');
 
 server.method('user.create', create, {});
 server.method('user.update', update, {});

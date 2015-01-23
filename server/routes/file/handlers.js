@@ -1,5 +1,6 @@
 var Joi = require('joi');
 var log = require('server/helpers/logger');
+var render = require('server/views/file');
 
 
 var handlers = module.exports;
@@ -22,7 +23,7 @@ exports.create = {
     { method: 'file.create(payload)', assign: 'file' }
   ],
   handler: function (request, reply) {
-    reply(request.file).created('/api/file/'+request.pre.file.id);
+    reply(render(request.file)).created('/api/file/'+request.pre.file.id);
   },
   description: 'Creates a new file'
 };
@@ -49,7 +50,7 @@ exports.update = {
     { method: 'file.update(params.id, payload)', assign: 'file' }
   ],
   handler: function (request, reply) {
-    reply(request.pre.file);
+    reply(render(request.pre.file));
   },
   description: 'Updates a file'
 };
@@ -68,7 +69,7 @@ exports.get = {
     { method: 'file.get(params.id, query)', assign: 'file' }
   ],
   handler: function (request, reply) {
-    reply(request.pre.file);
+    reply(render(request.pre.file));
   },
   description: 'Gets an file'
 };
@@ -82,7 +83,7 @@ exports.list = {
     { method: 'file.list(query)', assign: 'files' }
   ],
   handler: function (request, reply) {
-    reply(request.pre.files);
+    reply(render(request.pre.files));
   },
   description: 'Gets all the files'
 };
@@ -101,7 +102,7 @@ exports.remove = {
     { method: 'file.remove(params.id)', assign: 'file' }
   ],
   handler: function (request, reply) {
-    reply(request.pre.file);
+    reply(render(request.pre.file));
   },
   description: 'Removes a file'
 };

@@ -1,5 +1,6 @@
 var Joi = require('joi');
 var log = require('server/helpers/logger');
+var render = require('server/views/redeem');
 
 
 var handlers = module.exports;
@@ -21,7 +22,7 @@ exports.create = {
     { method: 'redeem.create(payload)', assign: 'redeem' }
   ],
   handler: function (request, reply) {
-    reply(request.redeem).created('/api/redeem/'+request.pre.redeem.id);
+    reply(render(request.redeem)).created('/api/redeem/'+request.pre.redeem.id);
   },
   description: 'Creates a new Redeem Code.'
 };
@@ -47,7 +48,7 @@ exports.update = {
     { method: 'redeem.update(params.id, payload)', assign: 'redeem' }
   ],
   handler: function (request, reply) {
-    reply(request.pre.redeem);
+    reply(render(request.pre.redeem));
   },
   description: 'Updates a redeem code'
 };
@@ -66,7 +67,7 @@ exports.get = {
     { method: 'redeem.get(params.id, query)', assign: 'redeem' }
   ],
   handler: function (request, reply) {
-    reply(request.pre.redeem);
+    reply(render(request.pre.redeem));
   },
   description: 'Gets a redeem code'
 };
@@ -80,7 +81,7 @@ exports.list = {
     { method: 'redeem.list(query)', assign: 'reddems' }
   ],
   handler: function (request, reply) {
-    reply(request.pre.redeems);
+    reply(render(request.pre.redeems));
   },
   description: 'Gets all the redeem codes'
 };
@@ -99,7 +100,7 @@ exports.remove = {
     { method: 'redeem.remove(params.id)', assign: 'redeem' }
   ],
   handler: function (request, reply) {
-    reply(request.pre.redeem);
+    reply(render(request.pre.redeem));
   },
   description: 'Removes a redeem code'
 };

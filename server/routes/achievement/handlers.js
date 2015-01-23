@@ -1,5 +1,6 @@
 var Joi = require('joi');
 var log = require('server/helpers/logger');
+var render = require('server/views/achievement');
 
 
 var handlers = module.exports;
@@ -23,7 +24,7 @@ exports.create = {
     { method: 'achievement.create(payload)', assign: 'achievement' }
   ],
   handler: function (request, reply) {
-    reply(request.pre.achievement).created('/api/achievement/'+request.pre.achievement.id);
+    reply(render(request.pre.achievement)).created('/api/achievement/'+request.pre.achievement.id);
   },
   description: 'Creates a new achievement'
 };
@@ -51,7 +52,7 @@ exports.update = {
     { method: 'achievement.update(params.id, payload)', assign: 'achievement' }
   ],
   handler: function (request, reply) {
-    reply(request.pre.achievement);
+    reply(render(request.pre.achievement));
   },
   description: 'Updates an achievement'
 };
@@ -73,7 +74,7 @@ exports.get = {
     { method: 'achievement.get(params.id, query)', assign: 'achievement' }
   ],
   handler: function (request, reply) {
-    reply(request.pre.achievement);
+    reply(render(request.pre.achievement));
   },
   description: 'Gets an achievement'
 };
@@ -92,7 +93,7 @@ exports.list = {
     { method: 'achievement.list(query)', assign: 'achievements' }
   ],
   handler: function (request, reply) {
-    reply(request.pre.achievements);
+    reply(render(request.pre.achievements));
   },
   description: 'Gets all the achievements'
 };
@@ -111,7 +112,7 @@ exports.remove = {
     { method: 'achievement.remove(params.id)', assign: 'achievement' }
   ],
   handler: function (request, reply) {
-    reply(request.pre.achievement);
+    reply(render(request.pre.achievement));
   },
   description: 'Removes an achievement'
 };
