@@ -11,6 +11,10 @@ var schema = new mongoose.Schema({
     id: String,
     token: {type: String, unique: true}
   },
+  google: {
+    id: String,
+    token: {type: String, unique: true}
+  },
   fenix: {
     id: String,
     token: {type: String, unique: true},
@@ -26,7 +30,8 @@ var schema = new mongoose.Schema({
     id: String,
     date: Date
   }],
-  files: [String]
+  files: [String],
+  registered: Date
 });
 
 var User = module.exports = mongoose.model('User', schema);
