@@ -8,7 +8,7 @@
     "start": "NODE_PATH=. node server/index.js | bunyan",
     "mon": "NODE_PATH=. nodemon server/index.js | bunyan",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "node_modules/.bin/jshint -c .jshintrc ampersand-collection-io-mixin.js"
+    "lint": "node_modules/.bin/jshint -jshintrc ."
   },
   "pre-commit": [
     "lint"
