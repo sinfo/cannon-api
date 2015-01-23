@@ -5,7 +5,7 @@ var log = require('server/helpers/logger');
 
 log.info('### Starting Cannon ###');
 
-var db = require('./models');
+var db = require('server/db');
 
 var server = module.exports.hapi = new Hapi.Server(config.port);
 
