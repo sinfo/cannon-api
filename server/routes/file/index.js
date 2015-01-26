@@ -24,3 +24,9 @@ server.route({
   path: '/api/file',
   config: handlers.create
 });
+
+server.route({
+  method: ['DELETE'],
+  path: '/api/file/{id}',
+  config: handlers.remove
+});
