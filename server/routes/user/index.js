@@ -3,30 +3,36 @@ var handlers = require('./handlers');
 
 server.route({
   method: 'POST',
-  path: '/api/user',
+  path: '/users',
   config: handlers.create
 });
 
 server.route({
   method: 'PUT',
-  path: '/api/user/{id}',
+  path: '/users/{id}',
   config: handlers.update
 });
 
 server.route({
   method: 'GET',
-  path: '/api/user/{id}',
+  path: '/users/me',
+  config: handlers.getMe
+});
+
+server.route({
+  method: 'GET',
+  path: '/users/{id}',
   config: handlers.get
 });
 
 server.route({
   method: 'GET',
-  path: '/api/user',
+  path: '/users',
   config: handlers.list
 });
 
 server.route({
   method: 'DELETE',
-  path: '/api/user/{id}',
+  path: '/users/{id}',
   config: handlers.remove
 });

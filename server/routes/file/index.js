@@ -3,30 +3,30 @@ var handlers = require('./handlers');
 
 server.route({
   method: 'GET',
-  path: '/api/file',
+  path: '/files',
   config: handlers.list
 });
 
 server.route({
   method: 'GET',
-  path: '/api/file/{id}',
+  path: '/files/{id}',
   config: handlers.get
 });
 
 server.route({
   method: ['PUT','PATCH'],
-  path: '/api/file/{id}',
+  path: '/files/{id}',
   config: handlers.update
 });
 
 server.route({
   method: 'POST',
-  path: '/api/file',
+  path: '/files',
   config: handlers.create
 });
 
 server.route({
   method: ['DELETE'],
-  path: '/api/file/{id}',
+  path: '/files/{id}',
   config: handlers.remove
 });

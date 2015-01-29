@@ -3,30 +3,30 @@ var handlers = require('./handlers');
 
 server.route({
   method: 'POST',
-  path: '/api/achievement',
+  path: '/achievements',
   config: handlers.create
 });
 
 server.route({
   method: ['PUT','PATCH'],
-  path: '/api/achievement/{id}',
+  path: '/achievements/{id}',
   config: handlers.update
 });
 
 server.route({
   method: 'GET',
-  path: '/api/achievement/{id}',
+  path: '/achievements/{id}',
   config: handlers.get
 });
 
 server.route({
   method: 'GET',
-  path: '/api/achievement',
+  path: '/achievements',
   config: handlers.list
 });
 
 server.route({
   method: 'DELETE',
-  path: '/api/achievement/{id}',
+  path: '/achievements/{id}',
   config: handlers.remove
 });

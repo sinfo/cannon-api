@@ -114,6 +114,21 @@ exports.get = {
 };
 
 
+exports.getMe = {
+  tags: ['api','user'],
+  auth: {
+    strategies: ['default', 'backup'],
+  },
+  pre: [
+    { method: 'user.get(auth.credentials.id, query)', assign: 'user' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.user));
+  },
+  description: 'Gets an user'
+};
+
+
 exports.list = {
   tags: ['api','user'],
   auth: {

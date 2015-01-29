@@ -3,12 +3,12 @@ var handlers = require('./handlers');
 
 server.route({
   method: ['GET', 'POST'],
-  path: '/login/facebook',
+  path: '/auth/facebook/{id}/{token}',
   config: handlers.facebook
 });
 
 server.route({
   method: ['GET'],
-  path: '/login/refresh',
+  path: '/auth/login/refresh',
   config: handlers.refreshToken
 });

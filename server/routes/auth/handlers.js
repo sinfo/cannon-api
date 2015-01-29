@@ -5,13 +5,20 @@ var handlers = module.exports;
 exports.facebook = {
   tags: ['api','auth'],
   auth: {
-    strategies: ['default', 'facebook'],
+    strategies: ['default'],
+    mode: 'try'
+  },
+  validate: {
+    params: {
+      id: Joi.string().description('facebook id of the member'),
+      token: Joi.string().description('facebook token of the member'),
+    }
   },
   pre: [
-    { method: 'auth.facebook(auth)', assign: 'facebook' }
+    { method: 'auth.facebook(params.id, params.token)', assign: 'member' }
   ],
   handler: function (request, reply) {
-     reply(request.pre.facebook);
+    reply(request.pre.member);
   },
   description: 'Facebook login'
 };

@@ -1,0 +1,36 @@
+var Request = require('request');
+var log = require('server/helpers/logger');
+var facebookConfig = require('config').facebook;
+
+var facebook = {};
+
+facebook.debugToken = function (facebookUserId, facebookUserToken, cb) {
+  Request.get('https://graph.facebook.com/debug_token?input_token=' + facebookUserToken + '&access_token=' + facebookConfig.clientId + '|' + facebookConfig.clientSecret, {
+    json: true
+  },
+  function (error, response, result) {
+    /*jshint camelcase: false */
+    if (error || response.statusCode != 200) {
+      log.warn({err: error, facebookConfig: facebookConfig, response: response});
+      return cb(error);
+    }
+
+    var isValid = !(!result.data || result.data.app_id !== facebookConfig.clientId || result.data.user_id !== facebookUserId);
+
+    if(!isValid) {
+      log.warn(
+        {
+          'result-app-id': result.data.app_id,
+          'config-app-id': facebookConfig.clientId,
+          'result-user-id': result.data.user_id,
+          'requested-user-id': facebookUserId,
+        },
+        'invalid facebook login!'
+      );
+    }
+
+    cb(null, isValid);
+  });
+};
+
+module.exports = facebook;

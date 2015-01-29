@@ -1,7 +1,7 @@
 {
-  "name": "eventapp-api",
+  "name": "cannon-api",
   "version": "0.0.0",
-  "description": "The ultimate web-app for the ultimate event!",
+  "description": "The ultimate webapp for the ultimate event!",
   "main": "server/index.js",
   "scripts": {
     "run": "NODE_PATH=. nodemon server/index.js | bunyan",
@@ -16,14 +16,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/sinfo/sinfo-app-api.git"
+    "url": "git://github.com/sinfo/cannon-api.git"
   },
   "author": "SINFO Dev Team <devteam@sinfo.org> (https://github.com/sinfo)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sinfo/eventapp-api/issues"
+    "url": "https://github.com/sinfo/cannon-api/issues"
   },
-  "homepage": "https://github.com/sinfo/eventapp-api",
+  "homepage": "https://github.com/sinfo/cannon-api",
   "dependencies": {
     "async": "^0.9.0",
     "bell": "^1.1.0",
