@@ -17,24 +17,70 @@ function facebookAuth(id, token, cb){
       return cb(Boom.unauthorized('nice try'));
     }
 
-    server.methods.user.get(id, function(err, user){
+    server.methods.user.get({'facebook.id': id}, function(err, user){
       if(err) {
-        log.error({err: err, facebook: id }, '[facebook-login] error getting user');
-        return cb(err);
-      }
-
-      var newToken = Token.getJWT(user.id);
-      var changedAttributes = { $push: {bearer: newToken}, 'facebook.token': token};
-
-      server.methods.user.update(user.id, changedAttributes, function(err, result){
-        if(err){
-          log.error({user: user.id }, '[facebook-login] error updating user');
+        if(!err.output || err.output.statusCode != 404) {
+          log.error({err: err, facebook: id }, '[facebook-login] error getting user');
           return cb(err);
         }
-        log.info({user: user.id}, '[facebook-login] user logged');
-        return  cb(err, newToken);
-      });
+
+        // This facebook id is not on db, let's find out who it belongs to
+        return facebook.getMe(token, function(err, facebookUser) {
+          if(err){
+            log.error({err: err, id: id, token: token }, '[facebook-login] error retrieving user info from facebook');
+            return cb(Boom.unauthorized('couldn\'t retrieve your info from facebook'));
+          }
+
+          var changedAttributes = {
+            facebook: {
+              id: facebookUser.id,
+              token: token
+            }
+          };
+
+          // If user does not exist, lets set the id, name and email
+          changedAttributes.$setOnInsert = {
+            id: Math.random().toString(36).substr(2,20), // generate random id
+            name: facebookUser.name,
+            mail: facebookUser.email,
+          };
+
+          log.debug({facebookUser: facebookUser.id}, '[facebook-login] got facebook user');
+
+          // Update the facebook details of the user with this email, ou create a new user if it does not exist
+          return server.methods.user.update({mail: facebookUser.email}, changedAttributes, {upsert: true}, function(err, result){
+            if(err){
+              log.error({user: {mail: facebookUser.email}, changedAttributes: changedAttributes }, '[facebook-login] error upserting user');
+              return cb(err);
+            }
+
+            log.debug({id: result.id}, '[facebook-login] upserted user');
+
+            return authenticate(result.id, null, cb);
+          });
+        });
+      }
+
+      var changedAttributes = { 'facebook.token': token };
+
+      return authenticate(user.id, changedAttributes, cb);
     });
+  });
+}
+
+
+function authenticate(userId, changedAttributes, cb) {
+  var newToken = Token.getJWT(userId);
+  changedAttributes = changedAttributes || {};
+  changedAttributes.$push = { bearer: newToken };
+
+  server.methods.user.update({id: userId}, changedAttributes, function(err, result){
+    if(err){
+      log.error({user: userId, changedAttributes: changedAttributes }, '[facebook-login] error updating user');
+      return cb(err);
+    }
+    log.info({user: userId}, '[facebook-login] user logged in ');
+    return  cb(err, newToken);
   });
 }
 

@@ -5,7 +5,9 @@ var facebookConfig = require('config').facebook;
 var facebook = {};
 
 facebook.debugToken = function (facebookUserId, facebookUserToken, cb) {
-  Request.get('https://graph.facebook.com/debug_token?input_token=' + facebookUserToken + '&access_token=' + facebookConfig.clientId + '|' + facebookConfig.clientSecret, {
+  var url = 'https://graph.facebook.com/debug_token?input_token=' + facebookUserToken + '&access_token=' + facebookConfig.clientId + '|' + facebookConfig.clientSecret;
+
+  Request.get(url, {
     json: true
   },
   function (error, response, result) {
@@ -30,6 +32,20 @@ facebook.debugToken = function (facebookUserId, facebookUserToken, cb) {
     }
 
     cb(null, isValid);
+  });
+};
+
+facebook.getMe = function (accessToken, cb) {
+  var url = 'https://graph.facebook.com/me?access_token=' + accessToken;
+  Request.get(url, {
+    json: true
+  },
+  function (error, response, result) {
+    if (error || response.statusCode != 200) {
+      return cb(error);
+    }
+
+    cb(null, result);
   });
 };
 

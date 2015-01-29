@@ -31,14 +31,23 @@ function create(user, cb) {
   });
 }
 
-function update(id, user, cb) {
-  User.findOneAndUpdate({id: id}, user, function(err, _user) {
+function update(filter, user, opts, cb) {
+  if(typeof opts == 'function') {
+    cb = opts;
+    opts = {};
+  }
+
+  if(typeof filter == 'string') {
+    filter = { id: filter };
+  }
+
+  User.findOneAndUpdate(filter, user, opts, function(err, _user) {
     if (err) {
-      log.error({err: err, requestedUser: id}, 'error updating user');
+      log.error({err: err, requestedUser: filter}, 'error updating user');
       return cb(Boom.internal());
     }
     if (!_user) {
-      log.error({err: err, requestedUser: id}, 'error updating user');
+      log.error({err: err, requestedUser: filter}, 'error updating user');
       return cb(Boom.notFound());
     }
 
@@ -46,18 +55,22 @@ function update(id, user, cb) {
   });
 }
 
-function get(id, query, cb) {
+function get(filter, query, cb) {
   cb = cb || query; // fields is optional
 
   var fields = fieldsParser(query.fields);
 
-  User.findOne({$or:[ {id: id}, {'facebook.id': id} ]}, fields, function(err, user) {
+  if(typeof filter == 'string') {
+    filter = { id: filter };
+  }
+
+  User.findOne(filter, fields, function(err, user) {
     if (err) {
-      log.error({err: err, requestedUser: id}, 'error getting user');
+      log.error({err: err, requestedUser: filter}, 'error getting user');
       return cb(Boom.internal());
     }
     if (!user) {
-      log.error({err: err, requestedUser: id}, 'error getting user');
+      log.error({err: err, requestedUser: filter}, 'error getting user');
       return cb(Boom.notFound());
     }
 
@@ -96,7 +109,7 @@ function list(query, cb) {
       log.error({err: err}, 'error getting all users');
       return cb(Boom.internal());
     }
-    
+
     cb(null, users);
   });
 }
