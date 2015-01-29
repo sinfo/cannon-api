@@ -6,6 +6,7 @@ var config = require('config');
 var handlers = module.exports;
 
 exports.generate = {
+  tags: ['api','qrcode'],
   auth: {
     strategies: ['default', 'backup'],
   },
@@ -23,6 +24,7 @@ exports.generate = {
 };
 
 exports.redirect = {
+  tags: ['api','qrcode'],
   validate: {
     params: {
       id: Joi.string().required().description('id of the qrcode'),

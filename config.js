@@ -1,3 +1,4 @@
+var pack = require('package');
 var fs = require('fs');
 
 var config = {
@@ -21,12 +22,18 @@ config.facebook = {
 };
 
 config.bunyan = {
-  name: require('./package.json').name,
+  name: pack.name,
   level: process.env.EVENTAPP_LOG_LEVEL || 'trace'
 };
 
 config.logs = {
   path: process.env.EVENTAPP_LOG_PATH || '/tmp/logs/',
+};
+
+config.swagger = {
+  pathPrefixSize: 2,
+  apiVersion: pack.version,
+  basePath: config.url,
 };
 
 config.token = {

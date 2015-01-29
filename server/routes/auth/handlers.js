@@ -3,6 +3,7 @@ var Joi = require('joi');
 var handlers = module.exports;
 
 exports.facebook = {
+  tags: ['api','auth'],
   auth: {
     strategies: ['default', 'facebook'],
   },
@@ -16,6 +17,7 @@ exports.facebook = {
 };
 
 exports.refreshToken = {
+  tags: ['api','auth'],
   validate: {
     params: {
       id: Joi.string().required().description('Id of the user we want to retrieve'),

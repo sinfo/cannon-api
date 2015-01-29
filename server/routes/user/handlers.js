@@ -6,6 +6,7 @@ var render = require('server/views/user');
 var handlers = module.exports;
 
 exports.create = {
+  tags: ['api','user'],
   auth: {
     strategies: ['default', 'backup'],
   },
@@ -50,6 +51,7 @@ exports.create = {
 
 
 exports.update = {
+  tags: ['api','user'],
   auth: {
     strategies: ['default', 'backup'],
   },
@@ -93,6 +95,7 @@ exports.update = {
 
 
 exports.get = {
+  tags: ['api','user'],
   auth: {
     strategies: ['default', 'backup'],
   },
@@ -112,6 +115,7 @@ exports.get = {
 
 
 exports.list = {
+  tags: ['api','user'],
   auth: {
     strategies: ['default', 'backup'],
   },
@@ -126,6 +130,7 @@ exports.list = {
 
 
 exports.remove = {
+  tags: ['api','user'],
   auth: {
     strategies: ['default', 'backup'],
   },

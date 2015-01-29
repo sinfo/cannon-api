@@ -6,6 +6,7 @@ var render = require('server/views/achievement');
 var handlers = module.exports;
 
 exports.create = {
+  tags: ['api','achievement'],
   auth: {
     strategies: ['default', 'backup']
   },
@@ -31,6 +32,7 @@ exports.create = {
 
 
 exports.update = {
+  tags: ['api','achievement'],
   auth: {
     strategies: ['default', 'backup'],
   },
@@ -59,6 +61,7 @@ exports.update = {
 
 
 exports.get = {
+  tags: ['api','achievement'],
   auth: {
     strategies: ['default', 'backup'],
   },
@@ -81,6 +84,7 @@ exports.get = {
 
 
 exports.list = {
+  tags: ['api','achievement'],
   auth: {
     strategies: ['default', 'backup'],
   },
@@ -100,6 +104,7 @@ exports.list = {
 
 
 exports.remove = {
+  tags: ['api','achievement'],
   auth: {
     strategies: ['default', 'backup'],
   },

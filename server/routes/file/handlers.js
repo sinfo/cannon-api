@@ -6,6 +6,7 @@ var render = require('server/views/file');
 var handlers = module.exports;
 
 exports.create = {
+  tags: ['api','qrcode'],
   auth: {
     strategies: ['default', 'backup'],
   },
@@ -30,6 +31,7 @@ exports.create = {
 
 
 exports.update = {
+  tags: ['api','qrcode'],
   auth: {
     strategies: ['default', 'backup'],
   },
@@ -57,6 +59,7 @@ exports.update = {
 
 
 exports.get = {
+  tags: ['api','file'],
   auth: {
     strategies: ['default', 'backup'],
   },
@@ -76,6 +79,7 @@ exports.get = {
 
 
 exports.list = {
+  tags: ['api','qrcode'],
   auth: {
     strategies: ['default', 'backup'],
   },
@@ -90,6 +94,7 @@ exports.list = {
 
 
 exports.remove = {
+  tags: ['api','qrcode'],
   auth: {
     strategies: ['default', 'backup'],
   },
