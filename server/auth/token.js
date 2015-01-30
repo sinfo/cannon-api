@@ -1,18 +1,9 @@
 var crypto = require('crypto');
 var jwt = require('jsonwebtoken');
 var Boom = require('boom');
-var log = require('./logger');
+var log = require('server/helpers/logger');
 var User = require('server/db/user');
 var tokenConfig = require('config').token;
-
-function getToken(){
-  var token = {
-    token: crypto.randomBytes(64).toString('hex'),
-    date: Date.now()
-  };
-  return token;
-
-}
 
 function getJWT(user){
   var date = Date.now();
@@ -36,6 +27,5 @@ function removeToken(user, token, cb){
   });
 }
 
-module.exports.getToken = getToken;
 module.exports.getJWT = getJWT;
 module.exports.removeToken = removeToken;

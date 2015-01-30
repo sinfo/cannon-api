@@ -2,7 +2,7 @@ var Boom = require('boom');
 var server = require('server').hapi;
 var log = require('server/helpers/logger');
 var facebook = require('server/helpers/facebook');
-var Token = require('server/helpers/token');
+var Token = require('server/auth/token');
 
 server.method('auth.facebook', facebookAuth, {});
 server.method('auth.refreshToken', refreshToken, {});
@@ -87,7 +87,7 @@ function authenticate(userId, changedAttributes, cb) {
 function refreshToken(auth, cb){
   var id = auth.credentials.user.id;
   var token = auth.credentials.bearer;
-  var newToken = Token.getToken();
+  var newToken = Token.getJWT();
 
   //NEEDS REPAIR
   var update = { $pull: {bearer: token}, $push: {bearer: newToken} };
