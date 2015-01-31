@@ -1,5 +1,6 @@
 var log = require('server/helpers/logger');
 var Joi = require('joi');
+var render = require('server/views/auth');
 var handlers = module.exports;
 
 exports.facebook = {
@@ -18,7 +19,7 @@ exports.facebook = {
     { method: 'auth.facebook(payload.id, payload.token)', assign: 'member' }
   ],
   handler: function (request, reply) {
-    reply(request.pre.member);
+    reply(render(request.pre.member));
   },
   description: 'Facebook login'
 };

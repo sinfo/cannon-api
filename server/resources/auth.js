@@ -80,7 +80,7 @@ function authenticate(userId, changedAttributes, cb) {
       return cb(err);
     }
     log.info({user: userId}, '[facebook-login] user logged in ');
-    return  cb(err, newToken);
+    return  cb(err, {id: userId, token: newToken.token});
   });
 }
 
