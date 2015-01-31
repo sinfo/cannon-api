@@ -9,13 +9,13 @@ exports.facebook = {
     mode: 'try'
   },
   validate: {
-    params: {
+    payload: {
       id: Joi.string().description('facebook id of the member'),
       token: Joi.string().description('facebook token of the member'),
     }
   },
   pre: [
-    { method: 'auth.facebook(params.id, params.token)', assign: 'member' }
+    { method: 'auth.facebook(payload.id, payload.token)', assign: 'member' }
   ],
   handler: function (request, reply) {
     reply(request.pre.member);

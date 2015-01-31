@@ -2,8 +2,8 @@ var server = require('server').hapi;
 var handlers = require('./handlers');
 
 server.route({
-  method: ['GET', 'POST'],
-  path: '/auth/facebook/{id}/{token}',
+  method: ['POST'],
+  path: '/auth/facebook',
   config: handlers.facebook
 });
 
