@@ -3,6 +3,7 @@ var mongoose = require('mongoose');
 var schema = new mongoose.Schema({
   id: {type: String, unique: true},
   name: String,
+  img: String,
   bearer: [{
     token: {type: String, unique: true, sparse: true},
     date: Date
@@ -18,7 +19,9 @@ var schema = new mongoose.Schema({
   fenix: {
     id: String,
     token: {type: String, unique: true, sparse: true},
-    refreshToken: {type: String, unique: true, sparse: true}
+    refreshToken: {type: String, unique: true, sparse: true},
+    expires: Number,
+    created: Date
   },
   role: String,
   mail: {type: String, unique: true, sparse: true},

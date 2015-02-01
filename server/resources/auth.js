@@ -2,6 +2,7 @@ var Boom = require('boom');
 var server = require('server').hapi;
 var config = require('config');
 var log = require('server/helpers/logger');
+var async = require('async');
 var facebook = require('server/helpers/facebook');
 var Token = require('server/auth/token');
 var Fenix = require('fenixedu')(config.fenix);
@@ -72,21 +73,99 @@ function facebookAuth(id, token, cb){
 }
 
 function fenixAuth(code, cb){
-  Fenix.auth.getAccessToken(code, function(err, response, body) {
-    if(err || !body){
-      log.error({err: err, response: response.statusCode, body: body}, '[fenix-login] error getting access token');
-      return cb(Boom.unauthorized(body));
+
+  async.waterfall([
+
+    function getAccessToken(cbAsync){
+      Fenix.auth.getAccessToken(code, function(err, response, body) {
+
+        var auth;
+
+        if(err || !body){
+          log.error({err: err, response: response.statusCode, body: body}, '[fenix-login] error getting access token');
+          return cbAsync(Boom.unauthorized(body));
+        }
+
+        auth = {
+          token: body.access_token, // jshint ignore:line
+          refreshToken: body.refresh_token, // jshint ignore:line
+          expires: body.expires_in, // jshint ignore:line
+          created: Date.now(),
+        };
+
+        cbAsync(null, auth);
+      });
+    },
+
+    function getPerson(auth, cbAsync){
+      Fenix.person.getPerson(auth.token, function(err, fenixUser){
+
+        var user;
+        var _auth = auth;
+
+        if(err || !fenixUser) {
+          log.error({err: err, user: fenixUser}, '[fenix-login] error getting person');
+          return cbAsync(Boom.unauthorized());
+        }
+
+        _auth.id = fenixUser.username;
+        user = {
+          auth: _auth,
+          name: fenixUser.name,
+          email:{
+            main: fenixUser.email,
+            others: fenixUser.personalEmails.concat(fenixUser.workEmails)
+          } 
+        };
+        cbAsync(null, user);
+      });
+    },
+
+    function compareUser(fenixUser, cbAsync){
+      server.methods.user.get({'fenix.id': fenixUser.auth.id}, function(err, user){
+
+        var changedAttributes = {};
+        var query = {};
+
+        if(err && (!err.output || err.output.statusCode != 404)){
+          log.error({err: err, fenix: fenixUser.auth.id}, '[fenix-login] error getting user');
+          return cbAsync(err);
+        }
+        if(user && user.id){
+          changedAttributes = { fenix: fenixUser.auth };
+
+          return authenticate(user.id, changedAttributes, cbAsync);
+        }
+
+        changedAttributes.fenix = fenixUser.auth;
+
+        // If user does not exist, lets set the id, name and email
+        changedAttributes.$setOnInsert = {
+          id: Math.random().toString(36).substr(2,20), // generate random id
+          name: fenixUser.name,
+          mail: fenixUser.email.main,
+        };
+
+        fenixUser.email.others.push(fenixUser.email.main);
+
+        query.$in = fenixUser.email.others;
+
+        log.debug({fenixUser: fenixUser.id}, '[fenix-login] got fenix user');
+
+        // Update the fenix details of the user with any this emails, ou create a new user if it does not exist
+        server.methods.user.update(query, changedAttributes, {upsert: true}, function(err, result){
+          if(err){
+            log.error({query: query, changedAttributes: changedAttributes }, '[fenix-login] error upserting user');
+            return cbAsync(err);
+          }
+
+          log.debug({id: result.id}, '[fenix-login] upserted user');
+
+          return authenticate(result.id, null, cbAsync);
+        });
+      });
     }
-    Fenix.person.getPerson(body.access_token, function(err, reply){ // jshint ignore:line
-      if(err) {
-        log.error({err: err, reply: reply}, '[fenix-login] error getting person');
-        return cb(Boom.unauthorized(body));
-      }
-      if(reply){
-        log.debug(reply);
-      }
-    });
-  });
+  ], cb);
 }
 
 

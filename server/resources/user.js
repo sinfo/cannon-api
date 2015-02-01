@@ -70,7 +70,7 @@ function get(filter, query, cb) {
       return cb(Boom.internal());
     }
     if (!user) {
-      log.error({err: err, requestedUser: filter}, 'error getting user');
+      log.warn({err: err, requestedUser: filter}, 'could not find user');
       return cb(Boom.notFound());
     }
 
