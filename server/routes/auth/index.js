@@ -8,6 +8,12 @@ server.route({
 });
 
 server.route({
+  method: ['POST'],
+  path: '/auth/fenix',
+  config: handlers.fenix
+});
+
+server.route({
   method: ['GET'],
   path: '/auth/login/refresh',
   config: handlers.refreshToken

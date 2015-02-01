@@ -40,7 +40,8 @@
     "mongoose": "^3.8.16",
     "qr-image": "~2.0.0",
     "request": "^2.44.0",
-    "slug": "~0.7.1"
+    "slug": "~0.7.1",
+    "fenixedu": "https://github.com/jgantunes/fenixedu/tarball/master"
   },
   "devDependencies": {
     "bunyan": "~1.2.1",

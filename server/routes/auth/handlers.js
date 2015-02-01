@@ -24,6 +24,26 @@ exports.facebook = {
   description: 'Facebook login'
 };
 
+exports.fenix = {
+  tags: ['api','auth'],
+  auth: {
+    strategies: ['default'],
+    mode: 'try'
+  },
+  validate: {
+    payload: {
+      code: Joi.string().description('fenix code of the member')
+    }
+  },
+  pre: [
+    { method: 'auth.fenix(payload.code)', assign: 'member' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.member));
+  },
+  description: 'Fenix login'
+};
+
 exports.refreshToken = {
   tags: ['api','auth'],
   validate: {

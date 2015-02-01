@@ -1,10 +1,13 @@
 var Boom = require('boom');
 var server = require('server').hapi;
+var config = require('config');
 var log = require('server/helpers/logger');
 var facebook = require('server/helpers/facebook');
 var Token = require('server/auth/token');
+var Fenix = require('fenixedu')(config.fenix);
 
 server.method('auth.facebook', facebookAuth, {});
+server.method('auth.fenix', fenixAuth, {});
 server.method('auth.refreshToken', refreshToken, {});
 
 function facebookAuth(id, token, cb){
@@ -64,6 +67,24 @@ function facebookAuth(id, token, cb){
       var changedAttributes = { 'facebook.token': token };
 
       return authenticate(user.id, changedAttributes, cb);
+    });
+  });
+}
+
+function fenixAuth(code, cb){
+  Fenix.auth.getAccessToken(code, function(err, response, body) {
+    if(err || !body){
+      log.error({err: err, response: response.statusCode, body: body}, '[fenix-login] error getting access token');
+      return cb(Boom.unauthorized(body));
+    }
+    Fenix.person.getPerson(body.access_token, function(err, reply){ // jshint ignore:line
+      if(err) {
+        log.error({err: err, reply: reply}, '[fenix-login] error getting person');
+        return cb(Boom.unauthorized(body));
+      }
+      if(reply){
+        log.debug(reply);
+      }
     });
   });
 }
