@@ -12,7 +12,7 @@ function renderObject(model) {
     name: model.name,
 		kind: model.kind,
     extension: model.extension,
-		created: model.created,
-		updated: model.updated
+		updated: model.updated,
+    created: model.created
   };
 }

@@ -42,6 +42,7 @@ function renderObject(model) {
       };
     }),
 		files: model.files,
-    registered: model.registered
+    registered: model.registered,
+    updated: model.updated
   };
 }

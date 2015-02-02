@@ -5,6 +5,7 @@ var schema = new mongoose.Schema({
   name: String,
   kind: String,
   extension: String,
+  created: Date,
   updated: Date
 });
 

@@ -15,6 +15,8 @@ server.method('achievement.remove', remove, {});
 function create(achievement, cb) {
   achievement.id = slug(achievement.name);
 
+  achievement.updated = achievement.created = Date.now();
+
   Achievement.create(achievement, function(err, _achievement) {
     if (err) {
       if(err.code == 11000) {
@@ -30,6 +32,9 @@ function create(achievement, cb) {
 }
 
 function update(id, achievement, cb) {
+
+  achievement.updated = Date.now();
+
   Achievement.findOneAndUpdate({id: id}, achievement, function(err, _achievement) {
     if (err) {
       log.error({err: err, achievement: id}, 'error updating achievement');

@@ -34,7 +34,8 @@ var schema = new mongoose.Schema({
     date: Date
   }],
   files: [String],
-  registered: Date
+  registered: Date,
+  updated: Date
 });
 
 var User = module.exports = mongoose.model('User', schema);

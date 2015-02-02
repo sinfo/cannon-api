@@ -22,6 +22,8 @@ server.method('file.upload', upload, {});
 
 function create(file, cb) {
 
+  file.created = file.updated = Date.now();
+
   File.create(file, function(err, _file) {
     if (err) {
       if(err.code == 11000) {
@@ -37,6 +39,9 @@ function create(file, cb) {
 }
 
 function update(id, file, cb) {
+
+  file.updated = Date.now();
+
   File.findOneAndUpdate({id: id}, file, function(err, _file) {
     if (err) {
       log.error({err: err, file: id}, 'error updating file');
@@ -138,11 +143,10 @@ function saveFiles(kind, files, data, cb){
 
 function saveFile(kind, data, cb){
 
-  log.debug(data.hapi);
-
   var mimeType = data.hapi.headers['content-type'];
   var fileInfo = {
     id: kind + '_' + Math.random().toString(36).substr(2,20),
+    kind: kind,
     name: urlencode.decode(data.hapi.filename),
   };
   var file = data;
@@ -169,7 +173,6 @@ function saveFile(kind, data, cb){
 
     async.each(options.upload, function(o, cbAsync){
       if(o.kind === kind){
-        log.debug({option: o, mime: mimeType});
         index = o.mimes.indexOf(mimeType);
       }
       cbAsync();

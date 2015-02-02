@@ -15,6 +15,8 @@ server.method('redeem.remove', remove, {});
 function create(redeem, cb) {
   Redeem.id = slug(redeem.name);
 
+  Redeem.updated = Date.now();
+
   Redeem.create(redeem, function(err, _redeem) {
     if (err) {
       if(err.code == 11000) {
