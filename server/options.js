@@ -33,6 +33,6 @@ module.exports = {
     }
 	},
   upload:[
-    {kind: 'cv', mimes: ['application/pdf', 'text/plain']}
+    {kind: 'cv', mimes: ['application/pdf']}
   ]
 };
