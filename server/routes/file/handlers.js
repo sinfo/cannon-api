@@ -144,7 +144,7 @@ exports.upload = {
   },
   pre: [
     { method: 'file.upload(params.kind, payload)', assign: 'file' },
-    { method: 'file.create(pre.file)', assign: 'fileInfo' }
+    { method: 'file.createArray(pre.file)', assign: 'fileInfo' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.fileInfo)).created('/api/file/'+request.pre.fileInfo.id);

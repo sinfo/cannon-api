@@ -13,12 +13,23 @@ var fieldsParser = require('server/helpers/fieldsParser');
 var File = require('server/db/file');
 
 server.method('file.create', create, {});
+server.method('file.createArray', createArray, {});
 server.method('file.update', update, {});
 server.method('file.get', get, {});
 server.method('file.list', list, {});
 server.method('file.remove', remove, {});
 server.method('file.saveFiles', saveFiles, {});
 server.method('file.upload', upload, {});
+
+function createArray(files, cb) {
+
+  async.map(files, create, function(err, results){
+    if(err){
+      log.error({err: err, files: files},'[files] error creating files in db');
+    }
+    cb(err, results);
+  });
+}
 
 function create(file, cb) {
 
