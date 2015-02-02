@@ -6,7 +6,7 @@ var render = require('server/views/redeem');
 var handlers = module.exports;
 
 exports.create = {
-  tags: ['api','user'],
+  tags: ['api','redeem'],
   auth: {
     strategies: ['default', 'backup'],
   },
@@ -30,7 +30,7 @@ exports.create = {
 
 
 exports.update = {
-  tags: ['api','user'],
+  tags: ['api','redeem'],
   auth: {
     strategies: ['default', 'backup'],
   },
@@ -77,7 +77,7 @@ exports.get = {
 
 
 exports.list = {
-  tags: ['api','user'],
+  tags: ['api','redeem'],
   auth: {
     strategies: ['default', 'backup'],
   },
@@ -92,7 +92,7 @@ exports.list = {
 
 
 exports.remove = {
-  tags: ['api','user'],
+  tags: ['api','redeem'],
   auth: {
     strategies: ['default', 'backup'],
   },

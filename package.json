@@ -36,11 +36,14 @@
     "hapi-auth-bearer-token": "^2.2.2",
     "hapi-swagger": "~0.4.2",
     "joi": "^4.7.0",
+    "urlencode": "^0.2.0",
+    "parse-http-header": "^1.0.0",
     "jsonwebtoken": "^3.2.2",
     "mongoose": "^3.8.16",
     "qr-image": "~2.0.0",
     "request": "^2.44.0",
     "slug": "~0.7.1",
+    "mime": "^1.2.11",
     "fenixedu": "https://github.com/jgantunes/fenixedu/tarball/master"
   },
   "devDependencies": {

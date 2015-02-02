@@ -31,5 +31,8 @@ module.exports = {
       isSecure: false, //while http only
       //ttl: should define ttl after
     }
-	}
+	},
+  upload:[
+    {kind: 'cv', mimes: ['application/pdf', 'text/plain']}
+  ]
 };

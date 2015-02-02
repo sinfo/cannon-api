@@ -1,12 +1,14 @@
 var Joi = require('joi');
 var log = require('server/helpers/logger');
 var render = require('server/views/file');
+var configUpload = require('config').upload;
+var optionsUpload = require('server/options').upload;
 
 
-var handlers = module.exports;
+var handlers = module.exports; 
 
 exports.create = {
-  tags: ['api','qrcode'],
+  tags: ['api','file'],
   auth: {
     strategies: ['default', 'backup'],
   },
@@ -16,7 +18,6 @@ exports.create = {
     	name: Joi.string().required().description('File name'),
     	kind: Joi.string().required().description('File category'),
     	extension: Joi.string().required().description('File type'),
-    	created: Joi.date().required().description('Creation time and date'),
     	updated: Joi.date().required().description('Update time and date'),
     }
   },
@@ -24,14 +25,14 @@ exports.create = {
     { method: 'file.create(payload)', assign: 'file' }
   ],
   handler: function (request, reply) {
-    reply(render(request.file)).created('/api/file/'+request.pre.file.id);
+    reply(render(request.pre.file)).created('/api/file/'+request.pre.file.id);
   },
   description: 'Creates a new file'
 };
 
 
 exports.update = {
-  tags: ['api','qrcode'],
+  tags: ['api','file'],
   auth: {
     strategies: ['default', 'backup'],
   },
@@ -40,12 +41,11 @@ exports.update = {
       id: Joi.string().required().description('Id of the file we want to update'),
     },
     payload: {
-    	id: Joi.string().required().description('File id'),
-    	name: Joi.string().required().description('File name'),
-    	kind: Joi.string().required().description('File category'),
-    	extension: Joi.string().required().description('File type'),
+    	id: Joi.string().description('File id'),
+    	name: Joi.string().description('File name'),
+    	kind: Joi.string().description('File category'),
+    	extension: Joi.string().description('File type'),
     	created: Joi.date().required().description('Creation time and date'),
-    	updated: Joi.date().required().description('Update time and date'),
     }
   },
   pre: [
@@ -79,7 +79,7 @@ exports.get = {
 
 
 exports.list = {
-  tags: ['api','qrcode'],
+  tags: ['api','file'],
   auth: {
     strategies: ['default', 'backup'],
   },
@@ -94,7 +94,7 @@ exports.list = {
 
 
 exports.remove = {
-  tags: ['api','qrcode'],
+  tags: ['api','file'],
   auth: {
     strategies: ['default', 'backup'],
   },
@@ -110,4 +110,44 @@ exports.remove = {
     reply(render(request.pre.file));
   },
   description: 'Removes a file'
+};
+
+exports.upload = {
+  tags: ['api','file'],
+  auth: {
+    strategies: ['default', 'backup'],
+  },
+  payload: {
+    output: 'stream',
+    parse: true,
+    allow: 'multipart/form-data',
+    maxBytes: configUpload.maxSize
+  },
+  validate: {
+    params: {
+      kind: Joi.string().valid(optionsUpload.map(function(o){
+        return o.kind;
+      })).required().description('File category'),
+    },
+    payload: Joi.object().pattern(/(\w*\W*)*/,
+      Joi.object({
+        pipe: Joi.func().required().description('File stream'),
+        hapi: Joi.object({
+          filename: Joi.string().required().description('File name'),
+          headers: Joi.object({
+            'content-type': Joi.string().required().description('File mime type'),
+            'content-disposition': Joi.string().required().regex(/\w*\W*filename\w*\W*/).description('File name')
+          }).unknown().required().description('File headers')
+        }).required().description('File')
+      }).unknown()
+    ).required()
+  },
+  pre: [
+    { method: 'file.upload(params.kind, payload)', assign: 'file' },
+    { method: 'file.create(pre.file)', assign: 'fileInfo' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.fileInfo)).created('/api/file/'+request.pre.fileInfo.id);
+  },
+  description: 'Uploads a file'
 };

@@ -7,7 +7,8 @@ var config = {
 };
 
 config.upload = {
-  path: process.env.CANNON_UPLOAD_PATH || 'root/cannon_uploads'
+  path: process.env.CANNON_UPLOAD_PATH || 'cannon_uploads',
+  maxSize: process.env.CANNON_UPLOAD_MAX_SIZE || 1000*1000
 };
 
 config.mongo = {

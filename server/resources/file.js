@@ -1,7 +1,14 @@
 var Boom = require('boom');
+var Mime = require('mime');
 var slug = require('slug');
+var config = require('config');
+var options = require('server/options');
 var server = require('server').hapi;
 var log = require('server/helpers/logger');
+var async = require('async');
+var fs = require('fs');
+var urlencode = require('urlencode');
+var parseHeader = require('parse-http-header');
 var fieldsParser = require('server/helpers/fieldsParser');
 var File = require('server/db/file');
 
@@ -10,10 +17,10 @@ server.method('file.update', update, {});
 server.method('file.get', get, {});
 server.method('file.list', list, {});
 server.method('file.remove', remove, {});
-
+server.method('file.saveFiles', saveFiles, {});
+server.method('file.upload', upload, {});
 
 function create(file, cb) {
-  file.id = slug(file.name);
 
   File.create(file, function(err, _file) {
     if (err) {
@@ -95,5 +102,89 @@ function remove(id, cb) {
     }
 
     return cb(null, file);
+  });
+}
+
+function upload(kind, data, cb){
+  var files = [];
+  async.each(Object.keys(data), function(prop, cbAsync){
+    if(data.hasOwnProperty(prop)){
+      files.push(prop);
+    }
+    cbAsync();
+  },
+  function(err){
+    if(err){
+      log.error({err: err, kind: kind, files: files}, '[files] error assigning file keys');
+      return cb(Boom.internal());
+    }
+    saveFiles(kind, files, data, cb);
+  });
+}
+
+function saveFiles(kind, files, data, cb){
+
+  if(!files){
+    cb(Boom.badData());
+  }
+  if(files.length === 1){
+    return saveFile(kind, data[files[0]], cb);
+  }
+
+  async.map(files, function(file, cbAsync){
+    saveFile(kind, data[file], cbAsync);
+  }, cb );
+}
+
+function saveFile(kind, data, cb){
+
+  log.debug(data.hapi);
+
+  var mimeType = data.hapi.headers['content-type'];
+  var fileInfo = {
+    id: kind + '_' + Math.random().toString(36).substr(2,20),
+    name: urlencode.decode(data.hapi.filename),
+  };
+  var file = data;
+  var path = config.upload.path + '/' + fileInfo.id;
+  var fileStream = fs.createWriteStream(path);
+
+  fileStream.on('error', function (err) {
+    if(err && err.errno === 34){
+      log.error('[file] issue with file path');
+    }
+    log.error({err: err}, '[file] error uploading file');
+    return cb(Boom.internal());
+  });
+
+  file.pipe(fileStream);
+
+  file.on('end', function (err) { 
+    if(err){
+      log.error({err: err}, '[file] error uploading file');
+      return cb(Boom.badData(err));
+    }
+
+    var index = -1;
+
+    async.each(options.upload, function(o, cbAsync){
+      if(o.kind === kind){
+        log.debug({option: o, mime: mimeType});
+        index = o.mimes.indexOf(mimeType);
+      }
+      cbAsync();
+    },
+    function done(err){
+      if(err){
+        log.error({err: err}, '[file] error running through options');
+        return cb(Boom.internal(err));
+      }
+      if(index === -1){
+        log.error({err: err}, '[file] invalid file type for requested kind');
+        return cb(Boom.badData(err));
+      }
+      fileInfo.extension = Mime.extension(mimeType);
+      return cb(null, fileInfo);
+    });
   });
 }
