@@ -89,7 +89,7 @@ function fenixAuth(code, cb){
         auth = {
           token: body.access_token, // jshint ignore:line
           refreshToken: body.refresh_token, // jshint ignore:line
-          expires: body.expires_in, // jshint ignore:line
+          ttl: body.expires_in, // jshint ignore:line
           created: Date.now(),
         };
 
@@ -180,7 +180,7 @@ function authenticate(userId, changedAttributes, cb) {
       return cb(err);
     }
     log.info({user: userId}, '[facebook-login] user logged in ');
-    return  cb(err, {id: userId, token: newToken.token});
+    return  cb(err, newToken);
   });
 }
 

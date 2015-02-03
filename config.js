@@ -50,13 +50,24 @@ config.swagger = {
   basePath: config.url,
 };
 
-config.token = {
-  expiration: process.env.CANNON_TOKEN_EXPIRATION || 10,
-  privateKey:  fs.readFileSync(process.env.CANNON_TOKEN_PRIVATE_KEY || './keys/token'),
+config.auth = {};
+
+config.auth.token = {
+  ttl: process.env.CANNON_TOKEN_EXPIRATION || 10, //in minutes
+  privateKey:  fs.readFileSync(process.env.CANNON_TOKEN_PRIVATE_KEY || './keys/token.key'),
   publicKey: fs.readFileSync(process.env.CANNON_TOKEN_PUBLIC_KEY || './keys/token.pub'),
   algorithm: process.env.CANNON_TOKEN_ALGORITHM || 'RS256',
   issuer: process.env.CANNON_TOKEN_ISSUER || 'cannon_masters',
   audience: process.env.CANNON_TOKEN_AUDIENCE || 'audience'
+};
+
+config.auth.refreshToken = {
+  ttl: process.env.CANNON_REFRESH_TOKEN_EXPIRATION || 43200, //in minutes
+  privateKey:  fs.readFileSync(process.env.CANNON_REFRESH_TOKEN_PRIVATE_KEY || './keys/token.key'),
+  publicKey: fs.readFileSync(process.env.CANNON_REFRESH_TOKEN_PUBLIC_KEY || './keys/token.pub'),
+  algorithm: process.env.CANNON_REFRESH_TOKEN_ALGORITHM || config.auth.token.algorithm,
+  issuer: process.env.CANNON_REFRESH_TOKEN_ISSUER || config.auth.token.issuer,
+  audience: process.env.CANNON_REFRESH_TOKEN_AUDIENCE || config.auth.token.audience
 };
 
 

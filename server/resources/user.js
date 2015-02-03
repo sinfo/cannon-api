@@ -16,6 +16,8 @@ server.method('user.remove', remove, {});
 function create(user, cb) {
   user.id = user.id || slug(user.name).toLowerCase();
 
+  user.resgistered = Date.now();
+
   User.create(user, function(err, _user) {
     if (err) {
       if(err.code == 11000) {
@@ -32,6 +34,9 @@ function create(user, cb) {
 }
 
 function update(filter, user, opts, cb) {
+
+  user.updated = Date.now();
+
   if(typeof opts == 'function') {
     cb = opts;
     opts = {};

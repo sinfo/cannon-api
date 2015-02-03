@@ -6,6 +6,8 @@ var schema = new mongoose.Schema({
   img: String,
   bearer: [{
     token: {type: String, unique: true, sparse: true},
+    refreshToken: {type: String, unique: true, sparse: true},
+    ttl: Number,
     date: Date
   }],
   facebook: {
@@ -20,7 +22,7 @@ var schema = new mongoose.Schema({
     id: String,
     token: {type: String, unique: true, sparse: true},
     refreshToken: {type: String, unique: true, sparse: true},
-    expires: Number,
+    ttl: Number,
     created: Date
   },
   role: String,

@@ -12,15 +12,15 @@ exports.create = {
   },
   validate: {
     payload: {
-    	id: Joi.string().required().description('Redeem Code id.'),
-		achievement: Joi.string().required().description('Achievement you want to redeem.'),
-		entries: Joi.number().required().description('Number of entries this code can be applied to.'),
-		created: Joi.date().required().description('Date of redeem code creation.'),
-		expires: Joi.date().required().description('Date of redeem code expiration.'),
-	}
+      id: Joi.string().required().description('Redeem Code id.'),
+      achievement: Joi.string().required().description('Achievement you want to redeem.'),
+      entries: Joi.number().required().description('Number of entries this code can be applied to.'),
+      created: Joi.date().required().description('Date of redeem code creation.'),
+      expires: Joi.date().required().description('Date of redeem code expiration.'),
+    }
   },
   pre: [
-    { method: 'redeem.create(payload)', assign: 'redeem' }
+  { method: 'redeem.create(payload)', assign: 'redeem' }
   ],
   handler: function (request, reply) {
     reply(render(request.redeem)).created('/api/redeem/'+request.pre.redeem.id);
@@ -40,14 +40,14 @@ exports.update = {
     },
     payload: {
     	id: Joi.string().required().description('Redeem Code id.'),
-		achievement: Joi.string().required().description('Achievement you want to redeem.'),
-		entries: Joi.number().required().description('Number of entries this code can be applied to.'),
-		created: Joi.date().required().description('Date of redeem code creation.'),
-		expires: Joi.date().required().description('Date of redeem code expiration.'),
+      achievement: Joi.string().required().description('Achievement you want to redeem.'),
+      entries: Joi.number().required().description('Number of entries this code can be applied to.'),
+      created: Joi.date().required().description('Date of redeem code creation.'),
+      expires: Joi.date().required().description('Date of redeem code expiration.'),
     }
   },
   pre: [
-    { method: 'redeem.update(params.id, payload)', assign: 'redeem' }
+  { method: 'redeem.update(params.id, payload)', assign: 'redeem' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.redeem));
@@ -67,7 +67,7 @@ exports.get = {
     }
   },
   pre: [
-    { method: 'redeem.get(params.id, query)', assign: 'redeem' }
+  { method: 'redeem.get(params.id, query)', assign: 'redeem' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.redeem));
@@ -82,7 +82,7 @@ exports.list = {
     strategies: ['default', 'backup'],
   },
   pre: [
-    { method: 'redeem.list(query)', assign: 'reddems' }
+  { method: 'redeem.list(query)', assign: 'reddems' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.redeems));
@@ -102,7 +102,7 @@ exports.remove = {
     }
   },
   pre: [
-    { method: 'redeem.remove(params.id)', assign: 'redeem' }
+  { method: 'redeem.remove(params.id)', assign: 'redeem' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.redeem));

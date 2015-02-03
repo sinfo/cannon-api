@@ -3,7 +3,7 @@ var User = require('server/db/user');
 var log = require('server/helpers/logger');
 var async = require('async');
 var jwt = require('jsonwebtoken');
-var tokenConfig = require('config').token;
+var tokenConfig = require('config').auth.token;
 var Token = require('server/auth/token');
 
 
@@ -31,14 +31,7 @@ function validator(id, token, cb) {
     log.debug({decoded: decoded}, 'on verify');
 
     if(err){
-      bearerDecoded = jwt.decode(token);
-      if(bearerDecoded){
-        Token.removeToken(bearerDecoded.user, token, function(error, result){
-          if(error){
-            log.error({err: error, token: bearerDecoded}, '[Auth] error removing invalid token');
-          }
-        });
-      }
+      log.warn({err: err, token: bearerDecoded}, '[Auth] invalid token');
       return cb(Boom.unauthorized());
     }
 
@@ -46,7 +39,6 @@ function validator(id, token, cb) {
       return cb(Boom.unauthorized()); 
     }
 
-    log.debug('Still on bearer');
     query = {id: bearerDecoded.user, bearer: {$elemMatch: {token: token}}};
     log.debug({query: query});
 
@@ -64,7 +56,7 @@ function validator(id, token, cb) {
         log.error({err: error, token: token},'[Auth] user not found');
         return cb(Boom.unauthorized());
       }
-      
+
       bearer = _user.bearer;
       async.each(bearer, checkToken, function (error){
         if(error){
