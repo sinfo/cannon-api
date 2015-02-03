@@ -5,7 +5,7 @@ var configUpload = require('config').upload;
 var optionsUpload = require('server/options').upload;
 
 
-var handlers = module.exports; 
+var handlers = module.exports;
 
 exports.create = {
   tags: ['api','file'],
@@ -18,7 +18,7 @@ exports.create = {
     	name: Joi.string().required().description('File name'),
     	kind: Joi.string().required().description('File category'),
     	extension: Joi.string().required().description('File type'),
-    	updated: Joi.date().required().description('Update time and date'),
+    	updated: Joi.date().description('Update time and date'),
     }
   },
   pre: [
@@ -45,7 +45,7 @@ exports.update = {
     	name: Joi.string().description('File name'),
     	kind: Joi.string().description('File category'),
     	extension: Joi.string().description('File type'),
-    	created: Joi.date().required().description('Creation time and date'),
+    	created: Joi.date().description('Creation time and date'),
     }
   },
   pre: [

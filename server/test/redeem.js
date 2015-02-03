@@ -15,28 +15,25 @@ var credentials = {
   }],
 };
 
-var fileA = {
-  id: 'readme',
-  name: 'readme',
-  kind: 'important',
-  extension: 'txt',
+var redeemA = {
+  id: 'awesomePrize',
+  achievement: 'WENT TO SINFO XXII',
+  entries: 5,
 };
 
 var changesToA = {
-  id: 'readme',
-  name: 'README',
-  kind: 'important',
-  extension: 'txt',
+  achievement: 'WENT TO SINFO XXIII',
 };
 
-lab.experiment('File', function() {
+
+lab.experiment('Redeem', function() {
 
   lab.test('Create', function(done) {
     var options = {
       method: 'POST',
-      url: '/files',
+      url: '/redeem',
       credentials: credentials,
-      payload: fileA
+      payload: redeemA
     };
 
     server.inject(options, function(response) {
@@ -44,9 +41,8 @@ lab.experiment('File', function() {
 
       Code.expect(response.statusCode).to.equal(201);
       Code.expect(result).to.be.instanceof(Object);
-      Code.expect(result.id).to.equal(fileA.id);
-      Code.expect(result.name).to.equal(fileA.name);
-      Code.expect(result.extension).to.equal(fileA.extension);
+      Code.expect(result.id).to.equal(redeemA.id);
+      Code.expect(result.name).to.equal(redeemA.name);
 
       done();
     });
@@ -56,12 +52,14 @@ lab.experiment('File', function() {
   lab.test('List all', function(done) {
     var options = {
       method: 'GET',
-      url: '/files',
+      url: '/redeem',
       credentials: credentials,
     };
 
     server.inject(options, function(response) {
       var result = response.result;
+
+      console.log(result);
 
       Code.expect(response.statusCode).to.equal(200);
       Code.expect(result).to.be.instanceof(Array);
@@ -73,7 +71,7 @@ lab.experiment('File', function() {
   lab.test('Get one', function(done) {
     var options = {
       method: 'GET',
-      url: '/files/'+fileA.id,
+      url: '/redeem/'+redeemA.id,
       credentials: credentials,
     };
 
@@ -82,9 +80,8 @@ lab.experiment('File', function() {
 
       Code.expect(response.statusCode).to.equal(200);
       Code.expect(result).to.be.instanceof(Object);
-      Code.expect(result.id).to.equal(fileA.id);
-      Code.expect(result.name).to.equal(fileA.name);
-      Code.expect(result.extension).to.equal(fileA.extension);
+      Code.expect(result.id).to.equal(redeemA.id);
+      Code.expect(result.name).to.equal(redeemA.name);
 
       done();
     });
@@ -93,7 +90,7 @@ lab.experiment('File', function() {
   lab.test('Update', function(done) {
     var options = {
       method: 'PUT',
-      url: '/files/'+fileA.id,
+      url: '/redeem/'+redeemA.id,
       credentials: credentials,
       payload: changesToA
     };
@@ -103,9 +100,8 @@ lab.experiment('File', function() {
 
       Code.expect(response.statusCode).to.equal(200);
       Code.expect(result).to.be.instanceof(Object);
-      Code.expect(result.id).to.equal(fileA.id);
+      Code.expect(result.id).to.equal(redeemA.id);
       Code.expect(result.name).to.equal(changesToA.name);
-      Code.expect(result.extension).to.equal(fileA.extension);
 
       done();
     });
@@ -114,7 +110,7 @@ lab.experiment('File', function() {
   lab.test('Delete', function(done) {
     var options = {
       method: 'DELETE',
-      url: '/files/'+fileA.id,
+      url: '/redeem/'+redeemA.id,
       credentials: credentials,
     };
 
@@ -123,9 +119,8 @@ lab.experiment('File', function() {
 
       Code.expect(response.statusCode).to.equal(200);
       Code.expect(result).to.be.instanceof(Object);
-      Code.expect(result.id).to.equal(fileA.id);
+      Code.expect(result.id).to.equal(redeemA.id);
       Code.expect(result.name).to.equal(changesToA.name);
-      Code.expect(result.extension).to.equal(fileA.extension);
       done();
     });
   });

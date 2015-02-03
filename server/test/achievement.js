@@ -31,7 +31,7 @@ lab.experiment('Achievement', function() {
   lab.test('Create', function(done) {
     var options = {
       method: 'POST',
-      url: '/api/achievement',
+      url: '/achievements',
       credentials: credentials,
       payload: achievementA
     };
@@ -52,7 +52,7 @@ lab.experiment('Achievement', function() {
   lab.test('List all', function(done) {
     var options = {
       method: 'GET',
-      url: '/api/achievement',
+      url: '/achievements',
       credentials: credentials,
     };
 
@@ -69,7 +69,7 @@ lab.experiment('Achievement', function() {
   lab.test('Get one', function(done) {
     var options = {
       method: 'GET',
-      url: '/api/achievement/'+achievementId,
+      url: '/achievements/'+achievementId,
       credentials: credentials,
     };
 
@@ -85,10 +85,26 @@ lab.experiment('Achievement', function() {
     });
   });
 
+  lab.test('Update 1', function(done) {
+    var options = {
+      method: 'POST',
+      url: '/achievements/'+achievementId,
+      credentials: credentials,
+      payload: changesToA
+    };
+
+    server.inject(options, function(response) {
+      var result = response.result;
+
+      Code.expect(response.statusCode).to.equal(404);
+      done();
+    });
+  });
+
   lab.test('Update', function(done) {
     var options = {
       method: 'PUT',
-      url: '/api/achievement/'+achievementId,
+      url: '/achievements/'+achievementId,
       credentials: credentials,
       payload: changesToA
     };
@@ -108,7 +124,7 @@ lab.experiment('Achievement', function() {
   lab.test('Delete', function(done) {
     var options = {
       method: 'DELETE',
-      url: '/api/achievement/'+achievementId,
+      url: '/achievements/'+achievementId,
       credentials: credentials,
     };
 
