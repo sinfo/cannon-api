@@ -15,8 +15,8 @@ exports.create = {
     	id: Joi.string().required().description('Redeem Code id.'),
 		achievement: Joi.string().required().description('Achievement you want to redeem.'),
 		entries: Joi.number().required().description('Number of entries this code can be applied to.'),
-		created: Joi.date().required().description('Date of redeem code creation.'),
-		expires: Joi.date().required().description('Date of redeem code expiration.'),
+		created: Joi.date().description('Date of redeem code creation.'),
+		expires: Joi.date().description('Date of redeem code expiration.'),
 	}
   },
   pre: [
@@ -40,10 +40,10 @@ exports.update = {
     },
     payload: {
     	id: Joi.string().required().description('Redeem Code id.'),
-		achievement: Joi.string().required().description('Achievement you want to redeem.'),
-		entries: Joi.number().required().description('Number of entries this code can be applied to.'),
-		created: Joi.date().required().description('Date of redeem code creation.'),
-		expires: Joi.date().required().description('Date of redeem code expiration.'),
+		achievement: Joi.string().description('Achievement you want to redeem.'),
+		entries: Joi.number().description('Number of entries this code can be applied to.'),
+		created: Joi.date().description('Date of redeem code creation.'),
+		expires: Joi.date().description('Date of redeem code expiration.'),
     }
   },
   pre: [
