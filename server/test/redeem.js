@@ -41,7 +41,7 @@ lab.experiment('Redeem', function() {
 
       Code.expect(response.statusCode).to.equal(201);
       Code.expect(result).to.be.instanceof(Object);
-      Code.expect(result.id).to.equal(redeem.id);
+      Code.expect(result.id).to.equal(redeemA.id);
       Code.expect(result.name).to.equal(redeemA.name);
 
       done();

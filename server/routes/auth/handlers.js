@@ -59,7 +59,7 @@ exports.refreshToken = {
     { method: 'auth.refreshToken(auth)', assign: 'refreshToken' }
   ],
   handler: function (request, reply) {
-     reply(request.pre.refreshToken);
+     reply(render(request.pre.refreshToken));
   },
   description: 'Facebook login'
 };

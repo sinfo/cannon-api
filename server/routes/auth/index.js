@@ -14,7 +14,7 @@ server.route({
 });
 
 server.route({
-  method: ['GET'],
-  path: '/auth/login/refresh',
+  method: ['POST'],
+  path: '/auth/refresh',
   config: handlers.refreshToken
 });
