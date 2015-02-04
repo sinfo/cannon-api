@@ -24,3 +24,9 @@ server.route({
   path: '/redeem',
   config: handlers.create
 });
+
+server.route({
+  method: ['DELETE'],
+  path: '/redeem/{id}',
+  config: handlers.remove
+});

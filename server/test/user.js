@@ -59,8 +59,6 @@ lab.experiment('User', function() {
     server.inject(options, function(response) {
       var result = response.result;
 
-      console.log(result);
-
       Code.expect(response.statusCode).to.equal(200);
       Code.expect(result).to.be.instanceof(Array);
       Code.expect(result[0].name).to.be.string;
