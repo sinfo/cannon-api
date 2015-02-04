@@ -21,15 +21,6 @@ module.exports = {
     backup: {
       allowEmptyUsername: false,
       validateFunc: auth.basic
-    },
-    facebook: {
-      provider: 'facebook',
-      cookie: config.facebook.cookie,
-      password: config.facebook.password,
-      clientId: config.facebook.clientId,
-      clientSecret: config.facebook.clientSecret,
-      isSecure: false, //while http only
-      //ttl: should define ttl after
     }
 	},
   upload:[

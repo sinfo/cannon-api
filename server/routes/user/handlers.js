@@ -9,6 +9,7 @@ exports.create = {
   tags: ['api','user'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['admin'],
   },
   validate: {
     payload: {
@@ -54,6 +55,7 @@ exports.update = {
   tags: ['api','user'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['user', 'admin']
   },
   validate: {
     params: {
@@ -98,6 +100,7 @@ exports.get = {
   tags: ['api','user'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['user', 'admin']
   },
   validate: {
     params: {
@@ -118,6 +121,7 @@ exports.getMe = {
   tags: ['api','user'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['user', 'admin']
   },
   pre: [
     { method: 'user.get(auth.credentials.id, query)', assign: 'user' }
@@ -133,6 +137,7 @@ exports.list = {
   tags: ['api','user'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['user', 'admin']
   },
   pre: [
     { method: 'user.list(query)', assign: 'users' }
@@ -148,6 +153,7 @@ exports.remove = {
   tags: ['api','user'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['admin']
   },
   validate: {
     params: {

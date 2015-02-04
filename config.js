@@ -50,7 +50,9 @@ config.swagger = {
   basePath: config.url,
 };
 
-config.auth = {};
+config.auth = {
+  permissions: ['user', 'admin']
+};
 
 config.auth.paths = {
   tokenKeys: {

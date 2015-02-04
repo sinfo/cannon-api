@@ -23,7 +23,6 @@ server.pack.register([
       return;
     }
 
-    server.auth.strategy('facebook', 'bell', options.auth.facebook);
     server.auth.strategy('default', 'bearer-access-token', options.auth.default);
     server.auth.strategy('backup', 'basic', options.auth.backup);
 
