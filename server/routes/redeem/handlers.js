@@ -23,7 +23,7 @@ exports.create = {
   { method: 'redeem.create(payload)', assign: 'redeem' }
   ],
   handler: function (request, reply) {
-    reply(render(request.redeem)).created('/api/redeem/'+request.pre.redeem.id);
+    reply(render(request.pre.redeem)).created('/api/redeem/'+request.pre.redeem.id);
   },
   description: 'Creates a new Redeem Code.',
 };
@@ -82,7 +82,7 @@ exports.list = {
     strategies: ['default', 'backup'],
   },
   pre: [
-  { method: 'redeem.list(query)', assign: 'reddems' }
+  { method: 'redeem.list(query)', assign: 'redeems' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.redeems));
