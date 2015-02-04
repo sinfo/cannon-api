@@ -1,7 +1,7 @@
 var Lab = require('lab');
 var Code = require('code');
 
-var server = require('../').hapi;
+var server = require('server').hapi;
 
 var lab = exports.lab = Lab.script();
 
