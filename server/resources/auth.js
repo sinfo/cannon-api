@@ -184,12 +184,9 @@ function authenticate(userId, changedAttributes, cb) {
   });
 }
 
-function refreshToken(auth, cb){
-  var id = auth.credentials.user.id;
-  var token = auth.credentials.bearer;
-  var newToken = Token.getJWT();
-
-  //NEEDS REPAIR
+function refreshToken(token, cb){
+/*  var newToken = Token.getJWT();
+  var filter = {bearer: {$elemMatch: {refreshToken: token}}};
   var update = { $pull: {bearer: token}, $push: {bearer: newToken} };
   server.methods.user.update(id, update, function(err, result){
     if(err){
@@ -198,5 +195,6 @@ function refreshToken(auth, cb){
     }
     log.debug({user: id}, '[bearer] updated token with succcess');
     return  cb(err, Token.getJWT(id, newToken));
-  });
+  });*/
+  cb();
 }
