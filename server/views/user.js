@@ -3,13 +3,14 @@ module.exports = function render(content) {
     return content.map(renderObject);
   }
 
-  return renderObject(content);  
+  return renderObject(content);
 };
 
 function renderObject(model) {
   return {
     id: model.id,
     name: model.name,
+    img: model.img || model.facebook && model.facebook.id && ('//graph.facebook.com/'+model.facebook.id+'/picture?width=400&height=400'),
     bearer: model.bearer && model.bearer.map(function(bearerToken) {
       return {
         token: bearerToken && bearerToken.token,

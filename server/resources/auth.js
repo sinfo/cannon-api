@@ -115,7 +115,7 @@ function fenixAuth(code, cb){
           email:{
             main: fenixUser.email,
             others: fenixUser.personalEmails.concat(fenixUser.workEmails)
-          } 
+          }
         };
         cbAsync(null, user);
       });
