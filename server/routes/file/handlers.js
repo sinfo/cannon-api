@@ -11,6 +11,7 @@ exports.create = {
   tags: ['api','file'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['admin']
   },
   validate: {
     payload: {
@@ -35,6 +36,7 @@ exports.update = {
   tags: ['api','file'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['admin']
   },
   validate: {
     params: {
@@ -62,6 +64,7 @@ exports.get = {
   tags: ['api','file'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['user', 'admin']
   },
   validate: {
     params: {
@@ -82,6 +85,7 @@ exports.list = {
   tags: ['api','file'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['user', 'admin']
   },
   pre: [
     { method: 'file.list(query)', assign: 'files' }
@@ -97,6 +101,8 @@ exports.remove = {
   tags: ['api','file'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['admin']
+
   },
   validate: {
     params: {
@@ -116,6 +122,7 @@ exports.upload = {
   tags: ['api','file'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['user', 'admin']
   },
   payload: {
     output: 'stream',

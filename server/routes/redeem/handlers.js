@@ -9,6 +9,7 @@ exports.create = {
   tags: ['api','redeem'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['admin']
   },
   validate: {
     payload: {
@@ -33,6 +34,7 @@ exports.update = {
   tags: ['api','redeem'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['admin']
   },
   validate: {
     params: {
@@ -59,6 +61,7 @@ exports.get = {
   tags: ['api','redeem'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['user', 'admin']
   },
   validate: {
     params: {
@@ -79,6 +82,7 @@ exports.list = {
   tags: ['api','redeem'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['admin']
   },
   pre: [
   { method: 'redeem.list(query)', assign: 'redeems' }
@@ -94,6 +98,7 @@ exports.remove = {
   tags: ['api','redeem'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['admin']
   },
   validate: {
     params: {

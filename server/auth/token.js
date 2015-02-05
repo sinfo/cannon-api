@@ -97,10 +97,12 @@ function validator(id, token, config, cb) {
       isValid = true;
       credentials.user = _user;
       credentials.bearer = userBearer;
+      credentials.scope = _user.role;
     }
     callback();
   }
 }
 
+module.exports.validator = validator;
 module.exports.getJWT = getJWT;
 module.exports.removeToken = removeToken;

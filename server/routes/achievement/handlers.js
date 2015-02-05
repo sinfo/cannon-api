@@ -8,7 +8,8 @@ var handlers = module.exports;
 exports.create = {
   tags: ['api','achievement'],
   auth: {
-    strategies: ['default', 'backup']
+    strategies: ['default', 'backup'],
+    scope: ['admin']
   },
   validate: {
     payload: {
@@ -35,6 +36,7 @@ exports.update = {
   tags: ['api','achievement'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['admin']
   },
   validate: {
     params: {
@@ -64,6 +66,7 @@ exports.get = {
   tags: ['api','achievement'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['user', 'admin']
   },
   validate: {
     query: {
@@ -87,6 +90,7 @@ exports.list = {
   tags: ['api','achievement'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['user', 'admin']
   },
   validate: {
     query: {
@@ -107,6 +111,7 @@ exports.remove = {
   tags: ['api','achievement'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['admin']
   },
   validate: {
     params: {

@@ -6,6 +6,8 @@ var tokenConfig = require('config').auth.token;
 var Token = require('server/auth/token');
 
 
+log.debug(tokenConfig);
+
 var basic = function(username, password, cb){
   log.debug({user: username, password: password}, 'On basic');
   Token.validator(username, password, tokenConfig, cb);

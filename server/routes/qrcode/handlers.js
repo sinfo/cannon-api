@@ -9,6 +9,7 @@ exports.generate = {
   tags: ['api','qrcode'],
   auth: {
     strategies: ['default', 'backup'],
+    scope: ['admin']
   },
   validate: {
     params: {
@@ -25,6 +26,10 @@ exports.generate = {
 
 exports.redirect = {
   tags: ['api','qrcode'],
+  auth: {
+    strategies: ['default', 'backup'],
+    scope: ['user', 'admin']
+  },
   validate: {
     params: {
       id: Joi.string().required().description('id of the qrcode'),
