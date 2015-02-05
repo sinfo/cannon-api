@@ -3,7 +3,7 @@ var options = require('server/options');
 var config =require('config');
 var log = require('server/helpers/logger');
 
-log.info('### Starting Cannon ###');
+log.error({ env: process.env.NODE_ENV }, '### Starting Cannon ###');
 
 var db = require('server/db');
 

@@ -25,7 +25,7 @@ var schema = new mongoose.Schema({
     ttl: Number,
     created: Date
   },
-  role: String,
+  role:  {type: String, default: 'user'},
   mail: {type: String, unique: true, sparse: true},
   points:{
     available: Number,
