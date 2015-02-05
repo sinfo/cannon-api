@@ -7,10 +7,7 @@ var handlers = module.exports;
 
 exports.generate = {
   tags: ['api','qrcode'],
-  auth: {
-    strategies: ['default', 'backup'],
-    scope: ['admin']
-  },
+  auth: false,
   validate: {
     params: {
       id: Joi.string().required().description('id of the qrcode'),
@@ -26,17 +23,14 @@ exports.generate = {
 
 exports.redirect = {
   tags: ['api','qrcode'],
-  auth: {
-    strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
-  },
+  auth: false,
   validate: {
     params: {
       id: Joi.string().required().description('id of the qrcode'),
     }
   },
   handler: function (request, reply) {
-    reply().redirect(config.url+'/redeem/'+request.params.id);
+    reply().redirect(config.webapp.url+'/redeem/'+request.params.id);
   },
   description: 'Redirect a request from QRCode to somewhere'
 };

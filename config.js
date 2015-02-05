@@ -6,6 +6,10 @@ var config = {
   port: process.env.CANNON_PORT || 8090,
 };
 
+config.webapp = {
+  url: process.env.CANNON_WEBAPP_URL || 'https://app.sinfo.org'
+};
+
 config.upload = {
   path: process.env.CANNON_UPLOAD_PATH || 'cannon_uploads',
   maxSize: process.env.CANNON_UPLOAD_MAX_SIZE || 1000*1000
