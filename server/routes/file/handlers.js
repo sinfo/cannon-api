@@ -161,3 +161,45 @@ exports.upload = {
   },
   description: 'Uploads one or more files'
 };
+
+exports.uploadUsers = {
+  tags: ['api','file'],
+  auth: {
+    strategies: ['default', 'backup'],
+    scope: ['user', 'admin']
+  },
+  payload: {
+    output: 'stream',
+    parse: true,
+    allow: 'multipart/form-data',
+    maxBytes: configUpload.maxSize
+  },
+  validate: {
+    params: {
+      kind: Joi.string().valid(optionsUpload.map(function(o){
+        return o.kind;
+      })).required().description('File category'),
+    },
+    payload: Joi.object().pattern(/(\w*\W*)*/,
+      Joi.object({
+        pipe: Joi.func().required().description('File stream'),
+        hapi: Joi.object({
+          filename: Joi.string().required().description('File name'),
+          headers: Joi.object({
+            'content-type': Joi.string().required().description('File mime type'),
+            'content-disposition': Joi.string().required().regex(/\w*\W*filename\w*\W*/).description('File name')
+          }).unknown().required().description('File headers')
+        }).required().description('File')
+      }).unknown()
+    ).required()
+  },
+  pre: [
+    { method: 'file.cv()', assign:'cv'},
+    { method: 'file.upload(params.kind, payload)', assign: 'file' },
+    { method: 'file.createArray(pre.file)', assign: 'fileInfo' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.fileInfo)).created('/api/file/'+request.pre.fileInfo.id);
+  },
+  description: 'Uploads one or more files'
+};
