@@ -16,7 +16,6 @@ exports.create = {
     	id: Joi.string().required().description('Redeem Code id.'),
       achievement: Joi.string().required().description('Achievement you want to redeem.'),
       entries: Joi.number().required().description('Number of entries this code can be applied to.'),
-      created: Joi.date().description('Date of redeem code creation.'),
       expires: Joi.date().description('Date of redeem code expiration.'),
     }
   },
@@ -24,7 +23,7 @@ exports.create = {
   { method: 'redeem.create(payload)', assign: 'redeem' }
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.redeem)).created('/api/redeem/'+request.pre.redeem.id);
+    reply(render(request.pre.redeem)).created('/redeem/'+request.pre.redeem.id);
   },
   description: 'Creates a new Redeem Code.',
 };

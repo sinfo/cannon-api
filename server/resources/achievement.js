@@ -27,7 +27,7 @@ function create(achievement, cb) {
       return cb(Boom.internal());
     }
 
-    cb(null, _achievement);
+    cb(null, _achievement.toObject({ getters: true }));
   });
 }
 
@@ -45,7 +45,7 @@ function update(id, achievement, cb) {
       return cb(Boom.notFound());
     }
 
-    cb(null, _achievement);
+    cb(null, _achievement.toObject({ getters: true }));
   });
 }
 

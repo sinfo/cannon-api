@@ -26,7 +26,7 @@ exports.create = {
     { method: 'achievement.create(payload)', assign: 'achievement' }
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.achievement)).created('/api/achievement/'+request.pre.achievement.id);
+    reply(render(request.pre.achievement)).created('/achievement/'+request.pre.achievement.id);
   },
   description: 'Creates a new achievement'
 };

@@ -30,7 +30,7 @@ function create(user, cb) {
       return cb(Boom.internal());
     }
 
-    cb(null, _user);
+    cb(null, _user.toObject({ getters: true }));
   });
 }
 
@@ -57,7 +57,7 @@ function update(filter, user, opts, cb) {
       return cb(Boom.notFound());
     }
 
-    cb(null, _user);
+    cb(null, _user.toObject({ getters: true }));
   });
 }
 

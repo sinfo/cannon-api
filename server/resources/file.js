@@ -20,9 +20,14 @@ server.method('file.list', list, {});
 server.method('file.remove', remove, {});
 server.method('file.saveFiles', saveFiles, {});
 server.method('file.upload', upload, {});
+server.method('file.uploadCV', uploadCV, {});
 
 function createArray(files, cb) {
 
+  if(!files.length){
+    log.debug(files);
+    return create(files, cb);
+  }
   async.map(files, create, function(err, results){
     if(err){
       log.error({err: err, files: files},'[files] error creating files in db');
@@ -44,8 +49,7 @@ function create(file, cb) {
       log.error({err: err, file: file.id}, 'error creating file');
       return cb(Boom.internal());
     }
-
-    cb(null, _file);
+    cb(null, _file.toObject({ getters: true }));
   });
 }
 
@@ -63,11 +67,15 @@ function update(id, file, cb) {
       return cb(Boom.notFound());
     }
 
-    cb(null, _file);
+    cb(null, _file.toObject({ getters: true }));
   });
 }
 
 function get(id, query, cb) {
+  if(!id){ //check if file exists use case
+    return cb();
+  }
+
   cb = cb || query; // fields is optional
   var fields = fieldsParser(query.fields);
 
@@ -77,7 +85,7 @@ function get(id, query, cb) {
       return cb(Boom.internal());
     }
     if (!file) {
-      log.error({err: 'not found', file: id}, 'error getting file');
+      log.error({err: 'not found', file: id}, 'file not found');
       return cb(Boom.notFound());
     }
 
@@ -119,6 +127,10 @@ function remove(id, cb) {
 
     return cb(null, file);
   });
+}
+
+function uploadCV(data, cb){
+  return upload('cv', data, cb);
 }
 
 function upload(kind, data, cb){

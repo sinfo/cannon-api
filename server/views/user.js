@@ -41,7 +41,6 @@ function renderObject(model) {
         date: achievement && achievement.date
       };
     }),
-		files: model.files,
     registered: model.registered,
     updated: model.updated
   };

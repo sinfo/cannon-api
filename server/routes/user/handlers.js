@@ -37,15 +37,14 @@ exports.create = {
       achievements: Joi.array().includes(Joi.object().keys({
         id: Joi.string(),
         date: Joi.date()
-      })),
-      files: Joi.array().includes(Joi.string()).description('Array of files of the user')
+      }))
     }
   },
   pre: [
     { method: 'user.create(payload)', assign: 'user' }
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.user)).created('/api/user/'+request.pre.user.id);
+    reply(render(request.pre.user)).created('/user/'+request.pre.user.id);
   },
   description: 'Creates a new user'
 };
@@ -82,8 +81,7 @@ exports.update = {
       achievements: Joi.array().includes(Joi.object().keys({
         id: Joi.string(),
         date: Joi.date()
-      })),
-      files: Joi.array().includes(Joi.string()).description('Array of files of the user')
+      }))
     }
   },
   pre: [

@@ -176,10 +176,10 @@ function authenticate(userId, changedAttributes, cb) {
 
   server.methods.user.update({id: userId}, changedAttributes, function(err, result){
     if(err){
-      log.error({user: userId, changedAttributes: changedAttributes }, '[facebook-login] error updating user');
+      log.error({user: userId, changedAttributes: changedAttributes }, '[login] error updating user');
       return cb(err);
     }
-    log.info({user: userId}, '[facebook-login] user logged in ');
+    log.info({user: userId}, '[login] user logged in ');
     return  cb(err, newToken);
   });
 }

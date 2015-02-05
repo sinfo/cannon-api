@@ -21,14 +21,8 @@ server.route({
 
 server.route({
   method: 'POST',
-  path: '/files/upload/{kind}',
-  config: handlers.upload
-});
-
-server.route({
-  method: 'POST',
-  path: 'users/files/upload/{kind}',
-  config: handlers.uploadUsers
+  path: '/files/upload/cv/me',
+  config: handlers.uploadCV
 });
 
 server.route({

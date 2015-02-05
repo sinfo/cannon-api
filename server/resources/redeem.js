@@ -26,7 +26,7 @@ function create(redeem, cb) {
       return cb(Boom.internal());
     }
 
-    cb(null, _redeem);
+    cb(null, _redeem.toObject({ getters: true }));
   });
 }
 
@@ -41,7 +41,7 @@ function update(id, redeem, cb) {
       return cb(Boom.notFound());
     }
 
-    cb(null, _redeem);
+    cb(null, _redeem.toObject({ getters: true }));
   });
 }
 

@@ -25,7 +25,7 @@ exports.create = {
     { method: 'file.create(payload)', assign: 'file' }
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.file)).created('/api/file/'+request.pre.file.id);
+    reply(render(request.pre.file)).created('/file/'+request.pre.file.id);
   },
   description: 'Creates a new file'
 };
@@ -162,7 +162,7 @@ exports.upload = {
   description: 'Uploads one or more files'
 };
 
-exports.uploadUsers = {
+exports.uploadCV = {
   tags: ['api','file'],
   auth: {
     strategies: ['default', 'backup'],
@@ -175,31 +175,29 @@ exports.uploadUsers = {
     maxBytes: configUpload.maxSize
   },
   validate: {
-    params: {
-      kind: Joi.string().valid(optionsUpload.map(function(o){
-        return o.kind;
-      })).required().description('File category'),
+    query: {
+      upsert: Joi.string().default('true').description('If none, creat it')
     },
     payload: Joi.object().pattern(/(\w*\W*)*/,
       Joi.object({
-        pipe: Joi.func().required().description('File stream'),
+        pipe: Joi.func().required().description('CV file stream'),
         hapi: Joi.object({
-          filename: Joi.string().required().description('File name'),
+          filename: Joi.string().required().description('CV file name'),
           headers: Joi.object({
-            'content-type': Joi.string().required().description('File mime type'),
-            'content-disposition': Joi.string().required().regex(/\w*\W*filename\w*\W*/).description('File name')
-          }).unknown().required().description('File headers')
-        }).required().description('File')
+            'content-type': Joi.string().required().description('CV file mime type'),
+            'content-disposition': Joi.string().required().regex(/\w*\W*filename\w*\W*/).description('CV file name')
+          }).unknown().required().description('CV file headers')
+        }).required().description('CV file')
       }).unknown()
-    ).required()
+    ).required().length(1)
   },
   pre: [
-    { method: 'file.cv()', assign:'cv'},
-    { method: 'file.upload(params.kind, payload)', assign: 'file' },
-    { method: 'file.createArray(pre.file)', assign: 'fileInfo' }
+    { method: 'file.uploadCV(payload)', assign: 'file' },
+    { method: 'file.createArray(pre.file)', assign: 'fileInfo' },
+    { method: 'cv.updateFile(auth.credentials.user.id, pre.fileInfo.id, query)', assign:'cv'},
   ],
   handler: function (request, reply) {
     reply(render(request.pre.fileInfo)).created('/api/file/'+request.pre.fileInfo.id);
   },
-  description: 'Uploads one or more files'
+  description: 'Uploads a cv file'
 };

@@ -50,8 +50,6 @@ function validator(id, token, config, cb) {
   jwt.verify(token, config.publicKey, {audience: config.audience, issuer: config.issuer}, function(err, decoded) {
     bearerDecoded = decoded;
 
-    log.debug({decoded: decoded}, 'on verify');
-
     if(err){
       log.warn({err: err, token: bearerDecoded}, '[Auth] invalid token');
       return cb(Boom.unauthorized());
@@ -62,13 +60,11 @@ function validator(id, token, config, cb) {
     }
 
     query = {id: bearerDecoded.user, bearer: {$elemMatch: {token: token}}};
-    log.debug({query: query});
 
     User.findOne(query, function(error, result){
       var bearer;
       _user = result;
-      log.debug({user: result}, 'found user');
-
+      
       if(error){
         log.error({err: error, token: token},'[Auth] error finding user');
         return cb(Boom.unauthorized());

@@ -35,7 +35,6 @@ var schema = new mongoose.Schema({
     id: String,
     date: Date
   }],
-  cv: {type: String, unique: true},
   registered: Date,
   updated: Date
 });
