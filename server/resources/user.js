@@ -4,6 +4,7 @@ var server = require('server').hapi;
 var log = require('server/helpers/logger');
 var dupKeyParser = require('server/helpers/dupKeyParser');
 var fieldsParser = require('server/helpers/fieldsParser');
+var config = require('config');
 var User = require('server/db/user');
 
 server.method('user.create', create, {});
@@ -15,6 +16,7 @@ server.method('user.remove', remove, {});
 
 function create(user, cb) {
   user.id = user.id || slug(user.name).toLowerCase();
+  user.role = user.role || config.auth.permissions[0];
 
   user.resgistered = Date.now();
 

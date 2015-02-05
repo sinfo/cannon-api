@@ -14,7 +14,7 @@ exports.create = {
   validate: {
     payload: {
       name: Joi.string().required().description('Name of the achievement'),
-      event: Joi.string().description('Event the achievement is associated to'),
+      event: Joi.string().required().description('Event the achievement is associated to'),
       category: Joi.string().description('Category of the achievement'),
       description: Joi.string().description('Description of the achievement'),
       instructions: Joi.string().description('Instructions on how to get the achievement'),

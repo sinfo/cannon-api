@@ -11,8 +11,8 @@ exports.facebook = {
   },
   validate: {
     payload: {
-      id: Joi.string().description('facebook id of the member'),
-      token: Joi.string().description('facebook token of the member'),
+      id: Joi.string().required().description('facebook id of the member'),
+      token: Joi.string().required().description('facebook token of the member'),
     }
   },
   pre: [
@@ -32,7 +32,7 @@ exports.fenix = {
   },
   validate: {
     payload: {
-      code: Joi.string().description('fenix code of the member')
+      code: Joi.string().required().description('fenix code of the member')
     }
   },
   pre: [

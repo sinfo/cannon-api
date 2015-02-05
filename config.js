@@ -50,6 +50,7 @@ config.swagger = {
   basePath: config.url,
 };
 
+//order lesser permissions to greater
 config.auth = {
   permissions: ['user', 'admin']
 };
