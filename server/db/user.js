@@ -35,7 +35,7 @@ var schema = new mongoose.Schema({
     id: String,
     date: Date
   }],
-  files: [String],
+  cv: {type: String, unique: true},
   registered: Date,
   updated: Date
 });

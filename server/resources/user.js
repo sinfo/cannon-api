@@ -17,7 +17,6 @@ server.method('user.remove', remove, {});
 function create(user, cb) {
   user.id = user.id || slug(user.name).toLowerCase();
   user.role = user.role || config.auth.permissions[0];
-
   user.resgistered = Date.now();
 
   User.create(user, function(err, _user) {

@@ -20,6 +20,18 @@ server.route({
 });
 
 server.route({
+  method: 'POST',
+  path: '/files/upload/{kind}',
+  config: handlers.upload
+});
+
+server.route({
+  method: 'POST',
+  path: 'users/files/upload/{kind}',
+  config: handlers.uploadUsers
+});
+
+server.route({
   method: 'GET',
   path: '/files/{id}',
   config: handlers.get

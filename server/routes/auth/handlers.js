@@ -53,7 +53,7 @@ exports.refreshToken = {
   },
   auth: {
     strategies: ['default'],
-    mode: 'required'
+    scope: ['admin']
   },
   pre: [
     { method: 'auth.refreshToken(auth)', assign: 'refreshToken' }
