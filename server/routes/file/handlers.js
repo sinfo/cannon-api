@@ -18,8 +18,7 @@ exports.create = {
     	id: Joi.string().required().description('File id'),
     	name: Joi.string().required().description('File name'),
     	kind: Joi.string().required().description('File category'),
-    	extension: Joi.string().required().description('File type'),
-    	updated: Joi.date().description('Update time and date'),
+    	extension: Joi.string().required().description('File type')
     }
   },
   pre: [
@@ -47,7 +46,6 @@ exports.update = {
     	name: Joi.string().description('File name'),
     	kind: Joi.string().description('File category'),
     	extension: Joi.string().description('File type'),
-    	created: Joi.date().description('Creation time and date'),
     }
   },
   pre: [
@@ -85,7 +83,12 @@ exports.list = {
   tags: ['api','file'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['admin']
+  },
+  validate: {
+    query: {
+      fields: Joi.string().default('id,name,img').description('Fields we want to retrieve'),
+    }
   },
   pre: [
     { method: 'file.list(query)', assign: 'files' }
@@ -122,7 +125,7 @@ exports.upload = {
   tags: ['api','file'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['admin']
   },
   payload: {
     output: 'stream',
@@ -156,5 +159,5 @@ exports.upload = {
   handler: function (request, reply) {
     reply(render(request.pre.fileInfo)).created('/api/file/'+request.pre.fileInfo.id);
   },
-  description: 'Uploads a file'
+  description: 'Uploads one or more files'
 };
