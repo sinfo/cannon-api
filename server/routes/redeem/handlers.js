@@ -41,7 +41,7 @@ exports.update = {
       id: Joi.string().required().description('Id of the redeem code we want to update'),
     },
     payload: {
-    	id: Joi.string().required().description('Redeem Code id.'),
+    	id: Joi.string().description('Redeem Code id.'),
       achievement: Joi.string().description('Achievement you want to redeem.'),
       entries: Joi.number().description('Number of entries this code can be applied to.'),
       expires: Joi.date().description('Date of redeem code expiration.'),

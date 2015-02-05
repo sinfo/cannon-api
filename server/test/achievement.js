@@ -4,17 +4,29 @@ var Code = require('code');
 var server = require('server').hapi;
 
 var lab = exports.lab = Lab.script();
+var token = require('server/auth/token');
+
+var aux = token.getJWT('john.doe');
 
 
-var credentials = {
-  id: 'john.doe',
-  name: 'John Doe',
-  roles: [{
-    id: 'development-team',
-    isTeamLeader: false
-  }],
+var credentialsA = {
+  user: {
+    id: 'john.doe',
+    name: 'John Doe',
+  },
+  bearer: aux.token,
+  scope: 'admin',
 };
 
+
+var credentialsB = {
+  user: {
+    id: 'john.doe',
+    name: 'John Doe',
+  },
+  bearer: aux.token,
+  scope: 'user',
+};
 var achievementId = 'WENT-TO-SINFO-XXII';
 
 var achievementA = {
@@ -28,11 +40,11 @@ var changesToA = {
 
 lab.experiment('Achievement', function() {
 
-  lab.test('Create', function(done) {
+  lab.test('Create as an admin', function(done) {
     var options = {
       method: 'POST',
       url: '/achievements',
-      credentials: credentials,
+      credentials: credentialsA,
       payload: achievementA
     };
 
@@ -49,11 +61,11 @@ lab.experiment('Achievement', function() {
   });
 
 
-  lab.test('List all', function(done) {
+  lab.test('List all as an admin', function(done) {
     var options = {
       method: 'GET',
       url: '/achievements',
-      credentials: credentials,
+      credentials: credentialsA,
     };
 
     server.inject(options, function(response) {
@@ -66,11 +78,11 @@ lab.experiment('Achievement', function() {
     });
   });
 
-  lab.test('Get one', function(done) {
+  lab.test('Get one as an admin', function(done) {
     var options = {
       method: 'GET',
       url: '/achievements/'+achievementId,
-      credentials: credentials,
+      credentials: credentialsA,
     };
 
     server.inject(options, function(response) {
@@ -85,27 +97,48 @@ lab.experiment('Achievement', function() {
     });
   });
 
-  lab.test('Update 1', function(done) {
+
+  lab.test('List all as an user', function(done) {
     var options = {
-      method: 'POST',
-      url: '/achievements/'+achievementId,
-      credentials: credentials,
-      payload: changesToA
+      method: 'GET',
+      url: '/achievements',
+      credentials: credentialsB,
     };
 
     server.inject(options, function(response) {
       var result = response.result;
 
-      Code.expect(response.statusCode).to.equal(404);
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(result).to.be.instanceof(Array);
+      Code.expect(result[0].name).to.be.string;
       done();
     });
   });
 
-  lab.test('Update', function(done) {
+  lab.test('Get one  as an user', function(done) {
+    var options = {
+      method: 'GET',
+      url: '/achievements/'+achievementId,
+      credentials: credentialsB,
+    };
+
+    server.inject(options, function(response) {
+      var result = response.result;
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(result).to.be.instanceof(Object);
+      Code.expect(result.id).to.equal(achievementId);
+      Code.expect(result.name).to.equal(achievementA.name);
+
+      done();
+    });
+  });
+
+  lab.test('Update as an admin', function(done) {
     var options = {
       method: 'PUT',
       url: '/achievements/'+achievementId,
-      credentials: credentials,
+      credentials: credentialsA,
       payload: changesToA
     };
 
@@ -121,11 +154,27 @@ lab.experiment('Achievement', function() {
     });
   });
 
-  lab.test('Delete', function(done) {
+  lab.test('Update as a user', function(done) {
+    var options = {
+      method: 'PUT',
+      url: '/achievements/'+achievementId,
+      credentials: credentialsB,
+      payload: changesToA
+    };
+
+    server.inject(options, function(response) {
+      var result = response.result;
+
+      Code.expect(response.statusCode).to.equal(403);
+
+      done();
+    });
+  });
+  lab.test('Delete as an admin', function(done) {
     var options = {
       method: 'DELETE',
       url: '/achievements/'+achievementId,
-      credentials: credentials,
+      credentials: credentialsA,
     };
 
     server.inject(options, function(response) {
@@ -138,5 +187,38 @@ lab.experiment('Achievement', function() {
       done();
     });
   });
+
+  lab.test('Create as a user', function(done) {
+    var options = {
+      method: 'POST',
+      url: '/achievements',
+      credentials: credentialsB,
+      payload: achievementA
+    };
+
+    server.inject(options, function(response) {
+      var result = response.result;
+
+      Code.expect(response.statusCode).to.equal(403);
+
+      done();
+    });
+  });
+
+  lab.test('Delete as a user', function(done) {
+    var options = {
+      method: 'DELETE',
+      url: '/achievements/'+achievementId,
+      credentials: credentialsB,
+    };
+
+    server.inject(options, function(response) {
+      var result = response.result;
+
+      Code.expect(response.statusCode).to.equal(403);
+      done();
+    });
+  });
+
 
 });

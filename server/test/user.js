@@ -4,15 +4,28 @@ var Code = require('code');
 var server = require('server').hapi;
 
 var lab = exports.lab = Lab.script();
+var token = require('server/auth/token');
+
+var aux = token.getJWT('john.doe');
 
 
-var credentials = {
-  id: 'john.doe',
-  name: 'John Doe',
-  roles: [{
-    id: 'development-team',
-    isTeamLeader: false
-  }],
+var credentialsA = {
+  user: {
+    id: 'john.doe',
+    name: 'John Doe',
+  },
+  bearer: aux.token,
+  scope: 'admin',
+};
+
+
+var credentialsB = {
+  user: {
+    id: 'john.doe',
+    name: 'John Doe',
+  },
+  bearer: aux.token,
+  scope: 'user',
 };
 
 var userA = {
@@ -28,11 +41,11 @@ var changesToA = {
 
 lab.experiment('User', function() {
 
-  lab.test('Create', function(done) {
+  lab.test('Create as admin', function(done) {
     var options = {
       method: 'POST',
       url: '/users',
-      credentials: credentials,
+      credentials: credentialsA,
       payload: userA
     };
 
@@ -49,11 +62,11 @@ lab.experiment('User', function() {
   });
 
 
-  lab.test('List all', function(done) {
+  lab.test('List all as admin', function(done) {
     var options = {
       method: 'GET',
       url: '/users',
-      credentials: credentials,
+      credentials: credentialsA,
     };
 
     server.inject(options, function(response) {
@@ -66,11 +79,11 @@ lab.experiment('User', function() {
     });
   });
 
-  lab.test('Get one', function(done) {
+  lab.test('Get one as admin', function(done) {
     var options = {
       method: 'GET',
       url: '/users/'+userA.id,
-      credentials: credentials,
+      credentials: credentialsA,
     };
 
     server.inject(options, function(response) {
@@ -85,11 +98,30 @@ lab.experiment('User', function() {
     });
   });
 
-  lab.test('Update', function(done) {
+  lab.test('Get one as user', function(done) {
+    var options = {
+      method: 'GET',
+      url: '/users/'+userA.id,
+      credentials: credentialsB,
+    };
+
+    server.inject(options, function(response) {
+      var result = response.result;
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(result).to.be.instanceof(Object);
+      Code.expect(result.id).to.equal(userA.id);
+      Code.expect(result.name).to.equal(userA.name);
+
+      done();
+    });
+  });
+
+  lab.test('Update as admin', function(done) {
     var options = {
       method: 'PUT',
       url: '/users/'+userA.id,
-      credentials: credentials,
+      credentials: credentialsA,
       payload: changesToA
     };
 
@@ -105,11 +137,49 @@ lab.experiment('User', function() {
     });
   });
 
-  lab.test('Delete', function(done) {
+  lab.test('List all as user', function(done) {
+    var options = {
+      method: 'GET',
+      url: '/users',
+      credentials: credentialsB,
+    };
+
+    server.inject(options, function(response) {
+      var result = response.result;
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(result).to.be.instanceof(Array);
+      Code.expect(result[0].name).to.be.string;
+      done();
+    });
+  });
+
+  lab.test('Update as user', function(done) {
+    var options = {
+      method: 'PUT',
+      url: '/users/'+userA.id,
+      credentials: credentialsB,
+      payload: changesToA
+    };
+
+    server.inject(options, function(response) {
+      var result = response.result;
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(result).to.be.instanceof(Object);
+      Code.expect(result.id).to.equal(userA.id);
+      Code.expect(result.name).to.equal(changesToA.name);
+
+      done();
+    });
+  });
+
+
+  lab.test('Delete as admin', function(done) {
     var options = {
       method: 'DELETE',
       url: '/users/'+userA.id,
-      credentials: credentials,
+      credentials: credentialsA,
     };
 
     server.inject(options, function(response) {
@@ -122,5 +192,37 @@ lab.experiment('User', function() {
       done();
     });
   });
+
+  lab.test('Create as user', function(done) {
+    var options = {
+      method: 'POST',
+      url: '/users',
+      credentials: credentialsB,
+      payload: userA
+    };
+
+    server.inject(options, function(response) {
+      var result = response.result;
+
+      Code.expect(response.statusCode).to.equal(403);
+      done();
+    });
+  });
+
+  lab.test('Delete as user', function(done) {
+    var options = {
+      method: 'DELETE',
+      url: '/users/'+userA.id,
+      credentials: credentialsB,
+    };
+
+    server.inject(options, function(response) {
+      var result = response.result;
+
+      Code.expect(response.statusCode).to.equal(403);
+      done();
+    });
+  });
+
 
 });
