@@ -114,9 +114,7 @@ lab.experiment('File', function() {
     server.inject(options, function(response) {
       var result = response.result;
 
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(result).to.be.instanceof(Array);
-      Code.expect(result[0].name).to.be.string;
+      Code.expect(response.statusCode).to.equal(403);
       done();
     });
   });

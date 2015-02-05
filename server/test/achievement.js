@@ -31,6 +31,7 @@ var achievementId = 'WENT-TO-SINFO-XXII';
 
 var achievementA = {
   name: 'WENT TO SINFO XXII',
+  event: 'SINFO XXII'
 };
 
 
