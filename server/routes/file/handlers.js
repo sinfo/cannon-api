@@ -224,7 +224,7 @@ exports.uploadMe = {
   },
   pre: [
     { method: 'file.uploadCV(payload)', assign: 'file' },
-    { method: 'file.get(auth.credentials.user.id)', assign: 'oldFile'},
+    { method: 'file.get(auth.credentials.user.id)', assign: 'oldFile', failAction: 'log'},
     { method: 'file.delete(pre.oldFile.id)', assign: 'deleteFile'},
     { method: 'file.update(oldFile.id, pre.file, auth.credentials.user.id, query)', assign: 'fileInfo' }
   ],

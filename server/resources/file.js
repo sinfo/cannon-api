@@ -56,11 +56,13 @@ function create(file, user, cb) {
 }
 
 function update(id, file, user, query, cb) {
+  log.debug({id: id, file: file, user: user, query: query});
   cb = cb || query || user;
   query = query || {};
   if(arguments.length === 4){
     if(typeof user !== 'string'){
       query = user;
+      user = null;
     }
   }
 
@@ -69,7 +71,8 @@ function update(id, file, user, query, cb) {
   };
 
   file.updated = Date.now();
-  file.user = user ? user : file.user;
+  file.$setOnInsert = {created: file.updated};
+  file.user = user || file.user || null;
 
   File.findOneAndUpdate({id: id}, file, options, function(err, _file) {
     if (err) {
@@ -86,12 +89,12 @@ function update(id, file, user, query, cb) {
 }
 
 function get(id, query, cb) {
+  cb = cb || query; // fields is optional
   if(!id){ //check if file exists use case
     log.warn('[file] tried to get with empty file id');
     return cb();
   }
 
-  cb = cb || query; // fields is optional
   var fields = fieldsParser(query.fields);
   var filter = {$or: [{id: id}, {user: id}]};
 
@@ -105,7 +108,7 @@ function get(id, query, cb) {
       return cb(Boom.notFound());
     }
 
-    cb(null, file);
+    cb(null, file.toObject({ getters: true }));
   });
 }
 

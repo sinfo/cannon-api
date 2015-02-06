@@ -63,7 +63,7 @@ function validator(id, token, config, cb) {
 
     User.findOne(query, function(error, result){
       var bearer;
-      _user = result;
+      _user = result.toObject({ getters: true });
       
       if(error){
         log.error({err: error, token: token},'[Auth] error finding user');

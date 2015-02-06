@@ -72,7 +72,7 @@ config.auth.paths.refreshKeys = {
 };
 
 config.auth.token = {
-  ttl: process.env.CANNON_TOKEN_EXPIRATION || 10, //in minutes
+  ttl: process.env.CANNON_TOKEN_EXPIRATION || 120, //in minutes
   privateKey:  fs.readFileSync(config.auth.paths.tokenKeys.priv),
   publicKey: fs.readFileSync(config.auth.paths.tokenKeys.pub),
   algorithm: process.env.CANNON_TOKEN_ALGORITHM || 'RS256',
