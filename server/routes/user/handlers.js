@@ -37,7 +37,14 @@ exports.create = {
       achievements: Joi.array().includes(Joi.object().keys({
         id: Joi.string(),
         date: Joi.date()
-      }))
+      })),
+      workAvalability: Joi.object().keys({
+        area: Joi.string(),
+        startup: Joi.boolean(),
+        internship: Joi.boolean(),
+        start: Joi.date(),
+        end: Joi.date(),
+      })
     }
   },
   pre: [
@@ -81,7 +88,14 @@ exports.update = {
       achievements: Joi.array().includes(Joi.object().keys({
         id: Joi.string(),
         date: Joi.date()
-      }))
+      })),
+      workAvalability: Joi.object().keys({
+        area: Joi.string(),
+        startup: Joi.boolean(),
+        internship: Joi.boolean(),
+        start: Joi.date(),
+        end: Joi.date(),
+      })
     }
   },
   pre: [

@@ -35,6 +35,13 @@ var schema = new mongoose.Schema({
     id: String,
     date: Date
   }],
+  workAvalability: {
+    area: String,
+    startup: Boolean,
+    internship: Boolean,
+    start: Date,
+    end: Date,
+  },
   registered: Date,
   updated: Date
 });
