@@ -4,6 +4,8 @@ var schema = new mongoose.Schema({
   id: {type: String, unique: true},
   name: String,
   img: String,
+  role:  {type: String, default: 'user'},
+  mail: {type: String, unique: true, sparse: true},
   bearer: [{
     token: {type: String, unique: true, sparse: true},
     refreshToken: {type: String, unique: true, sparse: true},
@@ -25,8 +27,6 @@ var schema = new mongoose.Schema({
     ttl: Number,
     created: Date
   },
-  role:  {type: String, default: 'user'},
-  mail: {type: String, unique: true, sparse: true},
   points:{
     available: Number,
     total: Number
