@@ -35,27 +35,14 @@ function renderObject(model, user) {
 
   if(isAllowed){
     result.mail = model.mail;
-    result.bearer = model.bearer && model.bearer.map(function(bearerToken) {
-      return {
-        token: bearerToken && bearerToken.token,
-        refreshToken: bearerToken && bearerToken.refreshToken,
-        ttl: bearerToken && bearerToken.ttl,
-        date: bearerToken && bearerToken.date
-      };
-    });
     result.facebook = model.facebook && {
-      id: model.facebook && model.facebook.id,
-      token: model.facebook && model.facebook.token
+      id: model.facebook && model.facebook.id
     };
     result.google = model.google && {
-      id: model.google && model.google.id,
-      token: model.google && model.google.token
+      id: model.google && model.google.id
     };
     result.fenix = model.fenix && {
       id: model.fenix && model.fenix.id,
-      token: model.fenix && model.fenix.token,
-      refreshToken: model.fenix && model.fenix.refreshToken,
-      ttl: model.fenix && model.fenix.ttl,
       created: model.fenix && model.fenix.created
     };
     result.updated = model.updated;
