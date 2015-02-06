@@ -66,7 +66,8 @@ exports.get = {
   tags: ['api','achievement'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['user', 'admin'],
+    mode: 'try'
   },
   validate: {
     query: {
@@ -90,7 +91,8 @@ exports.list = {
   tags: ['api','achievement'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['user', 'admin'],
+    mode: 'try'
   },
   validate: {
     query: {
