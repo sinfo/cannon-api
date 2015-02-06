@@ -165,6 +165,19 @@ function saveFiles(kind, files, data, cb){
   }, cb );
 }
 
+function deleteFile(file, cb){
+  var path = config.upload.path + '/' + file.id;
+
+  fs.unlink(path, function(err){
+    if(err){
+      log.error({err: err, path: path}, '[file] error deleting file');
+      return cb(err);
+    }
+    log.info({path: path},'[file] successfully deleted file');
+    cb();
+  });
+}
+
 function saveFile(kind, data, cb){
 
   var mimeType = data.hapi.headers['content-type'];
