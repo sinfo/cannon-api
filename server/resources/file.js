@@ -25,7 +25,6 @@ server.method('file.uploadCV', uploadCV, {});
 function createArray(files, cb) {
 
   if(!files.length){
-    log.debug(files);
     return create(files, cb);
   }
   async.map(files, create, function(err, results){

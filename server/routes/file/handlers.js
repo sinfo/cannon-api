@@ -162,7 +162,7 @@ exports.upload = {
   description: 'Uploads one or more files'
 };
 
-exports.uploadCV = {
+exports.uploadMe = {
   tags: ['api','file'],
   auth: {
     strategies: ['default', 'backup'],
@@ -175,9 +175,6 @@ exports.uploadCV = {
     maxBytes: configUpload.maxSize
   },
   validate: {
-    query: {
-      upsert: Joi.string().default('true').description('If none, creat it')
-    },
     payload: Joi.object().pattern(/(\w*\W*)*/,
       Joi.object({
         pipe: Joi.func().required().description('CV file stream'),

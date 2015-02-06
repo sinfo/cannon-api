@@ -39,12 +39,9 @@ function create(cv, id, cb) {
 //id can be from file, user or cv
 function updateFile(id, file, query, cb) {
   var options  = {};
-  log.debug(file);
   var filter = {$or:[ {id: id}, {user: id} ]};
   cb = cb || query;
-  log.debug(query);
   if(query &&query.upsert === 'true'){
-    log.debug('upsert cv');
     options.upsert = true;
   }
 
@@ -68,7 +65,6 @@ function update(id, cv, query, cb) {
   var filter = {$or:[ {id: id}, {user: id} ]};
   cb = cb || query;
   if(query && query.upsert === 'true'){
-    log.debug('upsert cv');
     options.upsert = true;
   }
 

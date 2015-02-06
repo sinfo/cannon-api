@@ -15,94 +15,147 @@ exports.create = {
     payload: {
       id: Joi.string().description('Id of the user'),
       name: Joi.string().required().description('Name of the user'),
+      img: Joi.string().required().description('Image of the user'),
       role: Joi.string().description('Role of the user'),
       mail: Joi.string().email().required().description('Mail of the user'),
-      bearer: Joi.array().includes({
-        date: Joi.date(),
-        token: Joi.string().token()
-      }),
+      bearer: Joi.array().includes(Joi.object({
+        token: Joi.string().token().description('Bearer token'),
+        refreshToken: Joi.string().token().description('Bearer refresh token'),
+        ttl: Joi.number().description('Bearer token time to live'),
+        date: Joi.date().description('Bearer date of creation')
+      })),
       facebook: {
-        id: Joi.string(),
-        token: Joi.string().token(),
+        id: Joi.string().description('Facebook id of the user'),
+        token: Joi.string().token().description('Facebook token of the user'),
+      },
+      google: {
+        id: Joi.string().description('Google id of the user'),
+        token: Joi.string().token().description('Google token of the user')
       },
       fenix: {
-        id: Joi.string(),
-        token: Joi.string().token(),
-        refreshToken: Joi.string().token(),
+        id: Joi.string().description('Fenix id of the user'),
+        token: Joi.string().token().description('Fenix token of the user'),
+        refreshToken: Joi.string().token().description('Fenix refresh token of the user'),
+        ttl: Joi.number().description('Fenix token time to live'),
+        created: Joi.date().description('Fenix token creation date')
       },
       points: {
-        available: Joi.number(),
-        total: Joi.number()
+        available: Joi.number().description('Points available to use'),
+        total: Joi.number().description('Total points earned')
       },
       achievements: Joi.array().includes(Joi.object().keys({
-        id: Joi.string(),
-        date: Joi.date()
+        id: Joi.string().description('id of the earned achievement'),
+        date: Joi.date().description('date of its receipt')
       })),
-      workAvalability: Joi.object().keys({
-        area: Joi.string(),
-        startup: Joi.boolean(),
-        internship: Joi.boolean(),
-        start: Joi.date(),
-        end: Joi.date(),
-      })
+      area: Joi.string().description('Work field of the user'),
+      skills: Joi.array().description('Skills of the user'),
+      job: Joi.object().keys({
+        startup: Joi.boolean().description('Interested in a startup'),
+        internship: Joi.boolean().description('Interested in internship'),
+        start: Joi.date().description('Available for hire')
+      }),
+      registered: Joi.date().description('Date of register'),
+      updated: Joi.date().description('Last update')
     }
   },
   pre: [
     { method: 'user.create(payload)', assign: 'user' }
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.user)).created('/user/'+request.pre.user.id);
+    reply(render(request.pre.user, request.auth.credentials.user)).created('/user/'+request.pre.user.id);
   },
   description: 'Creates a new user'
 };
 
 
-exports.update = {
+exports.updateMe = {
   tags: ['api','user'],
   auth: {
     strategies: ['default', 'backup'],
     scope: ['user', 'admin']
   },
   validate: {
-    params: {
-      id: Joi.string().required().description('Id of the user we want to update'),
-    },
     payload: {
       id: Joi.string().description('Id of the user'),
-      name: Joi.string().description('Name of the user'),
+      name: Joi.string().required().description('Name of the user'),
+      img: Joi.string().required().description('Image of the user'),
+      mail: Joi.string().email().required().description('Mail of the user'),
+      area: Joi.string().description('Work field of the user'),
+      skills: Joi.array().description('Skills of the user'),
+      job: Joi.object().keys({
+        startup: Joi.boolean().description('Interested in a startup'),
+        internship: Joi.boolean().description('Interested in internship'),
+        start: Joi.date().description('Available for hire')
+      })
+    }
+  },
+  pre: [
+    { method: 'user.update(auth.credentials.user.id, payload)', assign: 'user' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.user, request.auth.credentials.user));
+  },
+  description: 'Updates an user'
+};
+
+exports.update = {
+  tags: ['api','user'],
+  auth: {
+    strategies: ['default', 'backup'],
+    scope: ['admin']
+  },
+  validate: {
+    payload: {
+      id: Joi.string().description('Id of the user'),
+      name: Joi.string().required().description('Name of the user'),
+      img: Joi.string().required().description('Image of the user'),
       role: Joi.string().description('Role of the user'),
-      mail: Joi.string().email().description('Mail of the user'),
+      mail: Joi.string().email().required().description('Mail of the user'),
+      bearer: Joi.array().includes(Joi.object({
+        token: Joi.string().token().description('Bearer token'),
+        refreshToken: Joi.string().token().description('Bearer refresh token'),
+        ttl: Joi.number().description('Bearer token time to live'),
+        date: Joi.date().description('Bearer date of creation')
+      })),
       facebook: {
-        id: Joi.string(),
-        token: Joi.string(),
+        id: Joi.string().description('Facebook id of the user'),
+        token: Joi.string().token().description('Facebook token of the user'),
+      },
+      google: {
+        id: Joi.string().description('Google id of the user'),
+        token: Joi.string().token().description('Google token of the user')
       },
       fenix: {
-        id: Joi.string(),
-        token: Joi.string(),
-        refreshToken: Joi.string(),
+        id: Joi.string().description('Fenix id of the user'),
+        token: Joi.string().token().description('Fenix token of the user'),
+        refreshToken: Joi.string().token().description('Fenix refresh token of the user'),
+        ttl: Joi.number().description('Fenix token time to live'),
+        created: Joi.date().description('Fenix token creation date')
       },
       points: {
-        available: Joi.number(),
-        total: Joi.number()
+        available: Joi.number().description('Points available to use'),
+        total: Joi.number().description('Total points earned')
       },
       achievements: Joi.array().includes(Joi.object().keys({
-        id: Joi.string(),
-        date: Joi.date()
+        id: Joi.string().description('id of the earned achievement'),
+        date: Joi.date().description('date of its receipt')
       })),
-      workAvalability: Joi.object().keys({
-        area: Joi.string(),
-        startup: Joi.boolean(),
-        internship: Joi.boolean(),
-        start: Joi.date(),
-        end: Joi.date(),
-      })
+      area: Joi.string().description('Work field of the user'),
+      skills: Joi.array().description('Skills of the user'),
+      job: Joi.object().keys({
+        startup: Joi.boolean().description('Interested in a startup'),
+        internship: Joi.boolean().description('Interested in internship'),
+        start: Joi.date().description('Available for hire')
+      }),
+      registered: Joi.date().description('Date of register'),
+      updated: Joi.date().description('Last update')
     }
   },
   pre: [
     { method: 'user.update(params.id, payload)', assign: 'user' }
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.user));
+    reply(render(request.pre.user, request.auth.credentials.user));
   },
   description: 'Updates an user'
 };
@@ -123,7 +176,7 @@ exports.get = {
     { method: 'user.get(params.id, query)', assign: 'user' }
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.user));
+    reply(render(request.pre.user, request.auth.credentials.user));
   },
   description: 'Gets an user'
 };
@@ -139,7 +192,7 @@ exports.getMe = {
     { method: 'user.get(auth.credentials.id, query)', assign: 'user' }
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.user));
+    reply(render(request.pre.user, request.auth.credentials.user));
   },
   description: 'Gets an user'
 };
@@ -155,7 +208,7 @@ exports.list = {
     { method: 'user.list(query)', assign: 'users' }
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.users));
+    reply(render(request.pre.users, request.auth.credentials.user));
   },
   description: 'Gets all the users'
 };
@@ -177,6 +230,21 @@ exports.remove = {
   ],
   handler: function (request, reply) {
     reply(render(request.pre.user));
+  },
+  description: 'Removes an user'
+};
+
+exports.removeMe = {
+  tags: ['api','user'],
+  auth: {
+    strategies: ['default', 'backup'],
+    scope: ['user', 'admin']
+  },
+  pre: [
+    { method: 'user.remove(auth.credentials.user.id)', assign: 'user' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.user, request.auth.credentials.user));
   },
   description: 'Removes an user'
 };

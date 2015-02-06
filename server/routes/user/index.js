@@ -8,21 +8,27 @@ server.route({
 });
 
 server.route({
-  method: 'PUT',
+  method: ['PATCH','PUT'],
   path: '/users/{id}',
   config: handlers.update
 });
 
 server.route({
-  method: 'GET',
+  method: ['PATCH','PUT'],
   path: '/users/me',
-  config: handlers.getMe
+  config: handlers.updateMe
 });
 
 server.route({
   method: 'GET',
   path: '/users/{id}',
   config: handlers.get
+});
+
+server.route({
+  method: 'GET',
+  path: '/users/me',
+  config: handlers.getMe
 });
 
 server.route({
@@ -35,4 +41,10 @@ server.route({
   method: 'DELETE',
   path: '/users/{id}',
   config: handlers.remove
+});
+
+server.route({
+  method: 'DELETE',
+  path: '/users/me',
+  config: handlers.removeMe
 });

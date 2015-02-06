@@ -35,8 +35,9 @@ var schema = new mongoose.Schema({
     id: String,
     date: Date
   }],
+  area: String,
+  skills: Array,
   job: {
-    area: String,
     startup: Boolean,
     internship: Boolean,
     start: Date,
