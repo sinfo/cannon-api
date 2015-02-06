@@ -18,6 +18,7 @@ server.method('file.update', update, {});
 server.method('file.get', get, {});
 server.method('file.list', list, {});
 server.method('file.remove', remove, {});
+server.method('file.delete', deleteFile, {});
 server.method('file.saveFiles', saveFiles, {});
 server.method('file.upload', upload, {});
 server.method('file.uploadCV', uploadCV, {});
@@ -54,11 +55,23 @@ function create(file, user, cb) {
   });
 }
 
-function update(id, file, cb) {
+function update(id, file, user, query, cb) {
+  cb = cb || query || user;
+  query = query || {};
+  if(arguments.length === 4){
+    if(typeof user !== 'string'){
+      query = user;
+    }
+  }
+
+  var options = {
+    upsert: query.upsert
+  };
 
   file.updated = Date.now();
+  file.user = user ? user : file.user;
 
-  File.findOneAndUpdate({id: id}, file, function(err, _file) {
+  File.findOneAndUpdate({id: id}, file, options, function(err, _file) {
     if (err) {
       log.error({err: err, file: id}, 'error updating file');
       return cb(Boom.internal());
@@ -74,13 +87,15 @@ function update(id, file, cb) {
 
 function get(id, query, cb) {
   if(!id){ //check if file exists use case
+    log.warn('[file] tried to get with empty file id');
     return cb();
   }
 
   cb = cb || query; // fields is optional
   var fields = fieldsParser(query.fields);
+  var filter = {$or: [{id: id}, {user: id}]};
 
-  File.findOne({id: id}, fields, function(err, file) {
+  File.findOne(filter, fields, function(err, file) {
     if (err) {
       log.error({err: err, file: id}, 'error getting file');
       return cb(Boom.internal());
@@ -166,12 +181,19 @@ function saveFiles(kind, files, data, cb){
 }
 
 function deleteFile(file, cb){
-  var path = config.upload.path + '/' + file.id;
+
+  //only delete if file defined, doesn't throw err
+  if(!file || file === ''){
+    log.warn('[file] tried to delete empty file path');
+    return cb();
+  }
+
+  var path = config.upload.path + '/' + file;
 
   fs.unlink(path, function(err){
     if(err){
       log.error({err: err, path: path}, '[file] error deleting file');
-      return cb(err);
+      return cb(Boom.internal());
     }
     log.info({path: path},'[file] successfully deleted file');
     cb();

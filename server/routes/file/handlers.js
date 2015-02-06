@@ -161,6 +161,9 @@ exports.upload = {
     maxBytes: configUpload.maxSize
   },
   validate: {
+    query: {
+      upsert: Joi.string().default('true'),
+    },
     params: {
       id: Joi.string().required().description('Id of the user whose file we want to upload'),
     },
@@ -180,7 +183,9 @@ exports.upload = {
   pre: [
     { method: 'user.get(params.id)', assign: 'user' },
     { method: 'file.uploadCV(payload)', assign: 'file' },
-    { method: 'file.create(pre.file, params.id)', assign: 'fileInfo' }
+    { method: 'file.get(auth.credentials.user.id)', assign: 'oldFile'},
+    { method: 'file.delete(pre.oldFile.id)', assign: 'deleteFile'},
+    { method: 'file.update(oldFile.id, pre.file, auth.credentials.user.id, query)', assign: 'fileInfo' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.fileInfo)).created('/api/file/'+request.pre.fileInfo.id);
@@ -201,6 +206,9 @@ exports.uploadMe = {
     maxBytes: configUpload.maxSize
   },
   validate: {
+    query: {
+      upsert: Joi.string().invalid('false').default('true'),
+    },
     payload: Joi.object().pattern(/(\w*\W*)*/,
       Joi.object({
         pipe: Joi.func().required().description('File stream'),
@@ -216,7 +224,9 @@ exports.uploadMe = {
   },
   pre: [
     { method: 'file.uploadCV(payload)', assign: 'file' },
-    { method: 'file.create(pre.file, auth.credentials.user.id)', assign: 'fileInfo' }
+    { method: 'file.get(auth.credentials.user.id)', assign: 'oldFile'},
+    { method: 'file.delete(pre.oldFile.id)', assign: 'deleteFile'},
+    { method: 'file.update(oldFile.id, pre.file, auth.credentials.user.id, query)', assign: 'fileInfo' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.fileInfo)).created('/api/file/'+request.pre.fileInfo.id);
