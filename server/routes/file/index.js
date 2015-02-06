@@ -40,5 +40,11 @@ server.route({
 server.route({
   method: ['DELETE'],
   path: '/files/{id}',
+  config: handlers.remove
+});
+
+server.route({
+  method: ['DELETE'],
+  path: '/files/me',
   config: handlers.removeMe
 });

@@ -1,6 +1,5 @@
 var Boom = require('boom');
 var slug = require('slug');
-var Hoek = require('hoek');
 var server = require('server').hapi;
 var log = require('server/helpers/logger');
 var dupKeyParser = require('server/helpers/dupKeyParser');

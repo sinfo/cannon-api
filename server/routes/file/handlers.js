@@ -80,6 +80,20 @@ exports.get = {
   description: 'Gets the model of the file'
 };
 
+exports.getMe = {
+  tags: ['api','file'],
+  auth: {
+    strategies: ['default', 'backup'],
+    scope: ['user', 'admin']
+  },
+  pre: [
+    { method: 'file.get(auth.credentials.user.id, query)', assign: 'file' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.file));
+  },
+  description: 'Gets the file model of the user'
+};
 
 exports.list = {
   tags: ['api','file'],
@@ -116,6 +130,22 @@ exports.remove = {
     reply(render(request.pre.file));
   },
   description: 'Removes a file'
+};
+
+exports.removeMe = {
+  tags: ['api','file'],
+  auth: {
+    strategies: ['default', 'backup'],
+    scope: ['user', 'admin']
+
+  },
+  pre: [
+    { method: 'file.remove(auth.credentials.user.id)', assign: 'file' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.file));
+  },
+  description: 'Removes user file'
 };
 
 exports.upload = {
@@ -191,5 +221,5 @@ exports.uploadMe = {
   handler: function (request, reply) {
     reply(render(request.pre.fileInfo)).created('/api/file/'+request.pre.fileInfo.id);
   },
-  description: 'Uploads a file'
+  description: 'Uploads a file of the user'
 };
