@@ -4,4 +4,3 @@ require('./redeem');
 require('./auth');
 require('./user');
 require('./qrcode');
-require('./cv');

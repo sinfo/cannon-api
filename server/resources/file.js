@@ -35,7 +35,9 @@ function createArray(files, cb) {
   });
 }
 
-function create(file, cb) {
+function create(file, user, cb) {
+  cb = cb || user;
+  file.user = user ? user : file.user;
 
   file.created = file.updated = Date.now();
 

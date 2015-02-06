@@ -16,6 +16,7 @@ exports.create = {
   validate: {
     payload: {
     	id: Joi.string().required().description('File id'),
+      user: Joi.string().required().description('File user'),
     	name: Joi.string().required().description('File name'),
     	kind: Joi.string().required().description('File category'),
     	extension: Joi.string().required().description('File type')
@@ -27,7 +28,7 @@ exports.create = {
   handler: function (request, reply) {
     reply(render(request.pre.file)).created('/file/'+request.pre.file.id);
   },
-  description: 'Creates a new file'
+  description: 'Creates a new file model'
 };
 
 
@@ -43,6 +44,7 @@ exports.update = {
     },
     payload: {
     	id: Joi.string().description('File id'),
+      user: Joi.string().description('File user'),
     	name: Joi.string().description('File name'),
     	kind: Joi.string().description('File category'),
     	extension: Joi.string().description('File type'),
@@ -54,7 +56,7 @@ exports.update = {
   handler: function (request, reply) {
     reply(render(request.pre.file));
   },
-  description: 'Updates a file'
+  description: 'Updates a file model'
 };
 
 
@@ -62,11 +64,11 @@ exports.get = {
   tags: ['api','file'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['admin']
   },
   validate: {
     params: {
-      id: Joi.string().required().description('Id of the file we want to retrieve'),
+      id: Joi.string().required().description('Id or user of the file we want to retrieve'),
     }
   },
   pre: [
@@ -75,7 +77,7 @@ exports.get = {
   handler: function (request, reply) {
     reply(render(request.pre.file));
   },
-  description: 'Gets an file'
+  description: 'Gets the model of the file'
 };
 
 
@@ -85,18 +87,13 @@ exports.list = {
     strategies: ['default', 'backup'],
     scope: ['admin']
   },
-  validate: {
-    query: {
-      fields: Joi.string().default('id,name,img').description('Fields we want to retrieve'),
-    }
-  },
   pre: [
     { method: 'file.list(query)', assign: 'files' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.files));
   },
-  description: 'Gets all the files'
+  description: 'Gets all the file models'
 };
 
 
@@ -135,9 +132,7 @@ exports.upload = {
   },
   validate: {
     params: {
-      kind: Joi.string().valid(optionsUpload.map(function(o){
-        return o.kind;
-      })).required().description('File category'),
+      id: Joi.string().required().description('Id of the user whose file we want to upload'),
     },
     payload: Joi.object().pattern(/(\w*\W*)*/,
       Joi.object({
@@ -150,16 +145,17 @@ exports.upload = {
           }).unknown().required().description('File headers')
         }).required().description('File')
       }).unknown()
-    ).required()
+    ).required().length(1)
   },
   pre: [
-    { method: 'file.upload(params.kind, payload)', assign: 'file' },
-    { method: 'file.createArray(pre.file)', assign: 'fileInfo' }
+    { method: 'user.get(params.id)', assign: 'user' },
+    { method: 'file.uploadCV(payload)', assign: 'file' },
+    { method: 'file.create(pre.file, params.id)', assign: 'fileInfo' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.fileInfo)).created('/api/file/'+request.pre.fileInfo.id);
   },
-  description: 'Uploads one or more files'
+  description: 'Uploads a file'
 };
 
 exports.uploadMe = {
@@ -177,24 +173,23 @@ exports.uploadMe = {
   validate: {
     payload: Joi.object().pattern(/(\w*\W*)*/,
       Joi.object({
-        pipe: Joi.func().required().description('CV file stream'),
+        pipe: Joi.func().required().description('File stream'),
         hapi: Joi.object({
-          filename: Joi.string().required().description('CV file name'),
+          filename: Joi.string().required().description('File name'),
           headers: Joi.object({
-            'content-type': Joi.string().required().description('CV file mime type'),
-            'content-disposition': Joi.string().required().regex(/\w*\W*filename\w*\W*/).description('CV file name')
-          }).unknown().required().description('CV file headers')
-        }).required().description('CV file')
+            'content-type': Joi.string().required().description('File mime type'),
+            'content-disposition': Joi.string().required().regex(/\w*\W*filename\w*\W*/).description('File name')
+          }).unknown().required().description('File headers')
+        }).required().description('File')
       }).unknown()
     ).required().length(1)
   },
   pre: [
     { method: 'file.uploadCV(payload)', assign: 'file' },
-    { method: 'file.createArray(pre.file)', assign: 'fileInfo' },
-    { method: 'cv.updateFile(auth.credentials.user.id, pre.fileInfo.id, query)', assign:'cv'},
+    { method: 'file.create(pre.file, auth.credentials.user.id)', assign: 'fileInfo' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.fileInfo)).created('/api/file/'+request.pre.fileInfo.id);
   },
-  description: 'Uploads a cv file'
+  description: 'Uploads a file'
 };

@@ -15,14 +15,14 @@ server.route({
 
 server.route({
   method: 'POST',
-  path: '/files/upload/{kind}',
+  path: '/files/{id}',
   config: handlers.upload
 });
 
 server.route({
   method: 'POST',
-  path: '/files/upload/cv/me',
-  config: handlers.uploadCV
+  path: '/files/me',
+  config: handlers.uploadMe
 });
 
 server.route({
@@ -40,5 +40,5 @@ server.route({
 server.route({
   method: ['DELETE'],
   path: '/files/{id}',
-  config: handlers.remove
+  config: handlers.removeMe
 });

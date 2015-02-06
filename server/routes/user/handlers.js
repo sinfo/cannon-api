@@ -77,9 +77,9 @@ exports.updateMe = {
   validate: {
     payload: {
       id: Joi.string().description('Id of the user'),
-      name: Joi.string().required().description('Name of the user'),
-      img: Joi.string().required().description('Image of the user'),
-      mail: Joi.string().email().required().description('Mail of the user'),
+      name: Joi.string().description('Name of the user'),
+      img: Joi.string().description('Image of the user'),
+      mail: Joi.string().email().description('Mail of the user'),
       area: Joi.string().description('Work field of the user'),
       skills: Joi.array().description('Skills of the user'),
       job: Joi.object().keys({
@@ -95,7 +95,7 @@ exports.updateMe = {
   handler: function (request, reply) {
     reply(render(request.pre.user, request.auth.credentials.user));
   },
-  description: 'Updates an user'
+  description: 'Updates the user'
 };
 
 exports.update = {
@@ -107,10 +107,10 @@ exports.update = {
   validate: {
     payload: {
       id: Joi.string().description('Id of the user'),
-      name: Joi.string().required().description('Name of the user'),
-      img: Joi.string().required().description('Image of the user'),
+      name: Joi.string().description('Name of the user'),
+      img: Joi.string().description('Image of the user'),
       role: Joi.string().description('Role of the user'),
-      mail: Joi.string().email().required().description('Mail of the user'),
+      mail: Joi.string().email().description('Mail of the user'),
       bearer: Joi.array().includes(Joi.object({
         token: Joi.string().token().description('Bearer token'),
         refreshToken: Joi.string().token().description('Bearer refresh token'),
@@ -188,13 +188,10 @@ exports.getMe = {
     strategies: ['default', 'backup'],
     scope: ['user', 'admin']
   },
-  pre: [
-    { method: 'user.get(auth.credentials.id, query)', assign: 'user' }
-  ],
   handler: function (request, reply) {
-    reply(render(request.pre.user, request.auth.credentials.user));
+    reply(render(request.auth.credentials.user, request.auth.credentials.user));
   },
-  description: 'Gets an user'
+  description: 'Gets the user'
 };
 
 
@@ -246,5 +243,5 @@ exports.removeMe = {
   handler: function (request, reply) {
     reply(render(request.pre.user, request.auth.credentials.user));
   },
-  description: 'Removes an user'
+  description: 'Removes the user'
 };
