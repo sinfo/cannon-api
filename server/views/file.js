@@ -9,6 +9,7 @@ module.exports = function render(content) {
 function renderObject(model) {
   return {
     id: model.id,
+    user: model.user,
     name: model.name,
 		kind: model.kind,
     extension: model.extension,
