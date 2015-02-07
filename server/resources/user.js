@@ -22,7 +22,7 @@ function create(user, cb) {
   User.create(user, function(err, _user) {
     if (err) {
       if(err.code == 11000) {
-      	log.warn({err:err, requestedUser: user.id}, 'user is a duplicate');
+        log.warn({err:err, requestedUser: user.id}, 'user is a duplicate');
         return cb(Boom.conflict(dupKeyParser(err.err)+' is a duplicate'));
       }
 
