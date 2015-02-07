@@ -11,7 +11,7 @@ config.webapp = {
 };
 
 config.upload = {
-  path: process.env.CANNON_UPLOAD_PATH || 'cannon_uploads',
+  path: process.env.CANNON_UPLOAD_PATH || __dirname + '/cannon_uploads',
   maxSize: process.env.CANNON_UPLOAD_MAX_SIZE || 1000*1000
 };
 

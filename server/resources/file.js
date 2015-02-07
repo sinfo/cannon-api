@@ -107,7 +107,7 @@ function get(id, query, cb) {
       log.error({err: 'not found', file: id}, 'file not found');
       return cb(Boom.notFound());
     }
-
+    log.debug({file: file}, 'got file');
     cb(null, file.toObject({ getters: true }));
   });
 }
@@ -195,6 +195,9 @@ function deleteFile(file, cb){
 
   fs.unlink(path, function(err){
     if(err){
+      if(err.errno === 34){
+        log.error('[file] issue with file path');
+      }
       log.error({err: err, path: path}, '[file] error deleting file');
       return cb(Boom.internal());
     }
