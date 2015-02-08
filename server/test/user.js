@@ -29,7 +29,7 @@ var credentialsB = {
 };
 
 var userA = {
-  id: 'john.doo',
+  id: 'john.doe',
   name:'John Doe',
   mail:'john@doe.com'
 };
@@ -117,6 +117,44 @@ lab.experiment('User', function() {
     });
   });
 
+  lab.test('Get me as admin', function(done) {
+    var options = {
+      method: 'GET',
+      url: '/users/me',
+      credentials: credentialsA,
+    };
+
+    server.inject(options, function(response) {
+      var result = response.result;
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(result).to.be.instanceof(Object);
+      Code.expect(result.id).to.equal(userA.id);
+      Code.expect(result.name).to.equal(userA.name);
+
+      done();
+    });
+  });
+
+  lab.test('Get me as user', function(done) {
+    var options = {
+      method: 'GET',
+      url: '/users/me',
+      credentials: credentialsB,
+    };
+
+    server.inject(options, function(response) {
+      var result = response.result;
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(result).to.be.instanceof(Object);
+      Code.expect(result.id).to.equal(userA.id);
+      Code.expect(result.name).to.equal(userA.name);
+
+      done();
+    });
+  });
+
   lab.test('Update as admin', function(done) {
     var options = {
       method: 'PUT',
@@ -165,11 +203,7 @@ lab.experiment('User', function() {
     server.inject(options, function(response) {
       var result = response.result;
 
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(result).to.be.instanceof(Object);
-      Code.expect(result.id).to.equal(userA.id);
-      Code.expect(result.name).to.equal(changesToA.name);
-
+      Code.expect(response.statusCode).to.equal(403);
       done();
     });
   });

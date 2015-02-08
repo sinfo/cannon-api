@@ -13,6 +13,7 @@ var credentialsA = {
   user: {
     id: 'john.doe',
     name: 'John Doe',
+    role: 'admin',
   },
   bearer: aux.token,
   scope: 'admin',
@@ -23,6 +24,7 @@ var credentialsB = {
   user: {
     id: 'john.doe',
     name: 'John Doe',
+    role:'admin',
   },
   bearer: aux.token,
   scope: 'user',
@@ -30,6 +32,7 @@ var credentialsB = {
 
 var fileA = {
   id: 'readme',
+  user:'john.doe',
   name: 'readme',
   kind: 'important',
   extension: 'txt',
@@ -129,12 +132,7 @@ lab.experiment('File', function() {
     server.inject(options, function(response) {
       var result = response.result;
 
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(result).to.be.instanceof(Object);
-      Code.expect(result.id).to.equal(fileA.id);
-      Code.expect(result.name).to.equal(fileA.name);
-      Code.expect(result.extension).to.equal(fileA.extension);
-
+      Code.expect(response.statusCode).to.equal(403);
       done();
     });
   });

@@ -15,7 +15,7 @@ exports.create = {
     payload: {
       id: Joi.string().description('Id of the user'),
       name: Joi.string().required().description('Name of the user'),
-      img: Joi.string().required().description('Image of the user'),
+      img: Joi.string().description('Image of the user'),
       role: Joi.string().description('Role of the user'),
       mail: Joi.string().email().required().description('Mail of the user'),
       bearer: Joi.array().includes(Joi.object({
