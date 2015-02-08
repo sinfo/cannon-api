@@ -6,11 +6,11 @@ var tokenConfig = require('config').auth.token;
 var Token = require('server/auth/token');
 
 var basic = function(username, password, cb){
-  Token.validator(username, password, tokenConfig, cb);
+  Token.validator(password, tokenConfig, cb);
 };
 
 var bearer = function(token, cb){
-  Token.validator(null, token, tokenConfig, cb);
+  Token.validator(token, tokenConfig, cb);
 };
 
 

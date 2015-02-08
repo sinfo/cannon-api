@@ -39,66 +39,82 @@ function removeToken(token, user, cb){
   });
 }
 
-function validator(id, token, config, cb) {
+function validator(token, config, cb) {
   var isValid =  false;
   var credentials = {};
-  var user = id;
-  var _user;
-  var bearerDecoded;
-  var query;
+  var user;
+  var bearer;
+  var query = {bearer: {$elemMatch: {token: token}}};
 
-  jwt.verify(token, config.publicKey, {audience: config.audience, issuer: config.issuer}, function(err, decoded) {
-    bearerDecoded = decoded;
-
-    if(err){
-      log.warn({err: err, token: bearerDecoded}, '[Auth] invalid token');
-      return cb(Boom.unauthorized());
-    }
-
-    if(user && bearerDecoded.user != user){
-      return cb(Boom.unauthorized()); 
-    }
-
-    query = {id: bearerDecoded.user, bearer: {$elemMatch: {token: token}}};
-
-    User.findOne(query, function(error, result){
-      var bearer;
-      _user = result.toObject({ getters: true });
-      
-      if(error){
-        log.error({err: error, token: token},'[Auth] error finding user');
-        return cb(Boom.unauthorized());
-      }
-
-      if(!_user){
-        log.error({err: error, token: token},'[Auth] user not found');
-        return cb(Boom.unauthorized());
-      }
-
-      bearer = _user.bearer;
-      async.each(bearer, checkToken, function (error){
+  async.series([
+    function findUser(callback){
+      User.findOne(query, function(error, result){
         if(error){
-          log.error({err: error},'[Auth] error running throw user tokens');
-          return cb(Boom.unauthorized());
+          log.error({err: error, token: token},'[Auth] error finding user');
+          return callback(Boom.unauthorized());
         }
-        return cb(null, isValid, credentials);
+        if(!result){
+          log.error({err: error, token: token},'[Auth] user not found');
+          return callback(Boom.unauthorized());
+        }
+        user = result.toObject({ getters: true });
+        bearer = user.bearer;
+        callback();
       });
-    });
-
+    },
+    function verify(callback){
+      verifyToken(user.id, token, false, function(err, decoded){
+        async.each(bearer, checkToken, function (error){
+          if(error){
+            log.error({err: error},'[Auth] error running throw user tokens');
+            return callback(Boom.unauthorized());
+          }
+          return callback();
+        });
+      });
+    }
+  ], function done(err){
+    cb(err, isValid, credentials);
   });
 
 // aux check token func used in the async
   function checkToken(userBearer, callback){
     if(userBearer.token == token){
       isValid = true;
-      credentials.user = _user;
+      credentials.user = user;
       credentials.bearer = userBearer;
-      credentials.scope = _user.role;
+      credentials.scope = user.role;
     }
     callback();
   }
 }
 
+//given a user check if it matches the one in the token
+function verifyToken(id, token, refresh, cb) {
+  var config = refresh? authConfig.refreshToken : authConfig.token;
+
+  jwt.verify(token, config.publicKey, {audience: config.audience, issuer: config.issuer}, function(err, decoded) {
+    
+    if(err){
+      log.warn({err: err, token: decoded}, '[Auth] invalid token');
+      return cb(Boom.unauthorized());
+    }
+
+    if((refresh && !decoded.refresh) || (!refresh && decoded.refresh)){
+      log.warn({refresh: refresh, token: decoded}, '[Auth] invalid usage of token');
+      return cb(Boom.unauthorized());
+    }
+
+    if(id !== decoded.user){
+      log.warn({user: id, token: decoded}, '[Auth] user in token payload does not match user');
+      return cb(Boom.unauthorized());
+    }
+
+    cb(err, decoded);
+  });
+}
+
+module.exports.verifyToken = verifyToken;
 module.exports.validator = validator;
 module.exports.getJWT = getJWT;
 module.exports.removeToken = removeToken;

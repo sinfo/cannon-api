@@ -53,7 +53,7 @@ function update(filter, user, opts, cb) {
       return cb(Boom.internal());
     }
     if (!_user) {
-      log.error({err: err, requestedUser: filter}, 'error updating user');
+      log.error({err: err, requestedUser: filter}, 'user not found');
       return cb(Boom.notFound());
     }
 
