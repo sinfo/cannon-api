@@ -184,17 +184,23 @@ function authenticate(userId, changedAttributes, cb) {
   });
 }
 
-function refreshToken(token, cb){
-/*  var newToken = Token.getJWT();
-  var filter = {bearer: {$elemMatch: {refreshToken: token}}};
-  var update = { $pull: {bearer: token}, $push: {bearer: newToken} };
-  server.methods.user.update(id, update, function(err, result){
+function refreshToken(user, token, refresh, cb){
+  
+  Token.verifyToken(user, refresh, true, function(err, decoded){
     if(err){
-      log.error({user: id }, '[bearer] error updating user');
       return cb(err);
     }
-    log.debug({user: id}, '[bearer] updated token with succcess');
-    return  cb(err, Token.getJWT(id, newToken));
-  });*/
-  cb();
+
+    var newToken = Token.getJWT(user);
+    var filter = { id: user, bearer: {$elemMatch: {refreshToken: refresh, token: token}}};
+    var update = { $set: {'bearer.$': newToken}};
+
+    server.methods.user.update(filter, update, function(err, result){
+      if(err){
+        log.error({user: user }, '[login] error updating user');
+        return cb(Boom.unauthorized());
+      }
+      return  cb(err, newToken);
+    });
+  });
 }

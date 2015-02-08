@@ -46,20 +46,22 @@ exports.fenix = {
 
 exports.refreshToken = {
   tags: ['api','auth'],
-  validate: {
-    params: {
-      id: Joi.string().required().description('Id of the user we want to retrieve'),
-    }
-  },
   auth: {
     strategies: ['default'],
-    scope: ['admin']
+    mode: 'try'
+  },
+  validate: {
+    payload: {
+      id: Joi.string().required().description('fenix code of the member'),
+      token: Joi.string().required().description('fenix code of the member'),
+      refreshToken: Joi.string().required().description('fenix code of the member'),
+    }
   },
   pre: [
-    { method: 'auth.refreshToken(auth)', assign: 'refreshToken' }
+    { method: 'auth.refreshToken(payload.id, payload.token, payload.refreshToken)', assign: 'refreshToken' }
   ],
   handler: function (request, reply) {
      reply(render(request.pre.refreshToken));
   },
-  description: 'Facebook login'
+  description: 'Refresh access token'
 };
