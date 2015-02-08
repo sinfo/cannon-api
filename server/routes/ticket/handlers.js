@@ -72,7 +72,8 @@ exports.get = {
   tags: ['api','ticket'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['user', 'admin'],
+    mode: 'try'
   },
   validate: {
     params: {
