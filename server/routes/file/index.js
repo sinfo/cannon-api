@@ -32,6 +32,12 @@ server.route({
 });
 
 server.route({
+  method: 'GET',
+  path: '/files/me',
+  config: handlers.getMe
+});
+
+server.route({
   method: ['PUT','PATCH'],
   path: '/files/{id}',
   config: handlers.update
