@@ -26,10 +26,13 @@ server.pack.register([
     server.auth.strategy('default', 'bearer-access-token', options.auth.default);
     server.auth.strategy('backup', 'basic', options.auth.backup);
 
-    server.start(function () {
-      log.info('### Server started at: ' + server.info.uri + ' ###');
-      require('server/resources');
-      require('server/routes');
-    });
+    require('server/resources');
+    require('server/routes');
+
+    if (!module.parent) {
+      server.start(function () {
+        log.info('### Server started at: ' + server.info.uri + ' ###');
+      });
+    }
   }
 );

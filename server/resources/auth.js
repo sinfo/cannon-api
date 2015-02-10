@@ -46,13 +46,19 @@ function facebookAuth(id, token, cb){
           changedAttributes.$setOnInsert = {
             id: Math.random().toString(36).substr(2,20), // generate random id
             name: facebookUser.name,
-            mail: facebookUser.email,
+            // mail: facebookUser.email,
           };
+
+          var filter = { name: facebookUser.name };
+          if(facebookUser.email) {
+            filter = { mail: facebookUser.email };
+            changedAttributes.$setOnInsert.mail = facebookUser.email;
+          }
 
           log.debug({facebookUser: facebookUser.id}, '[facebook-login] got facebook user');
 
           // Update the facebook details of the user with this email, ou create a new user if it does not exist
-          return server.methods.user.update({mail: facebookUser.email}, changedAttributes, {upsert: true}, function(err, result){
+          return server.methods.user.update(filter, changedAttributes, {upsert: true}, function(err, result){
             if(err){
               log.error({user: {mail: facebookUser.email}, changedAttributes: changedAttributes }, '[facebook-login] error upserting user');
               return cb(err);
@@ -185,7 +191,7 @@ function authenticate(userId, changedAttributes, cb) {
 }
 
 function refreshToken(user, token, refresh, cb){
-  
+
   Token.verifyToken(user, refresh, true, function(err, decoded){
     if(err){
       return cb(err);
