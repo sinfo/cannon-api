@@ -7,7 +7,7 @@ log.error({ env: process.env.NODE_ENV }, '### Starting Cannon ###');
 
 var db = require('server/db');
 
-var server = module.exports.hapi = new Hapi.Server(config.port, { cors: true });
+var server = module.exports.hapi = new Hapi.Server(config.host, config.port, { cors: true });
 
 server.pack.register([
   { plugin: require('hapi-swagger'), options: config.swagger },

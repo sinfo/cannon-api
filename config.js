@@ -3,6 +3,7 @@ var fs = require('fs');
 
 var config = {
   url: process.env.CANNON_URL || 'http://localhost:8090',
+  host: process.env.CANNON_HOST || 'localhost',
   port: process.env.CANNON_PORT || 8090,
 };
 
