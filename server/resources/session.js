@@ -5,10 +5,14 @@ var Resquest = require('request');
 var config = require('config');
 var qs = require('qs');
 var parseBody = require('server/helpers/parseBody');
+var moment = require('moment');
 
 
 server.method('session.get', get, {});
 server.method('session.list', list, {});
+server.method('session.ticketsNeeded', ticketsNeeded, {});
+server.method('session.inRegistrationPeriod', inRegistrationPeriod, {});
+server.method('session.inConfirmationPeriod', inConfirmationPeriod, {});
 
 
 function get(id, query, cb) {
@@ -27,7 +31,13 @@ function get(id, query, cb) {
       return cb(Boom.notFound());
     }
 
-    parseBody(body, cb);
+    parseBody(body, function(err, session) {
+      if(err) {
+        return cb(Boom.create(err.statusCode, err.message || err.statusCode == 404 && 'session not found', err.data));
+      }
+
+      cb(null, session);
+    });
   });
 }
 
@@ -47,6 +57,40 @@ function list(query, cb) {
       return cb(Boom.notFound());
     }
 
-    parseBody(body, cb);
+    parseBody(body, function(err, sessions) {
+      if(err) {
+        return cb(Boom.create(err.statusCode, err.message, err.data));
+      }
+
+      cb(null, sessions);
+    });
   });
 }
+
+
+function ticketsNeeded(session, cb) {
+  if(!session.tickets || !session.tickets.needed) {
+    return cb(Boom.badRequest('this session doesn\'t need tickets'));
+  }
+
+  cb(null, true);
+}
+
+function inRegistrationPeriod(session, cb) {
+  var now = Date.now();
+  if(now < moment(session.tickets.start) || now > moment(session.tickets.end) || now > moment(session.date)) {
+    return cb(Boom.badRequest('out of registation period'));
+  }
+
+  cb(null, true);
+}
+
+function inConfirmationPeriod(session, cb) {
+  var now = Date.now();
+  if(!moment(session.date).isSame(now, 'day')) {
+    return cb(Boom.badRequest('out of confirmation period'));
+  }
+
+  cb(null, true);
+}
+

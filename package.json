@@ -39,6 +39,7 @@
     "joi": "^4.7.0",
     "jsonwebtoken": "^3.2.2",
     "mime": "^1.2.11",
+    "moment": "^2.9.0",
     "mongoose": "^3.8.16",
     "parse-http-header": "^1.0.0",
     "qr-image": "~2.0.0",

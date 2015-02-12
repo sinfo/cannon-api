@@ -17,7 +17,10 @@ exports.registerTicket = {
     },
   },
   pre: [
-    { method: 'ticket.addUser(params.sessionId, auth.credentials.user.id)', assign: 'ticket' }
+    { method: 'session.get(params.sessionId)', assign: 'session' },
+    { method: 'session.ticketsNeeded(pre.session)' },
+    { method: 'session.inRegistrationPeriod(pre.session)' },
+    { method: 'ticket.addUser(params.sessionId, auth.credentials.user.id, pre.session)', assign: 'ticket' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.ticket));
@@ -38,7 +41,9 @@ exports.voidTicket = {
     },
   },
   pre: [
-    { method: 'ticket.removeUser(params.sessionId, auth.credentials.user.id)', assign: 'ticket' }
+    { method: 'session.get(params.sessionId)', assign: 'session' },
+    { method: 'session.ticketsNeeded(pre.session)' },
+    { method: 'ticket.removeUser(params.sessionId, auth.credentials.user.id, pre.session)', assign: 'ticket' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.ticket));
@@ -59,7 +64,10 @@ exports.confirmTicket = {
     },
   },
   pre: [
-    { method: 'ticket.confirmUser(params.sessionId, auth.credentials.user.id)', assign: 'ticket' }
+    { method: 'session.get(params.sessionId)', assign: 'session' },
+    { method: 'session.ticketsNeeded(pre.session)' },
+    { method: 'session.inConfirmationPeriod(pre.session)' },
+    { method: 'ticket.confirmUser(params.sessionId, auth.credentials.user.id, pre.session)', assign: 'ticket' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.ticket));
@@ -81,7 +89,7 @@ exports.get = {
     }
   },
   pre: [
-  { method: 'ticket.get(params.sessionId)', assign: 'ticket' }
+    { method: 'ticket.get(params.sessionId)', assign: 'ticket' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.ticket));
@@ -97,7 +105,7 @@ exports.list = {
     scope: ['user','admin']
   },
   pre: [
-  { method: 'ticket.list(query)', assign: 'tickets' }
+    { method: 'ticket.list(query)', assign: 'tickets' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.tickets));

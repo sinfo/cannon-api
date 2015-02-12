@@ -11,7 +11,9 @@ server.method('ticket.registerUserPresence', registerUserPresence, {});
 server.method('ticket.get', get, {});
 server.method('ticket.list', list, {});
 
-function addUser(sessionId, userId, cb) {
+function addUser(sessionId, userId, session, cb) {
+  log.debug({session: session}, 'got session');
+
   var changes = {
     $addToSet: {
       users: userId
@@ -32,7 +34,7 @@ function addUser(sessionId, userId, cb) {
   });
 }
 
-function removeUser(sessionId, userId, cb) {
+function removeUser(sessionId, userId, session, cb) {
   var changes = {
     $pull: {
       users: userId,
@@ -56,7 +58,7 @@ function removeUser(sessionId, userId, cb) {
   });
 }
 
-function confirmUser(sessionId, userId, cb) {
+function confirmUser(sessionId, userId, session, cb) {
   var changes = {
     $addToSet: {
       confirmed: userId
@@ -77,7 +79,7 @@ function confirmUser(sessionId, userId, cb) {
   });
 }
 
-function registerUserPresence(sessionId, userId, cb) {
+function registerUserPresence(sessionId, userId, session, cb) {
   var changes = {
     $addToSet: {
       present: userId
