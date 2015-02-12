@@ -11,6 +11,10 @@ config.webapp = {
   url: process.env.CANNON_WEBAPP_URL || 'https://app.sinfo.org'
 };
 
+config.deck = {
+  url: process.env.EVENTDECK_URL || 'https://deck.sinfo.org'
+};
+
 config.upload = {
   path: process.env.CANNON_UPLOAD_PATH || __dirname + '/cannon_uploads',
   maxSize: process.env.CANNON_UPLOAD_MAX_SIZE || 1000*1000

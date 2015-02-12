@@ -1,6 +1,7 @@
 require('./achievement');
-require('./redeem');
-require('./file');
 require('./auth');
+require('./file');
+require('./redeem');
+require('./session');
 require('./ticket');
 require('./user');

@@ -25,3 +25,5 @@ build/Release
 node_modules
 keys/
 sftp-config.json
+
+cannon_uploads

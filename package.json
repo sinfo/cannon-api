@@ -29,6 +29,7 @@
     "bell": "^1.1.0",
     "boom": "~2.5.1",
     "bunyan": "^1.1.0",
+    "fenixedu": "https://github.com/jgantunes/fenixedu/tarball/master",
     "good": "^2.3.0",
     "handlebars": "^2.0.0",
     "hapi": "~7.5.0",
@@ -36,15 +37,15 @@
     "hapi-auth-bearer-token": "^2.2.2",
     "hapi-swagger": "~0.4.2",
     "joi": "^4.7.0",
-    "urlencode": "^0.2.0",
-    "parse-http-header": "^1.0.0",
     "jsonwebtoken": "^3.2.2",
+    "mime": "^1.2.11",
     "mongoose": "^3.8.16",
+    "parse-http-header": "^1.0.0",
     "qr-image": "~2.0.0",
+    "qs": "^2.3.3",
     "request": "^2.44.0",
     "slug": "~0.7.1",
-    "mime": "^1.2.11",
-    "fenixedu": "https://github.com/jgantunes/fenixedu/tarball/master"
+    "urlencode": "^0.2.0"
   },
   "devDependencies": {
     "bunyan": "~1.2.1",
