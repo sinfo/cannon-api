@@ -24,6 +24,27 @@ exports.facebook = {
   description: 'Facebook login'
 };
 
+exports.google = {
+  tags: ['api','auth'],
+  auth: {
+    strategies: ['default'],
+    mode: 'try'
+  },
+  validate: {
+    payload: {
+      id: Joi.string().required().description('google id of the member'),
+      token: Joi.string().required().description('google token of the member'),
+    }
+  },
+  pre: [
+    { method: 'auth.google(payload.id, payload.token)', assign: 'member' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.member));
+  },
+  description: 'Google login'
+};
+
 exports.fenix = {
   tags: ['api','auth'],
   auth: {
