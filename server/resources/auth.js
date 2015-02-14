@@ -104,9 +104,11 @@ function googleAuth(id, token, cb) {
             return cb(Boom.unauthorized('couldn\'t retrieve your info from google'));
           }
 
+          console.log(googleUser);
           var changedAttributes = {
             google: {
               id: googleUser.id,
+              img: googleUser.image.url + '0',
               token: token
             }
           };

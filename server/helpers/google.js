@@ -65,6 +65,4 @@ google.getMail = function (googleUserToken, cb) {
   });
 };  
 
-
-
 module.exports = google;
