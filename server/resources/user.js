@@ -12,6 +12,7 @@ server.method('user.update', update, {});
 server.method('user.get', get, {});
 server.method('user.getByToken', getByToken, {});
 server.method('user.list', list, {});
+server.method('user.getMulti', getMulti, {});
 server.method('user.remove', remove, {});
 
 function create(user, cb) {
@@ -113,6 +114,27 @@ function list(query, cb) {
   User.find(filter, fields, options, function(err, users) {
     if (err) {
       log.error({err: err}, 'error getting all users');
+      return cb(Boom.internal());
+    }
+
+    cb(null, users);
+  });
+}
+
+function getMulti(ids, query, cb) {
+  cb = cb || query; // fields is optional
+
+  var filter = { id: { $in: ids } };
+  var fields = fieldsParser(query.fields);
+  var options = {
+    skip: query.skip,
+    limit: query.limit,
+    sort: fieldsParser(query.sort)
+  };
+
+  User.find(filter, fields, options, function(err, users) {
+    if (err) {
+      log.error({err: err, ids: ids}, 'error getting multiple users');
       return cb(Boom.internal());
     }
 
