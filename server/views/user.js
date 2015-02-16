@@ -1,3 +1,5 @@
+var google = require('server/helpers/google');
+
 module.exports = function render(content, user) {
   if(content instanceof Array) {
     return content.map(function(model) { return renderObject(model, user); });
@@ -12,7 +14,7 @@ function renderObject(model, user) {
 
   result.id = model.id;
   result.name = model.name;
-  result.img = model.img || model.facebook && model.facebook.id && ('//graph.facebook.com/'+model.facebook.id+'/picture?width=400&height=400');
+  result.img = model.img || model.facebook && model.facebook.id && ('//graph.facebook.com/'+model.facebook.id+'/picture?width=400&height=400') || model.google && model.google.id && model.google.img;
   result.role = model.role,
   result.points = model.points && {
     available: model.points && model.points.available,

@@ -9,6 +9,12 @@ server.route({
 
 server.route({
   method: ['POST'],
+  path: '/auth/google',
+  config: handlers.google
+});
+
+server.route({
+  method: ['POST'],
   path: '/auth/fenix',
   config: handlers.fenix
 });

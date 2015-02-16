@@ -6,9 +6,11 @@ var async = require('async');
 var facebook = require('server/helpers/facebook');
 var Token = require('server/auth/token');
 var Fenix = require('fenixedu')(config.fenix);
+var google = require('server/helpers/google');
 
 server.method('auth.facebook', facebookAuth, {});
 server.method('auth.fenix', fenixAuth, {});
+server.method('auth.google', googleAuth, {});
 server.method('auth.refreshToken', refreshToken, {});
 
 function facebookAuth(id, token, cb){
@@ -77,6 +79,84 @@ function facebookAuth(id, token, cb){
     });
   });
 }
+
+function googleAuth(id, token, cb) {
+   google.debugToken(id, token, function(err, isValid) {
+      if(err) {
+        return cb(Boom.unauthorized(err));
+      }
+
+      if(!isValid) {
+        return cb(Boom.unauthorized('nice try'));
+      }
+
+      server.methods.user.get({'google.id': id}, function(err, user){
+      if(err) {
+        if(!err.output || err.output.statusCode != 404) {
+          log.error({err: err, google: id }, '[google-login] error getting user');
+          return cb(err);
+        }
+
+        // This google id is not on db, let's find out who it belongs to
+        return google.getMe(id, function(err, googleUser) {
+          if(err){
+            log.error({err: err, id: id, token: token }, '[google-login] error retrieving user info from google');
+            return cb(Boom.unauthorized('couldn\'t retrieve your info from google'));
+          }
+
+          console.log(googleUser);
+          var changedAttributes = {
+            google: {
+              id: googleUser.id,
+              img: googleUser.image.url + '0',
+              token: token
+            }
+          };
+
+          // If user does not exist, lets set the id, name and email
+          changedAttributes.$setOnInsert = {
+            id: Math.random().toString(36).substr(2,20), // generate random id
+            name: googleUser.displayName,
+          };
+
+          google.getMail(token, function(err, mail) {
+            if(err){
+              log.error({err: err, id: id, token: token }, '[google-login] error retrieving user email from google');
+              return cb(Boom.unauthorized('couldn\'t retrieve your info from google'));
+            }
+
+            var filter = { name: googleUser.name };
+
+            if(mail) {
+              filter = { mail: mail };
+              changedAttributes.$setOnInsert.mail = mail;
+            }
+
+            log.debug({googleUser: googleUser.id}, '[google-login] got google user');
+
+            // Update the facebook details of the user with this email, or create a new user if it does not exist
+            return server.methods.user.update(filter, changedAttributes, {upsert: true}, function(err, result){
+              if(err){
+                log.error({user: {mail: mail}, changedAttributes: changedAttributes }, '[google-login] error upserting user');
+                return cb(err);
+              }
+
+              log.debug({id: result.id}, '[google-login] upserted user');
+
+              return authenticate(result.id, null, cb);
+            });
+          });
+        });
+      }
+
+    var changedAttributes = { 'google.token': token };
+
+    return authenticate(user.id, changedAttributes, cb);
+  });   
+     
+   });
+}
+
 
 function fenixAuth(code, cb){
 

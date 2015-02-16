@@ -18,6 +18,7 @@ var schema = new mongoose.Schema({
   },
   google: {
     id: String,
+    img: String,
     token: {type: String, unique: true, sparse: true}
   },
   fenix: {
