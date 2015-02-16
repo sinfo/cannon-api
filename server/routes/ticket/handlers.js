@@ -23,7 +23,7 @@ exports.registerTicket = {
     { method: 'ticket.addUser(params.sessionId, auth.credentials.user.id, pre.session)', assign: 'ticket' }
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.ticket));
+    reply(render(request.pre.ticket, request.pre.session));
   },
   description: 'Registers a ticket for the current user.',
 };
@@ -46,7 +46,7 @@ exports.voidTicket = {
     { method: 'ticket.removeUser(params.sessionId, auth.credentials.user.id, pre.session)', assign: 'ticket' }
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.ticket));
+    reply(render(request.pre.ticket, request.pre.session));
   },
   description: 'Voids a ticket for the current user.',
 };
@@ -70,7 +70,7 @@ exports.confirmTicket = {
     { method: 'ticket.confirmUser(params.sessionId, auth.credentials.user.id, pre.session)', assign: 'ticket' }
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.ticket));
+    reply(render(request.pre.ticket, request.pre.session));
   },
   description: 'Lets a user confirm that he is going on the day of the session.',
 };
@@ -89,10 +89,13 @@ exports.get = {
     }
   },
   pre: [
-    { method: 'ticket.get(params.sessionId)', assign: 'ticket' }
+    [
+      { method: 'session.get(params.sessionId)', assign: 'session' },
+      { method: 'ticket.get(params.sessionId)', assign: 'ticket' }
+    ]
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.ticket));
+    reply(render(request.pre.ticket, request.pre.session));
   },
   description: 'Gets a ticket'
 };
@@ -127,10 +130,13 @@ exports.registerPresence = {
     },
   },
   pre: [
-    { method: 'ticket.registerUserPresence(params.sessionId, params.userId)', assign: 'ticket' }
+    [
+      { method: 'session.get(params.sessionId)', assign: 'session' },
+      { method: 'ticket.registerUserPresence(params.sessionId, params.userId)', assign: 'ticket' }
+    ]
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.ticket));
+    reply(render(request.pre.ticket, request.pre.session));
   },
   description: 'Lets an admin confirm that the user showed up on the session.',
 };

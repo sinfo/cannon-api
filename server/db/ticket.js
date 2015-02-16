@@ -4,7 +4,6 @@ var schema = new mongoose.Schema({
   session: {type: String, unique: true},
   users: Array,
   confirmed: Array,
-  waiting: Array,
   present: Array,
 });
 

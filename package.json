@@ -28,7 +28,7 @@
     "async": "^0.9.0",
     "bell": "^1.1.0",
     "boom": "~2.5.1",
-    "bunyan": "^1.1.0",
+    "bunyan": "~1.2.1",
     "fenixedu": "https://github.com/jgantunes/fenixedu/tarball/master",
     "good": "^2.3.0",
     "handlebars": "^2.0.0",
@@ -49,7 +49,6 @@
     "urlencode": "^0.2.0"
   },
   "devDependencies": {
-    "bunyan": "~1.2.1",
     "nodemon": "~1.2.1",
     "code": "~1.2.0",
     "lab": "~5.0.1",

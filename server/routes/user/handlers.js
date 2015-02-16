@@ -226,7 +226,7 @@ exports.remove = {
     { method: 'user.remove(params.id)', assign: 'user' }
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.user));
+    reply(render(request.pre.user, request.auth.credentials.user));
   },
   description: 'Removes an user'
 };
