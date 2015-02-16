@@ -62,7 +62,7 @@ exports.create = {
     { method: 'user.create(payload)', assign: 'user' }
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.user, request.auth.credentials.user)).created('/user/'+request.pre.user.id);
+    reply(render(request.pre.user, request.auth.credentials && request.auth.credentials.user)).created('/user/'+request.pre.user.id);
   },
   description: 'Creates a new user'
 };
@@ -93,7 +93,7 @@ exports.updateMe = {
     { method: 'user.update(auth.credentials.user.id, payload)', assign: 'user' }
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.user, request.auth.credentials.user));
+    reply(render(request.pre.user, request.auth.credentials && request.auth.credentials.user));
   },
   description: 'Updates the user'
 };
@@ -155,7 +155,7 @@ exports.update = {
     { method: 'user.update(params.id, payload)', assign: 'user' }
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.user, request.auth.credentials.user));
+    reply(render(request.pre.user, request.auth.credentials && request.auth.credentials.user));
   },
   description: 'Updates an user'
 };
@@ -176,7 +176,7 @@ exports.get = {
     { method: 'user.get(params.id, query)', assign: 'user' }
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.user, request.auth.credentials.user));
+    reply(render(request.pre.user, request.auth.credentials && request.auth.credentials.user));
   },
   description: 'Gets an user'
 };
@@ -189,7 +189,7 @@ exports.getMe = {
     scope: ['user', 'admin']
   },
   handler: function (request, reply) {
-    reply(render(request.auth.credentials.user, request.auth.credentials.user));
+    reply(render(request.auth.credentials && request.auth.credentials.user, request.auth.credentials && request.auth.credentials.user));
   },
   description: 'Gets the user'
 };
@@ -205,7 +205,7 @@ exports.list = {
     { method: 'user.list(query)', assign: 'users' }
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.users, request.auth.credentials.user));
+    reply(render(request.pre.users, request.auth.credentials && request.auth.credentials.user));
   },
   description: 'Gets all the users'
 };
@@ -241,7 +241,7 @@ exports.removeMe = {
     { method: 'user.remove(auth.credentials.user.id)', assign: 'user' }
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.user, request.auth.credentials.user));
+    reply(render(request.pre.user, request.auth.credentials && request.auth.credentials.user));
   },
   description: 'Removes the user'
 };

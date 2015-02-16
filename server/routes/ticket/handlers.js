@@ -1,6 +1,7 @@
 var Joi = require('joi');
 var log = require('server/helpers/logger');
 var render = require('server/views/ticket');
+var renderUsers = require('server/views/user');
 
 
 var handlers = module.exports;
@@ -133,6 +134,32 @@ exports.registerPresence = {
     reply(render(request.pre.ticket));
   },
   description: 'Lets an admin confirm that the user showed up on the session.',
+};
+
+
+exports.getUsers = {
+  tags: ['api','ticket'],
+  auth: {
+    strategies: ['default', 'backup'],
+    scope: ['user', 'admin'],
+    mode: 'try'
+  },
+  validate: {
+    params: {
+      sessionId: Joi.string().required().description('Id of the session'),
+    }
+  },
+  pre: [
+    { method: 'session.get(params.sessionId)', assign: 'session' },
+    { method: 'ticket.getRegisteredUsers(params.sessionId, pre.session)', assign: 'userIds' },
+    { method: 'user.getMulti(pre.userIds)', assign: 'users' }
+  ],
+  handler: function (request, reply) {
+    console.log(request.pre.userIds);
+
+    reply(renderUsers(request.pre.users, request.auth.credentials && request.auth.credentials.user));
+  },
+  description: 'Gets a ticket'
 };
 
 

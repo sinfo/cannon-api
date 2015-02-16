@@ -10,6 +10,7 @@ server.method('ticket.confirmUser', confirmUser, {});
 server.method('ticket.registerUserPresence', registerUserPresence, {});
 server.method('ticket.get', get, {});
 server.method('ticket.list', list, {});
+server.method('ticket.getRegisteredUsers', getRegisteredUsers, {});
 
 function addUser(sessionId, userId, session, cb) {
   log.debug({session: session}, 'got session');
@@ -143,3 +144,29 @@ function list(query, cb) {
     cb(null, tickets);
   });
 }
+
+
+function getRegisteredUsers(sessionId, session, cb) {
+  cb = cb || session; // session is optional
+
+  var filter = { session: sessionId };
+
+  Ticket.findOne(filter, {users: 1}, function(err, ticket) {
+    if (err) {
+      log.error({err: err, requestedTicket: filter}, 'error getting ticket');
+      return cb(Boom.internal());
+    }
+    if (!ticket) {
+      log.warn({err: err, requestedTicket: filter}, 'could not find ticket');
+      return cb(Boom.notFound());
+    }
+
+    var users = ticket.users;
+    if(session && session.tickets && session.tickets.max) {
+      users = users.slice(0, session.tickets.max);
+    }
+
+    cb(null, users);
+  });
+}
+

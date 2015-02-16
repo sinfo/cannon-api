@@ -8,7 +8,7 @@ module.exports = function render(content, user) {
 
 function renderObject(model, user) {
   var result = {};
-  var isAllowed = user.role === 'admin' || model.id === user.id;
+  var isAllowed = user && (user.role === 'admin' || model.id === user.id);
 
   result.id = model.id;
   result.name = model.name;
@@ -26,11 +26,6 @@ function renderObject(model, user) {
   });
   result.area = model.area;
   result.skills = model.skills;
-  result.job = model.job && {
-    startup: model.job && model.job.startup,
-    internship: model.job && model.job.internship,
-    start: model.job && model.job.start
-  };
   result.registered = model.registered;
 
   if(isAllowed){
@@ -44,6 +39,11 @@ function renderObject(model, user) {
     result.fenix = model.fenix && {
       id: model.fenix && model.fenix.id,
       created: model.fenix && model.fenix.created
+    };
+    result.job = model.job && {
+      startup: model.job && model.job.startup,
+      internship: model.job && model.job.internship,
+      start: model.job && model.job.start
     };
     result.updated = model.updated;
   }

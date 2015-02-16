@@ -37,3 +37,9 @@ server.route({
   config: handlers.registerPresence
 });
 
+server.route({
+  method: 'GET',
+  path: '/tickets/{sessionId}/users',
+  config: handlers.getUsers
+});
+
