@@ -76,7 +76,7 @@ exports.updateMe = {
   },
   validate: {
     payload: {
-      id: Joi.string().description('Id of the user'),
+      // id: Joi.string().description('Id of the user'),
       name: Joi.string().description('Name of the user'),
       img: Joi.string().description('Image of the user'),
       mail: Joi.string().email().description('Mail of the user'),
