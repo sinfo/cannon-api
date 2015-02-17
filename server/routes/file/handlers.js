@@ -95,6 +95,51 @@ exports.getMe = {
   description: 'Gets the file model of the user'
 };
 
+exports.download = {
+  tags: ['api','file'],
+  auth: {
+    strategies: ['default', 'backup'],
+    scope: ['admin']
+  },
+  validate: {
+    params: {
+      id: Joi.string().required().description('Id or user of the file we want to retrieve'),
+    }
+  },
+  pre: [
+    { method: 'file.get(params.id, query)', assign: 'file' }
+  ],
+  handler: function (request, reply) {
+    var path = configUpload.path + '/' + request.pre.file.id;
+    var options = {
+      filename: request.pre.file.name,
+      mode: 'attachement'
+    };
+    reply.file(path, options);
+  },
+  description: 'Downloads the file'
+};
+
+exports.downloadMe = {
+  tags: ['api','file'],
+  auth: {
+    strategies: ['default', 'backup'],
+    scope: ['user', 'admin']
+  },
+  pre: [
+    { method: 'file.get(auth.credentials.user.id, query)', assign: 'file' }
+  ],
+  handler: function (request, reply) {
+    var path = configUpload.path + '/' + request.pre.file.id;
+    var options = {
+      filename: request.pre.file.name,
+      mode: 'attachement'
+    };
+    reply.file(path, options);
+  },
+  description: 'Downloads the file of the user'
+};
+
 exports.list = {
   tags: ['api','file'],
   auth: {

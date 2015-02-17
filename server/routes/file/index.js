@@ -38,6 +38,19 @@ server.route({
 });
 
 server.route({
+  method: 'GET',
+  path: '/files/{id}/download',
+  config: handlers.download
+});
+
+server.route({
+  method: 'GET',
+  path: '/files/me/download',
+  config: handlers.downloadMe
+});
+
+
+server.route({
   method: ['PUT','PATCH'],
   path: '/files/{id}',
   config: handlers.update
