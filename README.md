@@ -19,8 +19,12 @@ Built using MongoDB (which must be installed and running to run the API).
   4. Set the environment variables used on <code>config.js</code>
   5. Create the <code>keys</code> and <code>cannon_upload</code> directories (if using the default config)
   6. Generate the the PEM RSA keys:
+    
     <code>openssl genrsa -out keys/token.key 1024</code>
+
     <code>openssl rsa -in keys/token.key -pubout -out keys/token.pub</code>
+    
   7. Start the server: <code>npm start</code>
 
 
+**Note:** If you've managed to break our awesome API you definitley deserve a cookey! So open a Issue/PR or drop us a line at `devteam@sinfo.org` to collect that cookie of yours.
