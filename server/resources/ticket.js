@@ -11,7 +11,9 @@ server.method('ticket.registerUserPresence', registerUserPresence, {});
 server.method('ticket.get', get, {});
 server.method('ticket.list', list, {});
 server.method('ticket.getRegisteredUsers', getRegisteredUsers, {});
+server.method('ticket.getAcceptedUser', getAcceptedUser, {});
 server.method('ticket.registrationEmail', registrationEmail, {});
+server.method('ticket.registrationAcceptedEmail', registrationAcceptedEmail, {});
 
 function addUser(sessionId, userId, session, cb) {
   log.debug({session: session}, 'got session');
@@ -170,6 +172,35 @@ function getRegisteredUsers(sessionId, session, cb) {
   });
 }
 
+function getAcceptedUser(ticket, session, user, cb) {
+  if(!session.tickets || !session.tickets.max || ticket.users.length <= session.tickets.max){
+    log.debug({ticket: ticket}, 'ticket user list does not have waiting list');
+    return cb(Boom.notFound('users list does not have waiting list'));
+  }
+
+  if(ticket.users.indexOf(user.id) >= session.tickets.max){
+    log.debug({ticket: ticket, user: user.id}, 'user was in the waiting list');
+    return cb(Boom.preconditionFailed('voided ticket in waiting list'));
+  }
+
+  server.methods.user.get(ticket.users[session.tickets.max], cb);
+}
+
+function registrationAcceptedEmail(ticket, session, user, cb){
+
+  if(!user || !user.mail){
+    log.error({user: user, ticket: ticket}, 'user does not have a valid email address');    
+    cb(Boom.preconditionFailed('user does not have a valid email address'));
+  }
+
+  if(ticket.users.indexOf(user.id) < 0){
+    log.error({ticket: ticket, user: user}, 'error sending mail, user not in ticket');
+    return cb(Boom.notFound());
+  }
+
+  server.methods.email.send(getRegistrationAcceptedEmail(session, user), cb);
+}
+
 
 function registrationEmail(ticket, session, user, cb) {
   var index = ticket.users.indexOf(user.id);
@@ -203,5 +234,13 @@ function getResgisteredListEmail(session, user){
     to: user.mail,
     subject: '[SINFO] Registered list for ' + session.name,
     text: 'You are in the registered list for the session ' + session.name + '.'
+  };
+}
+
+function getRegistrationAcceptedEmail(session, user){
+  return {
+    to: user.mail,
+    subject: '[SINFO] In the registration list for ' + session.name,
+    text: 'Due to a cancelation you just got in the registered list for the session ' + session.name + '.'
   };
 }

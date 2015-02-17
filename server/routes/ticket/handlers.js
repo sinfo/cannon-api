@@ -45,10 +45,13 @@ exports.voidTicket = {
   pre: [
     { method: 'session.get(params.sessionId)', assign: 'session' },
     { method: 'session.ticketsNeeded(pre.session)' },
-    { method: 'ticket.removeUser(params.sessionId, auth.credentials.user.id, pre.session)', assign: 'ticket' }
+    { method: 'ticket.get(params.sessionId)', assign: 'ticket'},
+    { method: 'ticket.removeUser(pre.session.id, auth.credentials.user.id, pre.session)', assign: 'removedTicket' },
+    { method: 'ticket.getAcceptedUser(ticket)', assign: 'user'},
+    { method: 'ticket.registrationAcceptedEmail(pre.ticket, pre.session, pre.user)'}
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.ticket, request.pre.session));
+    reply(render(request.pre.removedTicket, request.pre.session));
   },
   description: 'Voids a ticket for the current user.',
 };
