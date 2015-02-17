@@ -11,9 +11,9 @@ module.exports = function render(content, session) {
 function renderObject(model, session) {
   return {
     session: model.session,
-    users: model.users && model.users.slice(0, session.tickets.max),
+    users: model.users && session.tickets && model.users.slice(0, session.tickets.max),
     confirmed: model.confirmed,
-		waiting: model.users && model.users.slice(session.tickets.max),
+		waiting: model.users && session.tickets && model.users.slice(session.tickets.max),
     present: model.present,
   };
 }
