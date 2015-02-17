@@ -21,6 +21,7 @@ exports.registerTicket = {
     { method: 'session.get(params.sessionId)', assign: 'session' },
     { method: 'session.ticketsNeeded(pre.session)' },
     { method: 'session.inRegistrationPeriod(pre.session)' },
+    { method: 'ticket.userRegistered(params.sessionId, auth.credentials.user.id)'},
     { method: 'ticket.addUser(params.sessionId, auth.credentials.user.id, pre.session)', assign: 'ticket' },
     { method: 'ticket.registrationEmail(pre.ticket, pre.session, auth.credentials.user)', failAction: 'log'}
   ],

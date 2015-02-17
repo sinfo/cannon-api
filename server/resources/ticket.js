@@ -4,6 +4,7 @@ var log = require('server/helpers/logger');
 var fieldsParser = require('server/helpers/fieldsParser');
 var Ticket = require('server/db/ticket');
 
+server.method('ticket.userRegistered', userRegistered, {});
 server.method('ticket.addUser', addUser, {});
 server.method('ticket.removeUser', removeUser, {});
 server.method('ticket.confirmUser', confirmUser, {});
@@ -14,6 +15,24 @@ server.method('ticket.getRegisteredUsers', getRegisteredUsers, {});
 server.method('ticket.getAcceptedUser', getAcceptedUser, {});
 server.method('ticket.registrationEmail', registrationEmail, {});
 server.method('ticket.registrationAcceptedEmail', registrationAcceptedEmail, {});
+
+function userRegistered(sessionId, userId, cb){
+  Ticket.findOne({session: sessionId}, function(err, _ticket){
+    if (err) {
+      log.error({ err: err, session: sessionId}, 'error registering ticket');
+      return cb(Boom.internal());
+    }
+    if (!_ticket) {
+      log.error({ err: err, session: sessionId}, 'ticket not found');
+      return cb(Boom.notFound());
+    }
+    if (_ticket.users.indexOf(userId) >= 0){
+      log.error({ err: err, session: sessionId, user: userId}, 'user alreaday registered');
+      return cb(Boom.conflict());
+    }
+    cb(null, true);
+  });
+}
 
 function addUser(sessionId, userId, session, cb) {
   log.debug({session: session}, 'got session');
@@ -232,7 +251,7 @@ function getWaitingListEmail(session, user){
 function getResgisteredListEmail(session, user){
   return {
     to: user.mail,
-    subject: '[SINFO] Registered list for ' + session.name,
+    subject: '[SINFO] Registered for the session ' + session.name,
     text: 'You are in the registered list for the session ' + session.name + '.'
   };
 }
@@ -241,6 +260,6 @@ function getRegistrationAcceptedEmail(session, user){
   return {
     to: user.mail,
     subject: '[SINFO] In the registration list for ' + session.name,
-    text: 'Due to a cancelation you just got in the registered list for the session ' + session.name + '.'
+    text: 'Due to a cancelation you just got registered for the session ' + session.name + '.'
   };
 }
