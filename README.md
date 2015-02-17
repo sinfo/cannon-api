@@ -27,4 +27,4 @@ Built using MongoDB (which must be installed and running to run the API).
   7. Start the server: <code>npm start</code>
 
 
-**Note:** If you've managed to break our awesome API you definitley deserve a cookey! So open a Issue/PR or drop us a line at `devteam@sinfo.org` to collect that cookie of yours.
+**Note:** If you've managed to break our awesome API you definitley deserve a cookie! So open a Issue/PR or drop us a line at `devteam@sinfo.org` to collect that cookie of yours.
