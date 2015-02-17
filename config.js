@@ -94,5 +94,11 @@ config.auth.refreshToken = {
   audience: process.env.CANNON_REFRESH_TOKEN_AUDIENCE || config.auth.token.audience
 };
 
+config.email = {
+  fom: process.env.CANNON_EMAIL_FROM || 'SINFO <cannon@sinfo.org>',
+  path: process.env.CANNON_EMAIL_PATH || '/usr/sbin/sendmail',
+};
+
+
 
 module.exports = config;
