@@ -11,6 +11,7 @@ server.method('ticket.registerUserPresence', registerUserPresence, {});
 server.method('ticket.get', get, {});
 server.method('ticket.list', list, {});
 server.method('ticket.getRegisteredUsers', getRegisteredUsers, {});
+server.method('ticket.registrationEmail', registrationEmail, {});
 
 function addUser(sessionId, userId, session, cb) {
   log.debug({session: session}, 'got session');
@@ -169,3 +170,38 @@ function getRegisteredUsers(sessionId, session, cb) {
   });
 }
 
+
+function registrationEmail(ticket, session, user, cb) {
+  var index = ticket.users.indexOf(user.id);
+
+  if(!user || !user.mail){
+    log.error({user: user, ticket: ticket}, 'user does not have a valid email address');    
+    cb(Boom.preconditionFailed('user does not have a valid email address'));
+  }
+
+  if(index < 0){
+    log.error({ticket: ticket, user: user}, 'error sending mail, user not in ticket');
+    return cb(Boom.notFound());
+  }
+
+  if(index >= session.tickets.max){
+    return server.methods.email.send(getWaitingListEmail(session, user), cb);
+  }
+  server.methods.email.send(getResgisteredListEmail(session, user), cb);
+}
+
+function getWaitingListEmail(session, user){
+  return {
+    to: user.mail,
+    subject: '[SINFO] Waiting list for ' + session.name,
+    text: 'You are in the waiting list for the session ' + session.name + '.'
+  };
+}
+
+function getResgisteredListEmail(session, user){
+  return {
+    to: user.mail,
+    subject: '[SINFO] Registered list for ' + session.name,
+    text: 'You are in the registered list for the session ' + session.name + '.'
+  };
+}
