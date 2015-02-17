@@ -5,7 +5,7 @@ module.exports = function render(content, session) {
     });
   }
 
-  return renderObject(content);
+  return renderObject(content, session);
 };
 
 function renderObject(model, session) {
