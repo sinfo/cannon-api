@@ -18,6 +18,8 @@ server.method('session.inConfirmationPeriod', inConfirmationPeriod, {});
 function get(id, query, cb) {
   cb = cb || query; // fields is optional
 
+  query = (arguments.length === 2) ? {} : query;
+
   var url = config.deck.url+'/api/sessions/'+id+'?'+qs.stringify(query);
 
   Resquest.get(url, function(err, response, body) {
@@ -35,7 +37,6 @@ function get(id, query, cb) {
       if(err) {
         return cb(Boom.create(err.statusCode, err.message || err.statusCode == 404 && 'session not found', err.data));
       }
-
       cb(null, session);
     });
   });

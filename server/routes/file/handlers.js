@@ -113,7 +113,7 @@ exports.download = {
     var path = configUpload.path + '/' + request.pre.file.id;
     var options = {
       filename: request.pre.file.name,
-      mode: 'attachement'
+      mode: 'attachment'
     };
     reply.file(path, options);
   },
@@ -133,7 +133,7 @@ exports.downloadMe = {
     var path = configUpload.path + '/' + request.pre.file.id;
     var options = {
       filename: request.pre.file.name,
-      mode: 'attachement'
+      mode: 'attachment'
     };
     reply.file(path, options);
   },
