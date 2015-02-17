@@ -22,7 +22,7 @@ exports.registerTicket = {
     { method: 'session.ticketsNeeded(pre.session)' },
     { method: 'session.inRegistrationPeriod(pre.session)' },
     { method: 'ticket.addUser(params.sessionId, auth.credentials.user.id, pre.session)', assign: 'ticket' },
-    { method: 'ticket.registrationEmail(pre.ticket, pre.session, auth.credentials.user)'}
+    { method: 'ticket.registrationEmail(pre.ticket, pre.session, auth.credentials.user)', failAction: 'log'}
   ],
   handler: function (request, reply) {
     reply(render(request.pre.ticket, request.pre.session));
@@ -47,8 +47,8 @@ exports.voidTicket = {
     { method: 'session.ticketsNeeded(pre.session)' },
     { method: 'ticket.get(params.sessionId)', assign: 'ticket'},
     { method: 'ticket.removeUser(pre.session.id, auth.credentials.user.id, pre.session)', assign: 'removedTicket' },
-    { method: 'ticket.getAcceptedUser(ticket)', assign: 'user'},
-    { method: 'ticket.registrationAcceptedEmail(pre.ticket, pre.session, pre.user)'}
+    { method: 'ticket.getAcceptedUser(ticket)', assign: 'user', failAction: 'ignore'},
+    { method: 'ticket.registrationAcceptedEmail(pre.ticket, pre.session, pre.user)', failAction: 'ignore'}
   ],
   handler: function (request, reply) {
     reply(render(request.pre.removedTicket, request.pre.session));
