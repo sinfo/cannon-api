@@ -40,7 +40,6 @@ function removeUser(sessionId, userId, session, cb) {
     $pull: {
       users: userId,
       confirmed: userId,
-      waiting: userId,
       present: userId,
     },
   };
