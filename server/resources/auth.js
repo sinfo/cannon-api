@@ -234,7 +234,7 @@ function fenixAuth(code, cb){
 
         fenixUser.email.others.push(fenixUser.email.main);
 
-        query.$in = fenixUser.email.others;
+        query.mail = {$in: fenixUser.email.others};
 
         log.debug({fenixUser: fenixUser.id}, '[fenix-login] got fenix user');
 
