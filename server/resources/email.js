@@ -33,9 +33,9 @@ function send(mailOptions, cb) {
 }
 
 function formatText(text) {
-  var header = 'BOOOMMM!! \n\n';
-  var footer =  'Such <3,\n\n'+
-                '   _||SINFOOOOOOO\n'+
+  var header = 'BOOOMMM!!\n\n';
+  var footer =  '\n\nSuch <3,\n\n'+
+                '\xA0\xA0\xA0_||SINFOOOOOOO\n'+
                 '_|   |__\n'+
                 '\\oooooo/';
   return header + text + footer;
