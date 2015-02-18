@@ -329,7 +329,14 @@ function addFacebookAuth(user, id, token, cb) {
           }
         };
 
-        return cbAsync(null, filter, changedAttributes);
+        server.methods.user.remove(_user.id, function(err, result){
+          if(err){
+            log.error({err: err, id: id, token: token, user: _user.id}, '[facebook-login] error removing dup user');
+            return cbAsync(err);
+          }
+          return cbAsync(null, filter, changedAttributes);
+        });
+
       });
     },
     function updateUser(filter, changedAttributes, cbAsync){
