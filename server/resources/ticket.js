@@ -26,8 +26,8 @@ function userConfirmed(sessionId, userId, cb){
       return cb(Boom.internal());
     }
     if (!_ticket) {
-      log.error({ err: err, session: sessionId}, 'ticket not found');
-      return cb(Boom.notFound());
+      log.warn({ err: err, session: sessionId}, 'ticket not found');
+      return cb(null, false);
     }
     if (_ticket.confirmed.indexOf(userId) >= 0){
       log.error({ err: err, session: sessionId, user: userId}, 'user alreaday confirmed');
@@ -44,8 +44,8 @@ function userRegistered(sessionId, userId, cb){
       return cb(Boom.internal());
     }
     if (!_ticket) {
-      log.error({ err: err, session: sessionId}, 'ticket not found');
-      return cb(Boom.notFound());
+      log.warn({ err: err, session: sessionId}, 'ticket not found');
+      return cb(null, false);
     }
     if (_ticket.users.indexOf(userId) >= 0){
       log.error({ err: err, session: sessionId, user: userId}, 'user alreaday registered');
@@ -229,7 +229,7 @@ function getAcceptedUser(ticket, session, user, cb) {
 function registrationAcceptedEmail(ticket, session, user, cb){
 
   if(!user || !user.mail){
-    log.error({user: user, ticket: ticket}, 'user does not have a valid email address');    
+    log.error({user: user, ticket: ticket}, 'user does not have a valid email address');
     return cb(Boom.preconditionFailed('user does not have a valid email address'));
   }
 
@@ -244,7 +244,7 @@ function registrationAcceptedEmail(ticket, session, user, cb){
 function confirmationEmail(ticket, session, user, cb){
 
   if(!user || !user.mail){
-    log.error({user: user, ticket: ticket}, 'user does not have a valid email address');    
+    log.error({user: user, ticket: ticket}, 'user does not have a valid email address');
     return cb(Boom.preconditionFailed('user does not have a valid email address'));
   }
 
@@ -261,7 +261,7 @@ function registrationEmail(ticket, session, user, cb) {
   var index = ticket.users.indexOf(user.id);
 
   if(!user || !user.mail){
-    log.error({user: user, ticket: ticket}, 'user does not have a valid email address');    
+    log.error({user: user, ticket: ticket}, 'user does not have a valid email address');
     return cb(Boom.preconditionFailed('user does not have a valid email address'));
   }
 
