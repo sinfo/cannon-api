@@ -73,7 +73,9 @@ exports.confirmTicket = {
     { method: 'session.get(params.sessionId)', assign: 'session' },
     { method: 'session.ticketsNeeded(pre.session)' },
     { method: 'session.inConfirmationPeriod(pre.session)' },
-    { method: 'ticket.confirmUser(params.sessionId, auth.credentials.user.id, pre.session)', assign: 'ticket' }
+    { method: 'ticket.userConfirmed(params.sessionId, auth.credentials.user.id)'},
+    { method: 'ticket.confirmUser(params.sessionId, auth.credentials.user.id, pre.session)', assign: 'ticket' },
+    { method: 'ticket.confirmationEmail(pre.ticket, pre.session, auth.credentials.user)', failAction: 'log'}
   ],
   handler: function (request, reply) {
     reply(render(request.pre.ticket, request.pre.session));

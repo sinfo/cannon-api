@@ -17,6 +17,7 @@ function send(mailOptions, cb) {
   log.debug({mailOptions: mailOptions}, 'sending email');
 
   mailOptions.from = mailOptions.from || config.email.from;
+  mailOptions.replyTo = mailOptions.replyTo || config.email.replyTo;
   mailOptions.text = formatText(mailOptions.text);
 
   transporter.sendMail(mailOptions, function(err, info){

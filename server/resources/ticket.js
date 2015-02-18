@@ -5,6 +5,7 @@ var fieldsParser = require('server/helpers/fieldsParser');
 var Ticket = require('server/db/ticket');
 var config = require('config');
 
+server.method('ticket.userConfirmed', userConfirmed, {});
 server.method('ticket.userRegistered', userRegistered, {});
 server.method('ticket.addUser', addUser, {});
 server.method('ticket.removeUser', removeUser, {});
@@ -14,13 +15,32 @@ server.method('ticket.get', get, {});
 server.method('ticket.list', list, {});
 server.method('ticket.getRegisteredUsers', getRegisteredUsers, {});
 server.method('ticket.getAcceptedUser', getAcceptedUser, {});
+server.method('ticket.confirmationEmail', confirmationEmail, {});
 server.method('ticket.registrationEmail', registrationEmail, {});
 server.method('ticket.registrationAcceptedEmail', registrationAcceptedEmail, {});
+
+function userConfirmed(sessionId, userId, cb){
+  Ticket.findOne({session: sessionId}, function(err, _ticket){
+    if (err) {
+      log.error({ err: err, session: sessionId}, 'error getting ticket');
+      return cb(Boom.internal());
+    }
+    if (!_ticket) {
+      log.error({ err: err, session: sessionId}, 'ticket not found');
+      return cb(Boom.notFound());
+    }
+    if (_ticket.confirmed.indexOf(userId) >= 0){
+      log.error({ err: err, session: sessionId, user: userId}, 'user alreaday confirmed');
+      return cb(Boom.conflict('user alreaday confirmed'));
+    }
+    cb(null, true);
+  });
+}
 
 function userRegistered(sessionId, userId, cb){
   Ticket.findOne({session: sessionId}, function(err, _ticket){
     if (err) {
-      log.error({ err: err, session: sessionId}, 'error registering ticket');
+      log.error({ err: err, session: sessionId}, 'error getting ticket');
       return cb(Boom.internal());
     }
     if (!_ticket) {
@@ -221,6 +241,21 @@ function registrationAcceptedEmail(ticket, session, user, cb){
   server.methods.email.send(getRegistrationAcceptedEmail(session, user), cb);
 }
 
+function confirmationEmail(ticket, session, user, cb){
+
+  if(!user || !user.mail){
+    log.error({user: user, ticket: ticket}, 'user does not have a valid email address');    
+    cb(Boom.preconditionFailed('user does not have a valid email address'));
+  }
+
+  if(ticket.confirmed.indexOf(user.id) < 0){
+    log.error({ticket: ticket, user: user}, 'error sending mail, user not in the confirmed list of the ticket');
+    return cb(Boom.notFound());
+  }
+
+  server.methods.email.send(getConfirmationEmail(session, user), cb);
+}
+
 
 function registrationEmail(ticket, session, user, cb) {
   var index = ticket.users.indexOf(user.id);
@@ -263,5 +298,13 @@ function getRegistrationAcceptedEmail(session, user){
     to: user.mail,
     subject: '[SINFO] In the registration list for ' + session.name,
     text: 'Due to a cancelation you just got registered for the session ' + session.name + ': \n - ' + config.url + '/sessions/' + session.id + '\nYou will need to confirm your presence on the day of the session.\n'
+  };
+}
+
+function getConfirmationEmail(session, user){
+  return {
+    to: user.mail,
+    subject: '[SINFO] You are confirmed for ' + session.name,
+    text: 'You are now confirmed for ' + session.name + ': \n - ' + config.url + '/sessions/' + session.id + '\n\n'
   };
 }
