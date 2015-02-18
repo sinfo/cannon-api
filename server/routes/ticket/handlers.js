@@ -48,7 +48,7 @@ exports.voidTicket = {
     { method: 'session.ticketsNeeded(pre.session)' },
     { method: 'ticket.get(params.sessionId)', assign: 'ticket'},
     { method: 'ticket.removeUser(pre.session.id, auth.credentials.user.id, pre.session)', assign: 'removedTicket' },
-    { method: 'ticket.getAcceptedUser(pre.ticket, pre.session, pre.user)', assign: 'user', failAction: 'ignore'},
+    { method: 'ticket.getAcceptedUser(pre.ticket, pre.session, auth.credentials.user)', assign: 'user', failAction: 'ignore'},
     { method: 'ticket.registrationAcceptedEmail(pre.ticket, pre.session, pre.user)', failAction: 'ignore'}
   ],
   handler: function (request, reply) {
