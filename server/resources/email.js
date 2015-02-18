@@ -17,6 +17,7 @@ function send(mailOptions, cb) {
   log.debug({mailOptions: mailOptions}, 'sending email');
 
   mailOptions.from = mailOptions.from || config.email.from;
+  mailOptions.text = formatText(mailOptions.text);
 
   transporter.sendMail(mailOptions, function(err, info){
     if(err){
@@ -28,4 +29,13 @@ function send(mailOptions, cb) {
 
     cb && cb();
   });
+}
+
+function formatText(text) {
+  var header = 'BOOOMMM!! \n\n';
+  var footer =  'Such <3,\n\n'+
+                '   _||SINFOOOOOOO\n'+
+                '_|   |__\n'+
+                '\\oooooo/';
+  return header + text + footer;
 }

@@ -96,6 +96,7 @@ config.auth.refreshToken = {
 
 config.email = {
   from: process.env.CANNON_EMAIL_FROM || 'SINFO <cannon@sinfo.org>',
+  replyTo: process.env.CANNON_EMAIL_REPLY_TO || 'geral@sinfo.org',
   path: process.env.CANNON_EMAIL_PATH || '/usr/sbin/sendmail',
 };
 

@@ -3,6 +3,7 @@ var server = require('server').hapi;
 var log = require('server/helpers/logger');
 var fieldsParser = require('server/helpers/fieldsParser');
 var Ticket = require('server/db/ticket');
+var config = require('config');
 
 server.method('ticket.userRegistered', userRegistered, {});
 server.method('ticket.addUser', addUser, {});
@@ -244,7 +245,8 @@ function getWaitingListEmail(session, user){
   return {
     to: user.mail,
     subject: '[SINFO] Waiting list for ' + session.name,
-    text: 'You are in the waiting list for the session ' + session.name + '.'
+
+    text: 'You are in the waiting list for the session ' + session.name + ': \n - ' + config.url + '/sessions/' + session.id + '\nIf there is an opening you will receive an email.\n'
   };
 }
 
@@ -252,7 +254,7 @@ function getResgisteredListEmail(session, user){
   return {
     to: user.mail,
     subject: '[SINFO] Registered for the session ' + session.name,
-    text: 'You are in the registered list for the session ' + session.name + '.'
+    text: 'You have just been registered for the session ' + session.name + ': \n - ' + config.url + '/sessions/' + session.id + '\nYou will need to confirm your presence on the day of the session.\n'
   };
 }
 
@@ -260,6 +262,6 @@ function getRegistrationAcceptedEmail(session, user){
   return {
     to: user.mail,
     subject: '[SINFO] In the registration list for ' + session.name,
-    text: 'Due to a cancelation you just got registered for the session ' + session.name + '.'
+    text: 'Due to a cancelation you just got registered for the session ' + session.name + ': \n - ' + config.url + '/sessions/' + session.id + '\nYou will need to confirm your presence on the day of the session.\n'
   };
 }
