@@ -78,7 +78,7 @@ exports.addFacebook = {
     }
   },
   pre: [
-    { method: 'auth.addFacebook(auth.credentials.facebook, payload.id, payload.token)', assign: 'member' }
+    { method: 'auth.addFacebook(auth.credentials.user, payload.id, payload.token)', assign: 'member' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.member));
