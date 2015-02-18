@@ -27,6 +27,12 @@ server.route({
 
 server.route({
   method: ['POST'],
+  path: '/auth/add/google',
+  config: handlers.addGoogle
+});
+
+server.route({
+  method: ['POST'],
   path: '/auth/refresh',
   config: handlers.refreshToken
 });

@@ -12,6 +12,7 @@ server.method('auth.facebook', facebookAuth, {});
 server.method('auth.fenix', fenixAuth, {});
 server.method('auth.google', googleAuth, {});
 server.method('auth.addFacebook', addFacebookAuth, {});
+server.method('auth.addGoogle', addGoogleAuth, {});
 server.method('auth.refreshToken', refreshToken, {});
 
 function facebookAuth(id, token, cb){
@@ -105,7 +106,6 @@ function googleAuth(id, token, cb) {
             return cb(Boom.unauthorized('couldn\'t retrieve your info from google'));
           }
 
-          console.log(googleUser);
           var changedAttributes = {
             google: {
               id: googleUser.id,
@@ -286,7 +286,7 @@ function addFacebookAuth(user, id, token, cb) {
         cbAsync();
       });
     },
-    function getUser(cbAsync){
+    function mergeUser(cbAsync){
       server.methods.user.get({'facebook.id': id}, function(err, _user){
         var filter = { id: user.id };
         var changedAttributes;
@@ -339,20 +339,105 @@ function addFacebookAuth(user, id, token, cb) {
 
       });
     },
-    function updateUser(filter, changedAttributes, cbAsync){
-      // Update the facebook details of the user with this email, ou create a new user if it does not exist
-      server.methods.user.update(filter, changedAttributes, function(err, result){
-        if(err){
-          log.error({user: user.id, changedAttributes: changedAttributes }, '[facebook-login] error upserting user');
-          return cbAsync(err);
+    updateUserAuth
+  ], cb);
+}
+
+function addGoogleAuth(user, id, token, cb) {
+
+  async.waterfall([
+    function debugToken(cbAsync){
+      google.debugToken(id, token, function(err, isValid) {
+        if(err) {
+          return cbAsync(Boom.unauthorized(err));
         }
 
-        log.debug({id: result.id}, '[facebook-login] upserted user');
-
-        return cbAsync(null, result);
+        if(!isValid) {
+          return cbAsync(Boom.unauthorized('nice try'));
+        }
+        cbAsync();
       });
-    }
+    },
+    function mergeUser(cbAsync){
+      server.methods.user.get({'google.id': id}, function(err, _user){
+        var filter = { id: user.id };
+        var changedAttributes;
+        if(err) {
+          if(!err.output || err.output.statusCode != 404) {
+            log.error({err: err, google: id }, '[google-login] error getting user');
+            return cbAsync(err);
+          }
+
+          // This google id is not on db, let's find out who it belongs to
+          return google.getMe(token, function(err, googleUser) {
+            if(err){
+              log.error({err: err, id: id, token: token }, '[google-login] error retrieving user info from google');
+              return cbAsync(Boom.unauthorized('couldn\'t retrieve your info from google'));
+            }
+
+            changedAttributes = {
+              google: {
+                id: googleUser.id,
+                img: googleUser.image.url + '0',
+                token: token
+              }
+            };
+
+            if(!user.mail) {
+              google.getMail(token, function(err, mail) {
+                if(err){
+                  log.error({err: err, id: id, token: token }, '[google-login] error retrieving user email from google');
+                  return cb(Boom.unauthorized('couldn\'t retrieve your info from google'));
+                }
+                changedAttributes.mail = googleUser.email;
+                log.debug({googleUser: googleUser.id}, '[google-login] got google user');
+
+                return cbAsync(null, filter, changedAttributes);
+              });
+            }
+            log.debug({googleUser: googleUser.id}, '[google-login] got google user');
+
+            return cbAsync(null, filter, changedAttributes);
+          });
+        }
+
+        // Merging achievements with the same id must be done before doing this, so does the points also 
+        //changedAttributes.achievements = (user.achievements || []).concat(_user.achievements);
+
+        changedAttributes = {
+          google: {
+            id: _user.google.id,
+            img:_user.google.img + '0',
+            token: _user.google.token
+          }
+        };
+
+        server.methods.user.remove(_user.id, function(err, result){
+          if(err){
+            log.error({err: err, id: id, token: token, user: _user.id}, '[google-login] error removing dup user');
+            return cbAsync(err);
+          }
+          return cbAsync(null, filter, changedAttributes);
+        });
+
+      });
+    },
+    updateUserAuth
   ], cb);
+}
+
+function updateUserAuth(filter, changedAttributes, cbAsync){
+  // Update the details of the user with this new auth info
+  server.methods.user.update(filter, changedAttributes, function(err, result){
+    if(err){
+      log.error({user: filter, changedAttributes: changedAttributes }, '[login] error updating user');
+      return cbAsync(err);
+    }
+
+    log.debug({id: result.id}, '[login] updated user auth');
+
+    return cbAsync(null, result);
+  });
 }
 
 function refreshToken(user, token, refresh, cb){

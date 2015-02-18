@@ -86,6 +86,27 @@ exports.addFacebook = {
   description: 'Add facebook login'
 };
 
+exports.addGoogle = {
+  tags: ['api','auth'],
+  auth: {
+    strategies: ['default', 'backup'],
+    scope: ['user', 'admin']
+  },
+  validate: {
+    payload: {
+      id: Joi.string().required().description('google id of the member'),
+      token: Joi.string().required().description('google token of the member'),
+    }
+  },
+  pre: [
+    { method: 'auth.addGoogle(auth.credentials.user, payload.id, payload.token)', assign: 'member' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.member));
+  },
+  description: 'Add google login'
+};
+
 exports.refreshToken = {
   tags: ['api','auth'],
   auth: {
