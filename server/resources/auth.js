@@ -11,6 +11,7 @@ var google = require('server/helpers/google');
 server.method('auth.facebook', facebookAuth, {});
 server.method('auth.fenix', fenixAuth, {});
 server.method('auth.google', googleAuth, {});
+server.method('auth.addFacebook', addFacebookAuth, {});
 server.method('auth.refreshToken', refreshToken, {});
 
 function facebookAuth(id, token, cb){
@@ -81,7 +82,7 @@ function facebookAuth(id, token, cb){
 }
 
 function googleAuth(id, token, cb) {
-   google.debugToken(id, token, function(err, isValid) {
+  google.debugToken(id, token, function(err, isValid) {
       if(err) {
         return cb(Boom.unauthorized(err));
       }
@@ -268,6 +269,83 @@ function authenticate(userId, changedAttributes, cb) {
     log.info({user: userId}, '[login] user logged in ');
     return  cb(err, newToken);
   });
+}
+
+function addFacebookAuth(user, id, token, cb) {
+
+  async.waterfall([
+    function debugToken(cbAsync){
+      facebook.debugToken(id, token, function(err, isValid) {
+        if(err) {
+          return cbAsync(Boom.unauthorized(err));
+        }
+
+        if(!isValid) {
+          return cbAsync(Boom.unauthorized('nice try'));
+        }
+        cbAsync();
+      });
+    },
+    function getUser(cbAsync){
+      server.methods.user.get({'facebook.id': id}, function(err, _user){
+        var filter = { id: user.id };
+        var changedAttributes;
+        if(err) {
+          if(!err.output || err.output.statusCode != 404) {
+            log.error({err: err, facebook: id }, '[facebook-login] error getting user');
+            return cbAsync(err);
+          }
+
+          // This facebook id is not on db, let's find out who it belongs to
+          return facebook.getMe(token, function(err, facebookUser) {
+            if(err){
+              log.error({err: err, id: id, token: token }, '[facebook-login] error retrieving user info from facebook');
+              return cbAsync(Boom.unauthorized('couldn\'t retrieve your info from facebook'));
+            }
+
+            changedAttributes = {
+              facebook: {
+                id: facebookUser.id,
+                token: token
+              }
+            };
+
+            if(!user.mail && facebookUser.email) {
+              changedAttributes.mail = facebookUser.email;
+            }
+            log.debug({facebookUser: facebookUser.id}, '[facebook-login] got facebook user');
+
+            return cbAsync(null, filter, changedAttributes);
+          });
+        }
+
+        // Merging achievements with the same id must be done before doing this, so does the points also 
+        //changedAttributes.achievements = (user.achievements || []).concat(_user.achievements);
+
+        changedAttributes = {
+          facebook: {
+            id: _user.facebook.id,
+            token: _user.facebook.token
+          }
+        };
+
+        return cbAsync(null, filter, changedAttributes);
+      });
+    },
+    function updateUser(filter, changedAttributes, cbAsync){
+      // Update the facebook details of the user with this email, ou create a new user if it does not exist
+      server.methods.user.update(filter, changedAttributes, function(err, result){
+        if(err){
+          log.error({user: user.id, changedAttributes: changedAttributes }, '[facebook-login] error upserting user');
+          return cbAsync(err);
+        }
+
+        log.debug({id: result.id}, '[facebook-login] upserted user');
+
+        return cbAsync(null, result);
+      });
+    }
+  ], cb);
 }
 
 function refreshToken(user, token, refresh, cb){
