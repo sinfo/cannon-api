@@ -89,8 +89,8 @@ function inRegistrationPeriod(session, cb) {
 function inConfirmationPeriod(session, cb) {
   var now = new Date();
   var date = new Date(session.date);
-  log.debug({now: now, sessionDate: date});
-  if(!moment(date).isSame(now, 'day')) {
+
+  if(date.setHours(0,0,0,0) == now.setHours(0,0,0,0)) {
     return cb(Boom.badRequest('out of confirmation period'));
   }
 
