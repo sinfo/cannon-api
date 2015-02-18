@@ -28,7 +28,7 @@ function userRegistered(sessionId, userId, cb){
     }
     if (_ticket.users.indexOf(userId) >= 0){
       log.error({ err: err, session: sessionId, user: userId}, 'user alreaday registered');
-      return cb(Boom.conflict());
+      return cb(Boom.conflict('user alreaday registered'));
     }
     cb(null, true);
   });
@@ -194,7 +194,7 @@ function getRegisteredUsers(sessionId, session, cb) {
 function getAcceptedUser(ticket, session, user, cb) {
   if(!session.tickets || !session.tickets.max || ticket.users.length <= session.tickets.max){
     log.debug({ticket: ticket}, 'ticket user list does not have waiting list');
-    return cb(Boom.notFound('users list does not have waiting list'));
+    return cb(Boom.notFound('user list does not have waiting list'));
   }
 
   if(ticket.users.indexOf(user.id) >= session.tickets.max){
