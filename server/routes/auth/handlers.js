@@ -107,6 +107,26 @@ exports.addGoogle = {
   description: 'Add google login'
 };
 
+exports.addFenix = {
+  tags: ['api','auth'],
+  auth: {
+    strategies: ['default', 'backup'],
+    scope: ['user', 'admin']
+  },
+  validate: {
+    payload: {
+      code: Joi.string().required().description('fenix code of the member')
+    }
+  },
+  pre: [
+    { method: 'auth.addFenix(auth.credentials.user, payload.code)', assign: 'member' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.member));
+  },
+  description: 'Add fenix login'
+};
+
 exports.refreshToken = {
   tags: ['api','auth'],
   auth: {

@@ -13,6 +13,7 @@ server.method('auth.fenix', fenixAuth, {});
 server.method('auth.google', googleAuth, {});
 server.method('auth.addFacebook', addFacebookAuth, {});
 server.method('auth.addGoogle', addGoogleAuth, {});
+server.method('auth.addFenix', addFenixAuth, {});
 server.method('auth.refreshToken', refreshToken, {});
 
 function facebookAuth(id, token, cb){
@@ -425,6 +426,94 @@ function addGoogleAuth(user, id, token, cb) {
     updateUserAuth
   ], cb);
 }
+
+function addFenixAuth(user, code, cb) {
+
+  async.waterfall([
+    function debugToken(cbAsync){
+      Fenix.auth.getAccessToken(code, function(err, response, body) {
+
+        var auth;
+
+        if(err || !body){
+          log.error({err: err, response: response.statusCode, body: body}, '[fenix-login] error getting access token');
+          return cbAsync(Boom.unauthorized(body));
+        }
+
+        auth = {
+          token: body.access_token, // jshint ignore:line
+          refreshToken: body.refresh_token, // jshint ignore:line
+          ttl: body.expires_in, // jshint ignore:line
+          created: Date.now(),
+        };
+
+        cbAsync(null, auth);
+      });
+    },
+
+    function getPerson(auth, cbAsync){
+      Fenix.person.getPerson(auth.token, function(err, fenixUser){
+
+        var user;
+        var _auth = auth;
+
+        if(err || !fenixUser) {
+          log.error({err: err, user: fenixUser}, '[fenix-login] error getting person');
+          return cbAsync(Boom.unauthorized());
+        }
+
+        _auth.id = fenixUser.username;
+        user = {
+          auth: _auth,
+          name: fenixUser.name,
+          email:{
+            main: fenixUser.email,
+            others: fenixUser.personalEmails.concat(fenixUser.workEmails)
+          }
+        };
+        cbAsync(null, user);
+      });
+    },
+
+    function mergeUser(fenixUser, cbAsync){
+      server.methods.user.get({'fenix.id': fenixUser.auth.id}, function(err, _user){
+
+        var filter = { id: _user.id };
+        var changedAttributes = {};
+
+        if(err && (!err.output || err.output.statusCode != 404)){
+          log.error({err: err, fenix: fenixUser.auth.id}, '[fenix-login] error getting user');
+          return cbAsync(err);
+        }
+
+        if(_user && _user.id){
+          changedAttributes.fenix = _user.fenix;
+
+          server.methods.user.remove(_user.id, function(err, result){
+            if(err){
+              log.error({err: err, id: _user.fenix.id, token: _user.fenix.token, user: _user.id}, '[fenix-login] error removing dup user');
+              return cbAsync(err);
+            }
+            return cbAsync(null, filter, changedAttributes);
+          });
+        }
+        else{
+          changedAttributes.fenix = fenixUser.auth;
+
+          if(!user.mail && fenixUser.email) {
+            changedAttributes.mail = fenixUser.email.main;
+          }
+
+          log.debug({fenixUser: fenixUser.id}, '[fenix-login] got fenix user');
+
+          return cbAsync(null, filter, changedAttributes);
+        }
+      });
+    },
+    updateUserAuth
+  ], cb);
+}
+
 
 function updateUserAuth(filter, changedAttributes, cbAsync){
   // Update the details of the user with this new auth info
