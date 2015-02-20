@@ -27,7 +27,7 @@ function facebookAuth(id, token, cb){
     }
 
     server.methods.user.get({'facebook.id': id}, function(err, user){
-      if(err) {
+      if(err || (user && !user.mail)) {
         if(!err.output || err.output.statusCode != 404) {
           log.error({err: err, facebook: id }, '[facebook-login] error getting user');
           return cb(err);
@@ -54,9 +54,17 @@ function facebookAuth(id, token, cb){
             // mail: facebookUser.email,
           };
 
-          var filter = { name: facebookUser.name };
-          if(facebookUser.email) {
-            filter = { mail: facebookUser.email };
+          var filter = { mail: facebookUser.email };
+          if(!facebookUser.email){
+            log.error({err: err, id: id, token: token }, '[facebook-login] user logged in without valid facebook e-mail');
+            return cb(Boom.notAcceptable('you must have a valid facebook e-mail'));
+          }
+
+          if(user && !user.mail){
+            filter = {id: user.id};
+            changedAttributes.mail = facebookUser.email;
+          }
+          else{
             changedAttributes.$setOnInsert.mail = facebookUser.email;
           }
 
@@ -85,16 +93,16 @@ function facebookAuth(id, token, cb){
 
 function googleAuth(id, token, cb) {
   google.debugToken(id, token, function(err, isValid) {
-      if(err) {
-        return cb(Boom.unauthorized(err));
-      }
+    if(err) {
+      return cb(Boom.unauthorized(err));
+    }
 
-      if(!isValid) {
-        return cb(Boom.unauthorized('nice try'));
-      }
+    if(!isValid) {
+      return cb(Boom.unauthorized('nice try'));
+    }
 
-      server.methods.user.get({'google.id': id}, function(err, user){
-      if(err) {
+    server.methods.user.get({'google.id': id}, function(err, user){
+      if(err || (user && !user.mail)) {
         if(!err.output || err.output.statusCode != 404) {
           log.error({err: err, google: id }, '[google-login] error getting user');
           return cb(err);
@@ -127,10 +135,16 @@ function googleAuth(id, token, cb) {
               return cb(Boom.unauthorized('couldn\'t retrieve your info from google'));
             }
 
-            var filter = { name: googleUser.name };
-
-            if(mail) {
-              filter = { mail: mail };
+            if(!mail){
+              log.error({err: err, id: id, token: token }, '[google-login] user logged in without valid google e-mail');
+              return cb(Boom.notAcceptable('you must have a valid google e-mail'));
+            }
+            var filter = { mail: mail };
+            if(user && !user.mail){
+              filter = {id: user.id};
+              changedAttributes.mail = mail;
+            }
+            else{
               changedAttributes.$setOnInsert.mail = mail;
             }
 
@@ -151,10 +165,10 @@ function googleAuth(id, token, cb) {
         });
       }
 
-    var changedAttributes = { 'google.token': token };
+      var changedAttributes = { 'google.token': token };
 
-    return authenticate(user.id, changedAttributes, cb);
-  });   
+      return authenticate(user.id, changedAttributes, cb);
+    });   
      
    });
 }
