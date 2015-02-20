@@ -231,7 +231,7 @@ function getWaitingUsers(sessionId, session, cb) {
 
     var users = ticket.users;
     if(session && session.tickets && session.tickets.max) {
-      if (users.length > sessions.tickets.max) {
+      if (users.length > session.tickets.max) {
         users = users.slice(session.tickets.max);
       }
       else {
@@ -258,10 +258,9 @@ function getConfirmedUsers(sessionId, session, cb) {
       return cb(Boom.notFound());
     }
 
-    var users = ticket.users;
-    if(session && session.tickets && session.tickets.max) {
-      users = users.slice(0, session.tickets.max);
-    }
+    var users = ticket.users.filter(function (o) {
+      return ticket.confirmed && ticket.confirmed.indexOf(o.id) !== -1;
+    });
 
     cb(null, users);
   });
