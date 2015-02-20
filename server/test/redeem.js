@@ -31,11 +31,7 @@ var credentialsB = {
 var redeemA = {
   id: 'awesomePrize',
   achievement: 'WENT TO SINFO XXII',
-  entries: 5,
-};
-
-var changesToA = {
-  achievement: 'WENT TO SINFO XXIII',
+  // entries: 5,
 };
 
 
@@ -62,23 +58,6 @@ lab.experiment('Redeem', function() {
   });
 
 
-  lab.test('List all as an admin', function(done) {
-    var options = {
-      method: 'GET',
-      url: '/redeem',
-      credentials: credentialsA,
-    };
-
-    server.inject(options, function(response) {
-      var result = response.result;
-
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(result).to.be.instanceof(Array);
-      Code.expect(result[0].name).to.be.string;
-      done();
-    });
-  });
-
   lab.test('Get one as an admin', function(done) {
     var options = {
       method: 'GET',
@@ -94,23 +73,6 @@ lab.experiment('Redeem', function() {
       Code.expect(result.id).to.equal(redeemA.id);
       Code.expect(result.name).to.equal(redeemA.name);
 
-      done();
-    });
-  });
-
-
-
-  lab.test('List all as an user', function(done) {
-    var options = {
-      method: 'GET',
-      url: '/redeem',
-      credentials: credentialsB,
-    };
-
-    server.inject(options, function(response) {
-      var result = response.result;
-
-      Code.expect(response.statusCode).to.equal(403);
       done();
     });
   });
@@ -134,42 +96,6 @@ lab.experiment('Redeem', function() {
     });
   });
 
-  lab.test('Update as an admin', function(done) {
-    var options = {
-      method: 'PUT',
-      url: '/redeem/'+redeemA.id,
-      credentials: credentialsA,
-      payload: changesToA
-    };
-
-    server.inject(options, function(response) {
-      var result = response.result;
-
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(result).to.be.instanceof(Object);
-      Code.expect(result.id).to.equal(redeemA.id);
-      Code.expect(result.name).to.equal(changesToA.name);
-
-      done();
-    });
-  });
-  lab.test('Update as an user', function(done) {
-    var options = {
-      method: 'PUT',
-      url: '/redeem/'+redeemA.id,
-      credentials: credentialsB,
-      payload: changesToA
-    };
-
-    server.inject(options, function(response) {
-      var result = response.result;
-
-      Code.expect(response.statusCode).to.equal(403);
-
-      done();
-    });
-  });
-
   lab.test('Delete as an admin', function(done) {
     var options = {
       method: 'DELETE',
@@ -183,7 +109,7 @@ lab.experiment('Redeem', function() {
       Code.expect(response.statusCode).to.equal(200);
       Code.expect(result).to.be.instanceof(Object);
       Code.expect(result.id).to.equal(redeemA.id);
-      Code.expect(result.name).to.equal(changesToA.name);
+      Code.expect(result.name).to.equal(redeemA.name);
       done();
     });
   });

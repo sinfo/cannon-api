@@ -10,6 +10,7 @@ server.method('achievement.update', update, {});
 server.method('achievement.get', get, {});
 server.method('achievement.list', list, {});
 server.method('achievement.remove', remove, {});
+server.method('achievement.addUser', addUser, {});
 
 
 function create(achievement, cb) {
@@ -51,7 +52,7 @@ function update(id, achievement, cb) {
 
 function get(id, query, cb) {
   cb = cb || query; // fields is optional
-  
+
   var fields = fieldsParser(query.fields);
 
   Achievement.findOne({id: id}, fields, function(err, achievement) {
@@ -84,7 +85,7 @@ function list(query, cb) {
       log.error({err: err}, 'error getting all achievements');
       return cb(Boom.internal());
     }
-    
+
     cb(null, achievements);
   });
 }
@@ -103,3 +104,22 @@ function remove(id, cb) {
     return cb(null, achievement);
   });
 }
+
+
+function addUser(achievementId, userId, cb) {
+  var changes = {
+    $addToSet: {
+      users: userId
+    }
+  };
+
+  Achievement.findOneAndUpdate({ id: achievementId }, changes, function(err, achievement) {
+    if (err) {
+      log.error({ err: err, achievement: achievementId}, 'error adding user to achievement');
+      return cb(Boom.internal());
+    }
+
+    cb(null, achievement);
+  });
+}
+

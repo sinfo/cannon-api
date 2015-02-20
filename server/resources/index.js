@@ -4,5 +4,6 @@ require('./email');
 require('./file');
 require('./redeem');
 require('./session');
+require('./survey');
 require('./ticket');
 require('./user');

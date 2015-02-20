@@ -6,9 +6,7 @@ var fieldsParser = require('server/helpers/fieldsParser');
 var Redeem = require('server/db/redeem');
 
 server.method('redeem.create', create, {});
-server.method('redeem.update', update, {});
 server.method('redeem.get', get, {});
-server.method('redeem.list', list, {});
 server.method('redeem.remove', remove, {});
 
 
@@ -30,20 +28,6 @@ function create(redeem, cb) {
   });
 }
 
-function update(id, redeem, cb) {
-  Redeem.findOneAndUpdate({id: id}, redeem, function(err, _redeem) {
-    if (err) {
-      log.error({err: err, redeem: id}, 'error updating redeem');
-      return cb(Boom.internal());
-    }
-    if (!_redeem) {
-      log.error({err: err, redeem: id}, 'error updating redeem');
-      return cb(Boom.notFound());
-    }
-
-    cb(null, _redeem.toObject({ getters: true }));
-  });
-}
 
 function get(id, query, cb) {
   cb = cb || query; // fields is optional
@@ -63,26 +47,6 @@ function get(id, query, cb) {
   });
 }
 
-function list(query, cb) {
-  cb = cb || query; // fields is optional
-
-  var filter = {};
-  var fields = fieldsParser(query.fields);
-  var options = {
-    skip: query.skip,
-    limit: query.limit,
-    sort: fieldsParser(query.sort)
-  };
-
-  Redeem.find(filter, fields, options, function(err, redeem) {
-    if (err) {
-      log.error({err: err}, 'error getting all redeems');
-      return cb(Boom.internal());
-    }
-    
-    cb(null, redeem);
-  });
-}
 
 function remove(id, cb) {
   Redeem.findOneAndRemove({id: id}, function(err, redeem){
