@@ -43,3 +43,14 @@ server.route({
   config: handlers.getUsers
 });
 
+server.route({
+  method: 'GET',
+  path: '/tickets/{sessionId}/waiting',
+  config: handlers.getWaiting
+});
+
+server.route({
+  method: 'GET',
+  path: '/tickets/{sessionId}/confirmed',
+  config: handlers.getConfirmed
+});
