@@ -28,7 +28,7 @@ function facebookAuth(id, token, cb){
 
     server.methods.user.get({'facebook.id': id}, function(err, user){
       if(err || (user && !user.mail)) {
-        if(!err.output || err.output.statusCode != 404) {
+        if(err && (!err.output || err.output.statusCode != 404)) {
           log.error({err: err, facebook: id }, '[facebook-login] error getting user');
           return cb(err);
         }
@@ -103,7 +103,7 @@ function googleAuth(id, token, cb) {
 
     server.methods.user.get({'google.id': id}, function(err, user){
       if(err || (user && !user.mail)) {
-        if(!err.output || err.output.statusCode != 404) {
+        if( err (!err.output || err.output.statusCode != 404)) {
           log.error({err: err, google: id }, '[google-login] error getting user');
           return cb(err);
         }
