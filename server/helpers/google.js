@@ -14,7 +14,7 @@ google.debugToken = function (googleUserId, googleUserToken, cb) {
     /*jshint camelcase: false */
     if (error || response.statusCode != 200) {
       log.warn({err: error, googleConfig: googleConfig, response: response});
-      return cb(error);
+      return cb(error || {err: response.statusCode, message: response.statusMessage});
     }
 
     var isValid = !(!result|| result.issued_to !== googleConfig.clientId || result.user_id !== googleUserId);
@@ -43,7 +43,7 @@ google.getMe = function (googleUserId, cb) {
   },
   function (error, response, result) {
     if (error || response.statusCode != 200) {
-      return cb(error);
+      return cb(error || {err: response.statusCode, message: response.statusMessage});
     }
 
     cb(null, result);
@@ -58,7 +58,7 @@ google.getMail = function (googleUserToken, cb) {
   },
   function (error, response, result) {
     if (error || response.statusCode != 200) {
-      return cb(error);
+      return cb(error || {err: response.statusCode, message: response.statusMessage});
     }
 
     cb(null, result.email);

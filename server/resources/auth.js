@@ -291,6 +291,7 @@ function addFacebookAuth(user, id, token, cb) {
       server.methods.user.get({'facebook.id': id}, function(err, _user){
         var filter = { id: user.id };
         var changedAttributes;
+
         if(err) {
           if(!err.output || err.output.statusCode != 404) {
             log.error({err: err, facebook: id }, '[facebook-login] error getting user');
@@ -318,6 +319,11 @@ function addFacebookAuth(user, id, token, cb) {
 
             return cbAsync(null, filter, changedAttributes);
           });
+        }
+
+        if(_user && _user.id === user.id){
+          log.error({user: user.id}, '[facebook-login] user already added account');
+          return cbAsync(Boom.conflict('Account alaready registered to this user'));
         }
 
         // Merging achievements with the same id must be done before doing this, so does the points also 
@@ -363,6 +369,7 @@ function addGoogleAuth(user, id, token, cb) {
       server.methods.user.get({'google.id': id}, function(err, _user){
         var filter = { id: user.id };
         var changedAttributes;
+
         if(err) {
           if(!err.output || err.output.statusCode != 404) {
             log.error({err: err, google: id }, '[google-login] error getting user');
@@ -370,7 +377,8 @@ function addGoogleAuth(user, id, token, cb) {
           }
 
           // This google id is not on db, let's find out who it belongs to
-          return google.getMe(token, function(err, googleUser) {
+          return google.getMe(id, function(err, googleUser) {
+
             if(err){
               log.error({err: err, id: id, token: token }, '[google-login] error retrieving user info from google');
               return cbAsync(Boom.unauthorized('couldn\'t retrieve your info from google'));
@@ -400,6 +408,11 @@ function addGoogleAuth(user, id, token, cb) {
 
             return cbAsync(null, filter, changedAttributes);
           });
+        }
+
+        if(_user && _user.id === user.id){
+          log.error({user: user.id}, '[google-login] user already added account');
+          return cbAsync(Boom.conflict('Account alaready registered to this user'));
         }
 
         // Merging achievements with the same id must be done before doing this, so does the points also 
@@ -481,12 +494,18 @@ function addFenixAuth(user, code, cb) {
         var filter = { id: _user.id };
         var changedAttributes = {};
 
+
         if(err && (!err.output || err.output.statusCode != 404)){
           log.error({err: err, fenix: fenixUser.auth.id}, '[fenix-login] error getting user');
           return cbAsync(err);
         }
 
         if(_user && _user.id){
+
+          if(_user.id === user.id){
+            log.error({user: user.id}, '[fenix-login] user already added account');
+            return cbAsync(Boom.conflict('Account alaready registered to this user'));
+          }
           changedAttributes.fenix = _user.fenix;
 
           server.methods.user.remove(_user.id, function(err, result){
@@ -519,7 +538,7 @@ function updateUserAuth(filter, changedAttributes, cbAsync){
   // Update the details of the user with this new auth info
   server.methods.user.update(filter, changedAttributes, function(err, result){
     if(err){
-      log.error({user: filter, changedAttributes: changedAttributes }, '[login] error updating user');
+      log.error({err: err, user: filter, changedAttributes: changedAttributes }, '[login] error updating user');
       return cbAsync(err);
     }
 
