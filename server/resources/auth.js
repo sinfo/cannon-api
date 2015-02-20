@@ -28,9 +28,11 @@ function facebookAuth(id, token, cb){
 
     server.methods.user.get({'facebook.id': id}, function(err, user){
       if(err || (user && !user.mail)) {
-        if(err && (!err.output || err.output.statusCode != 404)) {
-          log.error({err: err, facebook: id }, '[facebook-login] error getting user');
-          return cb(err);
+        if(err){
+          if(!err.output || err.output.statusCode != 404) {
+            log.error({err: err, facebook: id }, '[facebook-login] error getting user');
+            return cb(err);
+          }
         }
 
         // This facebook id is not on db, let's find out who it belongs to
@@ -103,9 +105,11 @@ function googleAuth(id, token, cb) {
 
     server.methods.user.get({'google.id': id}, function(err, user){
       if(err || (user && !user.mail)) {
-        if( err (!err.output || err.output.statusCode != 404)) {
-          log.error({err: err, google: id }, '[google-login] error getting user');
-          return cb(err);
+        if(err){
+          if(!err.output || err.output.statusCode != 404) {
+            log.error({err: err, google: id }, '[google-login] error getting user');
+            return cb(err);
+          }
         }
 
         // This google id is not on db, let's find out who it belongs to
