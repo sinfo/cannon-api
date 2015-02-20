@@ -14,6 +14,8 @@ server.method('ticket.registerUserPresence', registerUserPresence, {});
 server.method('ticket.get', get, {});
 server.method('ticket.list', list, {});
 server.method('ticket.getRegisteredUsers', getRegisteredUsers, {});
+server.method('ticket.getWaitingUsers', getWaitingUsers, {});
+server.method('ticket.getConfirmedUsers', getConfirmedUsers, {});
 server.method('ticket.getAcceptedUser', getAcceptedUser, {});
 server.method('ticket.confirmationEmail', confirmationEmail, {});
 server.method('ticket.registrationEmail', registrationEmail, {});
@@ -136,7 +138,7 @@ function registerUserPresence(sessionId, userId, session, cb) {
     }
 
     if(!_ticket) {
-      return cb(Boom.notFound('Couln\'t find session'));
+      return cb(Boom.notFound('Couldn\'t find session'));
     }
 
     cb(null, _ticket.toObject({ getters: true }));
@@ -189,6 +191,54 @@ function list(query, cb) {
 
 
 function getRegisteredUsers(sessionId, session, cb) {
+  cb = cb || session; // session is optional
+
+  var filter = { session: sessionId };
+
+  Ticket.findOne(filter, {users: 1}, function(err, ticket) {
+    if (err) {
+      log.error({err: err, requestedTicket: filter}, 'error getting ticket');
+      return cb(Boom.internal());
+    }
+    if (!ticket) {
+      log.warn({err: err, requestedTicket: filter}, 'could not find ticket');
+      return cb(Boom.notFound());
+    }
+
+    var users = ticket.users;
+    if(session && session.tickets && session.tickets.max) {
+      users = users.slice(0, session.tickets.max);
+    }
+
+    cb(null, users);
+  });
+}
+
+function getWaitingUsers(sessionId, session, cb) {
+  cb = cb || session; // session is optional
+
+  var filter = { session: sessionId };
+
+  Ticket.findOne(filter, {users: 1}, function(err, ticket) {
+    if (err) {
+      log.error({err: err, requestedTicket: filter}, 'error getting ticket');
+      return cb(Boom.internal());
+    }
+    if (!ticket) {
+      log.warn({err: err, requestedTicket: filter}, 'could not find ticket');
+      return cb(Boom.notFound());
+    }
+
+    var users = ticket.users;
+    if(session && session.tickets && session.tickets.max && users.length > sessions.tickets.max) {
+      users = users.slice(session.tickets.max);
+    }
+
+    cb(null, users);
+  });
+}
+
+function getConfirmedUsers(sessionId, session, cb) {
   cb = cb || session; // session is optional
 
   var filter = { session: sessionId };
