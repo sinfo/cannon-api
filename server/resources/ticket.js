@@ -230,8 +230,13 @@ function getWaitingUsers(sessionId, session, cb) {
     }
 
     var users = ticket.users;
-    if(session && session.tickets && session.tickets.max && users.length > sessions.tickets.max) {
-      users = users.slice(session.tickets.max);
+    if(session && session.tickets && session.tickets.max) {
+      if (users.length > sessions.tickets.max) {
+        users = users.slice(session.tickets.max);
+      }
+      else {
+        users = [];
+      }
     }
 
     cb(null, users);
