@@ -45,7 +45,7 @@ server.route({
 
 server.route({
   method: 'GET',
-  path: '/tickets/{sessionId}/wating',
+  path: '/tickets/{sessionId}/waiting',
   config: handlers.getWaiting
 });
 
