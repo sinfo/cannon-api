@@ -41,7 +41,7 @@ exports.get = {
     }
   },
   pre: [
-    { method: 'redeem.get(params.id, query)', assign: 'redeem' }
+    { method: 'redeem.get(params.id)', assign: 'redeem' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.redeem));

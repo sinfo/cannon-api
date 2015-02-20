@@ -29,11 +29,8 @@ function create(redeem, cb) {
 }
 
 
-function get(id, query, cb) {
-  cb = cb || query; // fields is optional
-  var fields = fieldsParser(query.fields);
-
-  Redeem.findOne({id: id}, fields, function(err, redeem) {
+function get(id, cb) {
+  Redeem.findOne({id: id}, function(err, redeem) {
     if (err) {
       log.error({err: err, redeem: id}, 'error getting redeem');
       return cb(Boom.internal());
