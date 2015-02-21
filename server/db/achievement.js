@@ -10,6 +10,7 @@ var schema = new mongoose.Schema({
   instructions: String,
   img: String,
   value: Number,
+  users: [String],
   created: Date,
   updated: Date
 });

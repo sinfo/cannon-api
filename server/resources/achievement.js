@@ -105,6 +105,11 @@ function remove(id, cb) {
 
 
 function addUser(achievementId, userId, cb) {
+  if(!achievementId || !userId) {
+    log.error({userId: userId, achievementId: achievementId}, 'missing arguments on addUser');
+    return cb();
+  }
+
   var changes = {
     $addToSet: {
       users: userId
@@ -113,7 +118,7 @@ function addUser(achievementId, userId, cb) {
 
   Achievement.findOneAndUpdate({ id: achievementId }, changes, function(err, achievement) {
     if (err) {
-      log.error({ err: err, achievement: achievementId}, 'error adding user to achievement');
+      log.error({err: err, achievement: achievementId}, 'error adding user to achievement');
       return cb(Boom.internal());
     }
 

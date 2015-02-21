@@ -13,11 +13,12 @@ function renderObject(model) {
     category: model.category,
     session: model.session,
     name: model.name,
-		description: model.description,
-		instructions: model.instructions,
-		img: model.img,
-		value: model.value,
-		created: model.created,
-		updated: model.updated
+    description: model.description,
+    instructions: model.instructions,
+    img: model.img,
+    value: model.value,
+    users: model.users,
+    created: model.created,
+    updated: model.updated
   };
 }
