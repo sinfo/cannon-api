@@ -14,7 +14,7 @@ server.method('achievement.addUser', addUser, {});
 
 
 function create(achievement, cb) {
-  achievement.id = slug(achievement.name);
+  achievement.id = achievement.id || slug(achievement.name);
 
   achievement.updated = achievement.created = Date.now();
 
@@ -50,22 +50,20 @@ function update(id, achievement, cb) {
   });
 }
 
-function get(id, query, cb) {
-  cb = cb || query; // fields is optional
+function get(id, cb) {
+  // log.debug({id: id}, 'getting achievement')
 
-  var fields = fieldsParser(query.fields);
-
-  Achievement.findOne({id: id}, fields, function(err, achievement) {
+  Achievement.findOne({id: id}, function(err, achievement) {
     if (err) {
       log.error({err: err, achievement: id}, 'error getting achievement');
-      return cb(Boom.internal());
+      return cb(Boom.internal('error getting achievement'));
     }
     if (!achievement) {
       log.error({err: 'not found', achievement: id}, 'error getting achievement');
-      return cb(Boom.notFound());
+      return cb(Boom.notFound('achievement not found'));
     }
 
-    cb(null, achievement);
+    cb(null, achievement.toObject({ getters: true }));
   });
 }
 

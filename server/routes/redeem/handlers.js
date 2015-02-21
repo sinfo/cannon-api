@@ -41,10 +41,15 @@ exports.get = {
     }
   },
   pre: [
-    { method: 'redeem.get(params.id)', assign: 'redeem' }
+    { method: 'redeem.get(params.id)', assign: 'redeem' },
+    { method: 'achievement.get(pre.redeem.achievement)', assign: 'achievement' },
+    { method: 'session.get(pre.achievement.session)', assign: 'session', failAction: 'ignore' },
+    { method: 'session.surveyNotNeeded(pre.session)' },
+    { method: 'achievement.addUser(pre.redeemCode.achievement, auth.credentials.user.id)', assign: 'achievement' },
+    { method: 'redeem.remove(params.id)' },
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.redeem));
+    reply({success: true});
   },
   description: 'Gets a redeem code'
 };

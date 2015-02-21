@@ -40,7 +40,7 @@ function get(id, cb) {
       return cb(Boom.notFound());
     }
 
-    cb(null, redeem);
+    cb(null, redeem.toObject({ getters: true }));
   });
 }
 

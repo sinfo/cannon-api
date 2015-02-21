@@ -28,14 +28,37 @@ var credentialsB = {
   scope: 'user',
 };
 
+
+var achievementA = {
+  id: 'WENT-TO-SINFO-XXII',
+  name: 'WENT TO SINFO XXII',
+  event: 'SINFO XXII'
+};
+
+
 var redeemA = {
-  id: 'awesomePrize',
-  achievement: 'WENT TO SINFO XXII',
+  id: 'RANDOM-STRING',
+  achievement: achievementA.id,
   // entries: 5,
 };
 
 
 lab.experiment('Redeem', function() {
+
+  lab.before(function (done) {
+
+    var options = {
+      method: 'POST',
+      url: '/achievements',
+      credentials: credentialsA,
+      payload: achievementA
+    };
+
+    server.inject(options, function(response) {
+      done();
+    });
+  });
+
 
   lab.test('Create as an admin', function(done) {
     var options = {
@@ -57,26 +80,6 @@ lab.experiment('Redeem', function() {
     });
   });
 
-
-  lab.test('Get one as an admin', function(done) {
-    var options = {
-      method: 'GET',
-      url: '/redeem/'+redeemA.id,
-      credentials: credentialsA,
-    };
-
-    server.inject(options, function(response) {
-      var result = response.result;
-
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(result).to.be.instanceof(Object);
-      Code.expect(result.id).to.equal(redeemA.id);
-      Code.expect(result.name).to.equal(redeemA.name);
-
-      done();
-    });
-  });
-
   lab.test('Get one as an user', function(done) {
     var options = {
       method: 'GET',
@@ -88,6 +91,25 @@ lab.experiment('Redeem', function() {
       var result = response.result;
 
       Code.expect(response.statusCode).to.equal(200);
+      Code.expect(result).to.be.instanceof(Object);
+      Code.expect(result.success).to.equal(true);
+
+      done();
+    });
+  });
+
+  lab.test('Create again as an admin', function(done) {
+    var options = {
+      method: 'POST',
+      url: '/redeem',
+      credentials: credentialsA,
+      payload: redeemA
+    };
+
+    server.inject(options, function(response) {
+      var result = response.result;
+
+      Code.expect(response.statusCode).to.equal(201);
       Code.expect(result).to.be.instanceof(Object);
       Code.expect(result.id).to.equal(redeemA.id);
       Code.expect(result.name).to.equal(redeemA.name);
@@ -141,6 +163,18 @@ lab.experiment('Redeem', function() {
       var result = response.result;
 
       Code.expect(response.statusCode).to.equal(403);
+      done();
+    });
+  });
+
+  lab.after(function(done) {
+    var options = {
+      method: 'DELETE',
+      url: '/achievements/'+achievementA.id,
+      credentials: credentialsA,
+    };
+
+    server.inject(options, function(response) {
       done();
     });
   });

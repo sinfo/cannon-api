@@ -13,12 +13,14 @@ exports.create = {
   },
   validate: {
     payload: {
+      id: Joi.string().description('Id of the achievement'),
       name: Joi.string().required().description('Name of the achievement'),
-      event: Joi.string().required().description('Event the achievement is associated to'),
-      category: Joi.string().description('Category of the achievement'),
-      description: Joi.string().description('Description of the achievement'),
-      instructions: Joi.string().description('Instructions on how to get the achievement'),
+      event: Joi.string().default('22').description('Event the achievement is associated to'),
+      session: Joi.string().description('Id of a session associated to this achievement'),
       img: Joi.string().description('Image of the achievement'),
+      description: Joi.string().description('Description of the achievement'),
+      category: Joi.string().description('Category of the achievement'),
+      instructions: Joi.string().description('Instructions on how to get the achievement'),
       value: Joi.number().description('Amount of points associated to the achievement'),
     }
   },
@@ -78,7 +80,7 @@ exports.get = {
     }
   },
   pre: [
-    { method: 'achievement.get(params.id, query)', assign: 'achievement' }
+    { method: 'achievement.get(params.id)', assign: 'achievement' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.achievement));
@@ -96,7 +98,7 @@ exports.list = {
   },
   validate: {
     query: {
-      fields: Joi.string().default('id,name,img').description('Fields we want to retrieve'),
+      fields: Joi.string().description('Fields we want to retrieve'),
     }
   },
   pre: [
