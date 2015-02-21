@@ -29,6 +29,14 @@ handlers.grid = {
     },
     {
       method: function (request, reply) {
+        request.server.methods.session.get(request.achievement.session, function(err, session) {
+          return reply(err || session);
+        });
+      },
+      assign: 'session', failAction: 'ignore'
+    },
+    {
+      method: function (request, reply) {
         var redeemCodes = [];
         var count = 0;
 
@@ -67,11 +75,17 @@ handlers.grid = {
     }
   ],
   handler: function (request, reply) {
+    var message = 'Redeem your achievement!';
+    if(request.pre.session && request.pre.session.needsSurvey) {
+      message = 'Tell us what you think about this session on the following survey and get prizes!';
+    }
+
     reply.view('grid.hbs', {
       achievement: request.pre.achievement,
       redeemCodes: request.pre.redeemCodes,
       redeemUrl: config.url + '/r',
       qrcodeUrl: config.url + '/qrcode',
+      message: message
     });
   },
   description: 'Renders a list of redeem codes for an achievement'
