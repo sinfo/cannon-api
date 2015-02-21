@@ -87,7 +87,7 @@ function addFBaccount(user, fbUser, token, cb){
 
 function fbUserFound(user, token, cb){
   if(user.mail){
-    return authenticate(user.id, {facebook: {token: token}});
+    return authenticate(user.id, {facebook: {token: token}}, cb);
   }
 
   facebook.getMe(token, function(err, facebookUser) {
@@ -189,10 +189,10 @@ function getGUser(id, token, cb){
         return cb(err);
       }
 
-      return gUserNotFound(token, cb);
+      return gUserNotFound(id, token, cb);
     }
 
-    gUserFound(user, token, cb);
+    gUserFound(user, id, token, cb);
   });
 }
 
@@ -207,7 +207,7 @@ function addGaccount(user, gUser, mail, token, cb){
       var changedAttributes = {
         google: {
           id: gUser.id,
-          img: gUser.id.image.url + '0',
+          img: gUser.image.url + '0',
           token: token
         }
       };
@@ -231,7 +231,7 @@ function addGaccount(user, gUser, mail, token, cb){
 
 function gUserFound(user, id, token, cb){
   if(user.mail){
-    return authenticate(user.id, {google: {token: token}});
+    return authenticate(user.id, {google: {token: token}}, cb);
   }
 
     
@@ -617,17 +617,19 @@ function mergeAccount(user, other, cb){
   var userId = user.id;
   var otherId = other.id;
 
-  server.methods.users.remove({id: other.id}, function(err, result){
+  server.methods.user.remove(other.id, function(err, result){
     if(err){
       log.error({err: err, user: other.id}, '[merge-account] error removing dup account');
       return cb(err);
     }
 
+    log.debug('[merge-account] removed dup account');
+
     async.parallel([
       function updateTickets(cbAsync){
         var filter = {$and: [{users: otherId}, {users: {$nin: [userId]}}]};
         var changedAttributes = {$set:{ 'users.$': userId}};
-        server.methods.tickets.update(filter, changedAttributes, function(err, tickets){
+        server.methods.ticket.update(filter, changedAttributes, function(err, tickets){
           if(err){
             log.error({err: err, user: userId, other: otherId}, '[merge-account] error updating tickets');
             return cbAsync(err);
@@ -639,7 +641,7 @@ function mergeAccount(user, other, cb){
       function updateAchievements(cbAsync){
         var filter = {$and: [{users: otherId}, {users: {$nin: [userId]}}]};
         var changedAttributes = {$set:{ 'users.$': userId}};
-        server.methods.achievements.update(filter, changedAttributes, function(err, achievements){
+        server.methods.achievement.update(filter, changedAttributes, function(err, achievements){
           if(err){
             log.error({err: err, user: userId, other: otherId}, '[merge-account] error updating achievements');
             return cbAsync(err);
@@ -656,7 +658,7 @@ function mergeAccount(user, other, cb){
             changedAttributes = user[prop] || other[prop];
           }
         }
-        server.methods.users.update(filter, changedAttributes, function(err, user){
+        server.methods.user.update(filter, changedAttributes, function(err, user){
           if(err){
             log.error({err: err, user: userId, other: otherId, update: changedAttributes}, '[merge-account] error updating user');
             return cbAsync(err);

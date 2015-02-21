@@ -12,6 +12,7 @@ server.method('ticket.removeUser', removeUser, {});
 server.method('ticket.confirmUser', confirmUser, {});
 server.method('ticket.registerUserPresence', registerUserPresence, {});
 server.method('ticket.get', get, {});
+server.method('ticket.update', update, {});
 server.method('ticket.list', list, {});
 server.method('ticket.getRegisteredUsers', getRegisteredUsers, {});
 server.method('ticket.getWaitingUsers', getWaitingUsers, {});
@@ -157,6 +158,26 @@ function get(filter, query, cb) {
   Ticket.findOne(filter, fields, function(err, ticket) {
     if (err) {
       log.error({err: err, requestedTicket: filter}, 'error getting ticket');
+      return cb(Boom.internal());
+    }
+    if (!ticket) {
+      log.warn({err: err, requestedTicket: filter}, 'could not find ticket');
+      return cb(Boom.notFound());
+    }
+
+    cb(null, ticket);
+  });
+}
+
+function update(filter, ticket, cb) {
+
+  if(typeof filter == 'string') {
+    filter = { id: filter };
+  }
+
+  Ticket.findOneAndUpdate(filter, ticket, function(err, ticket) {
+    if (err) {
+      log.error({err: err, requestedTicket: filter}, 'error updating ticket');
       return cb(Boom.internal());
     }
     if (!ticket) {
