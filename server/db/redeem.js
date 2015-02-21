@@ -1,9 +1,9 @@
 var mongoose = require('mongoose');
 
 var schema = new mongoose.Schema({
-  id: String,
+  id: { type: String, unique: true },
   achievement: String,
-  entries: { type: Number, default: 1 },
+  // entries: { type: Number, default: 1 },
   created: Date,
   expires: Date
 });

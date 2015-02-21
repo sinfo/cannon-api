@@ -3,7 +3,7 @@ module.exports = function render(content) {
     return content.map(renderObject);
   }
 
-  return renderObject(content);  
+  return renderObject(content);
 };
 
 function renderObject(model) {
@@ -11,12 +11,14 @@ function renderObject(model) {
     id: model.id,
     event: model.event,
     category: model.category,
+    session: model.session,
     name: model.name,
-		description: model.description,
-		instructions: model.instructions,
-		img: model.img,
-		value: model.value,
-		created: model.created,
-		updated: model.updated
+    description: model.description,
+    instructions: model.instructions,
+    img: model.img,
+    value: model.value,
+    users: model.users,
+    created: model.created,
+    updated: model.updated
   };
 }

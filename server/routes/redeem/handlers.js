@@ -15,44 +15,17 @@ exports.create = {
     payload: {
     	id: Joi.string().required().description('Redeem Code id.'),
       achievement: Joi.string().required().description('Achievement you want to redeem.'),
-      entries: Joi.number().required().description('Number of entries this code can be applied to.'),
+      // entries: Joi.number().required().description('Number of entries this code can be applied to.'),
       expires: Joi.date().description('Date of redeem code expiration.'),
     }
   },
   pre: [
-  { method: 'redeem.create(payload)', assign: 'redeem' }
+    { method: 'redeem.create(payload)', assign: 'redeem' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.redeem)).created('/redeem/'+request.pre.redeem.id);
   },
   description: 'Creates a new Redeem Code.',
-};
-
-
-exports.update = {
-  tags: ['api','redeem'],
-  auth: {
-    strategies: ['default', 'backup'],
-    scope: ['admin']
-  },
-  validate: {
-    params: {
-      id: Joi.string().required().description('Id of the redeem code we want to update'),
-    },
-    payload: {
-    	id: Joi.string().description('Redeem Code id.'),
-      achievement: Joi.string().description('Achievement you want to redeem.'),
-      entries: Joi.number().description('Number of entries this code can be applied to.'),
-      expires: Joi.date().description('Date of redeem code expiration.'),
-    }
-  },
-  pre: [
-  { method: 'redeem.update(params.id, payload)', assign: 'redeem' }
-  ],
-  handler: function (request, reply) {
-    reply(render(request.pre.redeem));
-  },
-  description: 'Updates a redeem code'
 };
 
 
@@ -68,28 +41,17 @@ exports.get = {
     }
   },
   pre: [
-  { method: 'redeem.get(params.id, query)', assign: 'redeem' }
+    { method: 'redeem.get(params.id)', assign: 'redeem' },
+    { method: 'achievement.get(pre.redeem.achievement)', assign: 'achievement' },
+    { method: 'session.get(pre.achievement.session)', assign: 'session', failAction: 'ignore' },
+    { method: 'session.surveyNotNeeded(pre.session)' },
+    { method: 'achievement.addUser(pre.redeem.achievement, auth.credentials.user.id)', assign: 'achievement' },
+    { method: 'redeem.remove(params.id)' },
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.redeem));
+    reply({success: true});
   },
   description: 'Gets a redeem code'
-};
-
-
-exports.list = {
-  tags: ['api','redeem'],
-  auth: {
-    strategies: ['default', 'backup'],
-    scope: ['admin']
-  },
-  pre: [
-  { method: 'redeem.list(query)', assign: 'redeems' }
-  ],
-  handler: function (request, reply) {
-    reply(render(request.pre.redeems));
-  },
-  description: 'Gets all the redeem codes'
 };
 
 
@@ -105,7 +67,7 @@ exports.remove = {
     }
   },
   pre: [
-  { method: 'redeem.remove(params.id)', assign: 'redeem' }
+    { method: 'redeem.remove(params.id)', assign: 'redeem' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.redeem));

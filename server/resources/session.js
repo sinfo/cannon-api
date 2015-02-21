@@ -11,6 +11,7 @@ var moment = require('moment');
 server.method('session.get', get, {});
 server.method('session.list', list, {});
 server.method('session.ticketsNeeded', ticketsNeeded, {});
+server.method('session.surveyNotNeeded', surveyNotNeeded, {});
 server.method('session.inRegistrationPeriod', inRegistrationPeriod, {});
 server.method('session.inConfirmationPeriod', inConfirmationPeriod, {});
 
@@ -72,6 +73,14 @@ function list(query, cb) {
 function ticketsNeeded(session, cb) {
   if(!session.tickets || !session.tickets.needed) {
     return cb(Boom.badRequest('this session doesn\'t need tickets'));
+  }
+
+  cb(null, true);
+}
+
+function surveyNotNeeded(session, cb) {
+  if(session && session.surveyNeeded) {
+    return cb(Boom.preconditionFailed('you need to submit the session survey to redeem', {session: session}));
   }
 
   cb(null, true);

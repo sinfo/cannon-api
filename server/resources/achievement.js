@@ -10,10 +10,11 @@ server.method('achievement.update', update, {});
 server.method('achievement.get', get, {});
 server.method('achievement.list', list, {});
 server.method('achievement.remove', remove, {});
+server.method('achievement.addUser', addUser, {});
 
 
 function create(achievement, cb) {
-  achievement.id = slug(achievement.name);
+  achievement.id = achievement.id || slug(achievement.name);
 
   achievement.updated = achievement.created = Date.now();
 
@@ -49,22 +50,20 @@ function update(id, achievement, cb) {
   });
 }
 
-function get(id, query, cb) {
-  cb = cb || query; // fields is optional
-  
-  var fields = fieldsParser(query.fields);
+function get(id, cb) {
+  // log.debug({id: id}, 'getting achievement')
 
-  Achievement.findOne({id: id}, fields, function(err, achievement) {
+  Achievement.findOne({id: id}, function(err, achievement) {
     if (err) {
       log.error({err: err, achievement: id}, 'error getting achievement');
-      return cb(Boom.internal());
+      return cb(Boom.internal('error getting achievement'));
     }
     if (!achievement) {
       log.error({err: 'not found', achievement: id}, 'error getting achievement');
-      return cb(Boom.notFound());
+      return cb(Boom.notFound('achievement not found'));
     }
 
-    cb(null, achievement);
+    cb(null, achievement.toObject({ getters: true }));
   });
 }
 
@@ -84,7 +83,7 @@ function list(query, cb) {
       log.error({err: err}, 'error getting all achievements');
       return cb(Boom.internal());
     }
-    
+
     cb(null, achievements);
   });
 }
@@ -103,3 +102,27 @@ function remove(id, cb) {
     return cb(null, achievement);
   });
 }
+
+
+function addUser(achievementId, userId, cb) {
+  if(!achievementId || !userId) {
+    log.error({userId: userId, achievementId: achievementId}, 'missing arguments on addUser');
+    return cb();
+  }
+
+  var changes = {
+    $addToSet: {
+      users: userId
+    }
+  };
+
+  Achievement.findOneAndUpdate({ id: achievementId }, changes, function(err, achievement) {
+    if (err) {
+      log.error({err: err, achievement: achievementId}, 'error adding user to achievement');
+      return cb(Boom.internal());
+    }
+
+    cb(null, achievement);
+  });
+}
+
