@@ -80,7 +80,10 @@ function ticketsNeeded(session, cb) {
 
 function surveyNotNeeded(session, cb) {
   if(session && session.surveyNeeded) {
-    return cb(Boom.preconditionFailed('you need to submit the session survey to redeem', {session: session}));
+    var boom = Boom.preconditionFailed('you need to submit the session survey to redeem');
+    boom.output.payload.session = session;
+
+    return cb(boom);
   }
 
   cb(null, true);

@@ -47,6 +47,7 @@ exports.update = {
     payload: {
       name: Joi.string().description('Name of the achievement'),
       event: Joi.string().description('Event the achievement is associated to'),
+      session: Joi.string().description('Id of a session associated to this achievement'),
       category: Joi.string().description('Category of the achievement'),
       description: Joi.string().description('Description of the achievement'),
       instructions: Joi.string().description('Instructions on how to get the achievement'),

@@ -1,6 +1,7 @@
 var Joi = require('joi');
 var log = require('server/helpers/logger');
 var render = require('server/views/redeem');
+var renderAchievement = require('server/views/achievement');
 
 
 var handlers = module.exports;
@@ -49,7 +50,10 @@ exports.get = {
     { method: 'redeem.remove(params.id)' },
   ],
   handler: function (request, reply) {
-    reply({success: true});
+    reply({
+      success: true,
+      achievement: renderAchievement(request.pre.achievement)
+    });
   },
   description: 'Gets a redeem code'
 };
