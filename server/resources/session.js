@@ -31,7 +31,7 @@ function get(id, query, cb) {
 
     if (!body) {
       log.warn({err: err, id: id}, 'could not find session');
-      return cb(Boom.notFound());
+      return cb(Boom.notFound('session not found'));
     }
 
     parseBody(body, function(err, session) {
@@ -56,7 +56,7 @@ function list(query, cb) {
 
     if (!body) {
       log.warn({err: err}, 'could not find sessions');
-      return cb(Boom.notFound());
+      return cb(Boom.notFound('sessions not found'));
     }
 
     parseBody(body, function(err, sessions) {

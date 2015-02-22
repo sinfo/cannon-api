@@ -13,9 +13,9 @@ module.exports = {
         '> 28',
       ],
     },
-    sex: {
+    gender: {
       type: 'string',
-      title: 'Sex',
+      title: 'Gender',
       enum: [
         'Male',
         'Female',

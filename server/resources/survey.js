@@ -40,7 +40,7 @@ function get(sessionId, cb) {
     }
     if (!_survey) {
       log.error({err: 'not found', session: sessionId}, 'error getting survey');
-      return cb(Boom.notFound());
+      return cb(Boom.notFound('survey not found'));
     }
 
     cb(null, _survey);

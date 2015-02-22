@@ -43,7 +43,7 @@ function update(id, achievement, cb) {
     }
     if (!_achievement) {
       log.error({err: err, achievement: id}, 'error updating achievement');
-      return cb(Boom.notFound());
+      return cb(Boom.notFound('achievement not found'));
     }
 
     cb(null, _achievement.toObject({ getters: true }));
@@ -96,7 +96,7 @@ function remove(id, cb) {
     }
     if (!achievement) {
       log.error({err: 'not found', achievement: id}, 'error deleting achievement');
-      return cb(Boom.notFound());
+      return cb(Boom.notFound('achievement not found'));
     }
 
     return cb(null, achievement);

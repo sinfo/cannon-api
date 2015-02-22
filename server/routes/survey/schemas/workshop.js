@@ -13,9 +13,9 @@ module.exports = {
         '> 28',
       ],
     },
-    sex: {
+    gender: {
       type: 'string',
-      title: 'Sex',
+      title: 'Gender',
       enum: [
         'Male',
         'Female',
@@ -110,9 +110,9 @@ module.exports = {
           enum: [1, 2, 3, 4, 5],
           default: 5
         },
-        reccomend: {
+        recommend: {
           type: 'number',
-          title: 'Would reccomend this workshop',
+          title: 'Would recommend this workshop',
           enum: [1, 2, 3, 4, 5],
           default: 5
         },
