@@ -40,7 +40,7 @@ exports.getSchema = {
   },
   validate: {
     params: {
-      id: Joi.string().valid('presentation').required().description('id of the schema'),
+      id: Joi.string().valid(Object.keys(schemas)).required().description('id of the schema'),
     }
   },
   handler: function (request, reply) {
