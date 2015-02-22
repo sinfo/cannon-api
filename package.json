@@ -30,6 +30,7 @@
     "bell": "^1.1.0",
     "hoek": "^2.11.0",
     "boom": "~2.5.1",
+    "underscore": "^1.8.1",
     "bunyan": "~1.2.1",
     "fenixedu": "https://github.com/jgantunes/fenixedu/tarball/master",
     "good": "^2.3.0",

@@ -12,7 +12,7 @@ server.method('ticket.removeUser', removeUser, {});
 server.method('ticket.confirmUser', confirmUser, {});
 server.method('ticket.registerUserPresence', registerUserPresence, {});
 server.method('ticket.get', get, {});
-server.method('ticket.update', update, {});
+server.method('ticket.updateMulti', updateMulti, {});
 server.method('ticket.list', list, {});
 server.method('ticket.getRegisteredUsers', getRegisteredUsers, {});
 server.method('ticket.getWaitingUsers', getWaitingUsers, {});
@@ -169,13 +169,13 @@ function get(filter, query, cb) {
   });
 }
 
-function update(filter, ticket, cb) {
+function updateMulti(filter, ticket, cb) {
 
   if(typeof filter == 'string') {
     filter = { id: filter };
   }
 
-  Ticket.findOneAndUpdate(filter, ticket, function(err, ticket) {
+  Ticket.update(filter, ticket, {multi: true}, function(err, tickets) {
     if (err) {
       log.error({err: err, requestedTicket: filter}, 'error updating ticket');
       return cb(Boom.internal());
@@ -185,7 +185,7 @@ function update(filter, ticket, cb) {
       return cb(Boom.notFound());
     }
 
-    cb(null, ticket);
+    cb(null, tickets);
   });
 }
 

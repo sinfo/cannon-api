@@ -7,6 +7,7 @@ var Achievement = require('server/db/achievement');
 
 server.method('achievement.create', create, {});
 server.method('achievement.update', update, {});
+server.method('achievement.updateMulti', updateMulti, {});
 server.method('achievement.get', get, {});
 server.method('achievement.list', list, {});
 server.method('achievement.remove', remove, {});
@@ -32,17 +33,21 @@ function create(achievement, cb) {
   });
 }
 
-function update(id, achievement, cb) {
+function update(filter, achievement, cb) {
+
+  if(typeof filter == 'string') {
+    filter = { id: filter };
+  }
 
   achievement.updated = Date.now();
 
-  Achievement.findOneAndUpdate({id: id}, achievement, function(err, _achievement) {
+  Achievement.findOneAndUpdate(filter, achievement, function(err, _achievement) {
     if (err) {
-      log.error({err: err, achievement: id}, 'error updating achievement');
+      log.error({err: err, achievement: filter}, 'error updating achievement');
       return cb(Boom.internal());
     }
     if (!_achievement) {
-      log.error({err: err, achievement: id}, 'error updating achievement');
+      log.error({err: err, achievement: filter}, 'error updating achievement');
       return cb(Boom.notFound());
     }
 
@@ -50,16 +55,42 @@ function update(id, achievement, cb) {
   });
 }
 
-function get(id, cb) {
+function updateMulti(filter, achievement, cb) {
+
+  if(typeof filter == 'string') {
+    filter = { id: filter };
+  }
+
+  achievement.updated = Date.now();
+
+  Achievement.update(filter, achievement, {multi: true}, function(err, _achievements) {
+    if (err) {
+      log.error({err: err, achievement: filter}, 'error updating achievements');
+      return cb(Boom.internal());
+    }
+    if (!_achievements) {
+      log.warn({err: err, achievement: filter}, 'could not find achievements');
+      return cb(Boom.notFound());
+    }
+
+    cb(null, _achievements);
+  });
+}
+
+function get(filter, cb) {
   // log.debug({id: id}, 'getting achievement')
 
-  Achievement.findOne({id: id}, function(err, achievement) {
+  if(typeof filter == 'string') {
+    filter = { id: filter };
+  }
+
+  Achievement.findOne(filter, function(err, achievement) {
     if (err) {
-      log.error({err: err, achievement: id}, 'error getting achievement');
+      log.error({err: err, achievement: filter}, 'error getting achievement');
       return cb(Boom.internal('error getting achievement'));
     }
     if (!achievement) {
-      log.error({err: 'not found', achievement: id}, 'error getting achievement');
+      log.error({err: 'not found', achievement: filter}, 'error getting achievement');
       return cb(Boom.notFound('achievement not found'));
     }
 

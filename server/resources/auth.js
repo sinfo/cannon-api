@@ -4,6 +4,7 @@ var config = require('config');
 var log = require('server/helpers/logger');
 var async = require('async');
 var Hoek = require('hoek');
+var _ = require('underscore');
 var facebook = require('server/helpers/facebook');
 var Token = require('server/auth/token');
 var Fenix = require('fenixedu')(config.fenix);
@@ -626,11 +627,106 @@ function mergeAccount(user, other, cb){
     log.debug('[merge-account] removed dup account');
 
     async.parallel([
+      function updateFiles(cbAsync){
+        async.parallel([
+          function getUser(cbFile){
+            server.methods.file.get(userId, function(err, result){
+              if(err){
+                if (err.output && err.output.statusCode == 404) {
+                  log.warn({err: err.message, user: userId}, '[merge-account] user has no file');
+                  return cbFile();
+                }
+                log.error({err: err, user: userId, other: userId}, '[merge-account] error getting user file');
+              }
+              cbFile(err, result);
+            });
+          },
+          function getOther(cbFile){
+            server.methods.file.get(otherId, function(err, result){
+              if(err){
+                if (err.output && err.output.statusCode == 404) {
+                  log.warn({err: err.message, user: otherId}, '[merge-account] other user has no file');
+                  return cbFile();
+                }
+                log.error({err: err, user: userId, other: otherId}, '[merge-account] error getting other user file');
+              }
+              cbFile(err, result);
+            });
+          }
+        ], function gotFiles(err, results){
+          var userFile = results[0];
+          var otherFile = results[1];
+          var resultFile;
+          var deleteFile;
+          log.debug({results: results});
+          if(err){
+            return cbAsync(err);
+          }
+
+          if(!userFile && !otherFile){
+            return cbAsync();
+          }
+
+          if(!userFile || !otherFile){
+            resultFile = userFile || otherFile;
+            resultFile.user = user.id; 
+          }
+          else{
+            if(userFile.updated > otherFile.updated){
+              resultFile = userFile;
+              deleteFile = otherFile;
+            }
+            else{
+              resultFile = otherFile;
+              deleteFile = userFile;
+            }
+            resultFile.user = user.id;
+          }
+
+          async.parallel([
+            function deleteFile(cbFile){
+              server.methods.file.delete(deleteFile.id, function(err){
+                if(err){
+                  log.warn({err: err, file: deleteFile.id}, '[merge-account] error deleting file');
+                }
+                cbFile();
+              });
+            },
+            function deleteFileDb(cbFile){
+              server.methods.file.remove(deleteFile.id, function(err, _file){
+                if(err){
+                  log.error({err: err, file: deleteFile.id}, '[merge-account] error removing file from db');
+                  return cbFile(err);
+                }
+                cbFile(null, _file);
+              });
+            }
+          ],function updateFileDb(err, results){
+
+            if(err){
+              return cbAsync(err);
+            }
+
+            server.methods.file.update(resultFile.id, resultFile, function(err, result){
+              if(err){
+                log.error({err: err, file: resultFile.id}, '[merge-account] error updating file');
+                return cbAsync(err);
+              }
+              return cbAsync(null, result);
+            });
+          });
+        });
+      },
+
       function updateTickets(cbAsync){
         var filter = {$and: [{users: otherId}, {users: {$nin: [userId]}}]};
         var changedAttributes = {$set:{ 'users.$': userId}};
-        server.methods.ticket.update(filter, changedAttributes, function(err, tickets){
+        server.methods.ticket.updateMulti(filter, changedAttributes, function(err, tickets){
           if(err){
+            if (err.output && err.output.statusCode == 404) {
+              log.warn({err: err.message, user: otherId}, '[merge-account] user had no tickets');
+              return cbAsync();
+            }
             log.error({err: err, user: userId, other: otherId}, '[merge-account] error updating tickets');
             return cbAsync(err);
           }
@@ -641,38 +737,33 @@ function mergeAccount(user, other, cb){
       function updateAchievements(cbAsync){
         var filter = {$and: [{users: otherId}, {users: {$nin: [userId]}}]};
         var changedAttributes = {$set:{ 'users.$': userId}};
-        server.methods.achievement.update(filter, changedAttributes, function(err, achievements){
+        server.methods.achievement.updateMulti(filter, changedAttributes, function(err, achievements){
           if(err){
+            if (err.output && err.output.statusCode == 404) {
+              log.warn({err: err.message, user: otherId}, '[merge-account] user had no achievements');
+              return cbAsync();
+            }
             log.error({err: err, user: userId, other: otherId}, '[merge-account] error updating achievements');
             return cbAsync(err);
           }
           cbAsync(null, achievements);
         });
-      },
-
-      function updateUser(cbAsync){
+      }
+    ], function updateUser(err, results){
         var filter = {id: user.id};
         var changedAttributes = {};
-        for(var prop in other){
-          if(other.hasOwnProperty(prop)){
-            changedAttributes = user[prop] || other[prop];
-          }
-        }
+
+        changedAttributes = Hoek.applyToDefaults(other, user);
+        changedAttributes.skills = _.union(other.skills, user.skills);
         server.methods.user.update(filter, changedAttributes, function(err, user){
           if(err){
             log.error({err: err, user: userId, other: otherId, update: changedAttributes}, '[merge-account] error updating user');
-            return cbAsync(err);
+            return cb(err);
           }
-          cbAsync(null, user);
+          cb(null, user);
         });
       }
-    ], function done(err, results){
-      if(err){
-        log.error({err: err}, '[merge-account] error merging accounts');
-        return cb(err);
-      }
-      cb(null, results[2]);
-    });
+    );
   });
 }
 

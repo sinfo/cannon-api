@@ -81,7 +81,7 @@ function get(filter, query, cb) {
       return cb(Boom.notFound());
     }
 
-    cb(null, user);
+    cb(null, user.toObject({ getters: true }));
   });
 }
 
