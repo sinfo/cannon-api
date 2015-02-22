@@ -21,7 +21,7 @@ function create(achievement, cb) {
   Achievement.create(achievement, function(err, _achievement) {
     if (err) {
       if(err.code == 11000) {
-        return cb(Boom.conflict('achievement is a duplicate'));
+        return cb(Boom.conflict('achievement "'+achievement.id+'" is a duplicate'));
       }
 
       log.error({err: err, achievement: achievement.id}, 'error creating achievement');
