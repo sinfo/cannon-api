@@ -5,11 +5,11 @@ var log = require('server/helpers/logger');
 var fieldsParser = require('server/helpers/fieldsParser');
 var Survey = require('server/db/survey');
 
-server.method('survey.sumbit', sumbit, {});
+server.method('survey.submit', submit, {});
 server.method('survey.get', get, {});
 
 
-function sumbit(sessionId, response, cb) {
+function submit(sessionId, response, cb) {
 
   var changes = {
     $push: {

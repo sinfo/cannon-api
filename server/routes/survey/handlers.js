@@ -5,7 +5,9 @@ var config = require('config');
 
 var handlers = module.exports;
 
-exports.sumbit = {
+var schemas = require('./schemas');
+
+exports.submit = {
   tags: ['api','survey'],
   auth: {
     strategies: ['default', 'backup'],
@@ -25,6 +27,24 @@ exports.sumbit = {
   ],
   handler: function (request, reply) {
     reply({success: true});
+  },
+  description: 'Submit a survey'
+};
+
+exports.getSchema = {
+  tags: ['api','survey'],
+  auth: {
+    strategies: ['default', 'backup'],
+    scope: ['user', 'admin'],
+    mode: 'try'
+  },
+  validate: {
+    params: {
+      id: Joi.string().valid('presentation').required().description('id of the schema'),
+    }
+  },
+  handler: function (request, reply) {
+    reply(schemas[request.params.id]);
   },
   description: 'Submit a survey'
 };
