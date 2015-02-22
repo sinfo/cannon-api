@@ -29,7 +29,7 @@ handlers.grid = {
     },
     {
       method: function (request, reply) {
-        request.server.methods.session.get(request.achievement.session, function(err, session) {
+        request.server.methods.session.get(request.pre.achievement.session, function(err, session) {
           return reply(err || session);
         });
       },
