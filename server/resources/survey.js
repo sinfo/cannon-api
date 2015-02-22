@@ -5,11 +5,11 @@ var log = require('server/helpers/logger');
 var fieldsParser = require('server/helpers/fieldsParser');
 var Survey = require('server/db/survey');
 
-server.method('survey.sumbit', sumbit, {});
+server.method('survey.submit', submit, {});
 server.method('survey.get', get, {});
 
 
-function sumbit(sessionId, response, cb) {
+function submit(sessionId, response, cb) {
 
   var changes = {
     $push: {
@@ -40,7 +40,7 @@ function get(sessionId, cb) {
     }
     if (!_survey) {
       log.error({err: 'not found', session: sessionId}, 'error getting survey');
-      return cb(Boom.notFound());
+      return cb(Boom.notFound('survey not found'));
     }
 
     cb(null, _survey);

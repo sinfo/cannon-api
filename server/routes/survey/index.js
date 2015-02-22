@@ -6,3 +6,9 @@ server.route({
   path: '/surveys/{redeemCode}',
   config: handlers.submit
 });
+
+server.route({
+  method: 'GET',
+  path: '/surveys/{id}',
+  config: handlers.getSchema
+});
