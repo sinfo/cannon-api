@@ -468,8 +468,9 @@ function facebookAuth(id, token, cb) {
   ],function done(err, result){
     if(err){
       log.error({err: err}, '[facebook-login] error on facebook login');
+      return cb(err);
     }
-    cb(err, result);
+    cb(null, result);
   });
 }
 
@@ -485,8 +486,9 @@ function googleAuth(id, token, cb) {
   ],function done(err, result){
     if(err){
       log.error({err: err}, '[google-login] error on google login');
+      return cb(err);
     }
-    cb(err, result);
+    cb(null, result);
   });
 }
 
@@ -503,8 +505,9 @@ function fenixAuth(code, cb) {
   ],function done(err, result){
     if(err){
       log.error({err: err}, '[fenix-login] error on fenix login');
+      return cb(err);
     }
-    cb(err, result);
+    cb(null, result);
   });
 }
 
@@ -543,8 +546,9 @@ function addGoogleAuth(user, id, token, cb) {
   ],function done(err, result){
     if(err){
       log.error({err: err}, 'error adding google account');
+      return cb(err);
     }
-    cb(err, result);
+    cb(null, result);
   });
 }
 
@@ -574,8 +578,9 @@ function addFacebookAuth(user, id, token, cb) {
   ],function done(err, result){
     if(err){
       log.error({err: err}, 'error adding google account');
+      return cb(err);
     }
-    cb(err, result);
+    cb(null, result);
   });
 }
 
@@ -595,8 +600,9 @@ function addFenixAuth(user, code, cb) {
   ],function done(err, result){
     if(err){
       log.error({err: err}, 'error adding fenix account');
+      return cb(err);
     }
-    cb(err, result);
+    cb(null, result);
   });
 }
 
