@@ -12,6 +12,8 @@ function renderObject(model, user) {
   var result = {};
   var isAllowed = user && (user.role === 'admin' || model.id === user.id);
 
+  console.log({google: result.google, facebook: result.facebook});
+
   result.id = model.id;
   result.name = model.name;
   result.img = model.img || model.facebook && model.facebook.id && ('//graph.facebook.com/'+model.facebook.id+'/picture?width=400&height=400') || model.google && model.google.id && model.google.img || model.fenix && model.fenix.id && ('https://fenix.tecnico.ulisboa.pt/user/photo/' + model.fenix.id);

@@ -88,7 +88,7 @@ function addFBaccount(user, fbUser, token, cb){
 
 function fbUserFound(user, token, cb){
   if(user.mail){
-    return authenticate(user.id, {facebook: {token: token}}, cb);
+    return authenticate(user.id, {'facebook.token': token}, cb);
   }
 
   facebook.getMe(token, function(err, facebookUser) {
@@ -110,10 +110,12 @@ function fbUserFound(user, token, cb){
           log.error({err: err, mail: facebookUser.email, token: token }, '[facebook-login] error retrieving user info from facebook');
           return cb(Boom.unauthorized('couldn\'t retrieve your info from facebook'));
         }
-        return authenticate(_user.id, {mail: facebookUser.email, facebook: {token: token, id: facebookUser.id}}, cb);
+        return authenticate(user.id, {mail: facebookUser.email, 'facebook.token': token}, cb);
       }
 
-      user.facebook = {token: token};
+      if(user.facebook){
+        user.facebook.token = token;
+      }
       mergeAccount(user, _user, cb);
     });
   });
@@ -232,7 +234,7 @@ function addGaccount(user, gUser, mail, token, cb){
 
 function gUserFound(user, id, token, cb){
   if(user.mail){
-    return authenticate(user.id, {google: {token: token}}, cb);
+    return authenticate(user.id, {'google.token': token}, cb);
   }
 
     
@@ -254,15 +256,18 @@ function gUserFound(user, id, token, cb){
       }
 
       server.methods.user.get({mail: mail}, function(err, _user){
+
         if(err){
           if (!err.output || err.output.statusCode != 404) {
             log.error({err: err, mail: mail, token: token }, '[google-login] error retrieving user info from google');
             return cb(Boom.unauthorized('couldn\'t retrieve your info from google'));
           }
-          return authenticate(_user.id, {mail: mail, google: {token: token, id: googleUser.id}}, cb);
+          return authenticate(user.id, {mail: mail, 'google.token': token}, cb);
         }
 
-        user.google = {token: token};
+        if(user.google){
+          user.google.token = token;
+        }
         mergeAccount(user, _user, cb);
       });
     });

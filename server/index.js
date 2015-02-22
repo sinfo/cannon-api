@@ -14,7 +14,7 @@ server.pack.register([
     require('hapi-auth-bearer-token'),
     require('bell'),
     require('hapi-auth-basic'),
-    { plugin: require('./plugins/templates'), options: config.templates },
+    //{ plugin: require('./plugins/templates'), options: config.templates },
   ],
   //{ plugin: require('good'), options: options.log }],
 
