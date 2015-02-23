@@ -102,7 +102,7 @@ function inConfirmationPeriod(session, cb) {
   var now = new Date();
   var date = new Date(session.date);
 
-  if(date.setHours(0,0,0,0) == now.setHours(0,0,0,0)) {
+  if(date.setHours(0,0,0,0) != now.setHours(0,0,0,0)) {
     return cb(Boom.badRequest('out of confirmation period'));
   }
 
