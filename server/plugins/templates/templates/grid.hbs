@@ -18,13 +18,13 @@
       max-height: 110px;
       border: 1px solid #eee;
       display: table;
-      /*page-break-inside: avoid;*/
+      page-break-inside: avoid;
+      margin: 5px;
     }
     .table .column {
       display: table-cell;
       /*text-align: center;*/
       vertical-align: middle;
-      /*line-height: 13em;*/
     }
     .table .column.left {
       width: 30%;
@@ -32,6 +32,10 @@
     .table .column.right {
       width: 70%;
       padding: 10px;
+    }
+    .table .column.right .code {
+      font-size: 6px;
+      color: #666;
     }
     .table .column.left img {
       width: 100%;
@@ -48,8 +52,9 @@
       </div>
       <div class='right column'>
         <h2>#{{index}} - {{../achievement.name}}</h2>
-        <p><b>Redeem Code:</b><br>{{id}}</p>
+        <p class='message'>{{../message}}</p>
         <a href='{{../redeemUrl}}/{{id}}'>{{../redeemUrl}}/{{id}}</a>
+        <p class='code'><b>Code:</b> {{id}}</p>
       </div>
     </div>
   {{/each}}
