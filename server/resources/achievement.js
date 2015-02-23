@@ -9,6 +9,7 @@ server.method('achievement.create', create, {});
 server.method('achievement.update', update, {});
 server.method('achievement.updateMulti', updateMulti, {});
 server.method('achievement.get', get, {});
+server.method('achievement.getByUser', getByUser, {});
 server.method('achievement.list', list, {});
 server.method('achievement.remove', remove, {});
 server.method('achievement.addUser', addUser, {});
@@ -95,6 +96,25 @@ function get(filter, cb) {
     }
 
     cb(null, achievement.toObject({ getters: true }));
+  });
+}
+
+function getByUser(filter, cb) {
+  // log.debug({id: id}, 'getting achievement')
+
+  filter = { users: {$in : [filter]}};
+
+  Achievement.find(filter, function(err, achievements) {
+    if (err) {
+      log.error({err: err, achievement: filter}, 'error getting achievements');
+      return cb(Boom.internal('error getting achievements'));
+    }
+    if (!achievements) {
+      log.error({err: 'not found', achievement: filter}, 'error getting achievements');
+      return cb(Boom.notFound('achievements not found'));
+    }
+
+    cb(null, achievements);
   });
 }
 

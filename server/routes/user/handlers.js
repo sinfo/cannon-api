@@ -165,7 +165,8 @@ exports.get = {
   tags: ['api','user'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['user', 'admin'],
+    mode: 'try'
   },
   validate: {
     params: {
@@ -199,7 +200,8 @@ exports.list = {
   tags: ['api','user'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['user', 'admin'],
+    mode: 'try'
   },
   pre: [
     { method: 'user.list(query)', assign: 'users' }

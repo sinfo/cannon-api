@@ -89,6 +89,54 @@ exports.get = {
   description: 'Gets an achievement'
 };
 
+exports.get = {
+  tags: ['api','achievement'],
+  auth: {
+    strategies: ['default', 'backup'],
+    scope: ['user', 'admin'],
+    mode: 'try'
+  },
+  validate: {
+    query: {
+      fields: Joi.string().description('Fields we want to retrieve'),
+    },
+    params: {
+      id: Joi.string().required().description('Id of the achievement we want to retrieve'),
+    }
+  },
+  pre: [
+    { method: 'achievement.get(params.id)', assign: 'achievement' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.achievement));
+  },
+  description: 'Gets an achievement'
+};
+
+exports.getUser = {
+  tags: ['api','achievement'],
+  auth: {
+    strategies: ['default', 'backup'],
+    scope: ['user', 'admin'],
+    mode: 'try'
+  },
+  validate: {
+    query: {
+      fields: Joi.string().description('Fields we want to retrieve'),
+    },
+    params: {
+      id: Joi.string().required().description('Id of the user we want to retrieve'),
+    }
+  },
+  pre: [
+    { method: 'achievement.getByUser(params.id)', assign: 'achievements' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.achievements));
+  },
+  description: 'Gets user achievements'
+};
+
 
 exports.list = {
   tags: ['api','achievement'],
