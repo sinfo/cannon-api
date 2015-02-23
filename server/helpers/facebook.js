@@ -14,7 +14,7 @@ facebook.debugToken = function (facebookUserId, facebookUserToken, cb) {
     /*jshint camelcase: false */
     if (error || response.statusCode != 200) {
       log.warn({err: error, facebookConfig: facebookConfig, response: response});
-      return cb(error);
+      return cb(error || {err: response.statusCode, message: response.statusMessage});
     }
 
     var isValid = !(!result.data || result.data.app_id !== facebookConfig.clientId || result.data.user_id !== facebookUserId);
@@ -42,7 +42,7 @@ facebook.getMe = function (accessToken, cb) {
   },
   function (error, response, result) {
     if (error || response.statusCode != 200) {
-      return cb(error);
+      return cb(error || {err: response.statusCode, message: response.statusMessage});
     }
 
     cb(null, result);

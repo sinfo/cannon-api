@@ -56,7 +56,6 @@ function create(file, user, cb) {
 }
 
 function update(id, file, user, query, cb) {
-  log.debug({id: id, file: file, user: user, query: query});
   cb = cb || query || user;
   query = query || {};
   if(arguments.length === 4){
@@ -64,6 +63,10 @@ function update(id, file, user, query, cb) {
       query = user;
       user = null;
     }
+  }
+
+  if(typeof user === 'function'){
+    user = null;
   }
 
   var options = {
@@ -107,7 +110,6 @@ function get(id, query, cb) {
       log.error({err: 'not found', file: id}, 'file not found');
       return cb(Boom.notFound());
     }
-    log.debug({file: file}, 'got file');
     cb(null, file.toObject({ getters: true }));
   });
 }
