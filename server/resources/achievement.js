@@ -153,7 +153,7 @@ function addUser(achievementId, userId, cb) {
       return cb(Boom.internal());
     }
 
-    cb(null, achievement);
+    cb(null, achievement.toObject({ getters: true }));
   });
 }
 

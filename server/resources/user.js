@@ -9,6 +9,7 @@ var User = require('server/db/user');
 
 server.method('user.create', create, {});
 server.method('user.update', update, {});
+server.method('user.updatePoints', updatePoints, {});
 server.method('user.get', get, {});
 server.method('user.getByToken', getByToken, {});
 server.method('user.list', list, {});
@@ -33,6 +34,16 @@ function create(user, cb) {
 
     cb(null, _user.toObject({ getters: true }));
   });
+}
+
+function updatePoints(filter, points, cb){
+  var user = {$inc: {'points.available': points}};
+
+  if(points > 0){
+    user.$inc['points.total'] = points;
+  }
+
+  update(filter, user, cb);
 }
 
 function update(filter, user, opts, cb) {
