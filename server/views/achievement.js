@@ -15,7 +15,7 @@ function renderObject(model) {
     name: model.name,
     description: model.description,
     instructions: model.instructions,
-    img: model.img,
+    img: model.img || 'http://static.sinfo.org/SINFO_22/achievements/default.png',
     value: model.value,
     users: model.users,
     created: model.created,
