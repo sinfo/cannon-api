@@ -18,6 +18,22 @@ var credentialsA = {
   scope: 'admin',
 };
 
+var userA = {
+  id: 'john.doe',
+  name:'John Doe',
+  mail:'john@doe.com',
+  facebook: {
+    token: 'kjasgfasgfhjasgijki8'
+  },
+  google: {
+    token:'13751fdsgsd7'
+  },
+  fenix: {
+    token: '1agasgre',
+    refreshToken: '2fherhbhd',
+  },
+
+};
 
 var credentialsB = {
   user: {
@@ -32,7 +48,8 @@ var credentialsB = {
 var achievementA = {
   id: 'WENT-TO-SINFO-XXII',
   name: 'WENT TO SINFO XXII',
-  event: 'SINFO XXII'
+  event: 'SINFO XXII',
+  value: 10
 };
 
 
@@ -55,6 +72,28 @@ lab.experiment('Redeem', function() {
     };
 
     server.inject(options, function(response) {
+    });
+
+    var userOptions = {
+      method: 'POST',
+      url: '/users',
+      credentials: credentialsA,
+      payload: userA
+    };
+
+    server.inject(userOptions, function(response) {
+      done();
+    });
+  });
+
+  lab.after(function (done) {
+    var userOptions = {
+      method: 'DELETE',
+      url: '/users/'+userA.id,
+      credentials: credentialsA,
+    };
+
+    server.inject(userOptions, function(response) {
       done();
     });
   });
