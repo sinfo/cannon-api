@@ -27,3 +27,5 @@ keys/
 sftp-config.json
 
 cannon_uploads
+
+scripts/output

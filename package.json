@@ -47,6 +47,7 @@
     "mongoose": "^3.8.16",
     "nodemailer": "^1.3.0",
     "nodemailer-sendmail-transport": "^1.0.0",
+    "nodepdf": "^1.1.3",
     "parse-http-header": "^1.0.0",
     "qr-image": "~2.0.0",
     "qs": "^2.3.3",
