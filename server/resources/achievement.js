@@ -22,7 +22,7 @@ function create(achievement, cb) {
   Achievement.create(achievement, function(err, _achievement) {
     if (err) {
       if(err.code == 11000) {
-        return cb(Boom.conflict('achievement is a duplicate'));
+        return cb(Boom.conflict('achievement "'+achievement.id+'" is a duplicate'));
       }
 
       log.error({err: err, achievement: achievement.id}, 'error creating achievement');
@@ -127,7 +127,7 @@ function remove(id, cb) {
     }
     if (!achievement) {
       log.error({err: 'not found', achievement: id}, 'error deleting achievement');
-      return cb(Boom.notFound());
+      return cb(Boom.notFound('achievement not found'));
     }
 
     return cb(null, achievement);
