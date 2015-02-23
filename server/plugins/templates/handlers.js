@@ -8,7 +8,10 @@ var uuid = require('uuid');
 var handlers = module.exports;
 
 handlers.grid = {
-  auth: false,
+  // auth: false,
+  auth: {
+    strategies: ['internal'],
+  },
   tags: ['api','templates'],
   validate: {
     params: {

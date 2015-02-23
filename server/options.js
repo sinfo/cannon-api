@@ -21,6 +21,10 @@ module.exports = {
     backup: {
       allowEmptyUsername: false,
       validateFunc: auth.basic
+    },
+    internal: {
+      allowEmptyUsername: false,
+      validateFunc: auth.internal
     }
 	},
   upload:[

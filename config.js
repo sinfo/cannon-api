@@ -94,6 +94,11 @@ config.auth.refreshToken = {
   audience: process.env.CANNON_REFRESH_TOKEN_AUDIENCE || config.auth.token.audience
 };
 
+config.auth.internal = {
+  username: process.env.CANNON_INTERNAL_AUTH_USERNAME || 'YOUR INTERNAL AUTH USERNAME',
+  password: process.env.CANNON_INTERNAL_AUTH_PASSWORD || 'YOUR INTERNAL AUTH PASSWORD',
+};
+
 config.email = {
   from: process.env.CANNON_EMAIL_FROM || 'SINFO <cannon@sinfo.org>',
   replyTo: process.env.CANNON_EMAIL_REPLY_TO || 'geral@sinfo.org',

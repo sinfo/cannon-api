@@ -1,6 +1,6 @@
 var Hapi = require('hapi');
 var options = require('server/options');
-var config =require('config');
+var config = require('config');
 var log = require('server/helpers/logger');
 
 log.error({ env: process.env.NODE_ENV }, '### Starting Cannon ###');
@@ -14,7 +14,7 @@ server.pack.register([
     require('hapi-auth-bearer-token'),
     require('bell'),
     require('hapi-auth-basic'),
-    { plugin: require('./plugins/templates'), options: config.templates },
+    // { plugin: require('./plugins/templates'), options: config.templates },
   ],
   //{ plugin: require('good'), options: options.log }],
 
@@ -27,14 +27,20 @@ server.pack.register([
 
     server.auth.strategy('default', 'bearer-access-token', options.auth.default);
     server.auth.strategy('backup', 'basic', options.auth.backup);
+    server.auth.strategy('internal', 'basic', options.auth.internal);
 
     require('server/resources');
     require('server/routes');
 
-    if (!module.parent) {
-      server.start(function () {
-        log.info('### Server started at: ' + server.info.uri + ' ###');
-      });
-    }
+    // Register secondary plugins
+    server.pack.register([
+      { plugin: require('./plugins/templates'), options: config.templates },
+    ], function (err) {
+      if (!module.parent) {
+        server.start(function () {
+          log.info('### Server started at: ' + server.info.uri + ' ###');
+        });
+      }
+    });
   }
 );
