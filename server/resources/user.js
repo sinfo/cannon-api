@@ -81,7 +81,7 @@ function get(filter, query, cb) {
       return cb(Boom.notFound());
     }
 
-    cb(null, user);
+    cb(null, user.toObject({ getters: true }));
   });
 }
 
@@ -142,14 +142,19 @@ function getMulti(ids, query, cb) {
   });
 }
 
-function remove(id, cb) {
-  User.findOneAndRemove({id: id}, function(err, user){
+function remove(filter, cb) {
+
+  if(typeof filter == 'string') {
+    filter = { id: filter };
+  }
+
+  User.findOneAndRemove(filter, function(err, user){
     if (err) {
-      log.error({err: err, requestedUser: id}, 'error deleting user');
+      log.error({err: err, requestedUser: filter}, 'error deleting user');
       return cb(Boom.internal());
     }
     if (!user) {
-      log.error({err: err, requestedUser: id}, 'error deleting user');
+      log.error({err: err, requestedUser: filter}, 'error deleting user');
       return cb(Boom.notFound());
     }
 

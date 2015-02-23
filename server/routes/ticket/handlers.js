@@ -172,7 +172,57 @@ exports.getUsers = {
 
     reply(renderUsers(request.pre.users, request.auth.credentials && request.auth.credentials.user));
   },
-  description: 'Gets a ticket'
+  description: 'Gets the users'
 };
 
 
+exports.getWaiting = {
+  tags: ['api','ticket'],
+  auth: {
+    strategies: ['default', 'backup'],
+    scope: ['user', 'admin'],
+    mode: 'try'
+  },
+  validate: {
+    params: {
+      sessionId: Joi.string().required().description('Id of the session'),
+    }
+  },
+  pre: [
+    { method: 'session.get(params.sessionId)', assign: 'session' },
+    { method: 'ticket.getWaitingUsers(params.sessionId, pre.session)', assign: 'userIds' },
+    { method: 'user.getMulti(pre.userIds)', assign: 'users' }
+  ],
+  handler: function (request, reply) {
+    console.log(request.pre.userIds);
+
+    reply(renderUsers(request.pre.users, request.auth.credentials && request.auth.credentials.user));
+  },
+  description: 'Gets the waiting users'
+};
+
+
+exports.getConfirmed = {
+  tags: ['api','ticket'],
+  auth: {
+    strategies: ['default', 'backup'],
+    scope: ['user', 'admin'],
+    mode: 'try'
+  },
+  validate: {
+    params: {
+      sessionId: Joi.string().required().description('Id of the session'),
+    }
+  },
+  pre: [
+    { method: 'session.get(params.sessionId)', assign: 'session' },
+    { method: 'ticket.getConfirmedUsers(params.sessionId, pre.session)', assign: 'userIds' },
+    { method: 'user.getMulti(pre.userIds)', assign: 'users' }
+  ],
+  handler: function (request, reply) {
+    console.log(request.pre.userIds);
+
+    reply(renderUsers(request.pre.users, request.auth.credentials && request.auth.credentials.user));
+  },
+  description: 'Gets the confirmed users'
+};
