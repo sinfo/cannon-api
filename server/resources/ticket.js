@@ -21,6 +21,7 @@ server.method('ticket.getAcceptedUser', getAcceptedUser, {});
 server.method('ticket.confirmationEmail', confirmationEmail, {});
 server.method('ticket.registrationEmail', registrationEmail, {});
 server.method('ticket.registrationAcceptedEmail', registrationAcceptedEmail, {});
+server.method('ticket.getUserSessions', getUserSessions, {});
 
 function userConfirmed(sessionId, userId, cb){
   Ticket.findOne({session: sessionId}, function(err, _ticket){
@@ -210,6 +211,23 @@ function list(query, cb) {
   });
 }
 
+function getUserSessions(id, cb) {
+
+  Ticket.find( {
+      users: id
+    }, function(err, tickets) {
+    if (err) {
+      log.error({err: err}, 'error getting tickets');
+      return cb(Boom.internal());
+    }
+
+    var ids = tickets.map(function(ticket){
+      return ticket.session;
+    });
+
+    cb(null, ids);
+  });
+}
 
 function getRegisteredUsers(sessionId, session, cb) {
   cb = cb || session; // session is optional

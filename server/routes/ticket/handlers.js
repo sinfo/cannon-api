@@ -226,3 +226,25 @@ exports.getConfirmed = {
   },
   description: 'Gets the confirmed users'
 };
+
+exports.getUserSessions = {
+  tags: ['api','ticket'],
+  auth: {
+    strategies: ['default', 'backup'],
+    scope: ['user', 'admin'],
+    mode: 'try'
+  },
+  validate: {
+    params: {
+      userId: Joi.string().required().description('Id of the user'),
+    }
+  },
+  pre: [
+    { method: 'ticket.getUserSessions(params.userId)', assign: 'tickets' }
+  ],
+  handler: function (request, reply) {
+    console.log(request.pre.tickets);
+    reply(request.pre.tickets);
+  },
+  description: 'Gets the sessions for a user'
+};
