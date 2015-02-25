@@ -54,3 +54,9 @@ server.route({
   path: '/tickets/{sessionId}/confirmed',
   config: handlers.getConfirmed
 });
+
+server.route({
+  method: 'GET',
+  path: '/users/{userId}/sessions',
+  config: handlers.getUserSessions
+});
