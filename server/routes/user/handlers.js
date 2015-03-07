@@ -203,6 +203,14 @@ exports.list = {
     scope: ['user', 'admin'],
     mode: 'try'
   },
+  validate: {
+    query: {
+      fields: Joi.string().description('Fields we want to retrieve'),
+      sort: Joi.string().description('Sort fields we want to retrieve'),
+      skip: Joi.number().description('Number of documents we want to skip'),
+      limit: Joi.number().description('Limit of documents we want to retrieve')
+    }
+  },
   pre: [
     { method: 'user.list(query)', assign: 'users' }
   ],
