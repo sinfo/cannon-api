@@ -123,7 +123,7 @@ exports.download = {
 exports.downloadMe = {
   tags: ['api','file'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['backup'],
     scope: ['user', 'admin']
   },
   pre: [
@@ -135,7 +135,7 @@ exports.downloadMe = {
       filename: request.pre.file.name,
       mode: 'attachment'
     };
-    reply.file(path, options);
+    reply.file(path, options).type('application/pdf');
   },
   description: 'Downloads the file of the user'
 };
