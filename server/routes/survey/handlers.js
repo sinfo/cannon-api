@@ -54,4 +54,39 @@ exports.getSchema = {
   description: 'Submit a survey'
 };
 
+exports.getSessionResponses = {
+  tags: ['api','survey'],
+  auth: false,
+  validate: {
+    params: {
+      sessionId: Joi.string().required().description('id of the session whose surveys we want'),
+    }
+  },
+  pre: [
+    { method: 'survey.get(params.sessionId)', assign: 'survey' }
+  ],
+  handler: function (request, reply) {
+    reply(request.pre.survey);
+  },
+  description: 'Get responses of a session'
+};
+
+exports.getSessionProcessedResponses = {
+  tags: ['api','survey'],
+  auth: false,
+  validate: {
+    params: {
+      sessionId: Joi.string().required().description('id of the session whose surveys we want'),
+    }
+  },
+  pre: [
+    { method: 'survey.get(params.sessionId)', assign: 'survey' },
+    { method: 'survey.processResponses(pre.survey)', assign: 'result' }
+  ],
+  handler: function (request, reply) {
+    reply(request.pre.result);
+  },
+  description: 'Get processed responses of a session'
+};
+
 module.exports = handlers;
