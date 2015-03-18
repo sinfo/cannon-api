@@ -283,7 +283,9 @@ exports.uploadMe = {
     [
       { method: 'file.delete(pre.oldFile.id)', assign: 'deleteFile', failAction: 'log'},
       { method: 'file.update(pre.oldFile.id, pre.file, auth.credentials.user.id, query)', assign: 'fileInfo' }
-    ]
+    ],
+    { method: 'achievement.addCV(auth.credentials.user.id)', assign: 'achievement', failAction: 'log'},
+    { method: 'user.updatePoints(auth.credentials.user.id, pre.achievement.value)', failAction: 'ignore'},
   ],
   handler: function (request, reply) {
     reply(render(request.pre.fileInfo)).created('/api/file/'+request.pre.fileInfo.id);

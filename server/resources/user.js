@@ -39,6 +39,10 @@ function create(user, cb) {
 function updatePoints(filter, points, cb){
   var user = {$inc: {'points.available': points}};
 
+  if(typeof points !==  'number'){
+    return cb(Boom.badRequest('points must be of type number'));
+  }
+
   if(points > 0){
     user.$inc['points.total'] = points;
   }

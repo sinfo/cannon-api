@@ -1,5 +1,6 @@
 var Boom = require('boom');
 var slug = require('slug');
+var async = require('async');
 var server = require('server').hapi;
 var log = require('server/helpers/logger');
 var fieldsParser = require('server/helpers/fieldsParser');
@@ -13,6 +14,7 @@ server.method('achievement.getByUser', getByUser, {});
 server.method('achievement.list', list, {});
 server.method('achievement.remove', remove, {});
 server.method('achievement.addUser', addUser, {});
+server.method('achievement.addCV', addCV, {});
 
 
 function create(achievement, cb) {
@@ -86,12 +88,13 @@ function get(filter, cb) {
   }
 
   Achievement.findOne(filter, function(err, achievement) {
+    log.error({err: err});
     if (err) {
       log.error({err: err, achievement: filter}, 'error getting achievement');
       return cb(Boom.internal('error getting achievement'));
     }
     if (!achievement) {
-      log.error({err: 'not found', achievement: filter}, 'error getting achievement');
+      log.error({err: 'not found', achievement: filter}, 'achievement not found');
       return cb(Boom.notFound('achievement not found'));
     }
 
@@ -110,7 +113,7 @@ function getByUser(filter, cb) {
       return cb(Boom.internal('error getting achievements'));
     }
     if (!achievements) {
-      log.error({err: 'not found', achievement: filter}, 'error getting achievements');
+      log.error({err: 'not found', achievement: filter}, 'achievements not found');
       return cb(Boom.notFound('achievements not found'));
     }
 
@@ -154,6 +157,20 @@ function remove(id, cb) {
   });
 }
 
+function addCV(userId, cb){
+  var achievementId = 'submitted-cv';
+
+  get({id: achievementId, users: {$in: [userId]}}, function(err, result){
+    if(err){
+      log.error({err: err});
+      if(err.output && err.output.statusCode == 404){
+        return addUser(achievementId, userId, cb);
+      }
+      return cb(err);
+    }
+    return cb(Boom.conflict('user already has achievement'));
+  });
+}
 
 function addUser(achievementId, userId, cb) {
   if(!achievementId || !userId) {
