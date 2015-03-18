@@ -14,7 +14,7 @@ function renderObject(model, user) {
 
   result.id = model.id;
   result.name = model.name;
-  result.img = model.img || model.facebook && model.facebook.id && ('//graph.facebook.com/'+model.facebook.id+'/picture?width=400&height=400') || model.google && model.google.id && model.google.img || model.fenix && model.fenix.id && ('https://fenix.tecnico.ulisboa.pt/user/photo/' + model.fenix.id);
+  result.img = model.img || model.facebook && model.facebook.id && ('https://graph.facebook.com/'+model.facebook.id+'/picture?width=400&height=400') || model.google && model.google.id && model.google.img || model.fenix && model.fenix.id && ('https://fenix.tecnico.ulisboa.pt/user/photo/' + model.fenix.id);
   result.role = model.role,
   result.points = model.points && {
     available: model.points && model.points.available || 0,

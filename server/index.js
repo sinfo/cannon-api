@@ -12,7 +12,6 @@ var server = module.exports.hapi = new Hapi.Server(config.host, config.port, { c
 server.pack.register([
     { plugin: require('hapi-swagger'), options: config.swagger },
     require('hapi-auth-bearer-token'),
-    require('bell'),
     require('hapi-auth-basic'),
     // { plugin: require('./plugins/templates'), options: config.templates },
   ],

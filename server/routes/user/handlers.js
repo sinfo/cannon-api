@@ -15,10 +15,10 @@ exports.create = {
     payload: {
       id: Joi.string().description('Id of the user'),
       name: Joi.string().required().description('Name of the user'),
-      img: Joi.string().description('Image of the user'),
+      img: Joi.string().uri().description('Image of the user'),
       role: Joi.string().description('Role of the user'),
       mail: Joi.string().email().required().description('Mail of the user'),
-      bearer: Joi.array().includes(Joi.object({
+      bearer: Joi.array().items(Joi.object({
         token: Joi.string().token().description('Bearer token'),
         refreshToken: Joi.string().token().description('Bearer refresh token'),
         ttl: Joi.number().description('Bearer token time to live'),
@@ -43,7 +43,7 @@ exports.create = {
         available: Joi.number().description('Points available to use'),
         total: Joi.number().description('Total points earned')
       },
-      achievements: Joi.array().includes(Joi.object().keys({
+      achievements: Joi.array().items(Joi.object().keys({
         id: Joi.string().description('id of the earned achievement'),
         date: Joi.date().description('date of its receipt')
       })),
@@ -78,7 +78,7 @@ exports.updateMe = {
     payload: {
       // id: Joi.string().description('Id of the user'),
       name: Joi.string().description('Name of the user'),
-      img: Joi.string().description('Image of the user'),
+      img: Joi.string().uri().description('Image of the user'),
       mail: Joi.string().email().description('Mail of the user'),
       area: Joi.string().description('Work field of the user'),
       skills: Joi.array().description('Skills of the user'),
@@ -108,10 +108,10 @@ exports.update = {
     payload: {
       id: Joi.string().description('Id of the user'),
       name: Joi.string().description('Name of the user'),
-      img: Joi.string().description('Image of the user'),
+      img: Joi.string().uri().description('Image of the user'),
       role: Joi.string().description('Role of the user'),
       mail: Joi.string().email().description('Mail of the user'),
-      bearer: Joi.array().includes(Joi.object({
+      bearer: Joi.array().items(Joi.object({
         token: Joi.string().token().description('Bearer token'),
         refreshToken: Joi.string().token().description('Bearer refresh token'),
         ttl: Joi.number().description('Bearer token time to live'),
@@ -136,7 +136,7 @@ exports.update = {
         available: Joi.number().description('Points available to use'),
         total: Joi.number().description('Total points earned')
       },
-      achievements: Joi.array().includes(Joi.object().keys({
+      achievements: Joi.array().items(Joi.object().keys({
         id: Joi.string().description('id of the earned achievement'),
         date: Joi.date().description('date of its receipt')
       })),
