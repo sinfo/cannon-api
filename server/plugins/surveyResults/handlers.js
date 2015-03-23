@@ -27,7 +27,7 @@ handlers.surveyResults = {
     },
     {
       method: function (request, reply) {
-        request.server.methods.survey.proccessResponses(request.pre.survey, function (err, results) {
+        request.server.methods.survey.processResponses(request.pre.survey, function (err, results) {
           console.log(err, results);
           return reply(err || results); 
         });
