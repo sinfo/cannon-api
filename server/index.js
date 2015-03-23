@@ -35,6 +35,7 @@ server.pack.register([
     // Register secondary plugins
     server.pack.register([
       { plugin: require('./plugins/templates'), options: config.templates },
+      { plugin: require('./plugins/surveyresults'), options: config.surveyresults },
     ], function (err) {
       if (!module.parent) {
         server.start(function () {

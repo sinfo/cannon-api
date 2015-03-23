@@ -8,10 +8,10 @@ var handlers = require('./handlers');
 // Declare internals
 var internals = {
   defaults: {
-    endpoint: '/templates',
+    endpoint: '/surveyresults',
     auth: false,
-    basePath: Path.join(__dirname, 'templates'),
-    partialsPath: Path.join(__dirname, 'templates'),
+    basePath: Path.join(__dirname, 'surveyresults'),
+    partialsPath: Path.join(__dirname, 'surveyresults'),
   }
 };
 
@@ -31,8 +31,8 @@ exports.register = function (plugin, options, next) {
 
   plugin.route({
     method: 'GET',
-    path: settings.endpoint+'/achievements/{achievementId}',
-    config: handlers.grid
+    path: settings.endpoint+'/{sessionId}',
+    config: handlers.surveyResults
   });
 
   next();
