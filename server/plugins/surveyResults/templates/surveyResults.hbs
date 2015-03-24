@@ -25,7 +25,9 @@
       window.onload = function () {
         var results = {{{results}}};
 
-        isIST(results);
+        console.log(results);
+
+        fillElements(results);
 
         pieChart("ageChart", results['age'], results['responses']);
         pieChart("genderChart", results['gender'], results['responses']);
@@ -33,7 +35,7 @@
         pieChart("satisfactionChart", results['satisfaction'], results['responses']);
 
         //logistics
-        pieChart("installationsChart", results['logistics']['instalation'], results['responses']);
+        pieChart("installationsChart", results['logistics']['instalations'], results['responses']);
         pieChart("locationChart", results['logistics']['location'], results['responses']);
         pieChart("organizationChart", results['logistics']['organization'], results['responses']);
         pieChart("communicationChart", results['logistics']['communication'], results['responses']);
@@ -46,9 +48,12 @@
         pieChart("recommendChart", results['session']['recommend'], results['responses']);
       };
 
-      function isIST(results) {
-        var p = document.getElementById('ist');
-        results['isIST'] ? p.innerHTML += results['isIST'] : p.innerHTML = "";
+      function fillElements(results) {
+        var e = document.getElementById('responses');
+        e.innerHTML = (results.responses ? e.innerHTML + results.responses : '');
+
+        e = document.getElementById('istStudents');
+        e.innerHTML = (results.isIST ? e.innerHTML + results.isIST : '');
       }
 
       function pieChart(id, results, responses) {
@@ -102,7 +107,8 @@
     <div class="ink-grid">
       <h1>Survey Results</h1>
 
-      <h4 id="ist">IST students: </h4>
+      <h6 id="responses">Responses received: </h6>
+      <h6 id="istStudents">IST students: </h6>
 
       <h2>Attendees</h2>
       <div class="chart">
