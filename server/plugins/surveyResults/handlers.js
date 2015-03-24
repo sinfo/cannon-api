@@ -9,7 +9,7 @@ var handlers = module.exports;
 
 handlers.surveyResults = {
   auth: false,
-  tags: ['api','survey'],
+  tags: ['api', 'survey'],
   validate: {
     params: {
       sessionId: Joi.string().required().description('id of the session whose surveys we want'),
@@ -27,7 +27,7 @@ handlers.surveyResults = {
     {
       method: function (request, reply) {
         request.server.methods.survey.processResponses(request.pre.survey, function (results, err) {
-          return reply(err || results); 
+          return reply(err || results);
         });
       },
       assign: 'results'

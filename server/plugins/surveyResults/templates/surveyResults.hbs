@@ -11,7 +11,80 @@
 
     <script type="text/javascript" src="Chart.min.js"></script>
 
+    <style type="text/css">
+      .chart {
+        display: inline-block;
+      }
+
+      .chart > h6 {
+        text-align: center;
+      }
+    </style>
+
     <script type="text/javascript">
+      window.onload = function () {
+        var results = {{{results}}};
+
+        isIST(results);
+
+        pieChart("ageChart", results['age'], results['responses']);
+        pieChart("genderChart", results['gender'], results['responses']);
+        pieChart("areaChart", results['area'], results['responses']);
+        pieChart("satisfactionChart", results['satisfaction'], results['responses']);
+
+        //logistics
+        pieChart("installationsChart", results['logistics']['instalation'], results['responses']);
+        pieChart("locationChart", results['logistics']['location'], results['responses']);
+        pieChart("organizationChart", results['logistics']['organization'], results['responses']);
+        pieChart("communicationChart", results['logistics']['communication'], results['responses']);
+
+        //session
+        pieChart("session-organizationChart", results['session']['organization'], results['responses']);
+        pieChart("contentChart", results['session']['content'], results['responses']);
+        pieChart("speakerChart", results['session']['speaker'], results['responses']);
+        pieChart("durationChart", results['session']['duration'], results['responses']);
+        pieChart("recommendChart", results['session']['recommend'], results['responses']);
+      };
+
+      function isIST(results) {
+        var p = document.getElementById('ist');
+        results['isIST'] ? p.innerHTML += results['isIST'] : p.innerHTML = "";
+      }
+
+      function pieChart(id, results, responses) {
+        chart(id, results, responses, function (error, ctx, data) {
+          if (!error) {
+            new Chart(ctx).Pie(data, {
+              animateRotate: false
+            });
+          }
+        });
+      }
+
+      function chart(id, results, responses, cb) {
+        if (!results) {
+          return cb("Error");
+        }
+
+        var ctx = document.getElementById(id).getContext("2d");
+        var data = [];
+
+        for (var key in results) {
+          data.push({
+            value: (results[key] / responses * 100).toFixed(2),
+            color: randomColor(),   // "#F7464A"
+            highlight: "#555555",   // "#FF5A5E"
+            label: key
+          });
+        }
+
+        if (data.length === 0) {
+          return cb("Error");
+        }
+
+        cb(null, ctx, data)
+      }
+
       function randomColor() {
         var symbols = "0123456789ABCDEF";
         var color = "#";
@@ -22,67 +95,6 @@
 
         return color;
       }
-
-      function isIST(res) {
-        var p = document.getElementById('ist');
-        res['isIST'] ? p.innerHTML += res['isIST'] : p.innerHTML = "";
-      }
-
-      function chart(id, res, responses, cb) {
-        if (!res) {
-          return cb("Error");
-        }
-
-        var ctx = document.getElementById(id).getContext("2d");
-        var data = [];
-
-        for (var r in res) {
-          data.push({
-              value: (res[r] / responses * 100).toFixed(2),
-              color: randomColor(),   //"#F7464A",
-              highlight: "#555555",   //"#FF5A5E",
-              label: r
-          });
-        }
-
-        if (!data) {
-          return cb("Error");
-        }
-
-        cb(null, ctx, data)
-      }
-
-      function pieChart(id, res, responses) {
-        chart(id, res, responses, function (error, ctx, data) {
-          if (!error) {
-           new Chart(ctx).Pie(data);
-          }
-        });
-      }
-
-      window.onload = function() {
-        var res = {{{results}}};
-
-        isIST(res);
-
-        pieChart("ageChart", res['age'], res['responses']);
-        pieChart("genderChart", res['gender'], res['responses']);
-        pieChart("areaChart", res['area'], res['responses']);
-        pieChart("satisfactionChart", res['satisfaction'], res['responses']);
-
-        //logistics
-        pieChart("instalationsChart", res['logistics']['instalation'], res['responses']);
-        pieChart("locationChart", res['logistics']['location'], res['responses']);
-        pieChart("organizationChart", res['logistics']['organization'], res['responses']);
-        pieChart("communicationChart", res['logistics']['communication'], res['responses']);
-
-        //session
-        pieChart("session-organizationChart", res['session']['organization'], res['responses']);
-        pieChart("contentChart", res['session']['content'], res['responses']);
-        pieChart("speakerChart", res['session']['speaker'], res['responses']);
-        pieChart("durationChart", res['session']['duration'], res['responses']);
-        pieChart("recommendChart", res['session']['recommend'], res['responses']);
-      };
     </script>
   </head>
 
@@ -90,25 +102,65 @@
     <div class="ink-grid">
       <h1>Survey Results</h1>
 
-      <h4 id="ist">Número de alunos do IST: </h4>
+      <h4 id="ist">IST students: </h4>
 
-      <canvas id="ageChart" width="400" height="400"></canvas>
-      <canvas id="genderChart" width="400" height="400"></canvas>
-      <canvas id="areaChart" width="400" height="400"></canvas>
-      <canvas id="satisfactionChart" width="400" height="400"></canvas>
+      <h2>Attendees</h2>
+      <div class="chart">
+        <h6>Age</h6>
+        <canvas id="ageChart" width="250" height="250"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Gender</h6>
+        <canvas id="genderChart" width="250" height="250"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Area of study</h6>
+        <canvas id="areaChart" width="250" height="250"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Satisfaction</h6>
+        <canvas id="satisfactionChart" width="250" height="250"></canvas>
+      </div>
 
       <h2>Logistics</h2>
-      <canvas id="instalationsChart" width="400" height="400"></canvas>
-      <canvas id="locationChart" width="400" height="400"></canvas>
-      <canvas id="organizationChart" width="400" height="400"></canvas>
-      <canvas id="communicationChart" width="400" height="400"></canvas>
+      <div class="chart">
+        <h6>Installations</h6>
+        <canvas id="installationsChart" width="250" height="250"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Location</h6>
+        <canvas id="locationChart" width="250" height="250"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Organization</h6>
+        <canvas id="organizationChart" width="250" height="250"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Communication</h6>
+        <canvas id="communicationChart" width="250" height="250"></canvas>
+      </div>
 
       <h2>Session</h2>
-      <canvas id="session-organizationChart" width="400" height="400"></canvas>
-      <canvas id="contentChart" width="400" height="400"></canvas>
-      <canvas id="speakerChart" width="400" height="400"></canvas>
-      <canvas id="durationChart" width="400" height="400"></canvas>
-      <canvas id="recommendChart" width="400" height="400"></canvas>
+      <div class="chart">
+        <h6>Organization</h6>
+        <canvas id="session-organizationChart" width="250" height="250"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Content</h6>
+        <canvas id="contentChart" width="250" height="250"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Speaker</h6>
+        <canvas id="speakerChart" width="250" height="250"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Duration</h6>
+        <canvas id="durationChart" width="250" height="250"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Recommend</h6>
+        <canvas id="recommendChart" width="250" height="250"></canvas>
+      </div>
     </div>
   </body>
 </html>
