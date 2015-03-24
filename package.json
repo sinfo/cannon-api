@@ -6,7 +6,7 @@
   "scripts": {
     "run": "NODE_PATH=. nodemon server/index.js | bunyan",
     "start": "NODE_PATH=. node server/index.js | bunyan",
-    "mon": "NODE_PATH=. nodemon server/index.js | bunyan",
+    "mon": "NODE_PATH=. nodemon -e js,hbs server/index.js | bunyan",
     "test": "NODE_PATH=. node_modules/lab/bin/lab server/test -l  -m 2000 --verbose",
     "test-cov": "NODE_PATH=. node_modules/lab/bin/lab server/test -c",
     "lint": "node_modules/.bin/jshint -c .jshintrc ."
