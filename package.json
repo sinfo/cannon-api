@@ -28,9 +28,7 @@
   "dependencies": {
     "async": "^0.9.0",
     "bell": "^1.1.0",
-    "hoek": "^2.11.0",
     "boom": "~2.5.1",
-    "underscore": "^1.8.1",
     "bunyan": "~1.2.1",
     "fenixedu": "https://github.com/jgantunes/fenixedu/tarball/master",
     "good": "^2.3.0",
@@ -53,6 +51,7 @@
     "qs": "^2.3.3",
     "request": "^2.44.0",
     "slug": "~0.7.1",
+    "underscore": "^1.8.1",
     "urlencode": "^0.2.0",
     "uuid": "^2.0.1"
   },

@@ -10,8 +10,8 @@ var internals = {
   defaults: {
     endpoint: '/surveyresults',
     auth: false,
-    basePath: Path.join(__dirname, 'surveyresults'),
-    partialsPath: Path.join(__dirname, 'surveyresults'),
+    basePath: Path.join(__dirname, 'templates'),
+    partialsPath: Path.join(__dirname, 'templates'),
   }
 };
 
@@ -31,7 +31,15 @@ exports.register = function (plugin, options, next) {
 
   plugin.route({
     method: 'GET',
-    path: settings.endpoint+'/{sessionId}',
+    path: settings.endpoint + '/Chart.min.js',
+    handler: function (request, reply) {
+      reply.file(Path.join(internals.defaults.basePath, 'Chart.min.js'));
+    }
+  });
+  
+  plugin.route({
+    method: 'GET',
+    path: settings.endpoint + '/{sessionId}',
     config: handlers.surveyResults
   });
 

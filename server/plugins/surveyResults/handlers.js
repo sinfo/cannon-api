@@ -19,7 +19,6 @@ handlers.surveyResults = {
     {
       method: function (request, reply) {
         request.server.methods.survey.get(request.params.sessionId, function(err, survey) {
-          console.log(err, survey);
           return reply(err || survey);
         });
       },
@@ -27,8 +26,8 @@ handlers.surveyResults = {
     },
     {
       method: function (request, reply) {
-        request.server.methods.survey.processResponses(request.pre.survey, function (err, results) {
-          console.log(err, results);
+        request.server.methods.survey.processResponses(request.pre.survey, function (results, err) {
+          console.log(results);
           return reply(err || results); 
         });
       },
@@ -36,9 +35,10 @@ handlers.surveyResults = {
     }
   ],
   handler: function (request, reply) {
+    console.log(JSON.stringify(request.pre.results));
     reply.view('surveyResults.hbs', {
       survey: request.pre.survey,
-      results: request.pre.results
+      results: JSON.stringify(request.pre.results)
     });
   },
   description: 'Renders a survey analysis for a session'
