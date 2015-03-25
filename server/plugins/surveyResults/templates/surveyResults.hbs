@@ -91,11 +91,12 @@
 
         var ctx = document.getElementById(id).getContext("2d");
         var data = [];
-
+        var index = 0;
+        
         for (var key in results) {
           data.push({
             value: (results[key] / responses * 100).toFixed(2),
-            color: randomColor(),   // "#F7464A"
+            color: getColor(id, index++, key),   // "#F7464A"
             highlight: "#555555",   // "#FF5A5E"
             label: key
           });
@@ -106,6 +107,19 @@
         }
 
         cb(null, ctx, data)
+      }
+
+      function getColor(id, index, key) {
+        if (id == 'genderChart') {
+          return index == 0 ? '#82C2FA' : '#FFA3D0';
+        }
+        else if (id == 'ageChart' || id == 'areaChart' || id == 'satisfactionChart') {
+          return randomColor();
+        }
+        else {
+          var colors = ['#FCC8C1', '#CB7B37', '#EF7164', '#A8E549', '#00A2D5'];
+          return colors[key - 1];
+        }
       }
 
       function randomColor() {
