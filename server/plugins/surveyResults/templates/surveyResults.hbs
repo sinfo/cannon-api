@@ -25,8 +25,6 @@
       window.onload = function () {
         var results = {{{results}}};
 
-        console.log(results);
-
         fillElements(results);
 
         pieChart("ageChart", results['age'], results['responses']);
@@ -48,12 +46,24 @@
         pieChart("recommendChart", results['session']['recommend'], results['responses']);
       };
 
-      function fillElements(results) {
-        var e = document.getElementById('responses');
-        e.innerHTML = (results.responses ? e.innerHTML + results.responses : '');
+      function isEmpty(obj) {
+        return Object.keys(obj).length === 0;
+      }
 
+      function fillElements(results) {
         e = document.getElementById('istStudents');
         e.innerHTML = (results.isIST ? e.innerHTML + results.isIST : '');
+        
+        e = document.getElementById('sugestionsText');
+        
+        if (results.sugestions) {
+          e.innerHTML = results.sugestions 
+        }
+        else {
+          e.innerHTML = '';
+          var parentNode = e.parentNode;
+          parentNode.parentNode.removeChild(parentNode);
+        }
       }
 
       function pieChart(id, results, responses) {
@@ -67,7 +77,11 @@
       }
 
       function chart(id, results, responses, cb) {
-        if (!results) {
+        if (isEmpty(results)) {
+          var e = document.getElementById(id);
+          var parentNode = e.parentNode;
+          parentNode.parentNode.removeChild(parentNode);
+          
           return cb("Error");
         }
 
@@ -107,7 +121,6 @@
     <div class="ink-grid">
       <h1>Survey Results</h1>
 
-      <h6 id="responses">Responses received: </h6>
       <h6 id="istStudents">IST students: </h6>
 
       <h2>Attendees</h2>
@@ -167,6 +180,11 @@
         <h6>Recommend</h6>
         <canvas id="recommendChart" width="250" height="250"></canvas>
       </div>
+      <div id="sugestions">
+        <h6 id="sugestionsTitle">Sugestions</h6>
+        <p id="sugestionsText"></p>    
+      </div>
+    </div>
     </div>
   </body>
 </html>
