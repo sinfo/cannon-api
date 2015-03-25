@@ -31,12 +31,20 @@ exports.register = function (plugin, options, next) {
 
   plugin.route({
     method: 'GET',
+    path: settings.endpoint + '/pegasus.min.js',
+    handler: function (request, reply) {
+      reply.file(Path.join(internals.defaults.basePath, 'pegasus.min.js'));
+    }
+  });
+
+  plugin.route({
+    method: 'GET',
     path: settings.endpoint + '/Chart.min.js',
     handler: function (request, reply) {
       reply.file(Path.join(internals.defaults.basePath, 'Chart.min.js'));
     }
   });
-  
+
   plugin.route({
     method: 'GET',
     path: settings.endpoint + '/{sessionId}',

@@ -1,4 +1,4 @@
-<html>
+<!DOCTYPE html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="http://fastly.ink.sapo.pt/3.1.5/css/ink.css"> <!-- inks css file -->
     <script type="text/javascript" src="http://fastly.ink.sapo.pt/3.1.5/js/ink-all.js"></script> <!-- inks js bundle -->
 
+    <script type="text/javascript" src="pegasus.min.js"></script>
     <script type="text/javascript" src="Chart.min.js"></script>
 
     <style type="text/css">
@@ -23,9 +24,11 @@
 
     <script type="text/javascript">
       window.onload = function () {
-        var results = {{{results}}};
+        pegasus("/sessions/{{survey}}/results").then(render);
+      };
 
-        fillElements(results);
+      function render(results) {
+        renderElements(results);
 
         pieChart("ageChart", results['age'], results['responses']);
         pieChart("genderChart", results['gender'], results['responses']);
@@ -44,20 +47,20 @@
         pieChart("speakerChart", results['session']['speaker'], results['responses']);
         pieChart("durationChart", results['session']['duration'], results['responses']);
         pieChart("recommendChart", results['session']['recommend'], results['responses']);
-      };
+      }
 
       function isEmpty(obj) {
         return Object.keys(obj).length === 0;
       }
 
-      function fillElements(results) {
+      function renderElements(results) {
         var e = document.getElementById('istStudents');
         e.innerHTML = (results.isIST ? e.innerHTML + results.isIST : '');
-        
+
         e = document.getElementById('sugestionsText');
-        
+
         if (results.sugestions) {
-          e.innerHTML = results.sugestions 
+          e.innerHTML = results.sugestions
         }
         else {
           e.innerHTML = '';
@@ -81,7 +84,7 @@
           var e = document.getElementById(id);
           var parentNode = e.parentNode;
           parentNode.parentNode.removeChild(parentNode);
-          
+
           return cb("Error");
         }
 
@@ -126,65 +129,64 @@
       <h2>Attendees</h2>
       <div class="chart">
         <h6>Age</h6>
-        <canvas id="ageChart" width="250" height="250"></canvas>
+        <canvas id="ageChart" width="300" height="300"></canvas>
       </div>
       <div class="chart">
         <h6>Gender</h6>
-        <canvas id="genderChart" width="250" height="250"></canvas>
+        <canvas id="genderChart" width="300" height="300"></canvas>
       </div>
       <div class="chart">
         <h6>Area of study</h6>
-        <canvas id="areaChart" width="250" height="250"></canvas>
+        <canvas id="areaChart" width="300" height="300"></canvas>
       </div>
       <div class="chart">
         <h6>Satisfaction</h6>
-        <canvas id="satisfactionChart" width="250" height="250"></canvas>
+        <canvas id="satisfactionChart" width="300" height="300"></canvas>
       </div>
 
       <h2>Logistics</h2>
       <div class="chart">
         <h6>Installations</h6>
-        <canvas id="installationsChart" width="250" height="250"></canvas>
+        <canvas id="installationsChart" width="300" height="300"></canvas>
       </div>
       <div class="chart">
         <h6>Location</h6>
-        <canvas id="locationChart" width="250" height="250"></canvas>
+        <canvas id="locationChart" width="300" height="300"></canvas>
       </div>
       <div class="chart">
         <h6>Organization</h6>
-        <canvas id="organizationChart" width="250" height="250"></canvas>
+        <canvas id="organizationChart" width="300" height="300"></canvas>
       </div>
       <div class="chart">
         <h6>Communication</h6>
-        <canvas id="communicationChart" width="250" height="250"></canvas>
+        <canvas id="communicationChart" width="300" height="300"></canvas>
       </div>
 
       <h2>Session</h2>
       <div class="chart">
         <h6>Organization</h6>
-        <canvas id="session-organizationChart" width="250" height="250"></canvas>
+        <canvas id="session-organizationChart" width="300" height="300"></canvas>
       </div>
       <div class="chart">
         <h6>Content</h6>
-        <canvas id="contentChart" width="250" height="250"></canvas>
+        <canvas id="contentChart" width="300" height="300"></canvas>
       </div>
       <div class="chart">
         <h6>Speaker</h6>
-        <canvas id="speakerChart" width="250" height="250"></canvas>
+        <canvas id="speakerChart" width="300" height="300"></canvas>
       </div>
       <div class="chart">
         <h6>Duration</h6>
-        <canvas id="durationChart" width="250" height="250"></canvas>
+        <canvas id="durationChart" width="300" height="300"></canvas>
       </div>
       <div class="chart">
         <h6>Recommend</h6>
-        <canvas id="recommendChart" width="250" height="250"></canvas>
+        <canvas id="recommendChart" width="300" height="300"></canvas>
       </div>
       <div id="sugestions">
         <h6 id="sugestionsTitle">Sugestions</h6>
-        <p id="sugestionsText"></p>    
+        <p id="sugestionsText"></p>
       </div>
-    </div>
     </div>
   </body>
 </html>

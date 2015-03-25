@@ -18,25 +18,16 @@ handlers.surveyResults = {
   pre: [
     {
       method: function (request, reply) {
-        request.server.methods.survey.get(request.params.sessionId, function(err, survey) {
+        request.server.methods.survey.get(request.params.sessionId, function (err, survey) {
           return reply(err || survey);
         });
       },
       assign: 'survey'
-    },
-    {
-      method: function (request, reply) {
-        request.server.methods.survey.processResponses(request.pre.survey, function (results, err) {
-          return reply(err || results);
-        });
-      },
-      assign: 'results'
     }
   ],
   handler: function (request, reply) {
     reply.view('surveyResults.hbs', {
-      survey: request.pre.survey,
-      results: JSON.stringify(request.pre.results)
+      survey: request.pre.survey.session
     });
   },
   description: 'Renders a survey analysis for a session'
