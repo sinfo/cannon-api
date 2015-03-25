@@ -23,8 +23,10 @@
     </style>
 
     <script type="text/javascript">
+      var request = pegasus("/sessions/{{survey}}/results");
+
       window.onload = function () {
-        pegasus("/sessions/{{survey}}/results").then(render);
+        request.then(render);
       };
 
       function render(results) {
