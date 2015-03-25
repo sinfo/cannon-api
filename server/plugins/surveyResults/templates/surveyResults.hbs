@@ -59,8 +59,7 @@
         var e = document.getElementById('istStudents');
         e.innerHTML = (results.isIST ? e.innerHTML + results.isIST : '');
 
-        e = document.getElementById('sugestionsText');
-
+        e = document.getElementById('sugestions');
         if (results.sugestions) {
           e.innerHTML = results.sugestions
         }
@@ -185,9 +184,9 @@
         <h6>Recommend</h6>
         <canvas id="recommendChart" width="300" height="300"></canvas>
       </div>
-      <div id="sugestions">
-        <h6 id="sugestionsTitle">Sugestions</h6>
-        <p id="sugestionsText"></p>
+      <div>
+        <h6>Sugestions</h6>
+        <p id="sugestions"></p>
       </div>
     </div>
   </body>
