@@ -59,9 +59,11 @@
         var e = document.getElementById('istStudents');
         e.innerHTML = (results.isIST ? e.innerHTML + results.isIST : '');
 
-        e = document.getElementById('sugestions');
-        if (results.sugestions) {
-          e.innerHTML = results.sugestions
+        e = document.getElementById('suggestions');
+        if (results.suggestions) {
+          for(var i = 0; i < results.suggestions.length; i++) {
+            e.innerHTML += '<p>' + results.suggestions[i] + '</p>'
+          }
         }
         else {
           e.innerHTML = '';
@@ -200,8 +202,8 @@
         <canvas id="recommendChart" width="300" height="300"></canvas>
       </div>
       <div>
-        <h6>Sugestions</h6>
-        <p id="sugestions"></p>
+        <h6>Suggestions</h6>
+        <p id="suggestions"></p>
       </div>
     </div>
   </body>
