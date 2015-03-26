@@ -57,19 +57,7 @@
 
       function renderElements(results) {
         var e = document.getElementById('istStudents');
-        e.innerHTML = (results.isIST ? e.innerHTML + results.isIST : '');
-
-        e = document.getElementById('suggestions');
-        if (results.suggestions) {
-          for(var i = 0; i < results.suggestions.length; i++) {
-            e.innerHTML += '<p>' + results.suggestions[i] + '</p>'
-          }
-        }
-        else {
-          e.innerHTML = '';
-          var parentNode = e.parentNode;
-          parentNode.parentNode.removeChild(parentNode);
-        }
+        e.innerHTML = (results.isIST ? e.innerHTML + ((results.isIST / results.responses) * 100).toFixed(2) + '%' : '0%');
       }
 
       function pieChart(id, results, responses) {
@@ -140,25 +128,24 @@
   <body>
     <div class="ink-grid">
       <h1>Survey Results</h1>
-      <h3>Total Responses: </h3>
 
       <h6 id="istStudents">IST students: </h6>
 
       <h2>Attendees</h2>
       <div class="chart">
-        <h6>Age</h6>
+        <h6>Age - (%)</h6>
         <canvas id="ageChart" width="300" height="300"></canvas>
       </div>
       <div class="chart">
-        <h6>Gender</h6>
+        <h6>Gender - (%)</h6>
         <canvas id="genderChart" width="300" height="300"></canvas>
       </div>
       <div class="chart">
-        <h6>Area of study - [%]</h6>
+        <h6>Area of study - (%)</h6>
         <canvas id="areaChart" width="300" height="300"></canvas>
       </div>
       <div class="chart">
-        <h6>Satisfaction - [%]</h6>
+        <h6>Satisfaction - (%)</h6>
         <canvas id="satisfactionChart" width="300" height="300"></canvas>
       </div>
 
@@ -200,10 +187,6 @@
       <div class="chart">
         <h6>Recommend - [0-5]</h6>
         <canvas id="recommendChart" width="300" height="300"></canvas>
-      </div>
-      <div>
-        <h6>Suggestions</h6>
-        <p id="suggestions"></p>
       </div>
     </div>
   </body>
