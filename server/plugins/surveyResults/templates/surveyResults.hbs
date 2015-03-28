@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <title>Survey Results</title>
+
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="http://fastly.ink.sapo.pt/3.1.5/css/ink.css"> <!-- inks css file -->
+    <script type="text/javascript" src="http://fastly.ink.sapo.pt/3.1.5/js/ink-all.js"></script> <!-- inks js bundle -->
+
+    <script type="text/javascript" src="pegasus.min.js"></script>
+    <script type="text/javascript" src="Chart.min.js"></script>
+
+    <style type="text/css">
+      .chart {
+        display: inline-block;
+      }
+
+      .chart > h6 {
+        text-align: center;
+      }
+    </style>
+
+    <script type="text/javascript">
+      var request = pegasus("/sessions/{{survey}}/results");
+
+      window.onload = function () {
+        request.then(render);
+      };
+
+      function render(results) {
+        renderElements(results);
+
+        pieChart("ageChart", results['age'], results['responses']);
+        pieChart("genderChart", results['gender'], results['responses']);
+        pieChart("areaChart", results['area'], results['responses']);
+        pieChart("satisfactionChart", results['satisfaction'], results['responses']);
+
+        //logistics
+        pieChart("installationsChart", results['logistics']['instalations'], results['responses']);
+        pieChart("locationChart", results['logistics']['location'], results['responses']);
+        pieChart("organizationChart", results['logistics']['organization'], results['responses']);
+        pieChart("communicationChart", results['logistics']['communication'], results['responses']);
+
+        //session
+        pieChart("session-organizationChart", results['session']['organization'], results['responses']);
+        pieChart("contentChart", results['session']['content'], results['responses']);
+        pieChart("speakerChart", results['session']['speaker'], results['responses']);
+        pieChart("durationChart", results['session']['duration'], results['responses']);
+        pieChart("recommendChart", results['session']['recommend'], results['responses']);
+      }
+
+      function isEmpty(obj) {
+        return Object.keys(obj).length === 0;
+      }
+
+      function renderElements(results) {
+        var e = document.getElementById('istStudents');
+        e.innerHTML = (results.isIST ? e.innerHTML + ((results.isIST / results.responses) * 100).toFixed(2) + '%' : '0%');
+      }
+
+      function pieChart(id, results, responses) {
+        chart(id, results, responses, function (error, ctx, data) {
+          if (!error) {
+            new Chart(ctx).Pie(data, {
+              animateRotate: false
+            });
+          }
+        });
+      }
+
+      function chart(id, results, responses, cb) {
+        if (isEmpty(results)) {
+          var e = document.getElementById(id);
+          var parentNode = e.parentNode;
+          parentNode.parentNode.removeChild(parentNode);
+
+          return cb("Error");
+        }
+
+        var ctx = document.getElementById(id).getContext("2d");
+        var data = [];
+        var index = 0;
+        
+        for (var key in results) {
+          data.push({
+            value: (results[key] / responses * 100).toFixed(2),
+            color: getColor(id, index++, key),   // "#F7464A"
+            highlight: "#555555",   // "#FF5A5E"
+            label: key
+          });
+        }
+
+        if (data.length === 0) {
+          return cb("Error");
+        }
+
+        cb(null, ctx, data)
+      }
+
+      function getColor(id, index, key) {
+        if (id == 'genderChart') {
+          return index == 0 ? '#82C2FA' : '#FFA3D0';
+        }
+        else if (id == 'ageChart' || id == 'areaChart' || id == 'satisfactionChart') {
+          return randomColor();
+        }
+        else {
+          var colors = ['#CA2920', '#FC6A2A', '#F1C951', '#0098BA', '#003A50'];
+          return colors[key - 1];
+        }
+      }
+
+      function randomColor() {
+        var symbols = "0123456789ABCDEF";
+        var color = "#";
+
+        while (color.length < 7) {
+          color += symbols[Math.floor(Math.random() * symbols.length)];
+        }
+
+        return color;
+      }
+    </script>
+  </head>
+
+  <body>
+    <div class="ink-grid">
+      <h1>Survey Results</h1>
+
+      <h6 id="istStudents">IST students: </h6>
+
+      <h2>Attendees</h2>
+      <div class="chart">
+        <h6>Age - (%)</h6>
+        <canvas id="ageChart" width="300" height="300"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Gender - (%)</h6>
+        <canvas id="genderChart" width="300" height="300"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Area of study - (%)</h6>
+        <canvas id="areaChart" width="300" height="300"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Satisfaction - (%)</h6>
+        <canvas id="satisfactionChart" width="300" height="300"></canvas>
+      </div>
+
+      <h2>Logistics</h2>
+      <div class="chart">
+        <h6>Installations - [0-5]</h6>
+        <canvas id="installationsChart" width="300" height="300"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Location - [0-5]</h6>
+        <canvas id="locationChart" width="300" height="300"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Organization - [0-5]</h6>
+        <canvas id="organizationChart" width="300" height="300"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Communication - [0-5]</h6>
+        <canvas id="communicationChart" width="300" height="300"></canvas>
+      </div>
+
+      <h2>Session</h2>
+      <div class="chart">
+        <h6>Organization - [0-5]</h6>
+        <canvas id="session-organizationChart" width="300" height="300"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Content - [0-5]</h6>
+        <canvas id="contentChart" width="300" height="300"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Speaker - [0-5]</h6>
+        <canvas id="speakerChart" width="300" height="300"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Duration - [0-5]</h6>
+        <canvas id="durationChart" width="300" height="300"></canvas>
+      </div>
+      <div class="chart">
+        <h6>Recommend - [0-5]</h6>
+        <canvas id="recommendChart" width="300" height="300"></canvas>
+      </div>
+    </div>
+  </body>
+</html>
