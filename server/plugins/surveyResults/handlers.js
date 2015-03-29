@@ -23,11 +23,20 @@ handlers.surveyResults = {
         });
       },
       assign: 'survey'
+    },
+    {
+      method: function (request, reply) {
+        request.server.methods.session.get(request.params.sessionId, function (err, session) {
+          return reply(err || session);
+        });
+      },
+      assign: 'session'
     }
   ],
   handler: function (request, reply) {
     reply.view('surveyResults.hbs', {
-      survey: request.pre.survey.session
+      survey: request.pre.survey.session,
+      session: request.pre.session.name
     });
   },
   description: 'Renders a survey analysis for a session'

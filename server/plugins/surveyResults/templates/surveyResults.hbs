@@ -127,7 +127,7 @@
   </head>
 
   <body>
-    <div class="ink-grid">
+    <div class="ink-grid top-space">
       <h1>Thank you note</h1>
 
       <div class="bottom-space">
@@ -153,66 +153,104 @@
         <i>A Comissão</i>
       </div>
 
-      <h1>Survey results of your presentation</h1>
+      <h1>Survey results of your session: {{session}}</h1>
 
       <h6 id="istStudents">IST students: </h6>
 
       <h2>Attendees</h2>
-      <div class="chart">
-        <h6>Age - (%)</h6>
-        <canvas id="ageChart" width="300" height="300"></canvas>
-      </div>
-      <div class="chart">
-        <h6>Gender - (%)</h6>
-        <canvas id="genderChart" width="300" height="300"></canvas>
-      </div>
-      <div class="chart">
-        <h6>Area of study - (%)</h6>
-        <canvas id="areaChart" width="300" height="300"></canvas>
-      </div>
-      <div class="chart">
-        <h6>Satisfaction - (%)</h6>
-        <canvas id="satisfactionChart" width="300" height="300"></canvas>
-      </div>
-
-      <h2>Logistics</h2>
-      <div class="chart">
-        <h6>Installations - [0-5]</h6>
-        <canvas id="installationsChart" width="300" height="300"></canvas>
-      </div>
-      <div class="chart">
-        <h6>Location - [0-5]</h6>
-        <canvas id="locationChart" width="300" height="300"></canvas>
-      </div>
-      <div class="chart">
-        <h6>Organization - [0-5]</h6>
-        <canvas id="organizationChart" width="300" height="300"></canvas>
-      </div>
-      <div class="chart">
-        <h6>Communication - [0-5]</h6>
-        <canvas id="communicationChart" width="300" height="300"></canvas>
+      <div class="bottom-space">
+        <div class="chart">
+          <h6>Age - (%)</h6>
+          <canvas id="ageChart" width="300" height="300"></canvas>
+        </div>
+        <div class="chart">
+          <h6>Gender - (%)</h6>
+          <canvas id="genderChart" width="300" height="300"></canvas>
+        </div>
+        <div class="chart">
+          <h6>Area of study - (%)</h6>
+          <canvas id="areaChart" width="300" height="300"></canvas>
+        </div>
+        <div class="chart">
+          <h6>General satisfaction - (%)</h6>
+          <canvas id="satisfactionChart" width="300" height="300"></canvas>
+        </div>
       </div>
 
-      <h2>Session</h2>
-      <div class="chart">
-        <h6>Organization - [0-5]</h6>
-        <canvas id="session-organizationChart" width="300" height="300"></canvas>
+      <h2>Logistics of SINFO 22</h2>
+      <div class="bottom-space">
+        <div class="chart">
+          <h6>Installations and confort - [0-5]</h6>
+          <canvas id="installationsChart" width="300" height="300"></canvas>
+        </div>
+        <div class="chart">
+          <h6>Location - [0-5]</h6>
+          <canvas id="locationChart" width="300" height="300"></canvas>
+        </div>
+        <div class="chart">
+          <h6>Organization - [0-5]</h6>
+          <canvas id="organizationChart" width="300" height="300"></canvas>
+        </div>
+        <div class="chart">
+          <h6>Communication - [0-5]</h6>
+          <canvas id="communicationChart" width="300" height="300"></canvas>
+        </div>
       </div>
-      <div class="chart">
-        <h6>Content - [0-5]</h6>
-        <canvas id="contentChart" width="300" height="300"></canvas>
+      <div class="bottom-space note ">
+        <i>
+          <b>Label info:</b><br>
+          5 - Very Satisfied <br>
+          4 - Satisfied <br>
+          3 - Indiferent <br>
+          2 - Not satisfied <br>
+          1 - Very unsatisfied <br>
+        </i>
       </div>
-      <div class="chart">
-        <h6>Speaker - [0-5]</h6>
-        <canvas id="speakerChart" width="300" height="300"></canvas>
+
+      <h2>Logistics of the session</h2>
+      <div class="bottom-space">
+        <div class="chart">
+          <h6>Organization - [0-5]</h6>
+          <canvas id="session-organizationChart" width="300" height="300"></canvas>
+        </div>
+        <div class="chart">
+          <h6>Content quality - [0-5]</h6>
+          <canvas id="contentChart" width="300" height="300"></canvas>
+        </div>
       </div>
-      <div class="chart">
-        <h6>Duration - [0-5]</h6>
-        <canvas id="durationChart" width="300" height="300"></canvas>
+      <div class="bottom-space note ">
+        <i>
+          <b>Label info:</b><br>
+          5 - Very Satisfied <br>
+          4 - Satisfied <br>
+          3 - Indiferent <br>
+          2 - Not satisfied <br>
+          1 - Very unsatisfied <br>
+        </i>
       </div>
-      <div class="chart">
-        <h6>Recommend - [0-5]</h6>
-        <canvas id="recommendChart" width="300" height="300"></canvas>
+      <div class="bottom-space">
+        <div class="chart">
+          <h6>Would recommend speaker - [0-5]</h6>
+          <canvas id="speakerChart" width="300" height="300"></canvas>
+        </div>
+        <div class="chart">
+          <h6>Duration adequated - [0-5]</h6>
+          <canvas id="durationChart" width="300" height="300"></canvas>
+        </div>
+        <div class="chart">
+          <h6>Would recommend session - [0-5]</h6>
+          <canvas id="recommendChart" width="300" height="300"></canvas>
+        </div>
+      </div>
+      <div class="bottom-space note ">
+        <i>
+          <b>Label info:</b><br>
+          5 - Fully agree <br>
+          4 - Agree <br>
+          3 - Indiferent <br>
+          2 - Don't agree <br>
+          1 - Fully disagree <br>
+        </i>
       </div>
     </div>
   </body>
