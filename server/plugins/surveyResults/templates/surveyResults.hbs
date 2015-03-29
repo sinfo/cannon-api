@@ -104,7 +104,8 @@
           return index == 0 ? '#82C2FA' : '#FFA3D0';
         }
         else if (id == 'ageChart' || id == 'areaChart' || id == 'satisfactionChart') {
-          return randomColor();
+          var colors = ['#5D983A', '#1D2817', '#BA2140', '#BDE141', '#3B393A'];
+          return colors[index];
         }
         else {
           var colors = ['#CA2920', '#FC6A2A', '#F1C951', '#0098BA', '#003A50'];
