@@ -1,1 +1,3 @@
 node_modules
+server/plugins/surveyResults/templates/Chart.min.js
+server/plugins/surveyResults/templates/pegasus.min.js

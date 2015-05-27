@@ -12,3 +12,15 @@ server.route({
   path: '/surveys/{id}',
   config: handlers.getSchema
 });
+
+server.route({
+  method: 'GET',
+  path: '/sessions/{sessionId}/responses',
+  config: handlers.getSessionResponses
+});
+
+server.route({
+  method: 'GET',
+  path: '/sessions/{sessionId}/results',
+  config: handlers.getSessionProcessedResponses
+});

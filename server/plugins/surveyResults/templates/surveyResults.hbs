@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <title>Survey Results</title>
+
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="https://ink.global.ssl.fastly.net/3.1.5/css/ink.css"> <!-- inks css file -->
+    <script type="text/javascript" src="https://ink.global.ssl.fastly.net/3.1.5/js/ink-all.js"></script> <!-- inks js bundle -->
+
+    <script type="text/javascript" src="pegasus.min.js"></script>
+    <script type="text/javascript" src="Chart.min.js"></script>
+
+    <style type="text/css">
+      .chart {
+        display: inline-block;
+      }
+
+      .chart > h6 {
+        text-align: center;
+      }
+    </style>
+
+    <script type="text/javascript">
+      var request = pegasus("/sessions/{{survey}}/results");
+
+      window.onload = function () {
+        request.then(render);
+      };
+
+      function render(results) {
+        renderElements(results);
+
+        pieChart("ageChart", results['age'], results['responses']);
+        pieChart("genderChart", results['gender'], results['responses']);
+        pieChart("areaChart", results['area'], results['responses']);
+        pieChart("satisfactionChart", results['satisfaction'], results['responses']);
+
+        //logistics
+        pieChart("installationsChart", results['logistics']['instalations'], results['responses']);
+        pieChart("locationChart", results['logistics']['location'], results['responses']);
+        pieChart("organizationChart", results['logistics']['organization'], results['responses']);
+        pieChart("communicationChart", results['logistics']['communication'], results['responses']);
+
+        //session
+        pieChart("session-organizationChart", results['session']['organization'], results['responses']);
+        pieChart("contentChart", results['session']['content'], results['responses']);
+        pieChart("speakerChart", results['session']['speaker'], results['responses']);
+        pieChart("durationChart", results['session']['duration'], results['responses']);
+        pieChart("recommendChart", results['session']['recommend'], results['responses']);
+      }
+
+      function isEmpty(obj) {
+        return Object.keys(obj).length === 0;
+      }
+
+      function renderElements(results) {
+        var e = document.getElementById('istStudents');
+        e.innerHTML = (results.isIST ? e.innerHTML + ((results.isIST / results.responses) * 100).toFixed(2) + '%' : '0%');
+      }
+
+      function pieChart(id, results, responses) {
+        chart(id, results, responses, function (error, ctx, data) {
+          if (!error) {
+            new Chart(ctx).Pie(data, {
+              animateRotate: false
+            });
+          }
+        });
+      }
+
+      function chart(id, results, responses, cb) {
+        if (isEmpty(results)) {
+          var e = document.getElementById(id);
+          var parentNode = e.parentNode;
+          parentNode.parentNode.removeChild(parentNode);
+
+          return cb("Error");
+        }
+
+        var ctx = document.getElementById(id).getContext("2d");
+        var data = [];
+        var index = 0;
+        
+        for (var key in results) {
+          data.push({
+            value: (results[key] / responses * 100).toFixed(2),
+            color: getColor(id, index++, key),   // "#F7464A"
+            highlight: "#555555",   // "#FF5A5E"
+            label: key
+          });
+        }
+
+        if (data.length === 0) {
+          return cb("Error");
+        }
+
+        cb(null, ctx, data)
+      }
+
+      function getColor(id, index, key) {
+        if (id == 'genderChart') {
+          return index == 0 ? '#82C2FA' : '#FFA3D0';
+        }
+        else if (id == 'ageChart' || id == 'areaChart' || id == 'satisfactionChart') {
+          var colors = ['#5D983A', '#1D2817', '#BA2140', '#BDE141', '#3B393A'];
+          return colors[index];
+        }
+        else {
+          var colors = ['#CA2920', '#FC6A2A', '#F1C951', '#0098BA', '#003A50'];
+          return colors[key - 1];
+        }
+      }
+
+      function randomColor() {
+        var symbols = "0123456789ABCDEF";
+        var color = "#";
+
+        while (color.length < 7) {
+          color += symbols[Math.floor(Math.random() * symbols.length)];
+        }
+
+        return color;
+      }
+    </script>
+  </head>
+
+  <body>
+    <div class="ink-grid top-space">
+      <h1>Thank you note</h1>
+
+      <div class="bottom-space">
+        <p>
+          Gostaríamos de agradecer a vossa participação na 22ª edição da Semana Informática da SINFO.
+        </p>
+        <p>
+          A 22ª edição da Semana Informática contou com mais de 4700 participantes, nomeadamente, alguns participantes provenientes de outros países. A par e passo a SINFO está a elevar o seu nome e é com enorme prazer que vimos o vosso nome associado a este grande projecto.
+        </p>
+        <p>
+          Contámos com a presença de mais de 40 empresas durante todo o evento, as quais contribuíram para um total de 25 apresentações. Ao longo dos seis dias da 22ª Edição da Semana Informática, vários foram os oradores, onde figuraram mais de 15 de renome internacional, o que representa um enorme orgulho para todos os estudantes que fizeram parte desta comissão e que tentam elevar o nome da SINFO nacional e internacionalmente como uma organização de excelência.
+        </p>
+        <p>
+          Um dos principais objectivos da SINFO passa por melhorar a qualidade dos seus eventos ano após ano, pelo que gostaríamos de ter uma opinião/crítica da vossa parte relativamente ao evento e à forma como foi organizado, desde a primeira até à última instância.          
+        </p>
+        <p>
+          É deveras importante aliar as nossas capacidades logísticas aos conhecimentos de grandes empresas como a vossa para que possamos incrementar a qualidade do evento e fornecer um serviço mais coeso e capaz de atingir os objectivos das empresas ano após ano.
+          Deste modo, apreciaríamos todo e qualquer feedback para uma SINFO e uma Semana Informática cada vez melhor.
+        </p>
+        <p>
+          Atentamente,
+        </p>
+        <i>A Comissão</i>
+      </div>
+
+      <h1>Survey results of your session: {{session}}</h1>
+
+      <h6 id="istStudents">IST students: </h6>
+
+      <h2>Attendees</h2>
+      <div class="bottom-space">
+        <div class="chart">
+          <h6>Age - (%)</h6>
+          <canvas id="ageChart" width="300" height="300"></canvas>
+        </div>
+        <div class="chart">
+          <h6>Gender - (%)</h6>
+          <canvas id="genderChart" width="300" height="300"></canvas>
+        </div>
+        <div class="chart">
+          <h6>Area of study - (%)</h6>
+          <canvas id="areaChart" width="300" height="300"></canvas>
+        </div>
+        <div class="chart">
+          <h6>General satisfaction - (%)</h6>
+          <canvas id="satisfactionChart" width="300" height="300"></canvas>
+        </div>
+      </div>
+
+      <h2>Logistics of the main event</h2>
+      <div class="bottom-space">
+        <div class="chart">
+          <h6>Installations and confort - [1-5]</h6>
+          <canvas id="installationsChart" width="300" height="300"></canvas>
+        </div>
+        <div class="chart">
+          <h6>Location - [1-5]</h6>
+          <canvas id="locationChart" width="300" height="300"></canvas>
+        </div>
+        <div class="chart">
+          <h6>Organization - [1-5]</h6>
+          <canvas id="organizationChart" width="300" height="300"></canvas>
+        </div>
+        <div class="chart">
+          <h6>Communication - [1-5]</h6>
+          <canvas id="communicationChart" width="300" height="300"></canvas>
+        </div>
+      </div>
+      <div class="bottom-space note ">
+        <i>
+          <b>Label info:</b><br>
+          5 - Very Satisfied <br>
+          4 - Satisfied <br>
+          3 - Indiferent <br>
+          2 - Not satisfied <br>
+          1 - Very unsatisfied <br>
+        </i>
+      </div>
+
+      <h2>Logistics of the session</h2>
+      <div class="bottom-space">
+        <div class="chart">
+          <h6>Organization - [1-5]</h6>
+          <canvas id="session-organizationChart" width="300" height="300"></canvas>
+        </div>
+        <div class="chart">
+          <h6>Content quality - [1-5]</h6>
+          <canvas id="contentChart" width="300" height="300"></canvas>
+        </div>
+      </div>
+      <div class="bottom-space note ">
+        <i>
+          <b>Label info:</b><br>
+          5 - Very Satisfied <br>
+          4 - Satisfied <br>
+          3 - Indiferent <br>
+          2 - Not satisfied <br>
+          1 - Very unsatisfied <br>
+        </i>
+      </div>
+      <div class="bottom-space">
+        <div class="chart">
+          <h6>Would recommend speaker - [1-5]</h6>
+          <canvas id="speakerChart" width="300" height="300"></canvas>
+        </div>
+        <div class="chart">
+          <h6>Duration adequated - [1-5]</h6>
+          <canvas id="durationChart" width="300" height="300"></canvas>
+        </div>
+        <div class="chart">
+          <h6>Would recommend session - [1-5]</h6>
+          <canvas id="recommendChart" width="300" height="300"></canvas>
+        </div>
+      </div>
+      <div class="bottom-space note ">
+        <i>
+          <b>Label info:</b><br>
+          5 - Fully agree <br>
+          4 - Agree <br>
+          3 - Indiferent <br>
+          2 - Don't agree <br>
+          1 - Fully disagree <br>
+        </i>
+      </div>
+    </div>
+  </body>
+</html>
