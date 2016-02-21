@@ -43,7 +43,7 @@ module.exports = {
     },
     satisfaction: {
       type: 'string',
-      title: 'How satified are you with SINFO 22 in general?',
+      title: 'How satisfied are you with this SINFO edition in general?',
       enum: [
         'Very Satisfied',
         'Satisfied',

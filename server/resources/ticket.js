@@ -374,7 +374,7 @@ function getWaitingListEmail(session, user){
     to: user.mail,
     subject: '[SINFO] Waiting list for ' + session.name,
 
-    text: 'You are in the waiting list for the session ' + session.name + '\n - ' + config.webapp.url + '/sessions/' + session.id + '\nIf there is an opening you will receive an email.'
+    text: 'You are in the waiting list for the session ' + session.name + '\n - ' + config.webapp.url + '/events/' + session.event + '/sessions/' + session.id + '\nIf there is an opening you will receive an email.'
   };
 }
 
@@ -382,7 +382,7 @@ function getResgisteredListEmail(session, user){
   return {
     to: user.mail,
     subject: '[SINFO] Registered for the session ' + session.name,
-    text: 'You have just been registered for the session ' + session.name + '\n - ' + config.webapp.url + '/sessions/' + session.id + '\nYou will need to confirm your presence on the day of the session.'
+    text: 'You have just been registered for the session ' + session.name + '\n - ' + config.webapp.url + '/events/' + session.event + '/sessions/' + session.id + '\nYou will need to confirm your presence on the day of the session.'
   };
 }
 
@@ -390,7 +390,7 @@ function getRegistrationAcceptedEmail(session, user){
   return {
     to: user.mail,
     subject: '[SINFO] In the registration list for ' + session.name,
-    text: 'Due to a cancelation you just got registered for the session ' + session.name + '\n - ' + config.webapp.url + '/sessions/' + session.id + '\nYou will need to confirm your presence on the day of the session.'
+    text: 'Due to a cancelation you just got registered for the session ' + session.name + '\n - ' + config.webapp.url + '/events/' + session.event + '/sessions/' + session.id + '\nYou will need to confirm your presence on the day of the session.'
   };
 }
 
@@ -398,6 +398,6 @@ function getConfirmationEmail(session, user){
   return {
     to: user.mail,
     subject: '[SINFO] You are confirmed for ' + session.name,
-    text: 'You are now confirmed for ' + session.name + '\n - ' + config.webapp.url + '/sessions/' + session.id + '\n\n'
+    text: 'You are now confirmed for ' + session.name + '\n - ' + config.webapp.url + '/events/' + session.event + '/sessions/' + session.id + '\n\n'
   };
 }
