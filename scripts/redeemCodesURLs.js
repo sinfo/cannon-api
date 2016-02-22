@@ -3,6 +3,7 @@ var API = server.methods;
 var log = require('server/helpers/logger');
 var async = require('async');
 var config = require('config');
+var EVENT = '23-sinfo-conf';
 
 var authStr = config.auth.internal.username+':'+config.auth.internal.password+'@';
 
@@ -37,7 +38,7 @@ function processSession(session, cb) {
 }
 
 
-API.session.list(function (err, sessions) {
+API.session.list({event: EVENT}, function (err, sessions) {
   log.debug({err: err, count: sessions.length}, 'got sessions');
 
   async.eachLimit(sessions, 2, function (session, cb) {

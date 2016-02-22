@@ -4,6 +4,7 @@ var log = require('server/helpers/logger');
 var async = require('async');
 var NodePDF = require('nodepdf');
 var config = require('config');
+var EVENT = '23-sinfo-conf';
 
 var options = {
   'paperSize': {
@@ -55,7 +56,7 @@ function renderPDF(session, cb) {
 }
 
 
-API.session.list(function (err, sessions) {
+API.session.list({event: EVENT}, function (err, sessions) {
   log.debug({err: err, count: sessions.length}, 'got sessions');
 
   async.each(sessions, function (session, cb) {
