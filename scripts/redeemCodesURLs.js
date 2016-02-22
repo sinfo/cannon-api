@@ -7,7 +7,7 @@ var EVENT = '23-sinfo-conf';
 
 var authStr = config.auth.internal.username+':'+config.auth.internal.password+'@';
 
-var cannonUrl = 'http://'+authStr+'localhost:8090';
+var cannonUrl = 'http://'+authStr+'cannon.sinfo.org';
 
 function getUrl (id, quantity) {
   return cannonUrl+'/templates/achievements/'+id+'?quantity='+quantity;
