@@ -1,12 +1,12 @@
-module.exports = function render(content) {
-  if(content instanceof Array) {
-    return content.map(renderObject);
+module.exports = function render (content) {
+  if (content instanceof Array) {
+    return content.map(renderObject)
   }
 
-  return renderObject(content);
-};
+  return renderObject(content)
+}
 
-function renderObject(model) {
+function renderObject (model) {
   return {
     id: model.id,
     event: model.event,
@@ -20,5 +20,5 @@ function renderObject(model) {
     users: model.users,
     created: model.created,
     updated: model.updated
-  };
+  }
 }

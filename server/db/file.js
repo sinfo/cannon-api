@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose')
 
 var schema = new mongoose.Schema({
   id: {type: String, unique: true},
@@ -8,6 +8,6 @@ var schema = new mongoose.Schema({
   extension: String,
   created: Date,
   updated: Date
-});
+})
 
-var File = module.exports = mongoose.model('File', schema);
+module.exports = mongoose.model('File', schema)

@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose')
 
 var schema = new mongoose.Schema({
   session: {type: String, unique: false},
@@ -13,17 +13,17 @@ var schema = new mongoose.Schema({
       instalations: Number,
       location: Number,
       organization: Number,
-      communication: Number,
+      communication: Number
     },
     session: {
       organization: Number,
       content: Number,
       speaker: Number,
       duration: Number,
-      recommend: Number,
+      recommend: Number
     },
     suggestions: String
   }]
-});
+})
 
-var Survey = module.exports = mongoose.model('Survey', schema);
+module.exports = mongoose.model('Survey', schema)

@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose')
 
 var schema = new mongoose.Schema({
   id: { type: String, unique: true },
@@ -6,6 +6,6 @@ var schema = new mongoose.Schema({
   // entries: { type: Number, default: 1 },
   created: Date,
   expires: Date
-});
+})
 
-var RedeemCode = module.exports = mongoose.model('RedeemCode', schema);
+module.exports = mongoose.model('RedeemCode', schema)

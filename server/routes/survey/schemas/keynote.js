@@ -10,16 +10,16 @@ module.exports = {
         '18-22',
         '23-25',
         '26-28',
-        '> 28',
-      ],
+        '> 28'
+      ]
     },
     gender: {
       type: 'string',
       title: 'Gender',
       enum: [
         'Male',
-        'Female',
-      ],
+        'Female'
+      ]
     },
     area: {
       type: 'string',
@@ -31,11 +31,11 @@ module.exports = {
         'Economy',
         'Design',
         'Other'
-      ],
+      ]
     },
     areaOther: {
       type: 'string',
-      title: 'If you selected \'other\' on the previous question, which one is it?',
+      title: 'If you selected \'other\' on the previous question, which one is it?'
     },
     isIST: {
       type: 'boolean',
@@ -79,8 +79,8 @@ module.exports = {
           title: 'Communication',
           enum: [1, 2, 3, 4, 5],
           default: 5
-        },
-      },
+        }
+      }
     },
     session: {
       type: 'object',
@@ -115,12 +115,12 @@ module.exports = {
           title: 'Would recommend this keynote',
           enum: [1, 2, 3, 4, 5],
           default: 5
-        },
-      },
+        }
+      }
     },
     suggestions: {
       type: 'string',
-      title: 'Any suggestions to SINFO?',
-    },
-  },
-};
+      title: 'Any suggestions to SINFO?'
+    }
+  }
+}

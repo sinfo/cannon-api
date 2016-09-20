@@ -1,19 +1,19 @@
-module.exports = function render(content) {
-  if(content instanceof Array) {
-    return content.map(renderObject);
+module.exports = function render (content) {
+  if (content instanceof Array) {
+    return content.map(renderObject)
   }
 
-  return renderObject(content);  
-};
+  return renderObject(content)
+}
 
-function renderObject(model) {
+function renderObject (model) {
   return {
     id: model.id,
     user: model.user,
     name: model.name,
-		kind: model.kind,
+    kind: model.kind,
     extension: model.extension,
-		updated: model.updated,
+    updated: model.updated,
     created: model.created
-  };
+  }
 }

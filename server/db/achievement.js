@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose')
 
 var schema = new mongoose.Schema({
   id: {type: String, unique: true},
@@ -13,6 +13,6 @@ var schema = new mongoose.Schema({
   users: [String],
   created: Date,
   updated: Date
-});
+})
 
-var Achievement = module.exports = mongoose.model('Achievement', schema);
+module.exports = mongoose.model('Achievement', schema)

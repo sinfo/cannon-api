@@ -1,196 +1,191 @@
-var Boom = require('boom');
-var slug = require('slug');
-var async = require('async');
-var server = require('server').hapi;
-var log = require('server/helpers/logger');
-var fieldsParser = require('server/helpers/fieldsParser');
-var Achievement = require('server/db/achievement');
+var Boom = require('boom')
+var slug = require('slug')
+var server = require('server').hapi
+var log = require('server/helpers/logger')
+var fieldsParser = require('server/helpers/fieldsParser')
+var Achievement = require('server/db/achievement')
 
-server.method('achievement.create', create, {});
-server.method('achievement.update', update, {});
-server.method('achievement.updateMulti', updateMulti, {});
-server.method('achievement.get', get, {});
-server.method('achievement.getByUser', getByUser, {});
-server.method('achievement.list', list, {});
-server.method('achievement.remove', remove, {});
-server.method('achievement.addUser', addUser, {});
-server.method('achievement.addCV', addCV, {});
+server.method('achievement.create', create, {})
+server.method('achievement.update', update, {})
+server.method('achievement.updateMulti', updateMulti, {})
+server.method('achievement.get', get, {})
+server.method('achievement.getByUser', getByUser, {})
+server.method('achievement.list', list, {})
+server.method('achievement.remove', remove, {})
+server.method('achievement.addUser', addUser, {})
+server.method('achievement.addCV', addCV, {})
 
+function create (achievement, cb) {
+  achievement.id = achievement.id || slug(achievement.name)
 
-function create(achievement, cb) {
-  achievement.id = achievement.id || slug(achievement.name);
+  achievement.updated = achievement.created = Date.now()
 
-  achievement.updated = achievement.created = Date.now();
-
-  Achievement.create(achievement, function(err, _achievement) {
+  Achievement.create(achievement, function (err, _achievement) {
     if (err) {
-      if(err.code == 11000) {
-        return cb(Boom.conflict('achievement "'+achievement.id+'" is a duplicate'));
+      if (err.code === 11000) {
+        return cb(Boom.conflict('achievement "' + achievement.id + '" is a duplicate'))
       }
 
-      log.error({err: err, achievement: achievement.id}, 'error creating achievement');
-      return cb(Boom.internal());
+      log.error({err: err, achievement: achievement.id}, 'error creating achievement')
+      return cb(Boom.internal())
     }
 
-    cb(null, _achievement.toObject({ getters: true }));
-  });
+    cb(null, _achievement.toObject({ getters: true }))
+  })
 }
 
-function update(filter, achievement, cb) {
-
-  if(typeof filter == 'string') {
-    filter = { id: filter };
+function update (filter, achievement, cb) {
+  if (typeof filter === 'string') {
+    filter = { id: filter }
   }
 
-  achievement.updated = Date.now();
+  achievement.updated = Date.now()
 
-  Achievement.findOneAndUpdate(filter, achievement, function(err, _achievement) {
+  Achievement.findOneAndUpdate(filter, achievement, function (err, _achievement) {
     if (err) {
-      log.error({err: err, achievement: filter}, 'error updating achievement');
-      return cb(Boom.internal());
+      log.error({err: err, achievement: filter}, 'error updating achievement')
+      return cb(Boom.internal())
     }
     if (!_achievement) {
-      log.error({err: err, achievement: filter}, 'error updating achievement');
-      return cb(Boom.notFound());
+      log.error({err: err, achievement: filter}, 'error updating achievement')
+      return cb(Boom.notFound())
     }
 
-    cb(null, _achievement.toObject({ getters: true }));
-  });
+    cb(null, _achievement.toObject({ getters: true }))
+  })
 }
 
-function updateMulti(filter, achievement, cb) {
-
-  if(typeof filter == 'string') {
-    filter = { id: filter };
+function updateMulti (filter, achievement, cb) {
+  if (typeof filter === 'string') {
+    filter = { id: filter }
   }
 
-  achievement.updated = Date.now();
+  achievement.updated = Date.now()
 
-  Achievement.update(filter, achievement, {multi: true}, function(err, _achievements) {
+  Achievement.update(filter, achievement, {multi: true}, function (err, _achievements) {
     if (err) {
-      log.error({err: err, achievement: filter}, 'error updating achievements');
-      return cb(Boom.internal());
+      log.error({err: err, achievement: filter}, 'error updating achievements')
+      return cb(Boom.internal())
     }
     if (!_achievements) {
-      log.warn({err: err, achievement: filter}, 'could not find achievements');
-      return cb(Boom.notFound());
+      log.warn({err: err, achievement: filter}, 'could not find achievements')
+      return cb(Boom.notFound())
     }
 
-    cb(null, _achievements);
-  });
+    cb(null, _achievements)
+  })
 }
 
-function get(filter, cb) {
+function get (filter, cb) {
   // log.debug({id: id}, 'getting achievement')
 
-  if(typeof filter == 'string') {
-    filter = { id: filter };
+  if (typeof filter === 'string') {
+    filter = { id: filter }
   }
 
-  Achievement.findOne(filter, function(err, achievement) {
-    log.error({err: err});
+  Achievement.findOne(filter, function (err, achievement) {
+    log.error({err: err})
     if (err) {
-      log.error({err: err, achievement: filter}, 'error getting achievement');
-      return cb(Boom.internal('error getting achievement'));
+      log.error({err: err, achievement: filter}, 'error getting achievement')
+      return cb(Boom.internal('error getting achievement'))
     }
     if (!achievement) {
-      log.error({err: 'not found', achievement: filter}, 'achievement not found');
-      return cb(Boom.notFound('achievement not found'));
+      log.error({err: 'not found', achievement: filter}, 'achievement not found')
+      return cb(Boom.notFound('achievement not found'))
     }
 
-    cb(null, achievement.toObject({ getters: true }));
-  });
+    cb(null, achievement.toObject({ getters: true }))
+  })
 }
 
-function getByUser(filter, cb) {
+function getByUser (filter, cb) {
   // log.debug({id: id}, 'getting achievement')
 
-  filter = { users: {$in : [filter]}};
+  filter = {users: {$in: [filter]}}
 
-  Achievement.find(filter, function(err, achievements) {
+  Achievement.find(filter, function (err, achievements) {
     if (err) {
-      log.error({err: err, achievement: filter}, 'error getting achievements');
-      return cb(Boom.internal('error getting achievements'));
+      log.error({err: err, achievement: filter}, 'error getting achievements')
+      return cb(Boom.internal('error getting achievements'))
     }
     if (!achievements) {
-      log.error({err: 'not found', achievement: filter}, 'achievements not found');
-      return cb(Boom.notFound('achievements not found'));
+      log.error({err: 'not found', achievement: filter}, 'achievements not found')
+      return cb(Boom.notFound('achievements not found'))
     }
 
-    cb(null, achievements);
-  });
+    cb(null, achievements)
+  })
 }
 
-function list(query, cb) {
-  cb = cb || query; // fields is optional
+function list (query, cb) {
+  cb = cb || query // fields is optional
 
-  var filter = {};
-  var fields = fieldsParser(query.fields);
+  var filter = {}
+  var fields = fieldsParser(query.fields)
   var options = {
     skip: query.skip,
     limit: query.limit,
     sort: fieldsParser(query.sort)
-  };
+  }
 
-  Achievement.find(filter, fields, options, function(err, achievements) {
+  Achievement.find(filter, fields, options, function (err, achievements) {
     if (err) {
-      log.error({err: err}, 'error getting all achievements');
-      return cb(Boom.internal());
+      log.error({err: err}, 'error getting all achievements')
+      return cb(Boom.internal())
     }
 
-    cb(null, achievements);
-  });
+    cb(null, achievements)
+  })
 }
 
-function remove(id, cb) {
-  Achievement.findOneAndRemove({id: id}, function(err, achievement){
+function remove (id, cb) {
+  Achievement.findOneAndRemove({id: id}, function (err, achievement) {
     if (err) {
-      log.error({err: err, achievement: id}, 'error deleting achievement');
-      return cb(Boom.internal());
+      log.error({err: err, achievement: id}, 'error deleting achievement')
+      return cb(Boom.internal())
     }
     if (!achievement) {
-      log.error({err: 'not found', achievement: id}, 'error deleting achievement');
-      return cb(Boom.notFound('achievement not found'));
+      log.error({err: 'not found', achievement: id}, 'error deleting achievement')
+      return cb(Boom.notFound('achievement not found'))
     }
 
-    return cb(null, achievement);
-  });
+    return cb(null, achievement)
+  })
 }
 
-function addCV(userId, cb){
-  var achievementId = 'submitted-cv';
+function addCV (userId, cb) {
+  var achievementId = 'submitted-cv'
 
-  get({id: achievementId, users: {$in: [userId]}}, function(err, result){
-    if(err){
-      log.error({err: err});
-      if(err.output && err.output.statusCode == 404){
-        return addUser(achievementId, userId, cb);
+  get({id: achievementId, users: {$in: [userId]}}, function (err, result) {
+    if (err) {
+      log.error({err: err})
+      if (err.output && err.output.statusCode === 404) {
+        return addUser(achievementId, userId, cb)
       }
-      return cb(err);
+      return cb(err)
     }
-    return cb(Boom.conflict('user already has achievement'));
-  });
+    return cb(Boom.conflict('user already has achievement'))
+  })
 }
 
-function addUser(achievementId, userId, cb) {
-  if(!achievementId || !userId) {
-    log.error({userId: userId, achievementId: achievementId}, 'missing arguments on addUser');
-    return cb();
+function addUser (achievementId, userId, cb) {
+  if (!achievementId || !userId) {
+    log.error({userId: userId, achievementId: achievementId}, 'missing arguments on addUser')
+    return cb()
   }
 
   var changes = {
     $addToSet: {
       users: userId
     }
-  };
+  }
 
-  Achievement.findOneAndUpdate({ id: achievementId }, changes, function(err, achievement) {
+  Achievement.findOneAndUpdate({ id: achievementId }, changes, function (err, achievement) {
     if (err) {
-      log.error({err: err, achievement: achievementId}, 'error adding user to achievement');
-      return cb(Boom.internal());
+      log.error({err: err, achievement: achievementId}, 'error adding user to achievement')
+      return cb(Boom.internal())
     }
 
-    cb(null, achievement.toObject({ getters: true }));
-  });
+    cb(null, achievement.toObject({ getters: true }))
+  })
 }
-
