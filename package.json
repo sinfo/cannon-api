@@ -7,9 +7,9 @@
     "run": "NODE_PATH=. nodemon server/index.js | bunyan",
     "start": "NODE_PATH=. node server/index.js | bunyan",
     "mon": "NODE_PATH=. nodemon -e js,hbs server/index.js | bunyan",
-    "test": "NODE_PATH=. node_modules/lab/bin/lab server/test -l  -m 2000 --verbose",
-    "test-cov": "NODE_PATH=. node_modules/lab/bin/lab server/test -c",
-    "lint": "node_modules/.bin/jshint -c .jshintrc ."
+    "test": "NODE_PATH=. lab server/test -l  -m 2000 --verbose",
+    "test-cov": "NODE_PATH=. lab server/test -c",
+    "lint": "standard | snazzy"
   },
   "pre-commit": [
     "lint",
@@ -58,7 +58,8 @@
     "nodemon": "~1.2.1",
     "code": "~1.2.0",
     "lab": "~5.0.1",
-    "jshint": "~2.5.10",
-    "pre-commit": "^0.0.11"
+    "pre-commit": "^0.0.11",
+    "snazzy": "^4.0.0",
+    "standard": "^7.1.2"
   }
 }

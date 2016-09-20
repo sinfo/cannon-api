@@ -1,10 +1,10 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose')
 
 var schema = new mongoose.Schema({
   id: {type: String, unique: true},
   name: String,
   img: String,
-  role:  {type: String, default: 'user'},
+  role: {type: String, default: 'user'},
   mail: {type: String, unique: true, sparse: true},
   bearer: [{
     token: {type: String, unique: true, sparse: true},
@@ -28,7 +28,7 @@ var schema = new mongoose.Schema({
     ttl: Number,
     created: Date
   },
-  points:{
+  points: {
     available: Number,
     total: Number
   },
@@ -41,10 +41,10 @@ var schema = new mongoose.Schema({
   job: {
     startup: Boolean,
     internship: Boolean,
-    start: Date,
+    start: Date
   },
   registered: Date,
   updated: Date
-});
+})
 
-var User = module.exports = mongoose.model('User', schema);
+module.exports = mongoose.model('User', schema)

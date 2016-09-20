@@ -1,17 +1,15 @@
-var config = require('config');
-var auth = require('server/auth');
-var opsPath = config.logs.path + 'ops/';
-var logPath = config.logs.path + 'logs/';
+
+var auth = require('server/auth')
 
 module.exports = {
-	log: {
-		opsInterval: 1800000,
-		subscribers: {
+  log: {
+    opsInterval: 1800000,
+    subscribers: {
       opsPath: ['ops'],
-      logPath: ['request', 'log', 'error'],
+      logPath: ['request', 'log', 'error']
     }
-	},
-	auth: {
+  },
+  auth: {
     default: {
       allowQueryToken: false,
       allowMultipleHeaders: true,
@@ -26,11 +24,11 @@ module.exports = {
       allowEmptyUsername: false,
       validateFunc: auth.internal
     }
-	},
-  upload:[
+  },
+  upload: [
     {kind: 'cv', mimes: ['application/pdf']}
   ],
   cv: {
-    expiration: 60 //days
+    expiration: 60 // days
   }
-};
+}
