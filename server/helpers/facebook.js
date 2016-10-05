@@ -1,6 +1,6 @@
 var Request = require('request')
-var log = require('server/helpers/logger')
-var facebookConfig = require('config').facebook
+var log = require('./logger')
+var facebookConfig = require('../../config').facebook
 
 var facebook = {}
 

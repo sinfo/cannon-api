@@ -1,14 +1,14 @@
 var Boom = require('boom')
 var Mime = require('mime')
-var config = require('config')
-var options = require('server/options')
-var server = require('server').hapi
-var log = require('server/helpers/logger')
+var config = require('../../config')
+var options = require('../options')
+var server = require('../').hapi
+var log = require('../helpers/logger')
 var async = require('async')
 var fs = require('fs')
 var urlencode = require('urlencode')
-var fieldsParser = require('server/helpers/fieldsParser')
-var File = require('server/db/file')
+var fieldsParser = require('../helpers/fieldsParser')
+var File = require('../db/file')
 
 server.method('file.create', create, {})
 server.method('file.createArray', createArray, {})

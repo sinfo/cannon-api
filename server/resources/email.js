@@ -1,6 +1,6 @@
-var config = require('config')
-var server = require('server').hapi
-var log = require('server/helpers/logger')
+var config = require('../../config')
+var server = require('../').hapi
+var log = require('../helpers/logger')
 var nodemailer = require('nodemailer')
 var sendmailTransport = require('nodemailer-sendmail-transport')
 

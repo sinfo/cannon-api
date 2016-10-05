@@ -1,11 +1,11 @@
 var Hapi = require('hapi')
-var options = require('server/options')
-var config = require('config')
-var log = require('server/helpers/logger')
+var options = require('./options')
+var config = require('../config')
+var log = require('./helpers/logger')
 
 log.error({ env: process.env.NODE_ENV }, '### Starting Cannon ###')
 
-require('server/db')
+require('./db')
 
 var server = module.exports.hapi = new Hapi.Server(config.host, config.port, { cors: true })
 
@@ -27,8 +27,8 @@ server.pack.register([
     server.auth.strategy('backup', 'basic', options.auth.backup)
     server.auth.strategy('internal', 'basic', options.auth.internal)
 
-    require('server/resources')
-    require('server/routes')
+    require('./resources')
+    require('./routes')
 
     // Register secondary plugins
     server.pack.register([

@@ -1,6 +1,6 @@
-var server = require('server').hapi
+var server = require('../server').hapi
 var API = server.methods
-var log = require('server/helpers/logger')
+var log = require('../server/helpers/logger')
 var async = require('async')
 var EVENT = '23-sinfo-conf'
 

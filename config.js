@@ -1,4 +1,4 @@
-var pack = require('package')
+var pack = require('./package')
 var fs = require('fs')
 var join = require('path').join
 

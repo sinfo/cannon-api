@@ -1,9 +1,9 @@
-var server = require('server').hapi
+var server = require('../server').hapi
 var API = server.methods
-var log = require('server/helpers/logger')
+var log = require('../server/helpers/logger')
 var async = require('async')
 var NodePDF = require('nodepdf')
-var config = require('config')
+var config = require('../config')
 var join = require('path').join
 var EVENT = '23-sinfo-conf'
 

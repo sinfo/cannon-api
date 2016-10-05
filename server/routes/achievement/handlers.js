@@ -1,5 +1,5 @@
 var Joi = require('joi')
-var render = require('server/views/achievement')
+var render = require('../../views/achievement')
 
 exports = module.exports
 

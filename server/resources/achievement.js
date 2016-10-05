@@ -1,9 +1,9 @@
 var Boom = require('boom')
 var slug = require('slug')
-var server = require('server').hapi
-var log = require('server/helpers/logger')
-var fieldsParser = require('server/helpers/fieldsParser')
-var Achievement = require('server/db/achievement')
+var server = require('../').hapi
+var log = require('../helpers/logger')
+var fieldsParser = require('../helpers/fieldsParser')
+var Achievement = require('../db/achievement')
 
 server.method('achievement.create', create, {})
 server.method('achievement.update', update, {})

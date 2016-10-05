@@ -1,14 +1,14 @@
 var Boom = require('boom')
-var server = require('server').hapi
-var config = require('config')
-var log = require('server/helpers/logger')
+var server = require('../').hapi
+var config = require('../../config')
+var log = require('../helpers/logger')
 var async = require('async')
 var Hoek = require('hoek')
 var _ = require('underscore')
-var facebook = require('server/helpers/facebook')
-var Token = require('server/auth/token')
+var facebook = require('../helpers/facebook')
+var Token = require('../auth/token')
 var Fenix = require('fenixedu')(config.fenix)
-var google = require('server/helpers/google')
+var google = require('../helpers/google')
 
 server.method('auth.facebook', facebookAuth, {})
 server.method('auth.fenix', fenixAuth, {})

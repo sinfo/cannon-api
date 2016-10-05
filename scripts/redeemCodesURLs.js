@@ -1,8 +1,8 @@
-var server = require('server').hapi
+var server = require('../server').hapi
 var API = server.methods
-var log = require('server/helpers/logger')
+var log = require('../server/helpers/logger')
 var async = require('async')
-var config = require('config')
+var config = require('../config')
 var EVENT = '23-sinfo-conf'
 
 var authStr = config.auth.internal.username + ':' + config.auth.internal.password + '@'

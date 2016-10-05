@@ -1,6 +1,6 @@
 var Joi = require('joi')
-var render = require('server/views/file')
-var configUpload = require('config').upload
+var render = require('../../views/file')
+var configUpload = require('../../../config').upload
 
 exports = module.exports
 
