@@ -1,10 +1,10 @@
 var Lab = require('lab')
 var Code = require('code')
 
-var server = require('server').hapi
+var server = require('../').hapi
 
 var lab = exports.lab = Lab.script()
-var token = require('server/auth/token')
+var token = require('../auth/token')
 
 var aux = token.getJWT('john.doe')
 

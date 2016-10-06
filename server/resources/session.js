@@ -1,10 +1,10 @@
 var Boom = require('boom')
-var server = require('server').hapi
-var log = require('server/helpers/logger')
+var server = require('../').hapi
+var log = require('../helpers/logger')
 var Resquest = require('request')
-var config = require('config')
+var config = require('../../config')
 var qs = require('qs')
-var parseBody = require('server/helpers/parseBody')
+var parseBody = require('../helpers/parseBody')
 var moment = require('moment')
 
 server.method('session.get', get, {})

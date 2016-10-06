@@ -1,9 +1,9 @@
 var Boom = require('boom')
-var server = require('server').hapi
-var log = require('server/helpers/logger')
-var fieldsParser = require('server/helpers/fieldsParser')
-var Ticket = require('server/db/ticket')
-var config = require('config')
+var server = require('../').hapi
+var log = require('../helpers/logger')
+var fieldsParser = require('../helpers/fieldsParser')
+var Ticket = require('../db/ticket')
+var config = require('../../config')
 
 server.method('ticket.userConfirmed', userConfirmed, {})
 server.method('ticket.userRegistered', userRegistered, {})

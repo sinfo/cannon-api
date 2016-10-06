@@ -1,9 +1,9 @@
 
 var jwt = require('jsonwebtoken')
 var Boom = require('boom')
-var log = require('server/helpers/logger')
-var User = require('server/db/user')
-var authConfig = require('config').auth
+var log = require('../helpers/logger')
+var User = require('../db/user')
+var authConfig = require('../../config').auth
 var async = require('async')
 
 function getJWT (user) {

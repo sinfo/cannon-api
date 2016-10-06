@@ -1,14 +1,13 @@
 
-var tokenConfig = require('config').auth.token
-var Token = require('server/auth/token')
-var config = require('config')
+var config = require('../../config')
+var Token = require('./token')
 
 var basic = function (username, password, cb) {
-  Token.validator(password, tokenConfig, cb)
+  Token.validator(password, config.auth.token, cb)
 }
 
 var bearer = function (token, cb) {
-  Token.validator(token, tokenConfig, cb)
+  Token.validator(token, config.auth.token, cb)
 }
 
 var internal = function (username, password, cb) {

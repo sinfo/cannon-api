@@ -1,6 +1,6 @@
 var Request = require('request')
-var log = require('server/helpers/logger')
-var googleConfig = require('config').google
+var log = require('./logger')
+var googleConfig = require('../../config').google
 
 var google = {}
 

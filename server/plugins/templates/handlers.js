@@ -1,7 +1,7 @@
 var Joi = require('joi')
 var Boom = require('boom')
-var log = require('server/helpers/logger')
-var config = require('config')
+var log = require('../../helpers/logger')
+var config = require('../../../config')
 var async = require('async')
 var uuid = require('uuid')
 

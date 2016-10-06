@@ -1,7 +1,7 @@
 var Boom = require('boom')
-var server = require('server').hapi
-var log = require('server/helpers/logger')
-var Survey = require('server/db/survey')
+var server = require('../').hapi
+var log = require('../helpers/logger')
+var Survey = require('../db/survey')
 
 server.method('survey.submit', submit, {})
 server.method('survey.get', get, {})

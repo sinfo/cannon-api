@@ -1,5 +1,5 @@
 
-var auth = require('server/auth')
+var auth = require('./auth')
 
 module.exports = {
   log: {

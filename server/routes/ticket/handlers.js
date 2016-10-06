@@ -1,6 +1,6 @@
 var Joi = require('joi')
-var render = require('server/views/ticket')
-var renderUsers = require('server/views/user')
+var render = require('../../views/ticket')
+var renderUsers = require('../../views/user')
 
 exports = module.exports
 
