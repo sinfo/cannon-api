@@ -1,6 +1,6 @@
-var Joi = require('joi')
-var render = require('../../views/redeem')
-var renderAchievement = require('../../views/achievement')
+const Joi = require('joi')
+const render = require('../../views/redeem')
+const renderAchievement = require('../../views/achievement')
 
 exports = module.exports
 

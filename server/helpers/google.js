@@ -1,23 +1,23 @@
-var Request = require('request')
-var log = require('./logger')
-var googleConfig = require('../../config').google
+const Request = require('request')
+const log = require('./logger')
+const googleConfig = require('../../config').google
 
-var google = {}
+const google = {}
 
 google.debugToken = function (googleUserId, googleUserToken, cb) {
-  var url = 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + googleUserToken
+  const url = 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + googleUserToken
 
   Request.get(url, {
     json: true
   },
-  function (error, response, result) {
+  (error, response, result) => {
     /* jshint camelcase: false */
     if (error || response.statusCode !== 200) {
       log.warn({err: error, googleConfig: googleConfig, response: response})
       return cb(error || {err: response.statusCode, message: response.statusMessage})
     }
 
-    var isValid = !(!result || result.issued_to !== googleConfig.clientId || result.user_id !== googleUserId)
+    const isValid = !(!result || result.issued_to !== googleConfig.clientId || result.user_id !== googleUserId)
 
     if (!isValid) {
       log.warn(
@@ -36,12 +36,12 @@ google.debugToken = function (googleUserId, googleUserToken, cb) {
 }
 
 google.getMe = function (googleUserId, cb) {
-  var url = ' https://www.googleapis.com/plus/v1/people/' + googleUserId + '?key=' + googleConfig.clientSecret
+  const url = ' https://www.googleapis.com/plus/v1/people/' + googleUserId + '?key=' + googleConfig.clientSecret
 
   Request.get(url, {
     json: true
   },
-  function (error, response, result) {
+  (error, response, result) => {
     if (error || response.statusCode !== 200) {
       return cb(error || {err: response.statusCode, message: response.statusMessage})
     }
@@ -51,12 +51,12 @@ google.getMe = function (googleUserId, cb) {
 }
 
 google.getMail = function (googleUserToken, cb) {
-  var url = 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + googleUserToken
+  const url = 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + googleUserToken
 
   Request.get(url, {
     json: true
   },
-  function (error, response, result) {
+  (error, response, result) => {
     if (error || response.statusCode !== 200) {
       return cb(error || {err: response.statusCode, message: response.statusMessage})
     }

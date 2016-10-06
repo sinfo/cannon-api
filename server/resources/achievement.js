@@ -1,9 +1,9 @@
-var Boom = require('boom')
-var slug = require('slug')
-var server = require('../').hapi
-var log = require('../helpers/logger')
-var fieldsParser = require('../helpers/fieldsParser')
-var Achievement = require('../db/achievement')
+const Boom = require('boom')
+const slug = require('slug')
+const server = require('../').hapi
+const log = require('../helpers/logger')
+const fieldsParser = require('../helpers/fieldsParser')
+const Achievement = require('../db/achievement')
 
 server.method('achievement.create', create, {})
 server.method('achievement.update', update, {})
@@ -20,10 +20,10 @@ function create (achievement, cb) {
 
   achievement.updated = achievement.created = Date.now()
 
-  Achievement.create(achievement, function (err, _achievement) {
+  Achievement.create(achievement, (err, _achievement) => {
     if (err) {
       if (err.code === 11000) {
-        return cb(Boom.conflict('achievement "' + achievement.id + '" is a duplicate'))
+        return cb(Boom.conflict(`achievement "${achievement.id}" is a duplicate`))
       }
 
       log.error({err: err, achievement: achievement.id}, 'error creating achievement')
@@ -41,7 +41,7 @@ function update (filter, achievement, cb) {
 
   achievement.updated = Date.now()
 
-  Achievement.findOneAndUpdate(filter, achievement, function (err, _achievement) {
+  Achievement.findOneAndUpdate(filter, achievement, (err, _achievement) => {
     if (err) {
       log.error({err: err, achievement: filter}, 'error updating achievement')
       return cb(Boom.internal())
@@ -62,7 +62,7 @@ function updateMulti (filter, achievement, cb) {
 
   achievement.updated = Date.now()
 
-  Achievement.update(filter, achievement, {multi: true}, function (err, _achievements) {
+  Achievement.update(filter, achievement, {multi: true}, (err, _achievements) => {
     if (err) {
       log.error({err: err, achievement: filter}, 'error updating achievements')
       return cb(Boom.internal())
@@ -83,7 +83,7 @@ function get (filter, cb) {
     filter = { id: filter }
   }
 
-  Achievement.findOne(filter, function (err, achievement) {
+  Achievement.findOne(filter, (err, achievement) => {
     log.error({err: err})
     if (err) {
       log.error({err: err, achievement: filter}, 'error getting achievement')
@@ -103,7 +103,7 @@ function getByUser (filter, cb) {
 
   filter = {users: {$in: [filter]}}
 
-  Achievement.find(filter, function (err, achievements) {
+  Achievement.find(filter, (err, achievements) => {
     if (err) {
       log.error({err: err, achievement: filter}, 'error getting achievements')
       return cb(Boom.internal('error getting achievements'))
@@ -120,15 +120,15 @@ function getByUser (filter, cb) {
 function list (query, cb) {
   cb = cb || query // fields is optional
 
-  var filter = {}
-  var fields = fieldsParser(query.fields)
-  var options = {
+  const filter = {}
+  const fields = fieldsParser(query.fields)
+  const options = {
     skip: query.skip,
     limit: query.limit,
     sort: fieldsParser(query.sort)
   }
 
-  Achievement.find(filter, fields, options, function (err, achievements) {
+  Achievement.find(filter, fields, options, (err, achievements) => {
     if (err) {
       log.error({err: err}, 'error getting all achievements')
       return cb(Boom.internal())
@@ -139,7 +139,7 @@ function list (query, cb) {
 }
 
 function remove (id, cb) {
-  Achievement.findOneAndRemove({id: id}, function (err, achievement) {
+  Achievement.findOneAndRemove({id: id}, (err, achievement) => {
     if (err) {
       log.error({err: err, achievement: id}, 'error deleting achievement')
       return cb(Boom.internal())
@@ -154,9 +154,9 @@ function remove (id, cb) {
 }
 
 function addCV (userId, cb) {
-  var achievementId = 'submitted-cv'
+  const achievementId = 'submitted-cv'
 
-  get({id: achievementId, users: {$in: [userId]}}, function (err, result) {
+  get({id: achievementId, users: {$in: [userId]}}, (err, result) => {
     if (err) {
       log.error({err: err})
       if (err.output && err.output.statusCode === 404) {
@@ -174,13 +174,13 @@ function addUser (achievementId, userId, cb) {
     return cb()
   }
 
-  var changes = {
+  const changes = {
     $addToSet: {
       users: userId
     }
   }
 
-  Achievement.findOneAndUpdate({ id: achievementId }, changes, function (err, achievement) {
+  Achievement.findOneAndUpdate({ id: achievementId }, changes, (err, achievement) => {
     if (err) {
       log.error({err: err, achievement: achievementId}, 'error adding user to achievement')
       return cb(Boom.internal())

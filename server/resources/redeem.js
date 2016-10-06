@@ -1,7 +1,7 @@
-var Boom = require('boom')
-var server = require('../').hapi
-var log = require('../helpers/logger')
-var Redeem = require('../db/redeem')
+const Boom = require('boom')
+const server = require('../').hapi
+const log = require('../helpers/logger')
+const Redeem = require('../db/redeem')
 
 server.method('redeem.create', create, {})
 server.method('redeem.get', get, {})
@@ -10,7 +10,7 @@ server.method('redeem.remove', remove, {})
 function create (redeem, cb) {
   Redeem.created = Date.now()
 
-  Redeem.create(redeem, function (err, _redeem) {
+  Redeem.create(redeem, (err, _redeem) => {
     if (err) {
       if (err.code === 11000) {
         return cb(Boom.conflict('redeem is a duplicate'))
@@ -25,7 +25,7 @@ function create (redeem, cb) {
 }
 
 function get (id, cb) {
-  Redeem.findOne({id: id}, function (err, redeem) {
+  Redeem.findOne({id: id}, (err, redeem) => {
     if (err) {
       log.error({err: err, redeem: id}, 'error getting redeem')
       return cb(Boom.internal())
@@ -40,7 +40,7 @@ function get (id, cb) {
 }
 
 function remove (id, cb) {
-  Redeem.findOneAndRemove({id: id}, function (err, redeem) {
+  Redeem.findOneAndRemove({id: id}, (err, redeem) => {
     if (err) {
       log.error({err: err, redeem: id}, 'error deleting redeem')
       return cb(Boom.internal())

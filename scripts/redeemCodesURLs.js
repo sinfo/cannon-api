@@ -1,22 +1,22 @@
-var server = require('../server').hapi
-var API = server.methods
-var log = require('../server/helpers/logger')
-var async = require('async')
-var config = require('../config')
-var EVENT = '23-sinfo-conf'
+const server = require('../server').hapi
+const API = server.methods
+const log = require('../server/helpers/logger')
+const async = require('async')
+const config = require('../config')
+const EVENT = '23-sinfo-conf'
 
-var authStr = config.auth.internal.username + ':' + config.auth.internal.password + '@'
+const authStr = `${config.auth.internal.username}:${config.auth.internal.password}@`
 
-var cannonUrl = 'http://' + authStr + 'cannon.sinfo.org'
+const cannonUrl = `http://${authStr}cannon.sinfo.org`
 
 function getUrl (id, quantity) {
-  return cannonUrl + '/templates/achievements/' + id + '?quantity=' + quantity
+  return `${cannonUrl}/templates/achievements/${id}?quantity=${quantity}`
 }
 
-var redeemGrids = []
+const redeemGrids = []
 
 function processSession (session, cb) {
-  var quantity = 0
+  let quantity = 0
   switch (session.kind.toLowerCase()) {
     case 'presentation':
       quantity = 70
@@ -29,19 +29,19 @@ function processSession (session, cb) {
       break
   }
 
-  var achievementId = 'session-' + session.id
-  var url = getUrl(achievementId, quantity)
+  const achievementId = 'session-' + session.id
+  const url = getUrl(achievementId, quantity)
 
   redeemGrids.push(url)
 
   cb()
 }
 
-API.session.list({event: EVENT}, function (err, sessions) {
+API.session.list({event: EVENT}, (err, sessions) => {
   log.debug({err: err, count: sessions.length}, 'got sessions')
 
-  async.eachLimit(sessions, 2, function (session, cb) {
-    processSession(session, function (err) {
+  async.eachLimit(sessions, 2, (session, cb) => {
+    processSession(session, (err) => {
       if (err) {
         log.warn({err: err, session: session}, 'render')
       }
@@ -50,11 +50,11 @@ API.session.list({event: EVENT}, function (err, sessions) {
 
       cb()
     })
-  }, function (err) {
+  }, (err) => {
     if (err) throw err
     // log.info({err: err}, 'redeem codes created');
 
-    console.log(redeemGrids)
+    console.log(redeemGrids) // is this needed?
 
     process.exit(0)
   })

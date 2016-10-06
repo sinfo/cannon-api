@@ -1,6 +1,6 @@
-var Joi = require('joi')
-var render = require('../../views/file')
-var configUpload = require('../../../config').upload
+const Joi = require('joi')
+const render = require('../../views/file')
+const configUpload = require('../../../config').upload
 
 exports = module.exports
 
@@ -105,8 +105,8 @@ exports.download = {
     { method: 'file.get(params.id, query)', assign: 'file' }
   ],
   handler: function (request, reply) {
-    var path = configUpload.path + '/' + request.pre.file.id
-    var options = {
+    const path = configUpload.path + '/' + request.pre.file.id
+    const options = {
       filename: request.pre.file.name,
       mode: 'attachment'
     }
@@ -125,8 +125,8 @@ exports.downloadMe = {
     { method: 'file.get(auth.credentials.user.id, query)', assign: 'file' }
   ],
   handler: function (request, reply) {
-    var path = configUpload.path + '/' + request.pre.file.id
-    var options = {
+    const path = configUpload.path + '/' + request.pre.file.id
+    const options = {
       filename: request.pre.file.name,
       mode: 'attachment'
     }

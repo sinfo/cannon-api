@@ -1,11 +1,11 @@
-var Boom = require('boom')
-var server = require('../').hapi
-var log = require('../helpers/logger')
-var Resquest = require('request')
-var config = require('../../config')
-var qs = require('qs')
-var parseBody = require('../helpers/parseBody')
-var moment = require('moment')
+const Boom = require('boom')
+const server = require('../').hapi
+const log = require('../helpers/logger')
+const Resquest = require('request')
+const config = require('../../config')
+const qs = require('qs')
+const parseBody = require('../helpers/parseBody')
+const moment = require('moment')
 
 server.method('session.get', get, {})
 server.method('session.list', list, {})
@@ -19,9 +19,9 @@ function get (id, query, cb) {
 
   query = (arguments.length === 2) ? {} : query
 
-  var url = config.deck.url + '/api/sessions/' + id + '?' + qs.stringify(query)
+  const url = `${config.deck.url}/api/sessions/${id}?${qs.stringify(query)}`
 
-  Resquest.get(url, function (err, response, body) {
+  Resquest.get(url, (err, response, body) => {
     if (err) {
       log.error({err: err, id: id}, 'error getting session')
       return cb(Boom.internal())
@@ -32,7 +32,7 @@ function get (id, query, cb) {
       return cb(Boom.notFound('session not found'))
     }
 
-    parseBody(body, function (err, session) {
+    parseBody(body, (err, session) => {
       if (err) {
         return cb(Boom.create(err.statusCode, err.message || err.statusCode === 404 && 'session not found', err.data))
       }
@@ -44,9 +44,9 @@ function get (id, query, cb) {
 function list (query, cb) {
   cb = cb || query // fields is optional
 
-  var url = config.deck.url + '/api/sessions?' + qs.stringify(query)
+  const url = `${config.deck.url}/api/sessions?${qs.stringify(query)}`
 
-  Resquest.get(url, function (err, response, body) {
+  Resquest.get(url, (err, response, body) => {
     if (err) {
       log.error({err: err}, 'error getting sessions')
       return cb(Boom.internal())
@@ -57,7 +57,7 @@ function list (query, cb) {
       return cb(Boom.notFound('sessions not found'))
     }
 
-    parseBody(body, function (err, sessions) {
+    parseBody(body, (err, sessions) => {
       if (err) {
         return cb(Boom.create(err.statusCode, err.message, err.data))
       }
@@ -77,7 +77,7 @@ function ticketsNeeded (session, cb) {
 
 function surveyNotNeeded (session, cb) {
   if (session && session.surveyNeeded) {
-    var boom = Boom.preconditionFailed('you need to submit the session survey to redeem')
+    const boom = Boom.preconditionFailed('you need to submit the session survey to redeem')
     boom.output.payload.session = session
 
     return cb(boom)
@@ -87,7 +87,7 @@ function surveyNotNeeded (session, cb) {
 }
 
 function inRegistrationPeriod (session, cb) {
-  var now = Date.now()
+  const now = Date.now()
   if (now < moment(session.tickets.start) || now > moment(session.tickets.end) || now > moment(session.date)) {
     return cb(Boom.badRequest('out of registation period'))
   }
@@ -96,8 +96,8 @@ function inRegistrationPeriod (session, cb) {
 }
 
 function inConfirmationPeriod (session, cb) {
-  var now = new Date()
-  var date = new Date(session.date)
+  const now = new Date()
+  const date = new Date(session.date)
 
   if (date.setHours(0, 0, 0, 0) !== now.setHours(0, 0, 0, 0)) {
     return cb(Boom.badRequest('out of confirmation period'))

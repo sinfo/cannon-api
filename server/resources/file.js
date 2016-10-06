@@ -1,14 +1,14 @@
-var Boom = require('boom')
-var Mime = require('mime')
-var config = require('../../config')
-var options = require('../options')
-var server = require('../').hapi
-var log = require('../helpers/logger')
-var async = require('async')
-var fs = require('fs')
-var urlencode = require('urlencode')
-var fieldsParser = require('../helpers/fieldsParser')
-var File = require('../db/file')
+const Boom = require('boom')
+const Mime = require('mime')
+const config = require('../../config')
+const options = require('../options')
+const server = require('../').hapi
+const log = require('../helpers/logger')
+const async = require('async')
+const fs = require('fs')
+const urlencode = require('urlencode')
+const fieldsParser = require('../helpers/fieldsParser')
+const File = require('../db/file')
 
 server.method('file.create', create, {})
 server.method('file.createArray', createArray, {})
@@ -25,7 +25,7 @@ function createArray (files, cb) {
   if (!files.length) {
     return create(files, cb)
   }
-  async.map(files, create, function (err, results) {
+  async.map(files, create, (err, results) => {
     if (err) {
       log.error({err: err, files: files}, '[files] error creating files in db')
     }
@@ -39,7 +39,7 @@ function create (file, user, cb) {
 
   file.created = file.updated = Date.now()
 
-  File.create(file, function (err, _file) {
+  File.create(file, (err, _file) => {
     if (err) {
       if (err.code === 11000) {
         return cb(Boom.conflict('file is a duplicate'))
@@ -66,7 +66,7 @@ function update (id, file, user, query, cb) {
     user = null
   }
 
-  var options = {
+  const options = {
     upsert: query.upsert
   }
 
@@ -74,7 +74,7 @@ function update (id, file, user, query, cb) {
   file.$setOnInsert = {created: file.updated}
   file.user = user || file.user || null
 
-  File.findOneAndUpdate({id: id}, file, options, function (err, _file) {
+  File.findOneAndUpdate({id: id}, file, options, (err, _file) => {
     if (err) {
       log.error({err: err, file: id}, 'error updating file')
       return cb(Boom.internal())
@@ -95,10 +95,10 @@ function get (id, query, cb) {
     return cb()
   }
 
-  var fields = fieldsParser(query.fields)
-  var filter = {$or: [{id: id}, {user: id}]}
+  const fields = fieldsParser(query.fields)
+  const filter = {$or: [{id: id}, {user: id}]}
 
-  File.findOne(filter, fields, function (err, file) {
+  File.findOne(filter, fields, (err, file) => {
     if (err) {
       log.error({err: err, file: id}, 'error getting file')
       return cb(Boom.internal())
@@ -114,15 +114,15 @@ function get (id, query, cb) {
 function list (query, cb) {
   cb = cb || query // fields is optional
 
-  var filter = {}
-  var fields = fieldsParser(query.fields)
-  var options = {
+  const filter = {}
+  const fields = fieldsParser(query.fields)
+  const options = {
     skip: query.skip,
     limit: query.limit,
     sort: fieldsParser(query.sort)
   }
 
-  File.find(filter, fields, options, function (err, file) {
+  File.find(filter, fields, options, (err, file) => {
     if (err) {
       log.error({err: err}, 'error getting all files')
       return cb(Boom.internal())
@@ -133,7 +133,7 @@ function list (query, cb) {
 }
 
 function remove (id, cb) {
-  File.findOneAndRemove({id: id}, function (err, file) {
+  File.findOneAndRemove({id: id}, (err, file) => {
     if (err) {
       log.error({err: err, file: id}, 'error deleting file')
       return cb(Boom.internal())
@@ -152,14 +152,14 @@ function uploadCV (data, cb) {
 }
 
 function upload (kind, data, cb) {
-  var files = []
-  async.each(Object.keys(data), function (prop, cbAsync) {
+  const files = []
+  async.each(Object.keys(data), (prop, cbAsync) => {
     if (data.hasOwnProperty(prop)) {
       files.push(prop)
     }
     cbAsync()
   },
-  function (err) {
+  (err) => {
     if (err) {
       log.error({err: err, kind: kind, files: files}, '[files] error assigning file keys')
       return cb(Boom.internal())
@@ -176,7 +176,7 @@ function saveFiles (kind, files, data, cb) {
     return saveFile(kind, data[files[0]], cb)
   }
 
-  async.map(files, function (file, cbAsync) {
+  async.map(files, (file, cbAsync) => {
     saveFile(kind, data[file], cbAsync)
   }, cb)
 }
@@ -188,9 +188,9 @@ function deleteFile (file, cb) {
     return cb()
   }
 
-  var path = config.upload.path + '/' + file
+  const path = config.upload.path + '/' + file
 
-  fs.unlink(path, function (err) {
+  fs.unlink(path, (err) => {
     if (err) {
       if (err.errno === 34) {
         log.error('[file] issue with file path')
@@ -204,17 +204,17 @@ function deleteFile (file, cb) {
 }
 
 function saveFile (kind, data, cb) {
-  var mimeType = data.hapi.headers['content-type']
-  var fileInfo = {
+  const mimeType = data.hapi.headers['content-type']
+  const fileInfo = {
     id: kind + '_' + Math.random().toString(36).substr(2, 20),
     kind: kind,
     name: urlencode.decode(data.hapi.filename)
   }
-  var file = data
-  var path = config.upload.path + '/' + fileInfo.id
-  var fileStream = fs.createWriteStream(path)
+  const file = data
+  const path = config.upload.path + '/' + fileInfo.id
+  const fileStream = fs.createWriteStream(path)
 
-  fileStream.on('error', function (err) {
+  fileStream.on('error', (err) => {
     if (err && err.errno === 34) {
       log.error('[file] issue with file path')
     }
@@ -224,15 +224,15 @@ function saveFile (kind, data, cb) {
 
   file.pipe(fileStream)
 
-  file.on('end', function (err) {
+  file.on('end', (err) => {
     if (err) {
       log.error({err: err}, '[file] error uploading file')
       return cb(Boom.badData(err))
     }
 
-    var index = -1
+    let index = -1
 
-    async.each(options.upload, function (o, cbAsync) {
+    async.each(options.upload, (o, cbAsync) => {
       if (o.kind === kind) {
         index = o.mimes.indexOf(mimeType)
       }

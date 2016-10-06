@@ -1,8 +1,6 @@
 module.exports = function render (content, session) {
   if (content instanceof Array) {
-    return content.map(function (model) {
-      renderObject(model, session)
-    })
+    return content.map(model => renderObject(model, session))
   }
 
   return renderObject(content, session)

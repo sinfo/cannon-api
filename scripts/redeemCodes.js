@@ -1,13 +1,13 @@
-var server = require('../server').hapi
-var API = server.methods
-var log = require('../server/helpers/logger')
-var async = require('async')
-var NodePDF = require('nodepdf')
-var config = require('../config')
-var join = require('path').join
-var EVENT = '23-sinfo-conf'
+const server = require('../server').hapi
+const API = server.methods
+const log = require('../server/helpers/logger')
+const async = require('async')
+const NodePDF = require('nodepdf')
+const config = require('../config')
+const join = require('path').join
+const EVENT = '23-sinfo-conf'
 
-var options = {
+const options = {
   'paperSize': {
     'pageFormat': 'A4',
     'margin': {
@@ -24,16 +24,16 @@ var options = {
   }
 }
 
-var authStr = config.auth.internal.username + ':' + config.auth.internal.password + '@'
+const authStr = `${config.auth.internal.username}:${config.auth.internal.password}@`
 
-var cannonUrl = 'http://' + authStr + 'localhost:8090'
+const cannonUrl = `http://${authStr}localhost:8090`
 
 function getUrl (id, quantity) {
-  return cannonUrl + '/templates/achievements/' + id + '?quantity=' + quantity
+  return `${cannonUrl}/templates/achievements/${id}?quantity=${quantity}`
 }
 
 function renderPDF (session, cb) {
-  var quantity = 0
+  let quantity = 0
   switch (session.kind.toLowerCase()) {
     case 'presentation':
       quantity = 70
@@ -46,28 +46,28 @@ function renderPDF (session, cb) {
       break
   }
 
-  var achievementId = 'session-' + session.id
-  var url = getUrl(achievementId, quantity)
+  const achievementId = `session-${session.id}`
+  const url = getUrl(achievementId, quantity)
 
-  var pdfName = join(__dirname, 'output', achievementId + '.pdf')
+  const pdfName = join(__dirname, 'output', achievementId + '.pdf')
 
   log.debug({url: url, pdfName: pdfName}, 'render')
 
   NodePDF.render(url, pdfName, options, cb)
 }
 
-API.session.list({event: EVENT}, function (err, sessions) {
+API.session.list({event: EVENT}, (err, sessions) => {
   log.debug({err: err, count: sessions.length}, 'got sessions')
 
-  async.each(sessions, function (session, cb) {
-    renderPDF(session, function (err, fileName) {
+  async.each(sessions, (session, cb) => {
+    renderPDF(session, (err, fileName) => {
       if (err) {
         log.warn({err: err, fileName: fileName}, 'render')
       }
 
       cb()
     })
-  }, function (err) {
+  }, (err) => {
     log.info({err: err}, 'redeem codes created')
 
     process.exit(0)

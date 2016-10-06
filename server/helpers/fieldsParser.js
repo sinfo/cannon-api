@@ -7,11 +7,11 @@
  * @return {Object} options    - options object to be used on a mongoose query (eg: {id:1,name:-1,img:1})
  */
 module.exports = function (fieldsStr) {
-  var options = {}
+  const options = {}
 
   if (fieldsStr && typeof (fieldsStr) === 'string' && fieldsStr !== '') {
-    var fields = fieldsStr.replace(/\s+/g, '').split(',')
-    for (var i in fields) {
+    const fields = fieldsStr.replace(/\s+/g, '').split(',')
+    for (const i in fields) {
       if (fields[i][0] === '-') {
         options[fields[i].substring(1)] = -1
       } else {

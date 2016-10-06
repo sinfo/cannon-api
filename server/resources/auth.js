@@ -1,14 +1,14 @@
-var Boom = require('boom')
-var server = require('../').hapi
-var config = require('../../config')
-var log = require('../helpers/logger')
-var async = require('async')
-var Hoek = require('hoek')
-var _ = require('underscore')
-var facebook = require('../helpers/facebook')
-var Token = require('../auth/token')
-var Fenix = require('fenixedu')(config.fenix)
-var google = require('../helpers/google')
+const Boom = require('boom')
+const server = require('../').hapi
+const config = require('../../config')
+const log = require('../helpers/logger')
+const async = require('async')
+const Hoek = require('hoek')
+const _ = require('underscore')
+const facebook = require('../helpers/facebook')
+const Token = require('../auth/token')
+const Fenix = require('fenixedu')(config.fenix)
+const google = require('../helpers/google')
 
 server.method('auth.facebook', facebookAuth, {})
 server.method('auth.fenix', fenixAuth, {})
@@ -23,7 +23,7 @@ server.method('auth.refreshToken', refreshToken, {})
 // //////////////////////////
 
 function debugFBToken (id, token, cb) {
-  facebook.debugToken(id, token, function (err, isValid) {
+  facebook.debugToken(id, token, (err, isValid) => {
     if (err) {
       return cb(Boom.unauthorized(err))
     }
@@ -37,7 +37,7 @@ function debugFBToken (id, token, cb) {
 }
 
 function getFBUser (id, token, cb) {
-  server.methods.user.get({'facebook.id': id}, function (err, user) {
+  server.methods.user.get({'facebook.id': id}, (err, user) => {
     if (err) {
       if (!err.output || err.output.statusCode !== 404) {
         log.error({err: err, facebook: id}, '[facebook-login] error getting user')
@@ -52,14 +52,14 @@ function getFBUser (id, token, cb) {
 }
 
 function addFBaccount (user, fbUser, token, cb) {
-  server.methods.user.get({'facebook.id': fbUser.id}, function (err, _user) {
+  server.methods.user.get({'facebook.id': fbUser.id}, (err, _user) => {
     if (err) {
       if (!err.output || err.output.statusCode !== 404) {
         log.error({err: err, facebook: fbUser.id}, '[facebook-login] error getting user')
         return cb(err)
       }
 
-      var changedAttributes = {
+      const changedAttributes = {
         facebook: {
           id: fbUser.id,
           token: token
@@ -88,7 +88,7 @@ function fbUserFound (user, token, cb) {
     return authenticate(user.id, {'facebook.token': token}, cb)
   }
 
-  facebook.getMe(token, function (err, facebookUser) {
+  facebook.getMe(token, (err, facebookUser) => {
     if (err) {
       log.error({err: err, id: facebookUser.id, token: token}, '[facebook-login] error retrieving user info from facebook')
       return cb(Boom.unauthorized('couldn\'t retrieve your info from facebook'))
@@ -101,7 +101,7 @@ function fbUserFound (user, token, cb) {
 
     log.debug({facebookUser: facebookUser.id}, '[facebook-login] got facebook user')
 
-    server.methods.user.get({mail: facebookUser.email}, function (err, _user) {
+    server.methods.user.get({mail: facebookUser.email}, (err, _user) => {
       if (err) {
         if (!err.output || err.output.statusCode !== 404) {
           log.error({err: err, mail: facebookUser.email, token: token}, '[facebook-login] error retrieving user info from facebook')
@@ -119,10 +119,10 @@ function fbUserFound (user, token, cb) {
 }
 
 function fbUserNotFound (token, cb) {
-  var changedAttributes = {}
-  var filter = {}
+  let changedAttributes = {}
+  let filter = {}
 
-  facebook.getMe(token, function (err, facebookUser) {
+  facebook.getMe(token, (err, facebookUser) => {
     if (err) {
       log.error({err: err, id: facebookUser.id, token: token}, '[facebook-login] error retrieving user info from facebook')
       return cb(Boom.unauthorized('couldn\'t retrieve your info from facebook'))
@@ -151,7 +151,7 @@ function fbUserNotFound (token, cb) {
       mail: facebookUser.email
     }
 
-    server.methods.user.update(filter, changedAttributes, {upsert: true}, function (err, result) {
+    server.methods.user.update(filter, changedAttributes, {upsert: true}, (err, result) => {
       if (err) {
         log.error({user: {mail: facebookUser.email}, changedAttributes: changedAttributes}, '[facebook-login] error upserting user')
         return cb(err)
@@ -169,7 +169,7 @@ function fbUserNotFound (token, cb) {
 // //////////////////////////
 
 function debugGToken (id, token, cb) {
-  google.debugToken(id, token, function (err, isValid) {
+  google.debugToken(id, token, (err, isValid) => {
     if (err) {
       return cb(Boom.unauthorized(err))
     }
@@ -182,7 +182,7 @@ function debugGToken (id, token, cb) {
 }
 
 function getGUser (id, token, cb) {
-  server.methods.user.get({'google.id': id}, function (err, user) {
+  server.methods.user.get({'google.id': id}, (err, user) => {
     if (err) {
       if (!err.output || err.output.statusCode !== 404) {
         log.error({err: err, google: id}, '[google-login] error getting user')
@@ -197,14 +197,14 @@ function getGUser (id, token, cb) {
 }
 
 function addGaccount (user, gUser, mail, token, cb) {
-  server.methods.user.get({'google.id': gUser.id}, function (err, _user) {
+  server.methods.user.get({'google.id': gUser.id}, (err, _user) => {
     if (err) {
       if (!err.output || err.output.statusCode !== 404) {
         log.error({err: err, google: gUser.id}, '[google-login] error getting user')
         return cb(err)
       }
 
-      var changedAttributes = {
+      const changedAttributes = {
         google: {
           id: gUser.id,
           img: gUser.image.url + '0',
@@ -234,13 +234,13 @@ function gUserFound (user, id, token, cb) {
     return authenticate(user.id, {'google.token': token}, cb)
   }
 
-  google.getMe(id, function (err, googleUser) {
+  google.getMe(id, (err, googleUser) => {
     if (err) {
       log.error({err: err, id: id, token: token}, '[google-login] error retrieving user info from google')
       return cb(Boom.unauthorized('couldn\'t retrieve your info from google'))
     }
 
-    google.getMail(token, function (err, mail) {
+    google.getMail(token, (err, mail) => {
       if (err) {
         log.error({err: err, id: id, token: token}, '[google-login] error retrieving user email from google')
         return cb(Boom.unauthorized('couldn\'t retrieve your info from google'))
@@ -251,7 +251,7 @@ function gUserFound (user, id, token, cb) {
         return cb(Boom.notAcceptable('you must have a valid google e-mail'))
       }
 
-      server.methods.user.get({mail: mail}, function (err, _user) {
+      server.methods.user.get({mail: mail}, (err, _user) => {
         if (err) {
           if (!err.output || err.output.statusCode !== 404) {
             log.error({err: err, mail: mail, token: token}, '[google-login] error retrieving user info from google')
@@ -270,16 +270,16 @@ function gUserFound (user, id, token, cb) {
 }
 
 function gUserNotFound (id, token, cb) {
-  var changedAttributes = {}
-  var filter = {}
+  let changedAttributes = {}
+  let filter = {}
 
-  google.getMe(id, function (err, googleUser) {
+  google.getMe(id, (err, googleUser) => {
     if (err) {
       log.error({err: err, id: id, token: token}, '[google-login] error retrieving user info from google')
       return cb(Boom.unauthorized('couldn\'t retrieve your info from google'))
     }
 
-    google.getMail(token, function (err, mail) {
+    google.getMail(token, (err, mail) => {
       if (err) {
         log.error({err: err, id: id, token: token}, '[google-login] error retrieving user email from google')
         return cb(Boom.unauthorized('couldn\'t retrieve your info from google'))
@@ -307,7 +307,7 @@ function gUserNotFound (id, token, cb) {
         mail: mail
       }
 
-      server.methods.user.update(filter, changedAttributes, {upsert: true}, function (err, result) {
+      server.methods.user.update(filter, changedAttributes, {upsert: true}, (err, result) => {
         if (err) {
           log.error({user: {mail: mail}, changedAttributes: changedAttributes}, '[google-login] error upserting user')
           return cb(err)
@@ -326,8 +326,8 @@ function gUserNotFound (id, token, cb) {
 // //////////////////////////
 
 function getFenixToken (code, cb) {
-  Fenix.auth.getAccessToken(code, function (err, response, body) {
-    var auth
+  Fenix.auth.getAccessToken(code, (err, response, body) => {
+    let auth
 
     if (err || !body) {
       log.error({err: err, response: response.statusCode, body: body}, '[fenix-login] error getting access token')
@@ -346,9 +346,9 @@ function getFenixToken (code, cb) {
 }
 
 function getFenixInfo (auth, cb) {
-  Fenix.person.getPerson(auth.token, function (err, fenixUser) {
-    var user
-    var _auth = auth
+  Fenix.person.getPerson(auth.token, (err, fenixUser) => {
+    let user
+    const _auth = auth
 
     if (err || !fenixUser) {
       log.error({err: err, user: fenixUser}, '[fenix-login] error getting person')
@@ -369,7 +369,7 @@ function getFenixInfo (auth, cb) {
 }
 
 function getFenixUser (fenixUser, cb) {
-  server.methods.user.get({'fenix.id': fenixUser.auth.id}, function (err, user) {
+  server.methods.user.get({'fenix.id': fenixUser.auth.id}, (err, user) => {
     if (err) {
       if (!err.output || err.output.statusCode !== 404) {
         log.error({err: err, fenix: fenixUser.auth.id}, '[fenix-login] error getting user')
@@ -378,15 +378,15 @@ function getFenixUser (fenixUser, cb) {
 
       return fenixUserNotFound(fenixUser, cb)
     }
-    var changedAttributes = {fenix: fenixUser.auth}
+    const changedAttributes = {fenix: fenixUser.auth}
     changedAttributes.mail = user.mail || fenixUser.email.main
     authenticate(user.id, changedAttributes, cb)
   })
 }
 
 function addFenixAccount (user, fenixUser, cb) {
-  server.methods.user.get({'fenix.id': fenixUser.auth.id}, function (err, _user) {
-    var changedAttributes = {}
+  server.methods.user.get({'fenix.id': fenixUser.auth.id}, (err, _user) => {
+    const changedAttributes = {}
 
     if (err) {
       if (!err.output || err.output.statusCode !== 404) {
@@ -414,8 +414,8 @@ function addFenixAccount (user, fenixUser, cb) {
 }
 
 function fenixUserNotFound (fenixUser, cb) {
-  var changedAttributes = {}
-  var filter = {}
+  const changedAttributes = {}
+  const filter = {}
 
   changedAttributes.fenix = fenixUser.auth
 
@@ -433,7 +433,7 @@ function fenixUserNotFound (fenixUser, cb) {
   log.debug({fenixUser: fenixUser.id}, '[fenix-login] got fenix user')
 
   // Update the fenix details of the user with any this emails, ou create a new user if it does not exist
-  server.methods.user.update(filter, changedAttributes, {upsert: true}, function (err, result) {
+  server.methods.user.update(filter, changedAttributes, {upsert: true}, (err, result) => {
     if (err) {
       log.error({query: filter, changedAttributes: changedAttributes}, '[fenix-login] error upserting user')
       return cb(err)
@@ -510,13 +510,13 @@ function addGoogleAuth (user, id, token, cb) {
       debugGToken(id, token, cbAsync)
     },
     function addAccount (cbAsync) {
-      google.getMe(id, function (err, googleUser) {
+      google.getMe(id, (err, googleUser) => {
         if (err) {
           log.error({err: err, id: id, token: token}, '[google-login] error retrieving user info from google')
           return cbAsync(Boom.unauthorized('couldn\'t retrieve your info from google'))
         }
 
-        google.getMail(token, function (err, mail) {
+        google.getMail(token, (err, mail) => {
           if (err) {
             log.error({err: err, id: id, token: token}, '[google-login] error retrieving user email from google')
             return cbAsync(Boom.unauthorized('couldn\'t retrieve your info from google'))
@@ -546,7 +546,7 @@ function addFacebookAuth (user, id, token, cb) {
       debugFBToken(id, token, cbAsync)
     },
     function addAccount (cbAsync) {
-      facebook.getMe(token, function (err, facebookUser) {
+      facebook.getMe(token, (err, facebookUser) => {
         if (err) {
           log.error({err: err, id: facebookUser.id, token: token}, '[facebook-login] error retrieving user info from facebook')
           return cbAsync(Boom.unauthorized('couldn\'t retrieve your info from facebook'))
@@ -598,7 +598,7 @@ function addFenixAuth (user, code, cb) {
 
 function updateUserAuth (filter, changedAttributes, cbAsync) {
   // Update the details of the user with this new auth info
-  server.methods.user.update(filter, changedAttributes, function (err, result) {
+  server.methods.user.update(filter, changedAttributes, (err, result) => {
     if (err) {
       log.error({err: err, user: filter, changedAttributes: changedAttributes}, '[login] error updating user')
       return cbAsync(err)
@@ -611,10 +611,10 @@ function updateUserAuth (filter, changedAttributes, cbAsync) {
 }
 
 function mergeAccount (user, other, cb) {
-  var userId = user.id
-  var otherId = other.id
+  const userId = user.id
+  const otherId = other.id
 
-  server.methods.user.remove(other.id, function (err, result) {
+  server.methods.user.remove(other.id, (err, result) => {
     if (err) {
       log.error({err: err, user: other.id}, '[merge-account] error removing dup account')
       return cb(err)
@@ -626,7 +626,7 @@ function mergeAccount (user, other, cb) {
       function updateFiles (cbAsync) {
         async.parallel([
           function getUser (cbFile) {
-            server.methods.file.get(userId, function (err, result) {
+            server.methods.file.get(userId, (err, result) => {
               if (err) {
                 if (err.output && err.output.statusCode === 404) {
                   log.warn({err: err.message, user: userId}, '[merge-account] user has no file')
@@ -638,7 +638,7 @@ function mergeAccount (user, other, cb) {
             })
           },
           function getOther (cbFile) {
-            server.methods.file.get(otherId, function (err, result) {
+            server.methods.file.get(otherId, (err, result) => {
               if (err) {
                 if (err.output && err.output.statusCode === 404) {
                   log.warn({err: err.message, user: otherId}, '[merge-account] other user has no file')
@@ -650,10 +650,10 @@ function mergeAccount (user, other, cb) {
             })
           }
         ], function gotFiles (err, results) {
-          var userFile = results[0]
-          var otherFile = results[1]
-          var resultFile
-          var deleteFile
+          const userFile = results[0]
+          const otherFile = results[1]
+          let resultFile
+          let deleteFile
           log.debug({results: results})
           if (err) {
             return cbAsync(err)
@@ -679,7 +679,7 @@ function mergeAccount (user, other, cb) {
 
           async.parallel([
             function deleteFile (cbFile) {
-              server.methods.file.delete(deleteFile.id, function (err) {
+              server.methods.file.delete(deleteFile.id, err => {
                 if (err) {
                   log.warn({err: err, file: deleteFile.id}, '[merge-account] error deleting file')
                 }
@@ -687,7 +687,7 @@ function mergeAccount (user, other, cb) {
               })
             },
             function deleteFileDb (cbFile) {
-              server.methods.file.remove(deleteFile.id, function (err, _file) {
+              server.methods.file.remove(deleteFile.id, (err, _file) => {
                 if (err) {
                   log.error({err: err, file: deleteFile.id}, '[merge-account] error removing file from db')
                   return cbFile(err)
@@ -700,7 +700,7 @@ function mergeAccount (user, other, cb) {
               return cbAsync(err)
             }
 
-            server.methods.file.update(resultFile.id, resultFile, function (err, result) {
+            server.methods.file.update(resultFile.id, resultFile, (err, result) => {
               if (err) {
                 log.error({err: err, file: resultFile.id}, '[merge-account] error updating file')
                 return cbAsync(err)
@@ -712,9 +712,9 @@ function mergeAccount (user, other, cb) {
       },
 
       function updateTickets (cbAsync) {
-        var filter = {$and: [{users: otherId}, {users: {$nin: [userId]}}]}
-        var changedAttributes = {$set: {'users.$': userId}}
-        server.methods.ticket.updateMulti(filter, changedAttributes, function (err, tickets) {
+        const filter = {$and: [{users: otherId}, {users: {$nin: [userId]}}]}
+        const changedAttributes = {$set: {'users.$': userId}}
+        server.methods.ticket.updateMulti(filter, changedAttributes, (err, tickets) => {
           if (err) {
             if (err.output && err.output.statusCode === 404) {
               log.warn({err: err.message, user: otherId}, '[merge-account] user had no tickets')
@@ -728,9 +728,9 @@ function mergeAccount (user, other, cb) {
       },
 
       function updateAchievements (cbAsync) {
-        var filter = {$and: [{users: otherId}, {users: {$nin: [userId]}}]}
-        var changedAttributes = {$set: {'users.$': userId}}
-        server.methods.achievement.updateMulti(filter, changedAttributes, function (err, achievements) {
+        const filter = {$and: [{users: otherId}, {users: {$nin: [userId]}}]}
+        const changedAttributes = {$set: {'users.$': userId}}
+        server.methods.achievement.updateMulti(filter, changedAttributes, (err, achievements) => {
           if (err) {
             if (err.output && err.output.statusCode === 404) {
               log.warn({err: err.message, user: otherId}, '[merge-account] user had no achievements')
@@ -744,12 +744,12 @@ function mergeAccount (user, other, cb) {
       }
     ], function updateUser (err, results) {
       if (err) return cb(err)
-      var filter = {id: user.id}
-      var changedAttributes = {}
+      const filter = {id: user.id}
+      let changedAttributes = {}
 
       changedAttributes = Hoek.applyToDefaults(other, user)
       changedAttributes.skills = _.union(other.skills, user.skills)
-      server.methods.user.update(filter, changedAttributes, function (err, user) {
+      server.methods.user.update(filter, changedAttributes, (err, user) => {
         if (err) {
           log.error({err: err, user: userId, other: otherId, update: changedAttributes}, '[merge-account] error updating user')
           return cb(err)
@@ -765,11 +765,11 @@ function mergeAccount (user, other, cb) {
 // //////////////////////////////////////////
 
 function authenticate (userId, changedAttributes, cb) {
-  var newToken = Token.getJWT(userId)
+  const newToken = Token.getJWT(userId)
   changedAttributes = changedAttributes || {}
   changedAttributes.$push = { bearer: newToken }
 
-  server.methods.user.update({id: userId}, changedAttributes, function (err, result) {
+  server.methods.user.update({id: userId}, changedAttributes, (err, result) => {
     if (err) {
       log.error({user: userId, changedAttributes: changedAttributes}, '[login] error updating user')
       return cb(err)
@@ -784,16 +784,16 @@ function authenticate (userId, changedAttributes, cb) {
 // ///////////////////////////
 
 function refreshToken (user, token, refresh, cb) {
-  Token.verifyToken(user, refresh, true, function (err, decoded) {
+  Token.verifyToken(user, refresh, true, (err, decoded) => {
     if (err) {
       return cb(err)
     }
 
-    var newToken = Token.getJWT(user)
-    var filter = {id: user, bearer: {$elemMatch: {refreshToken: refresh, token: token}}}
-    var update = {$set: {'bearer.$': newToken}}
+    const newToken = Token.getJWT(user)
+    const filter = {id: user, bearer: {$elemMatch: {refreshToken: refresh, token: token}}}
+    const update = {$set: {'bearer.$': newToken}}
 
-    server.methods.user.update(filter, update, function (err, result) {
+    server.methods.user.update(filter, update, (err, result) => {
       if (err) {
         log.error({user: user}, '[login] error updating user')
         return cb(Boom.unauthorized())
