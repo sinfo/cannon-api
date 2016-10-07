@@ -1,8 +1,8 @@
-var pack = require('./package')
-var fs = require('fs')
-var join = require('path').join
+const pack = require('./package')
+const fs = require('fs')
+const join = require('path').join
 
-var config = {
+const config = {
   url: process.env.CANNON_URL || 'http://localhost:8090',
   host: process.env.CANNON_HOST || 'localhost',
   port: process.env.CANNON_PORT || 8090

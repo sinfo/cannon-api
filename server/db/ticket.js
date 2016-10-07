@@ -1,6 +1,6 @@
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-var schema = new mongoose.Schema({
+const schema = new mongoose.Schema({
   session: {type: String, unique: true},
   users: Array,
   confirmed: Array,

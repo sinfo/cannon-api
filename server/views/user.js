@@ -1,15 +1,14 @@
-
 module.exports = function render (content, user) {
   if (content instanceof Array) {
-    return content.map(function (model) { return renderObject(model, user) })
+    return content.map(model => renderObject(model, user))
   }
 
   return renderObject(content, user)
 }
 
 function renderObject (model, user) {
-  var result = {}
-  var isAllowed = user && (user.role === 'admin' || model.id === user.id)
+  const result = {}
+  const isAllowed = user && (user.role === 'admin' || model.id === user.id)
 
   result.id = model.id
   result.name = model.name
@@ -19,12 +18,10 @@ function renderObject (model, user) {
     available: model.points && model.points.available || 0,
     total: model.points && model.points.total || 0
   }
-  result.achievements = model.achievements && model.achievements.map(function (achievement) {
-    return {
-      id: achievement && achievement.id,
-      date: achievement && achievement.date
-    }
-  })
+  result.achievements = model.achievements && model.achievements.map(achievement => ({
+    id: achievement && achievement.id,
+    date: achievement && achievement.date
+  }))
   result.area = model.area
   result.skills = model.skills
   result.registered = model.registered

@@ -1,5 +1,5 @@
-var server = require('../../').hapi
-var handlers = require('./handlers')
+const server = require('../../').hapi
+const handlers = require('./handlers')
 
 server.route({
   method: 'POST',

@@ -1,14 +1,14 @@
-var Lab = require('lab')
-var Code = require('code')
+const Lab = require('lab')
+const Code = require('code')
 
-var server = require('../').hapi
+const server = require('../').hapi
 
-var lab = exports.lab = Lab.script()
-var token = require('../auth/token')
+const lab = exports.lab = Lab.script()
+const token = require('../auth/token')
 
-var aux = token.getJWT('john.doe')
+const aux = token.getJWT('john.doe')
 
-var credentialsA = {
+const credentialsA = {
   user: {
     id: 'john.doe',
     name: 'John Doe'
@@ -17,7 +17,7 @@ var credentialsA = {
   scope: 'admin'
 }
 
-var credentialsB = {
+const credentialsB = {
   user: {
     id: 'john.doe',
     name: 'John Doe'
@@ -26,27 +26,27 @@ var credentialsB = {
   scope: 'user'
 }
 
-var userA = {
+const userA = {
   id: 'john.doe',
   name: 'John Doe',
   mail: 'john@doe.com'
 }
 
-var changesToA = {
+const changesToA = {
   name: 'John Doe Doe'
 }
 
-lab.experiment('User', function () {
-  lab.test('Create as admin', function (done) {
-    var options = {
+lab.experiment('User', () => {
+  lab.test('Create as admin', (done) => {
+    const options = {
       method: 'POST',
       url: '/users',
       credentials: credentialsA,
       payload: userA
     }
 
-    server.inject(options, function (response) {
-      var result = response.result
+    server.inject(options, (response) => {
+      const result = response.result
 
       Code.expect(response.statusCode).to.equal(201)
       Code.expect(result).to.be.instanceof(Object)
@@ -57,15 +57,15 @@ lab.experiment('User', function () {
     })
   })
 
-  lab.test('List all as admin', function (done) {
-    var options = {
+  lab.test('List all as admin', (done) => {
+    const options = {
       method: 'GET',
       url: '/users',
       credentials: credentialsA
     }
 
-    server.inject(options, function (response) {
-      var result = response.result
+    server.inject(options, (response) => {
+      const result = response.result
 
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceof(Array)
@@ -74,15 +74,15 @@ lab.experiment('User', function () {
     })
   })
 
-  lab.test('Get one as admin', function (done) {
-    var options = {
+  lab.test('Get one as admin', (done) => {
+    const options = {
       method: 'GET',
       url: '/users/' + userA.id,
       credentials: credentialsA
     }
 
-    server.inject(options, function (response) {
-      var result = response.result
+    server.inject(options, (response) => {
+      const result = response.result
 
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceof(Object)
@@ -93,15 +93,15 @@ lab.experiment('User', function () {
     })
   })
 
-  lab.test('Get one as user', function (done) {
-    var options = {
+  lab.test('Get one as user', (done) => {
+    const options = {
       method: 'GET',
       url: '/users/' + userA.id,
       credentials: credentialsB
     }
 
-    server.inject(options, function (response) {
-      var result = response.result
+    server.inject(options, (response) => {
+      const result = response.result
 
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceof(Object)
@@ -112,15 +112,15 @@ lab.experiment('User', function () {
     })
   })
 
-  lab.test('Get me as admin', function (done) {
-    var options = {
+  lab.test('Get me as admin', (done) => {
+    const options = {
       method: 'GET',
       url: '/users/me',
       credentials: credentialsA
     }
 
-    server.inject(options, function (response) {
-      var result = response.result
+    server.inject(options, (response) => {
+      const result = response.result
 
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceof(Object)
@@ -131,15 +131,15 @@ lab.experiment('User', function () {
     })
   })
 
-  lab.test('Get me as user', function (done) {
-    var options = {
+  lab.test('Get me as user', (done) => {
+    const options = {
       method: 'GET',
       url: '/users/me',
       credentials: credentialsB
     }
 
-    server.inject(options, function (response) {
-      var result = response.result
+    server.inject(options, (response) => {
+      const result = response.result
 
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceof(Object)
@@ -150,16 +150,16 @@ lab.experiment('User', function () {
     })
   })
 
-  lab.test('Update as admin', function (done) {
-    var options = {
+  lab.test('Update as admin', (done) => {
+    const options = {
       method: 'PUT',
       url: '/users/' + userA.id,
       credentials: credentialsA,
       payload: changesToA
     }
 
-    server.inject(options, function (response) {
-      var result = response.result
+    server.inject(options, (response) => {
+      const result = response.result
 
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceof(Object)
@@ -170,15 +170,15 @@ lab.experiment('User', function () {
     })
   })
 
-  lab.test('List all as user', function (done) {
-    var options = {
+  lab.test('List all as user', (done) => {
+    const options = {
       method: 'GET',
       url: '/users',
       credentials: credentialsB
     }
 
-    server.inject(options, function (response) {
-      var result = response.result
+    server.inject(options, (response) => {
+      const result = response.result
 
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceof(Array)
@@ -187,29 +187,29 @@ lab.experiment('User', function () {
     })
   })
 
-  lab.test('Update as user', function (done) {
-    var options = {
+  lab.test('Update as user', (done) => {
+    const options = {
       method: 'PUT',
       url: '/users/' + userA.id,
       credentials: credentialsB,
       payload: changesToA
     }
 
-    server.inject(options, function (response) {
+    server.inject(options, (response) => {
       Code.expect(response.statusCode).to.equal(403)
       done()
     })
   })
 
-  lab.test('Delete as admin', function (done) {
-    var options = {
+  lab.test('Delete as admin', (done) => {
+    const options = {
       method: 'DELETE',
       url: '/users/' + userA.id,
       credentials: credentialsA
     }
 
-    server.inject(options, function (response) {
-      var result = response.result
+    server.inject(options, (response) => {
+      const result = response.result
 
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceof(Object)
@@ -219,28 +219,28 @@ lab.experiment('User', function () {
     })
   })
 
-  lab.test('Create as user', function (done) {
-    var options = {
+  lab.test('Create as user', (done) => {
+    const options = {
       method: 'POST',
       url: '/users',
       credentials: credentialsB,
       payload: userA
     }
 
-    server.inject(options, function (response) {
+    server.inject(options, (response) => {
       Code.expect(response.statusCode).to.equal(403)
       done()
     })
   })
 
-  lab.test('Delete as user', function (done) {
-    var options = {
+  lab.test('Delete as user', (done) => {
+    const options = {
       method: 'DELETE',
       url: '/users/' + userA.id,
       credentials: credentialsB
     }
 
-    server.inject(options, function (response) {
+    server.inject(options, (response) => {
       Code.expect(response.statusCode).to.equal(403)
       done()
     })

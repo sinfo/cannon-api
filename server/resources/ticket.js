@@ -1,9 +1,9 @@
-var Boom = require('boom')
-var server = require('../').hapi
-var log = require('../helpers/logger')
-var fieldsParser = require('../helpers/fieldsParser')
-var Ticket = require('../db/ticket')
-var config = require('../../config')
+const Boom = require('boom')
+const server = require('../').hapi
+const log = require('../helpers/logger')
+const fieldsParser = require('../helpers/fieldsParser')
+const Ticket = require('../db/ticket')
+const config = require('../../config')
 
 server.method('ticket.userConfirmed', userConfirmed, {})
 server.method('ticket.userRegistered', userRegistered, {})
@@ -24,7 +24,7 @@ server.method('ticket.registrationAcceptedEmail', registrationAcceptedEmail, {})
 server.method('ticket.getUserSessions', getUserSessions, {})
 
 function userConfirmed (sessionId, userId, cb) {
-  Ticket.findOne({session: sessionId}, function (err, _ticket) {
+  Ticket.findOne({session: sessionId}, (err, _ticket) => {
     if (err) {
       log.error({err: err, session: sessionId}, 'error getting ticket')
       return cb(Boom.internal())
@@ -42,7 +42,7 @@ function userConfirmed (sessionId, userId, cb) {
 }
 
 function userRegistered (sessionId, userId, cb) {
-  Ticket.findOne({session: sessionId}, function (err, _ticket) {
+  Ticket.findOne({session: sessionId}, (err, _ticket) => {
     if (err) {
       log.error({err: err, session: sessionId}, 'error getting ticket')
       return cb(Boom.internal())
@@ -62,7 +62,7 @@ function userRegistered (sessionId, userId, cb) {
 function addUser (sessionId, userId, session, cb) {
   log.debug({session: session}, 'got session')
 
-  var changes = {
+  const changes = {
     $addToSet: {
       users: userId
     },
@@ -72,7 +72,7 @@ function addUser (sessionId, userId, session, cb) {
     }
   }
 
-  Ticket.findOneAndUpdate({ session: sessionId }, changes, {upsert: true}, function (err, _ticket) {
+  Ticket.findOneAndUpdate({ session: sessionId }, changes, {upsert: true}, (err, _ticket) => {
     if (err) {
       log.error({err: err, session: sessionId}, 'error registering ticket')
       return cb(Boom.internal())
@@ -83,7 +83,7 @@ function addUser (sessionId, userId, session, cb) {
 }
 
 function removeUser (sessionId, userId, session, cb) {
-  var changes = {
+  const changes = {
     $pull: {
       users: userId,
       confirmed: userId,
@@ -91,7 +91,7 @@ function removeUser (sessionId, userId, session, cb) {
     }
   }
 
-  Ticket.findOneAndUpdate({ session: sessionId }, changes, function (err, _ticket) {
+  Ticket.findOneAndUpdate({ session: sessionId }, changes, (err, _ticket) => {
     if (err) {
       log.error({err: err, session: sessionId}, 'error voiding ticket')
       return cb(Boom.internal())
@@ -106,13 +106,13 @@ function removeUser (sessionId, userId, session, cb) {
 }
 
 function confirmUser (sessionId, userId, session, cb) {
-  var changes = {
+  const changes = {
     $addToSet: {
       confirmed: userId
     }
   }
 
-  Ticket.findOneAndUpdate({ session: sessionId, users: { $in: [userId] } }, changes, function (err, _ticket) {
+  Ticket.findOneAndUpdate({ session: sessionId, users: { $in: [userId] } }, changes, (err, _ticket) => {
     if (err) {
       log.error({err: err, session: sessionId}, 'error confirming ticket')
       return cb(Boom.internal())
@@ -127,13 +127,13 @@ function confirmUser (sessionId, userId, session, cb) {
 }
 
 function registerUserPresence (sessionId, userId, session, cb) {
-  var changes = {
+  const changes = {
     $addToSet: {
       present: userId
     }
   }
 
-  Ticket.findOneAndUpdate({ session: sessionId }, changes, function (err, _ticket) {
+  Ticket.findOneAndUpdate({ session: sessionId }, changes, (err, _ticket) => {
     if (err) {
       log.error({err: err, session: sessionId}, 'error confirming ticket')
       return cb(Boom.internal())
@@ -150,13 +150,13 @@ function registerUserPresence (sessionId, userId, session, cb) {
 function get (filter, query, cb) {
   cb = cb || query // fields is optional
 
-  var fields = fieldsParser(query.fields)
+  const fields = fieldsParser(query.fields)
 
   if (typeof filter === 'string') {
     filter = { session: filter }
   }
 
-  Ticket.findOne(filter, fields, function (err, ticket) {
+  Ticket.findOne(filter, fields, (err, ticket) => {
     if (err) {
       log.error({err: err, requestedTicket: filter}, 'error getting ticket')
       return cb(Boom.internal())
@@ -175,7 +175,7 @@ function updateMulti (filter, ticket, cb) {
     filter = { id: filter }
   }
 
-  Ticket.update(filter, ticket, {multi: true}, function (err, tickets) {
+  Ticket.update(filter, ticket, {multi: true}, (err, tickets) => {
     if (err) {
       log.error({err: err, requestedTicket: filter}, 'error updating ticket')
       return cb(Boom.internal())
@@ -192,15 +192,15 @@ function updateMulti (filter, ticket, cb) {
 function list (query, cb) {
   cb = cb || query // fields is optional
 
-  var filter = {}
-  var fields = fieldsParser(query.fields)
-  var options = {
+  const filter = {}
+  const fields = fieldsParser(query.fields)
+  const options = {
     skip: query.skip,
     limit: query.limit,
     sort: fieldsParser(query.sort)
   }
 
-  Ticket.find(filter, fields, options, function (err, tickets) {
+  Ticket.find(filter, fields, options, (err, tickets) => {
     if (err) {
       log.error({err: err}, 'error getting all tickets')
       return cb(Boom.internal())
@@ -213,13 +213,13 @@ function list (query, cb) {
 function getUserSessions (id, cb) {
   Ticket.find({
     users: id
-  }, function (err, tickets) {
+  }, (err, tickets) => {
     if (err) {
       log.error({err: err}, 'error getting tickets')
       return cb(Boom.internal())
     }
 
-    var ids = tickets.map(function (ticket) {
+    const ids = tickets.map((ticket) => {
       return ticket.session
     })
 
@@ -230,9 +230,9 @@ function getUserSessions (id, cb) {
 function getRegisteredUsers (sessionId, session, cb) {
   cb = cb || session // session is optional
 
-  var filter = { session: sessionId }
+  const filter = { session: sessionId }
 
-  Ticket.findOne(filter, {users: 1}, function (err, ticket) {
+  Ticket.findOne(filter, {users: 1}, (err, ticket) => {
     if (err) {
       log.error({err: err, requestedTicket: filter}, 'error getting ticket')
       return cb(Boom.internal())
@@ -242,7 +242,7 @@ function getRegisteredUsers (sessionId, session, cb) {
       return cb(Boom.notFound())
     }
 
-    var users = ticket.users
+    let users = ticket.users
     if (session && session.tickets && session.tickets.max) {
       users = users.slice(0, session.tickets.max)
     }
@@ -254,9 +254,9 @@ function getRegisteredUsers (sessionId, session, cb) {
 function getWaitingUsers (sessionId, session, cb) {
   cb = cb || session // session is optional
 
-  var filter = { session: sessionId }
+  const filter = { session: sessionId }
 
-  Ticket.findOne(filter, {users: 1}, function (err, ticket) {
+  Ticket.findOne(filter, {users: 1}, (err, ticket) => {
     if (err) {
       log.error({err: err, requestedTicket: filter}, 'error getting ticket')
       return cb(Boom.internal())
@@ -266,7 +266,7 @@ function getWaitingUsers (sessionId, session, cb) {
       return cb(Boom.notFound())
     }
 
-    var users = ticket.users
+    let users = ticket.users
     if (session && session.tickets && session.tickets.max) {
       if (users.length > session.tickets.max) {
         users = users.slice(session.tickets.max)
@@ -282,9 +282,9 @@ function getWaitingUsers (sessionId, session, cb) {
 function getConfirmedUsers (sessionId, session, cb) {
   cb = cb || session // session is optional
 
-  var filter = { session: sessionId }
+  const filter = { session: sessionId }
 
-  Ticket.findOne(filter, {users: 1}, function (err, ticket) {
+  Ticket.findOne(filter, {users: 1}, (err, ticket) => {
     if (err) {
       log.error({err: err, requestedTicket: filter}, 'error getting ticket')
       return cb(Boom.internal())
@@ -294,7 +294,7 @@ function getConfirmedUsers (sessionId, session, cb) {
       return cb(Boom.notFound())
     }
 
-    var users = ticket.users.filter(function (o) {
+    const users = ticket.users.filter((o) => {
       return ticket.confirmed && ticket.confirmed.indexOf(o.id) !== -1
     })
 
@@ -345,7 +345,7 @@ function confirmationEmail (ticket, session, user, cb) {
 }
 
 function registrationEmail (ticket, session, user, cb) {
-  var index = ticket.users.indexOf(user.id)
+  const index = ticket.users.indexOf(user.id)
 
   if (!user || !user.mail) {
     log.error({user: user, ticket: ticket}, 'user does not have a valid email address')

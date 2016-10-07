@@ -1,14 +1,14 @@
-var Boom = require('boom')
-var server = require('../').hapi
-var log = require('../helpers/logger')
-var Survey = require('../db/survey')
+const Boom = require('boom')
+const server = require('../').hapi
+const log = require('../helpers/logger')
+const Survey = require('../db/survey')
 
 server.method('survey.submit', submit, {})
 server.method('survey.get', get, {})
 server.method('survey.processResponses', processResponses, {})
 
 function submit (sessionId, response, cb) {
-  var changes = {
+  const changes = {
     $push: {
       responses: response
     },
@@ -18,7 +18,7 @@ function submit (sessionId, response, cb) {
     }
   }
 
-  Survey.findOneAndUpdate({ session: sessionId }, changes, {upsert: true}, function (err, _survey) {
+  Survey.findOneAndUpdate({ session: sessionId }, changes, {upsert: true}, (err, _survey) => {
     if (err) {
       log.error({err: err, session: sessionId}, 'error updating survey')
       return cb(Boom.internal())
@@ -29,7 +29,7 @@ function submit (sessionId, response, cb) {
 }
 
 function get (sessionId, cb) {
-  Survey.findOne({ session: sessionId }, function (err, _survey) {
+  Survey.findOne({ session: sessionId }, (err, _survey) => {
     if (err) {
       log.error({err: err, session: sessionId}, 'error getting survey')
       return cb(Boom.internal())
@@ -44,7 +44,7 @@ function get (sessionId, cb) {
 }
 
 function processResponses (survey, cb) {
-  var processed = {
+  const processed = {
     responses: 0,
     age: {},
     gender: {},
@@ -67,7 +67,7 @@ function processResponses (survey, cb) {
     suggestions: []
   }
 
-  survey.responses.forEach(function (response) {
+  survey.responses.forEach((response) => {
     processed.responses++
 
     processed.age[response.age] = processed.age[response.age] && processed.age[response.age] + 1 || 1

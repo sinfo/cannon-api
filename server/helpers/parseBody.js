@@ -9,16 +9,16 @@ module.exports = function parseBody (body, cb) {
     return cb(null, body)
   }
 
-  var parsedBody
+  let parsedBody
   try {
     parsedBody = JSON.parse(body)
     if (parsedBody.statusCode || parsedBody.code) { return cb(parsedBody) }
   } catch (exc) {
     // if you don't know for sure that you are getting jsonp, then i'd do something like this
     try {
-      var startPos = body.indexOf('({')
-      var endPos = body.indexOf('})')
-      var jsonString = body.substring(startPos + 1, endPos + 1)
+      const startPos = body.indexOf('({')
+      const endPos = body.indexOf('})')
+      const jsonString = body.substring(startPos + 1, endPos + 1)
       parsedBody = JSON.parse(jsonString)
     } catch (e) {
       return cb({exception: e, body: body}, body)

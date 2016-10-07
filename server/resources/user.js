@@ -1,11 +1,11 @@
-var Boom = require('boom')
-var slug = require('slug')
-var server = require('../').hapi
-var log = require('../helpers/logger')
-var dupKeyParser = require('../helpers/dupKeyParser')
-var fieldsParser = require('../helpers/fieldsParser')
-var config = require('../../config')
-var User = require('../db/user')
+const Boom = require('boom')
+const slug = require('slug')
+const server = require('../').hapi
+const log = require('../helpers/logger')
+const dupKeyParser = require('../helpers/dupKeyParser')
+const fieldsParser = require('../helpers/fieldsParser')
+const config = require('../../config')
+const User = require('../db/user')
 
 server.method('user.create', create, {})
 server.method('user.update', update, {})
@@ -21,7 +21,7 @@ function create (user, cb) {
   user.role = user.role || config.auth.permissions[0]
   user.resgistered = Date.now()
 
-  User.create(user, function (err, _user) {
+  User.create(user, (err, _user) => {
     if (err) {
       if (err.code === 11000) {
         log.warn({err: err, requestedUser: user.id}, 'user is a duplicate')
@@ -37,7 +37,7 @@ function create (user, cb) {
 }
 
 function updatePoints (filter, points, cb) {
-  var user = {$inc: {'points.available': points}}
+  const user = {$inc: {'points.available': points}}
 
   if (typeof points !== 'number') {
     return cb(Boom.badRequest('points must be of type number'))
@@ -62,7 +62,7 @@ function update (filter, user, opts, cb) {
     filter = { id: filter }
   }
 
-  User.findOneAndUpdate(filter, user, opts, function (err, _user) {
+  User.findOneAndUpdate(filter, user, opts, (err, _user) => {
     if (err) {
       log.error({err: err, requestedUser: filter}, 'error updating user')
       return cb(Boom.internal())
@@ -79,13 +79,13 @@ function update (filter, user, opts, cb) {
 function get (filter, query, cb) {
   cb = cb || query // fields is optional
 
-  var fields = fieldsParser(query.fields)
+  const fields = fieldsParser(query.fields)
 
   if (typeof filter === 'string') {
     filter = { id: filter }
   }
 
-  User.findOne(filter, fields, function (err, user) {
+  User.findOne(filter, fields, (err, user) => {
     if (err) {
       log.error({err: err, requestedUser: filter}, 'error getting user')
       return cb(Boom.internal())
@@ -100,7 +100,7 @@ function get (filter, query, cb) {
 }
 
 function getByToken (token, cb) {
-  User.findOne({'bearer.token': token}, function (err, user) {
+  User.findOne({'bearer.token': token}, (err, user) => {
     if (err) {
       log.error({err: err, requestedUser: user}, 'error getting user')
       return cb(Boom.internal())
@@ -117,15 +117,15 @@ function getByToken (token, cb) {
 function list (query, cb) {
   cb = cb || query // fields is optional
 
-  var filter = {}
-  var fields = fieldsParser(query.fields)
-  var options = {
+  const filter = {}
+  const fields = fieldsParser(query.fields)
+  const options = {
     skip: query.skip,
     limit: query.limit,
     sort: fieldsParser(query.sort)
   }
 
-  User.find(filter, fields, options, function (err, users) {
+  User.find(filter, fields, options, (err, users) => {
     if (err) {
       log.error({err: err}, 'error getting all users')
       return cb(Boom.internal())
@@ -138,15 +138,15 @@ function list (query, cb) {
 function getMulti (ids, query, cb) {
   cb = cb || query // fields is optional
 
-  var filter = { id: { $in: ids } }
-  var fields = fieldsParser(query.fields)
-  var options = {
+  const filter = { id: { $in: ids } }
+  const fields = fieldsParser(query.fields)
+  const options = {
     skip: query.skip,
     limit: query.limit,
     sort: fieldsParser(query.sort)
   }
 
-  User.find(filter, fields, options, function (err, users) {
+  User.find(filter, fields, options, (err, users) => {
     if (err) {
       log.error({err: err, ids: ids}, 'error getting multiple users')
       return cb(Boom.internal())
@@ -161,7 +161,7 @@ function remove (filter, cb) {
     filter = { id: filter }
   }
 
-  User.findOneAndRemove(filter, function (err, user) {
+  User.findOneAndRemove(filter, (err, user) => {
     if (err) {
       log.error({err: err, requestedUser: filter}, 'error deleting user')
       return cb(Boom.internal())

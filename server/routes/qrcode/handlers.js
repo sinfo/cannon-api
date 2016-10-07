@@ -1,6 +1,6 @@
-var Joi = require('joi')
-var qr = require('qr-image')
-var config = require('../../../config')
+const Joi = require('joi')
+const qr = require('qr-image')
+const config = require('../../../config')
 
 exports = module.exports
 
@@ -13,7 +13,7 @@ exports.generate = {
     }
   },
   handler: function (request, reply) {
-    var image = qr.image(config.url + '/r/' + request.params.id, { type: 'png' })
+    const image = qr.image(config.url + '/r/' + request.params.id, { type: 'png' })
 
     reply(image)
   },

@@ -1,36 +1,35 @@
-
-var jwt = require('jsonwebtoken')
-var Boom = require('boom')
-var log = require('../helpers/logger')
-var User = require('../db/user')
-var authConfig = require('../../config').auth
-var async = require('async')
+const jwt = require('jsonwebtoken')
+const Boom = require('boom')
+const log = require('../helpers/logger')
+const User = require('../db/user')
+const authConfig = require('../../config').auth
+const async = require('async')
 
 function getJWT (user) {
-  var date = Date.now()
-  var tokenOptions = {
+  const date = Date.now()
+  const tokenOptions = {
     algorithm: authConfig.token.algorithm,
     expiresInMinutes: authConfig.token.ttl,
     issuer: authConfig.token.issuer,
     audience: authConfig.token.audience
   }
-  var refreshOptions = {
+  const refreshOptions = {
     algorithm: authConfig.refreshToken.algorithm,
     expiresInMinutes: authConfig.refreshToken.ttl,
     issuer: authConfig.refreshToken.issuer,
     audience: authConfig.refreshToken.audience
   }
-  var token = jwt.sign({user: user, date: date}, authConfig.token.privateKey, tokenOptions)
-  var refreshToken = jwt.sign({user: user, refresh: true, date: date}, authConfig.refreshToken.privateKey, refreshOptions)
+  const token = jwt.sign({user: user, date: date}, authConfig.token.privateKey, tokenOptions)
+  const refreshToken = jwt.sign({user: user, refresh: true, date: date}, authConfig.refreshToken.privateKey, refreshOptions)
   return {token: token, refreshToken: refreshToken, ttl: authConfig.token.ttl, date: date}
 }
 
 function removeToken (token, user, cb) {
-  var filter = cb ? {id: user} : {bearer: {$elemMatch: {token: token}}}
-  var update = {$pull: {bearer: {token: token}}}
+  const filter = cb ? {id: user} : {bearer: {$elemMatch: {token: token}}}
+  const update = {$pull: {bearer: {token: token}}}
   cb = (cb || user)
 
-  User.findOneAndUpdate(filter, update, function (err, result) {
+  User.findOneAndUpdate(filter, update, (err, result) => {
     if (err) {
       log.error({err: err, requestedUser: user}, '[Auth] error removing expired token')
       return cb(Boom.internal())
@@ -40,15 +39,15 @@ function removeToken (token, user, cb) {
 }
 
 function validator (token, config, cb) {
-  var isValid = false
-  var credentials = {}
-  var user
-  var bearer
-  var query = {bearer: {$elemMatch: {token: token}}}
+  const credentials = {}
+  const query = {bearer: {$elemMatch: {token: token}}}
+  let isValid = false
+  let user
+  let bearer
 
   async.series([
     function findUser (callback) {
-      User.findOne(query, function (error, result) {
+      User.findOne(query, (error, result) => {
         if (error) {
           log.error({err: error, token: token}, '[Auth] error finding user')
           return callback(Boom.unauthorized())
@@ -63,9 +62,9 @@ function validator (token, config, cb) {
       })
     },
     function verify (callback) {
-      verifyToken(user.id, token, false, function (err, decoded) {
+      verifyToken(user.id, token, false, (err, decoded) => {
         if (err) return callback(Boom.unauthorized())
-        async.each(bearer, checkToken, function (error) {
+        async.each(bearer, checkToken, (error) => {
           if (error) {
             log.error({err: error}, '[Auth] error running throw user tokens')
             return callback(Boom.unauthorized())
@@ -92,9 +91,9 @@ function validator (token, config, cb) {
 
 // given a user check if it matches the one in the token
 function verifyToken (id, token, refresh, cb) {
-  var config = refresh ? authConfig.refreshToken : authConfig.token
+  const config = refresh ? authConfig.refreshToken : authConfig.token
 
-  jwt.verify(token, config.publicKey, {audience: config.audience, issuer: config.issuer}, function (err, decoded) {
+  jwt.verify(token, config.publicKey, {audience: config.audience, issuer: config.issuer}, (err, decoded) => {
     if (err) {
       log.warn({err: err, token: decoded}, '[Auth] invalid token')
       return cb(Boom.unauthorized())

@@ -1,23 +1,22 @@
-var Hapi = require('hapi')
-var options = require('./options')
-var config = require('../config')
-var log = require('./helpers/logger')
-
-log.error({ env: process.env.NODE_ENV }, '### Starting Cannon ###')
-
+const Hapi = require('hapi')
+const options = require('./options')
+const config = require('../config')
+const log = require('./helpers/logger')
 require('./db')
 
-var server = module.exports.hapi = new Hapi.Server(config.host, config.port, { cors: true })
+log.info({ env: process.env.NODE_ENV }, '### Starting Cannon ###')
 
-server.pack.register([
-    { plugin: require('hapi-swagger'), options: config.swagger },
-  require('hapi-auth-bearer-token'),
-  require('hapi-auth-basic')
+const server = module.exports.hapi = new Hapi.Server(config.host, config.port, { cors: true })
+
+server.pack.register(
+  [
     // { plugin: require('./plugins/templates'), options: config.templates },
-],
-  // { plugin: require('good'), options: options.log }],
-
-  function (err) {
+    // { plugin: require('good'), options: options.log }],
+    { plugin: require('hapi-swagger'), options: config.swagger },
+    require('hapi-auth-bearer-token'),
+    require('hapi-auth-basic')
+  ],
+  (err) => {
     if (err) {
       log.error({err: err}, '[hapi-plugins] problem registering hapi plugins')
       return
@@ -34,10 +33,10 @@ server.pack.register([
     server.pack.register([
       { plugin: require('./plugins/templates'), options: config.templates },
       { plugin: require('./plugins/surveyResults'), options: config.surveyResults }
-    ], function (err) {
+    ], (err) => {
       if (err) throw err
       if (!module.parent) {
-        server.start(function () {
+        server.start(() => {
           log.info('### Server started at: ' + server.info.uri + ' ###')
         })
       }
