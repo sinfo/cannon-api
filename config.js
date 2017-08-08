@@ -60,6 +60,8 @@ config.swagger = {
   basePath: config.url
 }
 
+config.userTypes = [ 'attendee', ' company', 'organization' ]
+
 // order lesser permissions to greater
 config.auth = {
   permissions: ['user', 'admin']
