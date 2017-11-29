@@ -28,7 +28,7 @@
   "dependencies": {
     "async": "^0.9.0",
     "boom": "~2.5.1",
-    "bunyan": "~1.2.1",
+    "bunyan": "^1.8.12",
     "fenixedu": "https://github.com/jgantunes/fenixedu/tarball/master",
     "good": "^2.3.0",
     "handlebars": "^2.0.0",
