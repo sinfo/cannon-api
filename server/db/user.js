@@ -12,6 +12,10 @@ const schema = new mongoose.Schema({
     ttl: Number,
     date: Date
   }],
+  company: [{
+    edition: String,
+    companyId: String
+  }],
   facebook: {
     id: String,
     token: {type: String, unique: true, sparse: true}
