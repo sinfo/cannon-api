@@ -2,10 +2,12 @@ const Boom = require('boom')
 const server = require('../').hapi
 const log = require('../helpers/logger')
 const Redeem = require('../db/redeem')
+const uuid = require('uuid')
 
 server.method('redeem.create', create, {})
 server.method('redeem.get', get, {})
 server.method('redeem.remove', remove, {})
+server.method('redeem.prepareRedeemCodes', prepareRedeemCodes, {})
 
 function create (redeem, cb) {
   Redeem.created = Date.now()
@@ -19,7 +21,6 @@ function create (redeem, cb) {
       log.error({err: err, redeem: redeem.id}, 'error redeeming')
       return cb(Boom.internal())
     }
-
     cb(null, _redeem.toObject({ getters: true }))
   })
 }
@@ -52,4 +53,15 @@ function remove (id, cb) {
 
     return cb(null, redeem)
   })
+}
+
+function prepareRedeemCodes (sessionId, users, cb) {
+  const redeemCodes = []
+  for (let i = 0; i < users.length; i++) {
+    redeemCodes.push({
+      id: uuid.v4(),
+      achievement: 'session-' + sessionId
+    })
+  }
+  cb(null, redeemCodes)
 }

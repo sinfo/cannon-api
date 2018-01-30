@@ -13,7 +13,8 @@ exports.submit = {
   validate: {
     params: {
       redeemCode: Joi.string().required().description('redeem code')
-    }
+    },
+    payload: {}
   },
   pre: [
     { method: 'redeem.get(params.redeemCode)', assign: 'redeem' },
@@ -47,7 +48,7 @@ exports.getSchema = {
   handler: function (request, reply) {
     reply(schemas[request.params.id])
   },
-  description: 'Submit a survey'
+  description: 'Get the structure and fields of the survey'
 }
 
 exports.getSessionResponses = {
@@ -83,4 +84,33 @@ exports.getSessionProcessedResponses = {
     reply(request.pre.result)
   },
   description: 'Get processed responses of a session'
+}
+
+exports.checkIn = {
+  tags: ['api', 'survey'],
+  auth: {
+    strategies: ['default', 'backup'],
+    scope: ['admin']
+  },
+  validate: {
+    params: {
+      sessionId: Joi.string().required().description('id of the session which is being performed check-in of the attendees')
+    },
+    payload: {
+      users: Joi.array().required().description('An array of users IDs')
+    }
+  },
+  pre: [
+    { method: 'session.get(params.sessionId)', assign: 'session' },
+    { method: 'user.getMulti(payload.users)', assign: 'users' },
+    { method: 'redeem.prepareRedeemCodes(params.sessionId, pre.users)', assign: 'redeemCodes' },
+    { method: 'redeem.create(pre.redeemCodes)', assign: 'redeem' },
+    { method: 'survey.sendMail(pre.redeemCodes, pre.users, pre.session)', assign: 'survey' }
+  ],
+  handler: function (request, reply) {
+    reply({
+      success: true
+    })
+  },
+  description: 'Perform check-in for an array of users, by sending an email with the link to the survey to each user'
 }

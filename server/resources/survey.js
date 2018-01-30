@@ -4,6 +4,7 @@ const log = require('../helpers/logger')
 const Survey = require('../db/survey')
 
 server.method('survey.submit', submit, {})
+server.method('survey.sendMail', sendMail, {})
 server.method('survey.get', get, {})
 server.method('survey.processResponses', processResponses, {})
 
@@ -26,6 +27,16 @@ function submit (sessionId, response, cb) {
 
     cb(null, _survey)
   })
+}
+
+function sendMail (redeemCodes, users, session, cb) {
+  users.forEach((user, i) => {
+    console.log(`
+      Send an email to ${user.name} <${user.mail}> with the link to the survey: 
+      https://cannon.sinfo.org/r/${redeemCodes[i].id} for a session with the name: ${session.name}
+      `)
+  })
+  cb(null, {})
 }
 
 function get (sessionId, cb) {

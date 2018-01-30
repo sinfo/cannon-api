@@ -24,3 +24,9 @@ server.route({
   path: '/sessions/{sessionId}/results',
   config: handlers.getSessionProcessedResponses
 })
+
+server.route({
+  method: 'POST',
+  path: '/sessions/{sessionId}/check-in',
+  config: handlers.checkIn
+})
