@@ -36,6 +36,7 @@ const schema = new mongoose.Schema({
     id: String,
     date: Date
   }],
+  type: {type: String, default: 'attendee'},
   area: String,
   skills: Array,
   job: {

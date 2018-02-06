@@ -45,6 +45,7 @@ exports.create = {
         id: Joi.string().description('id of the earned achievement'),
         date: Joi.date().description('date of its receipt')
       })),
+      type: Joi.string().description('Type of the user, can be: attendee, company, or organization'),
       area: Joi.string().description('Work field of the user'),
       skills: Joi.array().description('Skills of the user'),
       job: Joi.object().keys({
@@ -137,6 +138,7 @@ exports.update = {
         id: Joi.string().description('id of the earned achievement'),
         date: Joi.date().description('date of its receipt')
       })),
+      type: Joi.string().description('Type of the user, can be: attendee, company, or organization'),
       area: Joi.string().description('Work field of the user'),
       skills: Joi.array().description('Skills of the user'),
       job: Joi.object().keys({
