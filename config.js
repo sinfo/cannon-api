@@ -62,7 +62,7 @@ config.swagger = {
 
 // order lesser permissions to greater
 config.auth = {
-  permissions: ['user', 'admin']
+  permissions: ['user', 'company', 'team', 'admin']
 }
 
 config.auth.paths = {
