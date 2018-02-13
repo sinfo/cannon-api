@@ -56,12 +56,13 @@ function remove (id, cb) {
 }
 
 function prepareRedeemCodes (sessionId, users, cb) {
-  const redeemCodes = []
+  let redeemCodes = []
   for (let i = 0; i < users.length; i++) {
     redeemCodes.push({
       id: uuid.v4(),
       achievement: 'session-' + sessionId
     })
   }
+  log.info(`${redeemCodes.length} redeem codes created for ${users.length} users`)
   cb(null, redeemCodes)
 }

@@ -102,12 +102,10 @@ exports.checkIn = {
     { method: 'user.getMulti(payload.users)', assign: 'users' },
     { method: 'redeem.prepareRedeemCodes(params.sessionId, pre.users)', assign: 'redeemCodes' },
     { method: 'redeem.create(pre.redeemCodes)', assign: 'redeem' },
-    { method: 'survey.sendMail(pre.redeemCodes, pre.users, pre.session)', assign: 'survey' }
+    { method: 'survey.sendMail(pre.redeemCodes, pre.users, pre.session)', assign: 'mail' }
   ],
   handler: function (request, reply) {
-    reply({
-      success: true
-    })
+    reply(request.pre.mail)
   },
   description: 'Perform check-in for an array of users, by sending an email with the link to the survey to each user'
 }

@@ -48,24 +48,23 @@ function sendMail (redeemCodes, users, session, cb) {
     to.push(user.mail)
   })
 
-  console.log('recipientVars', recipientVars)
-
   const data = {
-    from: config.from,
+    from: config.email.from,
     to,
-    subject: `[SINFO] Survey for the session ${session.name}`,
+    subject: `Your survey for the session ${session.name}`,
     'recipient-variables': recipientVars,
-    html: `<p>Hello %recipient.name%,</p>
-          <br />
+    html: `<p>Hi %recipient.name%,</p>
           <p>You have just checked in for the session ${session.name}</p>
-          <p>To become eligible to win a prize at the end of the session, you need to submit the following survey: ${config.url}/r/%recipient.redeemCodeId%</p>`
+          <p>To become eligible to win a prize at the end of the session, you need to submit the following survey: ${config.url}/r/%recipient.redeemCodeId%</p>
+          <p>Have fun!</p>`
   }
 
   mailgun.messages().send(data, (err, body) => {
     if (err) {
-      console.log(err)
+      log.error({ err }, 'error sending email')
       return cb(err)
     }
+    log.info(body, 'emails sent')
     cb(body)
   })
 }
