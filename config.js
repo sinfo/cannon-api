@@ -106,6 +106,11 @@ config.email = {
   path: process.env.CANNON_EMAIL_PATH || '/usr/sbin/sendmail'
 }
 
+config.mailgun = {
+  apiKey: process.env.MAILGUN_APIKEY || 'YOUR API KEY',
+  domain: process.env.MAILGUN_DOMAIN || 'sinfo.org'
+}
+
 if (process.env.NODE_ENV === 'test') {
   config.mongo.url = process.env.CANNON_MONGO_TEST_URL || 'mongodb://localhost/cannon_test'
   config.bunyan.level = process.env.CANNON_LOG_LEVEL_TEST || 'error'

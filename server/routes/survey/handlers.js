@@ -88,10 +88,7 @@ exports.getSessionProcessedResponses = {
 
 exports.checkIn = {
   tags: ['api', 'survey'],
-  auth: {
-    strategies: ['default', 'backup'],
-    scope: ['admin']
-  },
+  auth: false,
   validate: {
     params: {
       sessionId: Joi.string().required().description('id of the session which is being performed check-in of the attendees')

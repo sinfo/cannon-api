@@ -2,6 +2,13 @@ const Boom = require('boom')
 const server = require('../').hapi
 const log = require('../helpers/logger')
 const Survey = require('../db/survey')
+const config = require('../../config')
+const mailgun = require('mailgun-js')(
+  {
+    apiKey: config.mailgun.apiKey,
+    domain: config.mailgun.domain
+  }
+)
 
 server.method('survey.submit', submit, {})
 server.method('survey.sendMail', sendMail, {})
@@ -30,13 +37,37 @@ function submit (sessionId, response, cb) {
 }
 
 function sendMail (redeemCodes, users, session, cb) {
+  let to = []
+  let recipientVars = {}
+
   users.forEach((user, i) => {
-    console.log(`
-      Send an email to ${user.name} <${user.mail}> with the link to the survey: 
-      https://cannon.sinfo.org/r/${redeemCodes[i].id} for a session with the name: ${session.name}
-      `)
+    recipientVars[user.mail] = {
+      name: user.name,
+      redeemCodeId: redeemCodes[i].id
+    }
+    to.push(user.mail)
   })
-  cb(null, {})
+
+  console.log('recipientVars', recipientVars)
+
+  const data = {
+    from: config.from,
+    to,
+    subject: `[SINFO] Survey for the session ${session.name}`,
+    'recipient-variables': recipientVars,
+    html: `<p>Hello %recipient.name%,</p>
+          <br />
+          <p>You have just checked in for the session ${session.name}</p>
+          <p>To become eligible to win a prize at the end of the session, you need to submit the following survey: ${config.url}/r/%recipient.redeemCodeId%</p>`
+  }
+
+  mailgun.messages().send(data, (err, body) => {
+    if (err) {
+      console.log(err)
+      return cb(err)
+    }
+    cb(body)
+  })
 }
 
 function get (sessionId, cb) {
