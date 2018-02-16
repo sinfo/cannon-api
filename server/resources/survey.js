@@ -3,6 +3,8 @@ const server = require('../').hapi
 const log = require('../helpers/logger')
 const Survey = require('../db/survey')
 const config = require('../../config')
+const Handlebars = require('handlebars')
+const fs = require('fs')
 const mailgun = require('mailgun-js')(
   {
     apiKey: config.mailgun.apiKey,
@@ -37,6 +39,7 @@ function submit (sessionId, response, cb) {
 }
 
 function sendMail (redeemCodes, users, session, cb) {
+
   let to = []
   let recipientVars = {}
 
@@ -52,20 +55,27 @@ function sendMail (redeemCodes, users, session, cb) {
     from: config.email.from,
     to,
     subject: `Your survey for the session ${session.name}`,
-    'recipient-variables': recipientVars,
-    html: `<p>Hi %recipient.name%,</p>
-          <p>You have just checked in for the session ${session.name}</p>
-          <p>To become eligible to win a prize at the end of the session, you need to submit the following survey: ${config.url}/r/%recipient.redeemCodeId%</p>
-          <p>Have fun!</p>`
+    'recipient-variables': recipientVars
   }
 
-  mailgun.messages().send(data, (err, body) => {
+  fs.readFile('../helpers/surveyEmail.html', (err, surveyTemplateSource) => {
     if (err) {
-      log.error({ err }, 'error sending email')
-      return cb(err)
+      log.error({ err }, 'Error reading email template. Mails not sent')
     }
-    log.info(body, 'emails sent')
-    cb(body)
+
+    const surveyTemplate = Handlebars.compile(surveyTemplateSource)
+    const context = {url: config.url, session: session}
+    const surveyHtml = surveyTemplate(context)
+    data.html = surveyHtml
+
+    mailgun.messages().send(data, (err, body) => {
+      if (err) {
+        log.error({ err }, 'error sending email')
+        return cb(err)
+      }
+      log.info(body, 'emails sent')
+      cb(body)
+    })
   })
 }
 
