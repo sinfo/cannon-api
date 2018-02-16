@@ -7,3 +7,4 @@ before_script:
   - mkdir keys
   - openssl genrsa -out keys/token.key 1024
   - openssl rsa -in keys/token.key -pubout -out keys/token.pub
+  - mongo --version
