@@ -188,10 +188,10 @@ function getGUser (id, token, cb) {
         log.error({err: err, google: id}, '[google-login] error getting user')
         return cb(err)
       }
-
+      log.debug('User not found')
       return gUserNotFound(id, token, cb)
     }
-
+    log.debug('User found')
     gUserFound(user, id, token, cb)
   })
 }
@@ -234,7 +234,7 @@ function gUserFound (user, id, token, cb) {
     return authenticate(user.id, {'google.token': token}, cb)
   }
 
-  google.getMe(id, (err, googleUser) => {
+  google.getMe(token, (err, googleUser) => {
     if (err) {
       log.error({err: err, id: id, token: token}, '[google-login] error retrieving user info from google')
       return cb(Boom.unauthorized('couldn\'t retrieve your info from google'))
@@ -273,7 +273,7 @@ function gUserNotFound (id, token, cb) {
   let changedAttributes = {}
   let filter = {}
 
-  google.getMe(id, (err, googleUser) => {
+  google.getMe(token, (err, googleUser) => {
     if (err) {
       log.error({err: err, id: id, token: token}, '[google-login] error retrieving user info from google')
       return cb(Boom.unauthorized('couldn\'t retrieve your info from google'))
@@ -510,7 +510,7 @@ function addGoogleAuth (user, id, token, cb) {
       debugGToken(id, token, cbAsync)
     },
     function addAccount (cbAsync) {
-      google.getMe(id, (err, googleUser) => {
+      google.getMe(token, (err, googleUser) => {
         if (err) {
           log.error({err: err, id: id, token: token}, '[google-login] error retrieving user info from google')
           return cbAsync(Boom.unauthorized('couldn\'t retrieve your info from google'))
