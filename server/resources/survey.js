@@ -57,9 +57,10 @@ function sendMail (redeemCodes, users, session, cb) {
     'recipient-variables': recipientVars
   }
 
-  fs.readFile('../helpers/surveyEmail.html', (err, surveyTemplateSource) => {
+  fs.readFile(__dirname + '/../helpers/surveyEmail.html', 'utf8', (err, surveyTemplateSource) => {
     if (err) {
       log.error({ err }, 'Error reading email template. Mails not sent')
+      return cb(Boom.internal())
     }
 
     const surveyTemplate = Handlebars.compile(surveyTemplateSource)
