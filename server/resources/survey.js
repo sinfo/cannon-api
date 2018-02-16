@@ -39,7 +39,6 @@ function submit (sessionId, response, cb) {
 }
 
 function sendMail (redeemCodes, users, session, cb) {
-
   let to = []
   let recipientVars = {}
 

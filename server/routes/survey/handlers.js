@@ -13,7 +13,8 @@ exports.submit = {
   validate: {
     params: {
       redeemCode: Joi.string().required().description('redeem code')
-    }
+    },
+    payload: {}
   },
   pre: [
     { method: 'redeem.get(params.redeemCode)', assign: 'redeem' },
