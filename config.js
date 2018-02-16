@@ -34,7 +34,8 @@ config.facebook = {
 
 config.google = {
   clientId: process.env.CANNON_GOOGLE_APP_ID || 'YOUR APP ID',
-  clientSecret: process.env.CANNON_GOOGLE_API_KEY || 'YOUR API KEY'
+  clientSecret: process.env.CANNON_GOOGLE_CLIENT_SECRET || 'YOUR CLIENT SECRET',
+  apiKey: process.env.CANNON_GOOGLE_API_KEY || 'YOUR API KEY'
 }
 
 config.fenix = {
