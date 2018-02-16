@@ -1,9 +1,17 @@
 language: node_js
 node_js:
-  - "6.6.0"
-services:
-  - mongodb
+  - "6.12.0"
+env:
+  - MONGODB=2.6.12
+install:
+  - wget http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-${MONGODB}.tgz
+  - tar xzf mongodb-linux-x86_64-${MONGODB}.tgz
+  - ${PWD}/mongodb-linux-x86_64-${MONGODB}/bin/mongod --version
+  - mongo --version
+  - yarn
 before_script:
+  - mkdir ${PWD}/mongodb-linux-x86_64-${MONGODB}/data
+  - ${PWD}/mongodb-linux-x86_64-${MONGODB}/bin/mongod --dbpath ${PWD}/mongodb-linux-x86_64-${MONGODB}/data --logpath ${PWD}/mongodb-linux-x86_64-${MONGODB}/mongodb.log --fork
   - mkdir keys
   - openssl genrsa -out keys/token.key 1024
   - openssl rsa -in keys/token.key -pubout -out keys/token.pub
