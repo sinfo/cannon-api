@@ -21,6 +21,7 @@ exports.create = {
     }
   },
   pre: [
+    { method: 'link.checkCompany(auth.credentials.user.id, params.companyId, payload.editionId)', assign: 'verification' },
     { method: 'link.create(params.companyId, payload)', assign: 'link' }
   ],
   handler: function (request, reply) {
@@ -40,14 +41,17 @@ exports.update = {
       companyId: Joi.string().required().description('Id of the company we are linking from'),
       attendeeId: Joi.string().required().description('Id of the attendee')
     },
+    query: {
+      editionId: Joi.string().required().description('Id of the edition'),
+    },
     payload: {
       userId: Joi.string().description('Id of the user working for the company'),
-      editionId: Joi.string().required().description('Id of the edition'),
       note: Joi.string().description('Notes the user wants to keep on the attendee')
     }
   },
   pre: [
-    { method: 'link.update(params, payload)', assign: 'link' }
+    { method: 'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)', assign: 'verification' },
+    { method: 'link.update(params, query.editionId, payload)', assign: 'link' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.link))
@@ -71,6 +75,7 @@ exports.get = {
     }
   },
   pre: [
+    { method: 'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)', assign: 'verification' },
     { method: 'link.get(params, query.editionId)', assign: 'link' }
   ],
   handler: function (request, reply) {
@@ -87,7 +92,7 @@ exports.list = {
   },
   validate: {
     query: {
-      editionId: Joi.string().description('Id of the edition'),
+      editionId: Joi.string().required().description('Id of the edition'),
       fields: Joi.string().description('Fields we want to retrieve'),
       sort: Joi.string().description('Sort fields we want to retrieve'),
       skip: Joi.number().description('Number of documents we want to skip'),
@@ -98,6 +103,7 @@ exports.list = {
     }
   },
   pre: [
+    { method: 'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)', assign: 'verification' },
     { method: 'link.list(params.companyId, query)', assign: 'links' }
   ],
   handler: function (request, reply) {
@@ -122,6 +128,7 @@ exports.remove = {
     }
   },
   pre: [
+    { method: 'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)', assign: 'verification' },
     { method: 'link.remove(params, query.editionId)', assign: 'link' }
   ],
   handler: function (request, reply) {

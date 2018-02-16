@@ -6,18 +6,33 @@ const server = require('../').hapi
 const lab = exports.lab = Lab.script()
 const token = require('../auth/token')
 
+const aux = token.getJWT('admin')
 const auxA = token.getJWT('john.doe')
 const auxB = token.getJWT('jane.doe')
+const auxC = token.getJWT('conor.mcgregor')
+
+const credentialsAdmin = {
+  user: {
+    id: 'admin',
+    name: 'John Doe',
+  },
+  bearer: aux.token,
+  scope: 'admin'
+}
+
+const userA = {
+  id: 'john.doe',
+  name: 'John Doe',
+  mail: 'john@doe.com',
+  role: 'company',
+  company: [{
+    edition: '25-SINFO',
+    company: 'SINFO'
+  }]
+}
 
 const credentialsA = {
-  user: {
-    id: 'john.doe',
-    name: 'John Doe',
-    company: [{
-      edition: '25-SINFO',
-      company: 'SINFO'
-    }]
-  },
+  user: userA,
   bearer: auxA.token,
   scope: 'company'
 }
@@ -31,41 +46,89 @@ const credentialsB = {
   scope: 'user'
 }
 
+const userC = {
+  id: 'conor.mcgregor',
+  name: 'Conner Mcgregor',
+  mail: 'conor@ufc.com',
+  role: 'company',
+  company: [{
+    edition: '25-SINFO',
+    company: 'UFC'
+  }]
+}
+
+const credentialsC = {
+  user: userC,
+  bearer: auxC.token,
+  scope: 'company'
+}
+
 const linkA = {
   userId: credentialsA.user.id,
   attendeeId: credentialsB.user.id,
-  editionId: credentialsA.user.company[0].edition,
-  note: 'Jane had a great sence of humor'
-}
-
-const linkB = {
-  userId: credentialsA.user.id,
-  attendeeId: credentialsB.user.id,
-  editionId: '24-SINFO',
+  editionId: userA.company[0].edition,
   note: 'Jane had a great sence of humor'
 }
 
 const changesToA = {
-  editionId: credentialsA.user.company[0].edition,
   note: 'Jane had a great sence of humor and great Perl skils'
 }
 
 lab.experiment('Link', () => {
+  lab.before((done) => {
+    const optionsA = {
+      method: 'POST',
+      url: '/users',
+      credentials: credentialsAdmin,
+      payload: userA
+    }
+    const optionsB = {
+      method: 'POST',
+      url: '/users',
+      credentials: credentialsAdmin,
+      payload: userC
+    }
+    server.inject(optionsA, (response) => {
+      server.inject(optionsB, (response) => {
+        done()
+      })
+    })
+  })
+
+  lab.after((done) => {
+    const optionsA = {
+      method: 'DELETE',
+      url: '/users/' + userA.id,
+      credentials: credentialsAdmin
+    }
+    const optionsB = {
+      method: 'DELETE',
+      url: '/users/' + userC.id,
+      credentials: credentialsAdmin
+    }
+
+    server.inject(optionsA, (response) => {
+      server.inject(optionsB, (response) => {
+        done()
+      })
+    })
+  })
+
   lab.test('Create A as company', (done) => {
     const options = {
       method: 'POST',
-      url: `/company/${credentialsA.user.company[0].company}/link`,
+      url: `/company/${userA.company[0].company}/link`,
       credentials: credentialsA,
       payload: linkA
     }
 
     server.inject(options, (response) => {
       const result = response.result
-
+      
       Code.expect(response.statusCode).to.equal(201)
       Code.expect(result).to.be.instanceof(Object)
       Code.expect(result.user).to.equal(linkA.userId)
-      Code.expect(result.company).to.equal(credentialsA.user.company[0].company)
+      Code.expect(result.company).to.equal(userA.company[0].company)
       Code.expect(result.edition).to.equal(linkA.editionId)
       Code.expect(result.attendee).to.equal(linkA.attendeeId)
       Code.expect(result.note).to.equal(linkA.note)
@@ -77,7 +140,7 @@ lab.experiment('Link', () => {
   lab.test('Get as company', (done) => {
     const options = {
       method: 'Get',
-      url: `/company/${credentialsA.user.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
+      url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
       credentials: credentialsA
     }
 
@@ -86,7 +149,7 @@ lab.experiment('Link', () => {
 
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result.user).to.equal(linkA.userId)
-      Code.expect(result.company).to.equal(credentialsA.user.company[0].company)
+      Code.expect(result.company).to.equal(userA.company[0].company)
       Code.expect(result.edition).to.equal(linkA.editionId)
       Code.expect(result.attendee).to.equal(linkA.attendeeId)
       Code.expect(result.note).to.equal(linkA.note)
@@ -95,10 +158,23 @@ lab.experiment('Link', () => {
     })
   })
 
+  lab.test('Get other company as company', (done) => {
+    const options = {
+      method: 'Get',
+      url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
+      credentials: credentialsC
+    }
+
+    server.inject(options, (response) => {
+      Code.expect(response.statusCode).to.equal(404)
+      done()
+    })
+  })
+
   lab.test('Update as company', (done) => {
     const options = {
       method: 'PUT',
-      url: `/company/${credentialsA.user.company[0].company}/link/${linkA.attendeeId}`,
+      url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
       credentials: credentialsA,
       payload: changesToA
     }
@@ -109,7 +185,7 @@ lab.experiment('Link', () => {
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceof(Object)
       Code.expect(result.user).to.equal(linkA.userId)
-      Code.expect(result.company).to.equal(credentialsA.user.company[0].company)
+      Code.expect(result.company).to.equal(userA.company[0].company)
       Code.expect(result.edition).to.equal(linkA.editionId)
       Code.expect(result.attendee).to.equal(linkA.attendeeId)
       Code.expect(result.note).to.equal(changesToA.note)
@@ -118,55 +194,25 @@ lab.experiment('Link', () => {
     })
   })
 
+  lab.test('Update Non Existing as company', (done) => {
+    const options = {
+      method: 'PUT',
+      url: `/company/NullConsulting/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
+      credentials: credentialsA,
+      payload: changesToA
+    }
+
+    server.inject(options, (response) => {
+      Code.expect(response.statusCode).to.equal(404)
+
+      done()
+    })
+  })
+
   lab.test('List as company', (done) => {
     const options = {
       method: 'Get',
-      url: `/company/${credentialsA.user.company[0].company}/link`,
-      credentials: credentialsA
-    }
-
-    server.inject(options, (response) => {
-      const result = response.result
-
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Array)
-      Code.expect(result[0].user).to.equal(linkA.userId)
-      Code.expect(result[0].company).to.equal(credentialsA.user.company[0].company)
-      Code.expect(result[0].edition).to.equal(linkA.editionId)
-      Code.expect(result[0].attendee).to.equal(linkA.attendeeId)
-      Code.expect(result[0].note).to.equal(changesToA.note)
-
-      done()
-    })
-  })
-
-  lab.test('Create B as company', (done) => {
-    const options = {
-      method: 'POST',
-      url: `/company/${credentialsA.user.company[0].company}/link`,
-      credentials: credentialsA,
-      payload: linkB
-    }
-
-    server.inject(options, (response) => {
-      const result = response.result
-
-      Code.expect(response.statusCode).to.equal(201)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.user).to.equal(linkB.userId)
-      Code.expect(result.company).to.equal(credentialsA.user.company[0].company)
-      Code.expect(result.edition).to.equal(linkB.editionId)
-      Code.expect(result.attendee).to.equal(linkB.attendeeId)
-      Code.expect(result.note).to.equal(linkB.note)
-
-      done()
-    })
-  })
-
-  lab.test('List edition as company', (done) => {
-    const options = {
-      method: 'Get',
-      url: `/company/${credentialsA.user.company[0].company}/link?editionId=${linkB.editionId}`,
+      url: `/company/${userA.company[0].company}/link?editionId=${linkA.editionId}`,
       credentials: credentialsA
     }
 
@@ -176,12 +222,25 @@ lab.experiment('Link', () => {
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceof(Array)
       Code.expect(result[1]).to.not.exist()
-      Code.expect(result[0].user).to.equal(linkB.userId)
-      Code.expect(result[0].company).to.equal(credentialsA.user.company[0].company)
-      Code.expect(result[0].edition).to.equal(linkB.editionId)
-      Code.expect(result[0].attendee).to.equal(linkB.attendeeId)
-      Code.expect(result[0].note).to.equal(linkB.note)
+      Code.expect(result[0].user).to.equal(linkA.userId)
+      Code.expect(result[0].company).to.equal(userA.company[0].company)
+      Code.expect(result[0].edition).to.equal(linkA.editionId)
+      Code.expect(result[0].attendee).to.equal(linkA.attendeeId)
+      Code.expect(result[0].note).to.equal(changesToA.note)
 
+      done()
+    })
+  })
+
+  lab.test('List Non Existing as company', (done) => {
+    const options = {
+      method: 'Get',
+      url: `/company/NullConsulting/link?editionId=${linkA.editionId}`,
+      credentials: credentialsA
+    }
+
+    server.inject(options, (response) => {
+      Code.expect(response.statusCode).to.equal(404)
       done()
     })
   })
@@ -189,7 +248,7 @@ lab.experiment('Link', () => {
   lab.test('Create same as company', (done) => {
     const options = {
       method: 'POST',
-      url: `/company/${credentialsA.user.company[0].company}/link`,
+      url: `/company/${userA.company[0].company}/link`,
       credentials: credentialsA,
       payload: linkA
     }
@@ -204,7 +263,7 @@ lab.experiment('Link', () => {
   lab.test('Delete A as company', (done) => {
     const options = {
       method: 'DELETE',
-      url: `/company/${credentialsA.user.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
+      url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
       credentials: credentialsA
     }
 
@@ -214,7 +273,7 @@ lab.experiment('Link', () => {
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceof(Object)
       Code.expect(result.user).to.equal(linkA.userId)
-      Code.expect(result.company).to.equal(credentialsA.user.company[0].company)
+      Code.expect(result.company).to.equal(userA.company[0].company)
       Code.expect(result.edition).to.equal(linkA.editionId)
       Code.expect(result.attendee).to.equal(linkA.attendeeId)
       Code.expect(result.note).to.equal(changesToA.note)
@@ -223,32 +282,10 @@ lab.experiment('Link', () => {
     })
   })
 
-  lab.test('Delete B as company', (done) => {
-    const options = {
-      method: 'DELETE',
-      url: `/company/${credentialsA.user.company[0].company}/link/${linkA.attendeeId}?editionId=${linkB.editionId}`,
-      credentials: credentialsA
-    }
-
-    server.inject(options, (response) => {
-      const result = response.result
-
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.user).to.equal(linkB.userId)
-      Code.expect(result.company).to.equal(credentialsA.user.company[0].company)
-      Code.expect(result.edition).to.equal(linkB.editionId)
-      Code.expect(result.attendee).to.equal(linkB.attendeeId)
-      Code.expect(result.note).to.equal(linkB.note)
-
-      done()
-    })
-  })
-
   lab.test('Create as user', (done) => {
     const options = {
       method: 'POST',
-      url: `/company/${credentialsA.user.company[0].company}/link`,
+      url: `/company/${userA.company[0].company}/link`,
       credentials: credentialsB,
       payload: linkA
     }
@@ -263,7 +300,7 @@ lab.experiment('Link', () => {
   lab.test('Get as user', (done) => {
     const options = {
       method: 'GET',
-      url: `/company/${credentialsA.user.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
+      url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
       credentials: credentialsB
     }
 
@@ -277,7 +314,7 @@ lab.experiment('Link', () => {
   lab.test('List as user', (done) => {
     const options = {
       method: 'GET',
-      url: `/company/${credentialsA.user.company[0].company}/link`,
+      url: `/company/${userA.company[0].company}/link?editionId=${linkA.editionId}`,
       credentials: credentialsB
     }
 
@@ -291,7 +328,7 @@ lab.experiment('Link', () => {
   lab.test('Delete as user', (done) => {
     const options = {
       method: 'GET',
-      url: `/company/${credentialsA.user.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
+      url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
       credentials: credentialsB
     }
 

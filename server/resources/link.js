@@ -3,12 +3,14 @@ const server = require('../').hapi
 const log = require('../helpers/logger')
 const fieldsParser = require('../helpers/fieldsParser')
 const Link = require('../db/link')
+const _ = require('underscore')
 
 server.method('link.create', create, {})
 server.method('link.update', update, {})
 server.method('link.get', get, {})
 server.method('link.list', list, {})
 server.method('link.remove', remove, {})
+server.method('link.checkCompany', checkCompany, {})
 
 function create (companyId, link, cb) {
   link = {
@@ -35,12 +37,12 @@ function create (companyId, link, cb) {
   })
 }
 
-function update (filter, link, cb) {
-  log.debug({filter: filter, link: link}, 'updating link')
+function update (filter, editionId, link, cb) {
+  log.debug({filter: filter, edition: editionId, link: link}, 'updating link')
 
   filter = {
     company: filter.companyId,
-    edition: link.editionId,
+    edition: editionId,
     attendee: filter.attendeeId
   }
 
@@ -134,5 +136,25 @@ function remove (filter, editionId, cb) {
     }
 
     return cb(null, link)
+  })
+}
+
+// Checks if the user is/was part of the company whose link he trying accessing
+function checkCompany (userId, companyId, editionId, cb) {
+  server.methods.user.get({ id: userId }, (err, user) => {
+    if (err) {
+      log.error({err: err, user: userId}, 'error getting user')
+      return cb(Boom.internal())
+    }
+    if (!user) {
+      log.error({err: 'not found', user: userId}, 'error getting user')
+      return cb(Boom.notFound('user not found'))
+    }
+
+    if (_.findWhere(user.company, {company: companyId, edition: editionId})) {
+      return cb(null, true)
+    }
+
+    return cb(Boom.notFound())
   })
 }
