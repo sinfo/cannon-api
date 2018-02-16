@@ -24,7 +24,7 @@ exports.create = {
       })),
       company: Joi.array().items(Joi.object().keys({
         edition: Joi.string().description('id of the event edition'),
-        companyId: Joi.string().description('id of the company')
+        company: Joi.string().description('id of the company')
       })),
       facebook: {
         id: Joi.string().description('Facebook id of the user'),
@@ -120,7 +120,7 @@ exports.update = {
       })),
       company: Joi.array().items(Joi.object().keys({
         edition: Joi.string().description('id of the event edition'),
-        companyId: Joi.string().description('id of the company')
+        company: Joi.string().description('id of the company')
       })),
       facebook: {
         id: Joi.string().description('Facebook id of the user'),

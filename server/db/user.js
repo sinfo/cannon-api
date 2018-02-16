@@ -14,7 +14,7 @@ const schema = new mongoose.Schema({
   }],
   company: [{
     edition: String,
-    companyId: String
+    company: String
   }],
   facebook: {
     id: String,

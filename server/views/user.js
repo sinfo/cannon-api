@@ -49,7 +49,7 @@ function renderObject (model, user) {
   if (isTeam) {
     result.company = model.company && model.company.map(participation => ({
       edition: participation && participation.edition,
-      companyId: participation && participation.companyId
+      company: participation && participation.company
     }))
   }
 

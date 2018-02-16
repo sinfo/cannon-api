@@ -49,7 +49,7 @@ const promoteAtoCompany = {
   role: 'company',
   company: [{
     edition: 'sinfo25',
-    companyId: 'sinfo-consulting'
+    company: 'sinfo-consulting'
   }]
 }
 
@@ -237,8 +237,8 @@ lab.experiment('User', () => {
       Code.expect(result.id).to.equal(userA.id)
       Code.expect(result.company[0]).to.be.instanceof(Object)
       Code.expect(result.company[0].edition).to.equal(promoteAtoCompany.company[0].edition)
-      Code.expect(result.company[0].companyId).to.equal(promoteAtoCompany.company[0].companyId)
-      Code.expect(result.company[0].companyId).to.equal(promoteAtoCompany.company[0].companyId)
+      Code.expect(result.company[0].company).to.equal(promoteAtoCompany.company[0].company)
+      Code.expect(result.company[0].company).to.equal(promoteAtoCompany.company[0].company)
       Code.expect(result.role).to.include('company')
 
       done()
