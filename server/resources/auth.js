@@ -314,7 +314,12 @@ function googleAuth (id, token, cb) {
     // Get user in cannon from Google User ID (also known as gUser.sub)
     google.getUser(gUser)
       .then(userId => authenticate(userId, null, cb))
-      .catch(err => cb(Boom.unauthorized(err)))
+      .catch(() => {
+        // User not found, lets create a user
+        google.createUser(gUser)
+          .then(userId => authenticate(userId, null, cb))
+          .catch(err => cb(Boom.unauthorized(err)))
+      })
   }).catch(err => cb(Boom.unauthorized(err)))
 }
 

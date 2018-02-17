@@ -32,20 +32,18 @@ google.getUser = gUser => {
   return new Promise((resolve, reject) => {
     server.methods.user.get({ 'google.id': gUser.sub }, (err, user) => {
       if (err) {
-        if (!err.output || err.output.statusCode !== 404) {
+        if (err.output && err.output.statusCode !== 404) {
           log.error({ err: err, google: gUser.sub }, '[google-login] error getting user')
           return reject(err)
         }
-        return createUser(gUser)
-          .then(userId => resolve(userId))
-          .catch(err => reject(err))
+        return reject(err)
       }
       return resolve(user.id)
     })
   })
 }
 
-const createUser = gUser => {
+google.createUser = gUser => {
   return new Promise((resolve, reject) => {
     let changedAttributes = {}
     let filter = {}
@@ -62,7 +60,7 @@ const createUser = gUser => {
     // If user does not exist, lets set the id, name and email
     changedAttributes.$setOnInsert = {
       id: Math.random().toString(36).substr(2, 20), // generate random id
-      name: `${gUser.given_name} ${gUser.family_name}`,
+      name: gUser.name,
       mail: gUser.email
     }
 
