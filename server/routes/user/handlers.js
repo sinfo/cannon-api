@@ -73,7 +73,7 @@ exports.updateMe = {
   tags: ['api', 'user'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
     payload: {
@@ -169,7 +169,7 @@ exports.get = {
   tags: ['api', 'user'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin'],
+    scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
   validate: {
@@ -190,7 +190,7 @@ exports.getMe = {
   tags: ['api', 'user'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['user', 'company', 'team', 'admin']
   },
   handler: function (request, reply) {
     reply(render(request.auth.credentials && request.auth.credentials.user, request.auth.credentials && request.auth.credentials.user))
@@ -202,7 +202,7 @@ exports.list = {
   tags: ['api', 'user'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin'],
+    scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
   validate: {
@@ -246,7 +246,7 @@ exports.removeMe = {
   tags: ['api', 'user'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['user', 'company', 'team', 'admin']
   },
   pre: [
     { method: 'user.remove(auth.credentials.user.id)', assign: 'user' }

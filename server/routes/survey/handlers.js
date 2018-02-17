@@ -8,7 +8,7 @@ exports.submit = {
   tags: ['api', 'survey'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
     params: {
@@ -37,7 +37,7 @@ exports.getSchema = {
   tags: ['api', 'survey'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin'],
+    scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
   validate: {

@@ -65,7 +65,7 @@ exports.get = {
   tags: ['api', 'achievement'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin'],
+    scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
   validate: {
@@ -89,7 +89,7 @@ exports.getUser = {
   tags: ['api', 'achievement'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin'],
+    scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
   validate: {
@@ -113,7 +113,7 @@ exports.list = {
   tags: ['api', 'achievement'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin'],
+    scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
   validate: {

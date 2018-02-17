@@ -31,7 +31,7 @@ exports.get = {
   tags: ['api', 'redeem'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
     params: {

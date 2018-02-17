@@ -32,7 +32,7 @@ const credentialsC = {
     name: 'John Doe'
   },
   bearer: aux.token,
-  scope: ['user', 'team']
+  scope: 'team'
 }
 
 const userA = {
@@ -215,7 +215,7 @@ lab.experiment('User', () => {
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceof(Object)
       Code.expect(result.id).to.equal(userA.id)
-      Code.expect(result.role).to.include('team')
+      Code.expect(result.role).to.be.equal('team')
 
       done()
     })
@@ -239,7 +239,7 @@ lab.experiment('User', () => {
       Code.expect(result.company[0].edition).to.equal(promoteAtoCompany.company[0].edition)
       Code.expect(result.company[0].company).to.equal(promoteAtoCompany.company[0].company)
       Code.expect(result.company[0].company).to.equal(promoteAtoCompany.company[0].company)
-      Code.expect(result.role).to.include('company')
+      Code.expect(result.role).to.be.equal('company')
 
       done()
     })
