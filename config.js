@@ -101,9 +101,14 @@ config.auth.internal = {
 }
 
 config.email = {
-  from: process.env.CANNON_EMAIL_FROM || 'SINFO <cannon@sinfo.org>',
+  from: process.env.CANNON_EMAIL_FROM || 'SINFO <geral@sinfo.org>',
   replyTo: process.env.CANNON_EMAIL_REPLY_TO || 'geral@sinfo.org',
   path: process.env.CANNON_EMAIL_PATH || '/usr/sbin/sendmail'
+}
+
+config.mailgun = {
+  apiKey: process.env.MAILGUN_APIKEY || 'YOUR API KEY',
+  domain: process.env.MAILGUN_DOMAIN || 'sinfo.org'
 }
 
 if (process.env.NODE_ENV === 'test') {

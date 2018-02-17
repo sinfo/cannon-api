@@ -2,8 +2,18 @@ const Boom = require('boom')
 const server = require('../').hapi
 const log = require('../helpers/logger')
 const Survey = require('../db/survey')
+const config = require('../../config')
+const Handlebars = require('handlebars')
+const fs = require('fs')
+const mailgun = require('mailgun-js')(
+  {
+    apiKey: config.mailgun.apiKey,
+    domain: config.mailgun.domain
+  }
+)
 
 server.method('survey.submit', submit, {})
+server.method('survey.sendMail', sendMail, {})
 server.method('survey.get', get, {})
 server.method('survey.processResponses', processResponses, {})
 
@@ -25,6 +35,47 @@ function submit (sessionId, response, cb) {
     }
 
     cb(null, _survey)
+  })
+}
+
+function sendMail (redeemCodes, users, session, cb) {
+  let to = []
+  let recipientVars = {}
+
+  users.forEach((user, i) => {
+    recipientVars[user.mail] = {
+      name: user.name,
+      redeemCodeId: redeemCodes[i].id
+    }
+    to.push(user.mail)
+  })
+
+  const data = {
+    from: config.email.from,
+    to,
+    subject: `Your survey for the session ${session.name}`,
+    'recipient-variables': recipientVars
+  }
+
+  fs.readFile(__dirname + '/../helpers/surveyEmail.html', 'utf8', (err, surveyTemplateSource) => {
+    if (err) {
+      log.error({ err }, 'Error reading email template. Mails not sent')
+      return cb(Boom.internal())
+    }
+
+    const surveyTemplate = Handlebars.compile(surveyTemplateSource)
+    const context = {url: config.url, session: session}
+    const surveyHtml = surveyTemplate(context)
+    data.html = surveyHtml
+
+    mailgun.messages().send(data, (err, body) => {
+      if (err) {
+        log.error({ err }, 'error sending email')
+        return cb(err)
+      }
+      log.info(body, 'emails sent')
+      cb(body)
+    })
   })
 }
 
