@@ -35,6 +35,8 @@ facebook.debugToken = function (facebookUserId, facebookUserToken, cb) {
 }
 
 facebook.getMe = function (accessToken, cb) {
+  // TODO: To obtain id, name, email and picture
+  // https://graph.facebook.com/me?fields=id,name,email,picture&access_token=
   const url = 'https://graph.facebook.com/me?access_token=' + accessToken
   Request.get(url, {
     json: true

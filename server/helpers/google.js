@@ -1,89 +1,81 @@
-const Request = require('request')
 const { OAuth2Client } = require('google-auth-library')
+const server = require('../').hapi
 const log = require('./logger')
 const googleConfig = require('../../config').google
 
 const google = {}
 
-google.debugToken = function (googleUserId, googleUserToken, cb) {
-  let oAuth2Client = new OAuth2Client(googleConfig.clientId, googleConfig.clientSecret)
-  oAuth2Client.verifyIdToken({
-    idToken: googleUserToken,
-    audience: googleConfig.clientId
-  }, (err, login) => {
-    if (err) {
-      log.warn(err)
-      return cb(err)
-    }
-    log.debug(login)
-    const auth = login.payload
-    const isValid = !(!login || auth.aud !== googleConfig.clientId || auth.sub !== googleUserId)
-    const url = `https://www.googleapis.com/plus/v1/people/me`
-    oAuth2Client.request({ url })
-      .then(result => {
-        log.debug(result)
-      })
-      .catch(error => {
-        if (error) {
-          log.debug(error)
-        }
-      })
+google.verifyToken = (googleUserId, googleUserToken) => {
+  return new Promise((resolve, reject) => {
+    const oAuth2Client = new OAuth2Client(googleConfig.clientId, googleConfig.clientSecret)
+    /**
+     * The verifyIdToken function verifies the JWT signature, the aud claim,
+     * the exp claim, and the iss claim.
+     */
+    oAuth2Client.verifyIdToken({
+      idToken: googleUserToken,
+      audience: googleConfig.clientId
+    }, (err, login) => {
+      if (err) {
+        log.warn(err)
+        return reject(err)
+      }
+      log.debug(login)
 
-    if (!isValid) {
-      log.warn(
-        {
-          'result-app-id': auth.aud,
-          'config-app-id': googleConfig.clientId,
-          'result-user-id': auth.sub,
-          'requested-user-id': googleUserId
-        },
-        'invalid google login!'
-      )
-    }
-
-    cb(null, isValid)
+      // If verified we can trust in the login.payload
+      return resolve(login.payload)
+    })
   })
 }
 
-google.getMe = function (googleUserToken, cb) {
-  let oAuth2Client = new OAuth2Client(googleConfig.clientId, googleConfig.clientSecret)
-  const url = `https://www.googleapis.com/plus/v1/people/me`
-  oAuth2Client.request({ url })
-    .then(result => {
-      log.debug(result)
-      return cb(null, result)
-    })
-    .catch(error => {
-      if (error) {
-        log.error(error)
-        return cb(error)
+google.getUser = gUser => {
+  return new Promise((resolve, reject) => {
+    server.methods.user.get({ 'google.id': gUser.sub }, (err, user) => {
+      if (err) {
+        if (!err.output || err.output.statusCode !== 404) {
+          log.error({ err: err, google: gUser.sub }, '[google-login] error getting user')
+          return reject(err)
+        }
+        return createUser(gUser)
+          .then(userId => resolve(userId))
+          .catch(err => reject(err))
       }
+      return resolve(user.id)
     })
-
-  /* Request.get(url, {
-    json: true
-  },
-  (error, response, result) => {
-    if (error || response.statusCode !== 200) {
-      return cb(error || {err: response.statusCode, message: response.statusMessage})
-    }
-    log.debug(result)
-    cb(null, result)
-  }) */
+  })
 }
 
-google.getMail = function (googleUserToken, cb) {
-  const url = 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + googleUserToken
+const createUser = gUser => {
+  return new Promise((resolve, reject) => {
+    let changedAttributes = {}
+    let filter = {}
 
-  Request.get(url, {
-    json: true
-  },
-  (error, response, result) => {
-    if (error || response.statusCode !== 200) {
-      return cb(error || {err: response.statusCode, message: response.statusMessage})
+    filter = { mail: gUser.email }
+
+    changedAttributes = {
+      google: {
+        id: gUser.sub,
+        img: gUser.picture
+      }
     }
 
-    cb(null, result.email)
+    // If user does not exist, lets set the id, name and email
+    changedAttributes.$setOnInsert = {
+      id: Math.random().toString(36).substr(2, 20), // generate random id
+      name: `${gUser.given_name} ${gUser.family_name}`,
+      mail: gUser.email
+    }
+
+    server.methods.user.update(filter, changedAttributes, {upsert: true}, (err, result) => {
+      if (err) {
+        log.error({ user: { mail: gUser.email }, changedAttributes: changedAttributes }, '[google-login] error creating or updating user')
+        return reject(err)
+      }
+
+      log.debug({id: result.id}, '[google-login] created or updated user')
+
+      return resolve(result.id)
+    })
   })
 }
 
