@@ -22,6 +22,10 @@ exports.create = {
         ttl: Joi.number().description('Bearer token time to live'),
         date: Joi.date().description('Bearer date of creation')
       })),
+      company: Joi.array().items(Joi.object().keys({
+        edition: Joi.string().description('id of the event edition'),
+        company: Joi.string().description('id of the company')
+      })),
       facebook: {
         id: Joi.string().description('Facebook id of the user'),
         token: Joi.string().token().description('Facebook token of the user')
@@ -99,7 +103,7 @@ exports.update = {
   tags: ['api', 'user'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['admin']
+    scope: ['team', 'admin']
   },
   validate: {
     payload: {
@@ -113,6 +117,10 @@ exports.update = {
         refreshToken: Joi.string().token().description('Bearer refresh token'),
         ttl: Joi.number().description('Bearer token time to live'),
         date: Joi.date().description('Bearer date of creation')
+      })),
+      company: Joi.array().items(Joi.object().keys({
+        edition: Joi.string().description('id of the event edition'),
+        company: Joi.string().description('id of the company')
       })),
       facebook: {
         id: Joi.string().description('Facebook id of the user'),

@@ -62,6 +62,14 @@ function update (filter, user, opts, cb) {
     filter = { id: filter }
   }
 
+  if (user && user.company) {
+    user.$addToSet = {
+      'user.company': {
+        $each: [user.company]
+      }
+    }
+  }
+
   User.findOneAndUpdate(filter, user, opts, (err, _user) => {
     if (err) {
       log.error({err: err, requestedUser: filter}, 'error updating user')

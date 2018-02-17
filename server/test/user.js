@@ -26,6 +26,15 @@ const credentialsB = {
   scope: 'user'
 }
 
+const credentialsC = {
+  user: {
+    id: 'john.doe',
+    name: 'John Doe'
+  },
+  bearer: aux.token,
+  scope: ['user', 'team']
+}
+
 const userA = {
   id: 'john.doe',
   name: 'John Doe',
@@ -34,6 +43,14 @@ const userA = {
 
 const changesToA = {
   name: 'John Doe Doe'
+}
+
+const promoteAtoCompany = {
+  role: 'company',
+  company: [{
+    edition: 'sinfo25',
+    company: 'sinfo-consulting'
+  }]
 }
 
 lab.experiment('User', () => {
@@ -166,6 +183,78 @@ lab.experiment('User', () => {
       Code.expect(result.id).to.equal(userA.id)
       Code.expect(result.name).to.equal(changesToA.name)
 
+      done()
+    })
+  })
+
+  lab.test('Promote to team as user', (done) => {
+    const options = {
+      method: 'PUT',
+      url: '/users/' + userA.id,
+      credentials: credentialsB,
+      payload: { role: 'team' }
+    }
+
+    server.inject(options, (response) => {
+      Code.expect(response.statusCode).to.equal(403)
+      done()
+    })
+  })
+
+  lab.test('Promote to team as team', (done) => {
+    const options = {
+      method: 'PUT',
+      url: '/users/' + userA.id,
+      credentials: credentialsC,
+      payload: { role: 'team' }
+    }
+
+    server.inject(options, (response) => {
+      const result = response.result
+
+      Code.expect(response.statusCode).to.equal(200)
+      Code.expect(result).to.be.instanceof(Object)
+      Code.expect(result.id).to.equal(userA.id)
+      Code.expect(result.role).to.include('team')
+
+      done()
+    })
+  })
+
+  lab.test('Promote to company as team', (done) => {
+    const options = {
+      method: 'PUT',
+      url: '/users/' + userA.id,
+      credentials: credentialsC,
+      payload: promoteAtoCompany
+    }
+
+    server.inject(options, (response) => {
+      const result = response.result
+
+      Code.expect(response.statusCode).to.equal(200)
+      Code.expect(result).to.be.instanceof(Object)
+      Code.expect(result.id).to.equal(userA.id)
+      Code.expect(result.company[0]).to.be.instanceof(Object)
+      Code.expect(result.company[0].edition).to.equal(promoteAtoCompany.company[0].edition)
+      Code.expect(result.company[0].company).to.equal(promoteAtoCompany.company[0].company)
+      Code.expect(result.company[0].company).to.equal(promoteAtoCompany.company[0].company)
+      Code.expect(result.role).to.include('company')
+
+      done()
+    })
+  })
+
+  lab.test('Promote to company as user', (done) => {
+    const options = {
+      method: 'PUT',
+      url: '/users/' + userA.id,
+      credentials: credentialsB,
+      payload: promoteAtoCompany
+    }
+
+    server.inject(options, (response) => {
+      Code.expect(response.statusCode).to.equal(403)
       done()
     })
   })

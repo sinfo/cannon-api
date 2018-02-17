@@ -8,7 +8,8 @@ module.exports = function render (content, user) {
 
 function renderObject (model, user) {
   const result = {}
-  const isAllowed = user && (user.role === 'admin' || model.id === user.id)
+  const isAdmin = user && (user.role === 'admin' || model.id === user.id)
+  const isTeam = user && (user.role === 'team' || isAdmin)
 
   result.id = model.id
   result.name = model.name
@@ -26,7 +27,7 @@ function renderObject (model, user) {
   result.skills = model.skills
   result.registered = model.registered
 
-  if (isAllowed) {
+  if (isAdmin) {
     result.mail = model.mail
     result.facebook = model.facebook && {
       id: model.facebook && model.facebook.id
@@ -44,6 +45,12 @@ function renderObject (model, user) {
       start: model.job && model.job.start
     }
     result.updated = model.updated
+  }
+  if (isTeam) {
+    result.company = model.company && model.company.map(participation => ({
+      edition: participation && participation.edition,
+      company: participation && participation.company
+    }))
   }
 
   return result
