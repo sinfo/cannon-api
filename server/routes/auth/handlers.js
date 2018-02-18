@@ -65,27 +65,6 @@ exports.fenix = {
   description: 'Fenix login'
 }
 
-exports.addFacebook = {
-  tags: ['api', 'auth'],
-  auth: {
-    strategies: ['default', 'backup'],
-    scope: ['user', 'company', 'team', 'admin']
-  },
-  validate: {
-    payload: {
-      id: Joi.string().required().description('facebook id of the member'),
-      token: Joi.string().required().description('facebook token of the member')
-    }
-  },
-  pre: [
-    { method: 'auth.addFacebook(auth.credentials.user, payload.id, payload.token)', assign: 'member' }
-  ],
-  handler: function (request, reply) {
-    reply(render(request.pre.member))
-  },
-  description: 'Add facebook login'
-}
-
 exports.addFenix = {
   tags: ['api', 'auth'],
   auth: {

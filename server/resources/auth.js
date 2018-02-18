@@ -13,155 +13,8 @@ const google = require('../helpers/google')
 server.method('auth.facebook', facebookAuth, {})
 server.method('auth.fenix', fenixAuth, {})
 server.method('auth.google', googleAuth, {})
-server.method('auth.addFacebook', addFacebookAuth, {})
 server.method('auth.addFenix', addFenixAuth, {})
 server.method('auth.refreshToken', refreshToken, {})
-
-// //////////////////////////
-// Facebook helper functions
-// //////////////////////////
-
-function debugFBToken (id, token, cb) {
-  facebook.debugToken(id, token, (err, isValid) => {
-    if (err) {
-      return cb(Boom.unauthorized(err))
-    }
-
-    if (!isValid) {
-      return cb(Boom.unauthorized('nice try'))
-    }
-
-    cb()
-  })
-}
-
-function getFBUser (id, token, cb) {
-  server.methods.user.get({'facebook.id': id}, (err, user) => {
-    if (err) {
-      if (!err.output || err.output.statusCode !== 404) {
-        log.error({err: err, facebook: id}, '[facebook-login] error getting user')
-        return cb(err)
-      }
-
-      return fbUserNotFound(token, cb)
-    }
-
-    fbUserFound(user, token, cb)
-  })
-}
-
-function addFBaccount (user, fbUser, token, cb) {
-  server.methods.user.get({'facebook.id': fbUser.id}, (err, _user) => {
-    if (err) {
-      if (!err.output || err.output.statusCode !== 404) {
-        log.error({err: err, facebook: fbUser.id}, '[facebook-login] error getting user')
-        return cb(err)
-      }
-
-      const changedAttributes = {
-        facebook: {
-          id: fbUser.id,
-          token: token
-        }
-      }
-
-      changedAttributes.mail = user.mail || fbUser.email
-
-      return updateUserAuth({id: user.id}, changedAttributes, cb)
-    }
-
-    if (_user.id === user.id) {
-      log.error({user: user.id}, '[google-login] user already added account')
-      return cb(Boom.conflict('Account alaready registered to this user'))
-    }
-
-    // force new auth on merge
-    user.facebook = _user.facebook
-    user.facebook.token = token
-    mergeAccount(user, _user, cb)
-  })
-}
-
-function fbUserFound (user, token, cb) {
-  if (user.mail) {
-    return authenticate(user.id, {'facebook.token': token}, cb)
-  }
-
-  facebook.getMe(token, (err, facebookUser) => {
-    if (err) {
-      log.error({err: err, id: facebookUser.id, token: token}, '[facebook-login] error retrieving user info from facebook')
-      return cb(Boom.unauthorized('couldn\'t retrieve your info from facebook'))
-    }
-
-    if (!facebookUser.email) {
-      log.error({err: err, id: facebookUser.id, token: token}, '[facebook-login] user logged in without valid facebook e-mail')
-      return cb(Boom.notAcceptable('you must have a valid facebook e-mail'))
-    }
-
-    log.debug({facebookUser: facebookUser.id}, '[facebook-login] got facebook user')
-
-    server.methods.user.get({mail: facebookUser.email}, (err, _user) => {
-      if (err) {
-        if (!err.output || err.output.statusCode !== 404) {
-          log.error({err: err, mail: facebookUser.email, token: token}, '[facebook-login] error retrieving user info from facebook')
-          return cb(Boom.unauthorized('couldn\'t retrieve your info from facebook'))
-        }
-        return authenticate(user.id, {mail: facebookUser.email, 'facebook.token': token}, cb)
-      }
-
-      if (user.facebook) {
-        user.facebook.token = token
-      }
-      mergeAccount(user, _user, cb)
-    })
-  })
-}
-
-function fbUserNotFound (token, cb) {
-  let changedAttributes = {}
-  let filter = {}
-
-  facebook.getMe(token, (err, facebookUser) => {
-    if (err) {
-      log.error({err: err, id: facebookUser.id, token: token}, '[facebook-login] error retrieving user info from facebook')
-      return cb(Boom.unauthorized('couldn\'t retrieve your info from facebook'))
-    }
-
-    if (!facebookUser.email) {
-      log.error({err: err, id: facebookUser.id, token: token}, '[facebook-login] user logged in without valid facebook e-mail')
-      return cb(Boom.notAcceptable('you must have a valid facebook e-mail'))
-    }
-
-    log.debug({facebookUser: facebookUser.id}, '[facebook-login] got facebook user')
-
-    filter = { mail: facebookUser.email }
-
-    changedAttributes = {
-      facebook: {
-        id: facebookUser.id,
-        token: token
-      }
-    }
-
-    // If user does not exist, lets set the id, name and email
-    changedAttributes.$setOnInsert = {
-      id: Math.random().toString(36).substr(2, 20), // generate random id
-      name: facebookUser.name,
-      mail: facebookUser.email
-    }
-
-    server.methods.user.update(filter, changedAttributes, {upsert: true}, (err, result) => {
-      if (err) {
-        log.error({user: {mail: facebookUser.email}, changedAttributes: changedAttributes}, '[facebook-login] error upserting user')
-        return cb(err)
-      }
-
-      log.debug({id: result.id}, '[facebook-login] upserted user')
-
-      return authenticate(result.id, null, cb)
-    })
-  })
-}
 
 // //////////////////////////
 // Fenix helper functions
@@ -292,20 +145,26 @@ function fenixUserNotFound (fenixUser, cb) {
 // /////////////////////////////////
 
 function facebookAuth (id, token, cb) {
-  async.waterfall([
-    function debug (cbAsync) {
-      debugFBToken(id, token, cbAsync)
-    },
-    function getUser (cbAsync) {
-      getFBUser(id, token, cbAsync)
-    }
-  ], function done (err, result) {
-    if (err) {
-      log.error({err: err}, '[facebook-login] error on facebook login')
-      return cb(err)
-    }
-    cb(null, result)
-  })
+  // Check with Facebook if token is valid
+  facebook.verifyToken(id, token).then(() => {
+    // Get user profile information from Facebook
+    facebook.getFacebookUser(token).then(fbUser => {
+      // Get user in cannon from Facebook Token
+      facebook.getUser(fbUser)
+        .then(res => {
+          if (res.createUser) {
+            return facebook.createUser(fbUser)
+              .then(userId => authenticate(userId, null, cb))
+              .catch(err => cb(Boom.unauthorized(err)))
+          } else {
+            let changedAttributes = {
+              img: fbUser.picture.data.url
+            }
+            return authenticate(res.userId, changedAttributes, cb)
+          }
+        }).catch(err => cb(Boom.unauthorized(err)))
+    }).catch(err => cb(Boom.unauthorized(err)))
+  }).catch(err => cb(Boom.unauthorized(err)))
 }
 
 function googleAuth (id, token, cb) {
@@ -343,37 +202,6 @@ function fenixAuth (code, cb) {
 // ////////////////////////////
 // Add account server methods
 // ////////////////////////////
-
-function addFacebookAuth (user, id, token, cb) {
-  async.waterfall([
-    function debug (cbAsync) {
-      debugFBToken(id, token, cbAsync)
-    },
-    function addAccount (cbAsync) {
-      facebook.getMe(token, (err, facebookUser) => {
-        if (err) {
-          log.error({err: err, id: facebookUser.id, token: token}, '[facebook-login] error retrieving user info from facebook')
-          return cbAsync(Boom.unauthorized('couldn\'t retrieve your info from facebook'))
-        }
-
-        if (!facebookUser.email) {
-          log.error({err: err, id: facebookUser.id, token: token}, '[facebook-login] user logged in without valid facebook e-mail')
-          return cbAsync(Boom.notAcceptable('you must have a valid facebook e-mail'))
-        }
-
-        log.debug({facebookUser: facebookUser.id}, '[facebook-login] got facebook user')
-
-        addFBaccount(user, facebookUser, token, cbAsync)
-      })
-    }
-  ], function done (err, result) {
-    if (err) {
-      log.error({err: err}, 'error adding google account')
-      return cb(err)
-    }
-    cb(null, result)
-  })
-}
 
 function addFenixAuth (user, code, cb) {
   async.waterfall([

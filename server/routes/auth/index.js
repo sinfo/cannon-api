@@ -21,12 +21,6 @@ server.route({
 
 server.route({
   method: ['POST'],
-  path: '/auth/add/facebook',
-  config: handlers.addFacebook
-})
-
-server.route({
-  method: ['POST'],
   path: '/auth/add/fenix',
   config: handlers.addFenix
 })
