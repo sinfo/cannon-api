@@ -66,7 +66,7 @@ facebook.getUser = fbUser => {
           log.error({ err: err, facebook: fbUser }, '[facebook-login] error getting user by facebook email')
           return reject(err)
         }
-        // If does not find a user with a given facebook email, we create a new user (MAKE IT SIMPLE)
+        // If does not find a user with a given facebook email, we create a new user (KEEP IT SIMPLE)
         return resolve({ createUser: true, fbUser })
       }
       // A user exist with a given Facebook email, we only need to update 'facebook.id' and 'img' in DB
@@ -77,7 +77,7 @@ facebook.getUser = fbUser => {
 
 facebook.createUser = fbUser => {
   return new Promise((resolve, reject) => {
-    let user = {
+    const user = {
       facebook: {
         id: fbUser.id
       },
