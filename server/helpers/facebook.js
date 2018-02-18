@@ -15,7 +15,7 @@ facebook.verifyToken = (facebookUserId, facebookUserToken) => {
         return reject('invalid facebook token')
       }
 
-      const isValid = !(!result.data || result.data.app_id !== facebookConfig.clientId || result.data.user_id !== facebookUserId)
+      const isValid = (result.data && result.data.app_id === facebookConfig.clientId && result.data.user_id === facebookUserId)
 
       if (!isValid) {
         log.warn(
