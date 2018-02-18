@@ -66,15 +66,18 @@ function getFenixInfo (auth, cb) {
 function getFenixUser (fenixUser, cb) {
   server.methods.user.get({'fenix.id': fenixUser.auth.id}, (err, user) => {
     if (err) {
-      if (!err.output || err.output.statusCode !== 404) {
-        log.error({err: err, fenix: fenixUser.auth.id}, '[fenix-login] error getting user')
-        return cb(err)
+      if (err.output && err.output.statusCode === 404) {
+        return fenixUserNotFound(fenixUser, cb)
       }
 
-      return fenixUserNotFound(fenixUser, cb)
+      log.error({err: err, fenix: fenixUser.auth.id}, '[fenix-login] error getting user')
+      return cb(err)
     }
-    const changedAttributes = {fenix: fenixUser.auth}
-    changedAttributes.mail = user.mail || fenixUser.email.main
+
+    const changedAttributes = {
+      fenix: fenixUser.auth,
+      mail: user.mail || fenixUser.email.main
+    }
     authenticate(user.id, changedAttributes, cb)
   })
 }
@@ -150,23 +153,23 @@ function facebookAuth (id, token, cb) {
     // Get user profile information from Facebook
     facebook.getFacebookUser(token).then(fbUser => {
       // Get user in cannon by Facebook User email
-      facebook.getUser(fbUser)
-        .then(res => {
-          // If user does not exist we create, otherwise we update existing user
-          if (res.createUser) {
-            return facebook.createUser(fbUser)
-              .then(userId => authenticate(userId, null, cb))
-              .catch(err => cb(Boom.unauthorized(err)))
-          } else {
-            const changedAttributes = {
-              facebook: {
-                id: fbUser.id
-              },
-              img: fbUser.picture.data.url
-            }
-            return authenticate(res.userId, changedAttributes, cb)
-          }
-        }).catch(err => cb(Boom.unauthorized(err)))
+      facebook.getUser(fbUser).then(res => {
+        // If user does not exist we create, otherwise we update existing user
+        if (res.createUser) {
+          return facebook.createUser(fbUser)
+          .then(userId => authenticate(userId, null, cb))
+          .catch(err => cb(Boom.unauthorized(err)))
+        }
+
+        const changedAttributes = {
+          facebook: {
+            id: fbUser.id
+          },
+          img: fbUser.picture.data.url
+        }
+        return authenticate(res.userId, changedAttributes, cb)
+
+      }).catch(err => cb(Boom.unauthorized(err)))
     }).catch(err => cb(Boom.unauthorized(err)))
   }).catch(err => cb(Boom.unauthorized(err)))
 }
@@ -175,23 +178,23 @@ function googleAuth (id, token, cb) {
   // Check with Google if token is valid
   google.verifyToken(id, token).then(gUser => {
     // Get user in cannon by Google User email
-    google.getUser(gUser)
-      .then(res => {
-        // If user does not exist we create, otherwise we update existing user
-        if (res.createUser) {
-          return google.createUser(gUser)
-            .then(userId => authenticate(userId, null, cb))
-            .catch(err => cb(Boom.unauthorized(err)))
-        } else {
-          const changedAttributes = {
-            google: {
-              id: gUser.sub
-            },
-            img: gUser.picture
-          }
-          return authenticate(res.userId, changedAttributes, cb)
-        }
-      }).catch(err => cb(Boom.unauthorized(err)))
+    google.getUser(gUser).then(res => {
+      // If user does not exist we create, otherwise we update existing user
+      if (res.createUser) {
+        return google.createUser(gUser)
+        .then(userId => authenticate(userId, null, cb))
+        .catch(err => cb(Boom.unauthorized(err)))
+      } 
+
+      const changedAttributes = {
+        google: {
+          id: gUser.sub
+        },
+        img: gUser.picture
+      }
+      return authenticate(res.userId, changedAttributes, cb)
+
+    }).catch(err => cb(Boom.unauthorized(err)))
   }).catch(err => cb(Boom.unauthorized(err)))
 }
 
