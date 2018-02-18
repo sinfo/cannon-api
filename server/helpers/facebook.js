@@ -69,7 +69,7 @@ facebook.getUser = fbUser => {
         // If does not find a user with a given facebook email, we create a new user (MAKE IT SIMPLE)
         return resolve({ createUser: true, fbUser })
       }
-      // A user exist with a given Facebook email, we only need to update 'facebook.id': facebookUserId
+      // A user exist with a given Facebook email, we only need to update 'facebook.id' and 'img' in DB
       return resolve({ createUser: false, userId: user.id })
     })
   })
@@ -77,7 +77,6 @@ facebook.getUser = fbUser => {
 
 facebook.createUser = fbUser => {
   return new Promise((resolve, reject) => {
-    // If user does not exist, lets set the id, name and email
     let user = {
       facebook: {
         id: fbUser.id
@@ -101,29 +100,5 @@ facebook.createUser = fbUser => {
     })
   })
 }
-
-/* facebook.updateUser = fbUser => {
-  return new Promise((resolve, reject) => {
-    let changedAttributes = {
-      facebook: {
-        id: fbUser.user_id
-      },
-      img: fbUser.picture.data.url
-    }
-
-    log.debug('[facebook-login] updating user', fbUser)
-
-    server.methods.user.update({ mail: fbUser.email }, changedAttributes, (err, result) => {
-      if (err) {
-        log.error({ user: { mail: fbUser.email }, changedAttributes }, '[facebook-login] error updating user')
-        return reject(err)
-      }
-
-      log.debug({ userId: result.id }, '[facebook-login] user updated')
-
-      return resolve(result.id)
-    })
-  })
-} */
 
 module.exports = facebook
