@@ -69,7 +69,7 @@ exports.addFacebook = {
   tags: ['api', 'auth'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
     payload: {
@@ -90,7 +90,7 @@ exports.addGoogle = {
   tags: ['api', 'auth'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
     payload: {
@@ -111,7 +111,7 @@ exports.addFenix = {
   tags: ['api', 'auth'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
     payload: {

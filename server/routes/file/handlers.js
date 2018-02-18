@@ -79,7 +79,7 @@ exports.getMe = {
   tags: ['api', 'file'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['user', 'company', 'team', 'admin']
   },
   pre: [
     { method: 'file.get(auth.credentials.user.id, query)', assign: 'file' }
@@ -119,7 +119,7 @@ exports.downloadMe = {
   tags: ['api', 'file'],
   auth: {
     strategies: ['backup'],
-    scope: ['user', 'admin']
+    scope: ['user', 'company', 'team', 'admin']
   },
   pre: [
     { method: 'file.get(auth.credentials.user.id, query)', assign: 'file' }
@@ -183,7 +183,7 @@ exports.removeMe = {
   tags: ['api', 'file'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['user', 'company', 'team', 'admin']
 
   },
   pre: [
@@ -246,7 +246,7 @@ exports.uploadMe = {
   tags: ['api', 'file'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['user', 'company', 'team', 'admin']
   },
   payload: {
     output: 'stream',

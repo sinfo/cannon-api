@@ -8,7 +8,7 @@ exports.registerTicket = {
   tags: ['api', 'ticket'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
     params: {
@@ -33,7 +33,7 @@ exports.voidTicket = {
   tags: ['api', 'ticket'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
     params: {
@@ -58,7 +58,7 @@ exports.confirmTicket = {
   tags: ['api', 'ticket'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
     params: {
@@ -83,7 +83,7 @@ exports.get = {
   tags: ['api', 'ticket'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin'],
+    scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
   validate: {
@@ -107,7 +107,7 @@ exports.list = {
   tags: ['api', 'ticket'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin']
+    scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
     query: {
@@ -154,7 +154,7 @@ exports.getUsers = {
   tags: ['api', 'ticket'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin'],
+    scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
   validate: {
@@ -179,7 +179,7 @@ exports.getWaiting = {
   tags: ['api', 'ticket'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin'],
+    scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
   validate: {
@@ -204,7 +204,7 @@ exports.getConfirmed = {
   tags: ['api', 'ticket'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin'],
+    scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
   validate: {
@@ -229,7 +229,7 @@ exports.getUserSessions = {
   tags: ['api', 'ticket'],
   auth: {
     strategies: ['default', 'backup'],
-    scope: ['user', 'admin'],
+    scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
   validate: {
