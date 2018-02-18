@@ -39,13 +39,16 @@ google.getUser = gUser => {
   return new Promise((resolve, reject) => {
     server.methods.user.get({ 'mail': gUser.email }, (err, user) => {
       if (err) {
-        if (err.output && err.output.statusCode !== 404) {
-          log.error({ err: err, google: gUser }, '[google-login] error getting user by google email')
-          return reject(err)
+
+        // If does not find a user with a given Google email, we create a new user
+        if (err.output && err.output.statusCode === 404) {
+          return resolve({ createUser: true, gUser })
         }
-        // If does not find a user with a given Google email, we create a new user (KEEP IT SIMPLE)
-        return resolve({ createUser: true, gUser })
+
+        log.error({ err: err, google: gUser }, '[google-login] error getting user by google email')
+        return reject(err)
       }
+
       // A user exist with a given Google email, we only need to update 'google.id' and 'img' in DB
       return resolve({ createUser: false, userId: user.id })
     })
