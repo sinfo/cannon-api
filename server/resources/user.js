@@ -1,5 +1,4 @@
 const Boom = require('boom')
-const slug = require('slug')
 const server = require('../').hapi
 const log = require('../helpers/logger')
 const dupKeyParser = require('../helpers/dupKeyParser')
@@ -17,9 +16,10 @@ server.method('user.getMulti', getMulti, {})
 server.method('user.remove', remove, {})
 
 function create (user, cb) {
-  user.id = user.id || slug(user.name).toLowerCase()
+  user.id = user.id || Math.random().toString(36).substr(2, 20)
   user.role = user.role || config.auth.permissions[0]
-  user.resgistered = Date.now()
+  user.resgistered = user.resgistered || Date.now()
+  user.updated = user.updated || Date.now()
 
   User.create(user, (err, _user) => {
     if (err) {

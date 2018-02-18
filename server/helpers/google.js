@@ -1,67 +1,83 @@
-const Request = require('request')
+const { OAuth2Client } = require('google-auth-library')
+const server = require('../').hapi
 const log = require('./logger')
 const googleConfig = require('../../config').google
 
 const google = {}
 
-google.debugToken = function (googleUserId, googleUserToken, cb) {
-  const url = 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + googleUserToken
-
-  Request.get(url, {
-    json: true
-  },
-  (error, response, result) => {
-    /* jshint camelcase: false */
-    if (error || response.statusCode !== 200) {
-      log.warn({err: error, googleConfig: googleConfig, response: response})
-      return cb(error || {err: response.statusCode, message: response.statusMessage})
-    }
-
-    const isValid = !(!result || result.issued_to !== googleConfig.clientId || result.user_id !== googleUserId)
-
-    if (!isValid) {
-      log.warn(
-        {
-          'result-app-id': result.issued_to,
-          'config-app-id': googleConfig.clientId,
-          'result-user-id': result.user_id,
-          'requested-user-id': googleUserId
-        },
-        'invalid google login!'
-      )
-    }
-
-    cb(null, isValid)
+/**
+ * Verifies the JWT signature, the aud claim, the exp claim, and the iss claim.
+ * @param {string} googleUserId
+ * @param {string} googleUserToken
+ */
+google.verifyToken = (googleUserId, googleUserToken) => {
+  return new Promise((resolve, reject) => {
+    const oAuth2Client = new OAuth2Client(googleConfig.clientId, googleConfig.clientSecret)
+    oAuth2Client.verifyIdToken({
+      idToken: googleUserToken,
+      audience: googleConfig.clientId
+    }, (err, login) => {
+      if (err) {
+        log.warn(err)
+        return reject(err)
+      }
+      // If verified we can trust in the login.payload
+      return resolve(login.payload)
+    })
   })
 }
 
-google.getMe = function (googleUserId, cb) {
-  const url = ' https://www.googleapis.com/plus/v1/people/' + googleUserId + '?key=' + googleConfig.clientSecret
+/**
+ * Get user in cannon DB by mail associated with Google account
+ * @param {object} gUser Google User Profile
+ * @param {string} gUser.sub Google User Id
+ * @param {string} gUser.email
+ * @param {string} gUser.name
+ * @param {string} gUser.picture Profile image
+ */
+google.getUser = gUser => {
+  return new Promise((resolve, reject) => {
+    server.methods.user.get({ 'mail': gUser.email }, (err, user) => {
+      if (err) {
 
-  Request.get(url, {
-    json: true
-  },
-  (error, response, result) => {
-    if (error || response.statusCode !== 200) {
-      return cb(error || {err: response.statusCode, message: response.statusMessage})
-    }
+        // If does not find a user with a given Google email, we create a new user
+        if (err.output && err.output.statusCode === 404) {
+          return resolve({ createUser: true, gUser })
+        }
 
-    cb(null, result)
+        log.error({ err: err, google: gUser }, '[google-login] error getting user by google email')
+        return reject(err)
+      }
+
+      // A user exist with a given Google email, we only need to update 'google.id' and 'img' in DB
+      return resolve({ createUser: false, userId: user.id })
+    })
   })
 }
 
-google.getMail = function (googleUserToken, cb) {
-  const url = 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + googleUserToken
-
-  Request.get(url, {
-    json: true
-  },
-  (error, response, result) => {
-    if (error || response.statusCode !== 200) {
-      return cb(error || {err: response.statusCode, message: response.statusMessage})
+google.createUser = gUser => {
+  return new Promise((resolve, reject) => {
+    const user = {
+      google: {
+        id: gUser.sub
+      },
+      name: gUser.name,
+      mail: gUser.email,
+      img: gUser.picture
     }
 
-    cb(null, result.email)
+    log.debug('[google-login] creating user', user)
+
+    server.methods.user.create(user, (err, result) => {
+      if (err) {
+        log.error({ user }, '[google-login] error creating user')
+        return reject(err)
+      }
+
+      log.debug({ userId: result.id }, '[google-login] new user created')
+
+      return resolve(result.id)
+    })
   })
 }
 

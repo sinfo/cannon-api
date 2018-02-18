@@ -26,15 +26,14 @@ config.mongo = {
 }
 
 config.facebook = {
-  cookie: process.env.CANNON_COOKIE_NAME || 'cannon_cookie',
-  password: process.env.CANNON_COOKIE_PASSWORD || 'YOUR COOKIE PASSWORD',
   clientId: process.env.CANNON_FACEBOOK_APP_ID || 'YOUR APP ID',
   clientSecret: process.env.CANNON_FACEBOOK_APP_SECRET || 'YOUR APP SECRET'
 }
 
 config.google = {
   clientId: process.env.CANNON_GOOGLE_APP_ID || 'YOUR APP ID',
-  clientSecret: process.env.CANNON_GOOGLE_API_KEY || 'YOUR API KEY'
+  clientSecret: process.env.CANNON_GOOGLE_CLIENT_SECRET || 'YOUR CLIENT SECRET',
+  apiKey: process.env.CANNON_GOOGLE_API_KEY || 'YOUR API KEY'
 }
 
 config.fenix = {
