@@ -149,15 +149,19 @@ function facebookAuth (id, token, cb) {
   facebook.verifyToken(id, token).then(() => {
     // Get user profile information from Facebook
     facebook.getFacebookUser(token).then(fbUser => {
-      // Get user in cannon from Facebook Token
+      // Get user in cannon by Facebook User email
       facebook.getUser(fbUser)
         .then(res => {
+          // If user does not exist we create, otherwise we update existing user
           if (res.createUser) {
             return facebook.createUser(fbUser)
               .then(userId => authenticate(userId, null, cb))
               .catch(err => cb(Boom.unauthorized(err)))
           } else {
-            let changedAttributes = {
+            const changedAttributes = {
+              facebook: {
+                id: fbUser.id
+              },
               img: fbUser.picture.data.url
             }
             return authenticate(res.userId, changedAttributes, cb)

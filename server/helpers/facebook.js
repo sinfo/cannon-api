@@ -44,23 +44,32 @@ facebook.getFacebookUser = facebookUserToken => {
         log.warn({ error, response: response.statusMessage })
         return reject('error getting facebook user profile')
       }
-      log.debug(fbUser)
+
       return resolve(fbUser)
     })
   })
 }
 
+/**
+ * Get user in cannon DB by mail associated with Facebook account
+ * @param {object} fbUser Facebook User profile
+ * @param {string} fbUser.id User Id
+ * @param {string} fbUser.email
+ * @param {string} fbUser.name
+ * @param {string} fbUser.picture.data.url Profile image
+ */
 facebook.getUser = fbUser => {
   return new Promise((resolve, reject) => {
-    server.methods.user.get({ 'facebook.id': fbUser.user_id }, (err, user) => {
+    server.methods.user.get({ 'mail': fbUser.email }, (err, user) => {
       if (err) {
         if (err.output && err.output.statusCode !== 404) {
-          log.error({ err: err, facebook: fbUser }, '[facebook-login] error getting user')
+          log.error({ err: err, facebook: fbUser }, '[facebook-login] error getting user by facebook email')
           return reject(err)
         }
+        // If does not find a user with a given facebook email, we create a new user (MAKE IT SIMPLE)
         return resolve({ createUser: true, fbUser })
       }
-      // We do not need to create a new user
+      // A user exist with a given Facebook email, we only need to update 'facebook.id': facebookUserId
       return resolve({ createUser: false, userId: user.id })
     })
   })
@@ -68,31 +77,53 @@ facebook.getUser = fbUser => {
 
 facebook.createUser = fbUser => {
   return new Promise((resolve, reject) => {
-    let changedAttributes = {
-      facebook: {
-        id: fbUser.user_id
-      }
-    }
-    log.debug('create user', fbUser)
     // If user does not exist, lets set the id, name and email
-    changedAttributes.$setOnInsert = {
-      id: Math.random().toString(36).substr(2, 20), // generate random id
+    let user = {
+      facebook: {
+        id: fbUser.id
+      },
       name: fbUser.name,
       mail: fbUser.email,
       img: fbUser.picture.data.url
     }
 
-    server.methods.user.update({ mail: fbUser.email }, changedAttributes, {upsert: true}, (err, result) => {
+    log.debug('[facebook-login] creating user', user)
+
+    server.methods.user.create(user, (err, result) => {
       if (err) {
-        log.error({user: { mail: fbUser.email }, changedAttributes: changedAttributes}, '[facebook-login] error creating or updating user')
+        log.error({ user }, '[facebook-login] error creating user')
         return reject(err)
       }
 
-      log.debug({ userId: result.id }, '[facebook-login] created or updated user')
+      log.debug({ userId: result.id }, '[facebook-login] new user created')
 
       return resolve(result.id)
     })
   })
 }
+
+/* facebook.updateUser = fbUser => {
+  return new Promise((resolve, reject) => {
+    let changedAttributes = {
+      facebook: {
+        id: fbUser.user_id
+      },
+      img: fbUser.picture.data.url
+    }
+
+    log.debug('[facebook-login] updating user', fbUser)
+
+    server.methods.user.update({ mail: fbUser.email }, changedAttributes, (err, result) => {
+      if (err) {
+        log.error({ user: { mail: fbUser.email }, changedAttributes }, '[facebook-login] error updating user')
+        return reject(err)
+      }
+
+      log.debug({ userId: result.id }, '[facebook-login] user updated')
+
+      return resolve(result.id)
+    })
+  })
+} */
 
 module.exports = facebook
