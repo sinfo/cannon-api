@@ -9,7 +9,7 @@ facebook.verifyToken = (facebookUserId, facebookUserToken) => {
   return new Promise((resolve, reject) => {
     const url = `https://graph.facebook.com/debug_token?input_token=${facebookUserToken}&access_token=${facebookConfig.clientId}|${facebookConfig.clientSecret}`
 
-    request.get(url, { json: true }, (error, response, result) => {
+      request.get(url, { json: true }, (error, response, result) => {
       if (error || response.statusCode !== 200) {
         log.warn({ error, facebookConfig, response: response.statusMessage })
         return reject('invalid facebook token')
@@ -39,7 +39,7 @@ facebook.getFacebookUser = facebookUserToken => {
   return new Promise((resolve, reject) => {
     const url = `https://graph.facebook.com/me?fields=id,name,email,picture&access_token=${facebookUserToken}`
 
-    request.get(url, { json: true }, (error, response, fbUser) => {
+      request.get(url, { json: true }, (error, response, fbUser) => {
       if (error || response.statusCode !== 200) {
         log.warn({ error, response: response.statusMessage })
         return reject('error getting facebook user profile')
@@ -62,13 +62,16 @@ facebook.getUser = fbUser => {
   return new Promise((resolve, reject) => {
     server.methods.user.get({ 'mail': fbUser.email }, (err, user) => {
       if (err) {
-        if (err.output && err.output.statusCode !== 404) {
-          log.error({ err: err, facebook: fbUser }, '[facebook-login] error getting user by facebook email')
-          return reject(err)
-        }
+
         // If does not find a user with a given facebook email, we create a new user (KEEP IT SIMPLE)
-        return resolve({ createUser: true, fbUser })
+        if (err.output && err.output.statusCode === 404) {
+          return resolve({ createUser: true, fbUser })
+        }
+
+        log.error({ err: err, facebook: fbUser }, '[facebook-login] error getting user by facebook email')
+        return reject(err)
       }
+
       // A user exist with a given Facebook email, we only need to update 'facebook.id' and 'img' in DB
       return resolve({ createUser: false, userId: user.id })
     })
