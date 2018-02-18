@@ -174,15 +174,24 @@ function facebookAuth (id, token, cb) {
 function googleAuth (id, token, cb) {
   // Check with Google if token is valid
   google.verifyToken(id, token).then(gUser => {
-    // Get user in cannon from Google User ID (also known as gUser.sub)
+    // Get user in cannon by Google User email
     google.getUser(gUser)
-      .then(userId => authenticate(userId, null, cb))
-      .catch(() => {
-        // User not found, lets create a user
-        google.createUser(gUser)
-          .then(userId => authenticate(userId, null, cb))
-          .catch(err => cb(Boom.unauthorized(err)))
-      })
+      .then(res => {
+        // If user does not exist we create, otherwise we update existing user
+        if (res.createUser) {
+          return google.createUser(gUser)
+            .then(userId => authenticate(userId, null, cb))
+            .catch(err => cb(Boom.unauthorized(err)))
+        } else {
+          const changedAttributes = {
+            google: {
+              id: gUser.sub
+            },
+            img: gUser.picture
+          }
+          return authenticate(res.userId, changedAttributes, cb)
+        }
+      }).catch(err => cb(Boom.unauthorized(err)))
   }).catch(err => cb(Boom.unauthorized(err)))
 }
 
