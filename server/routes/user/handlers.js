@@ -118,10 +118,10 @@ exports.update = {
         ttl: Joi.number().description('Bearer token time to live'),
         date: Joi.date().description('Bearer date of creation')
       })),
-      company: Joi.array().items(Joi.object().keys({
+      company: Joi.object().keys({
         edition: Joi.string().description('id of the event edition'),
         company: Joi.string().description('id of the company')
-      })),
+      }),
       facebook: {
         id: Joi.string().description('Facebook id of the user'),
         token: Joi.string().token().description('Facebook token of the user')

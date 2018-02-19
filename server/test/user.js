@@ -47,10 +47,10 @@ const changesToA = {
 
 const promoteAtoCompany = {
   role: 'company',
-  company: [{
+  company: {
     edition: 'sinfo25',
     company: 'sinfo-consulting'
-  }]
+  }
 }
 
 lab.experiment('User', () => {
@@ -236,9 +236,9 @@ lab.experiment('User', () => {
       Code.expect(result).to.be.instanceof(Object)
       Code.expect(result.id).to.equal(userA.id)
       Code.expect(result.company[0]).to.be.instanceof(Object)
-      Code.expect(result.company[0].edition).to.equal(promoteAtoCompany.company[0].edition)
-      Code.expect(result.company[0].company).to.equal(promoteAtoCompany.company[0].company)
-      Code.expect(result.company[0].company).to.equal(promoteAtoCompany.company[0].company)
+      Code.expect(result.company[0].edition).to.equal(promoteAtoCompany.company.edition)
+      Code.expect(result.company[0].company).to.equal(promoteAtoCompany.company.company)
+      Code.expect(result.company[0].company).to.equal(promoteAtoCompany.company.company)
       Code.expect(result.role).to.be.equal('company')
 
       done()

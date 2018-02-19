@@ -64,11 +64,10 @@ function update (filter, user, opts, cb) {
 
   if (user && user.company) {
     user.$addToSet = {
-      'user.company': {
-        $each: [user.company]
-      }
+      'company': user.company
     }
   }
+  delete user.company
 
   User.findOneAndUpdate(filter, user, opts, (err, _user) => {
     if (err) {
