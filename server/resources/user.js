@@ -8,6 +8,7 @@ const User = require('../db/user')
 
 server.method('user.create', create, {})
 server.method('user.update', update, {})
+server.method('user.updateMe', updateMe, {})
 server.method('user.updatePoints', updatePoints, {})
 server.method('user.get', get, {})
 server.method('user.getByToken', getByToken, {})
@@ -49,6 +50,21 @@ function updatePoints (filter, points, cb) {
   }
 
   update(filter, user, cb)
+}
+
+function updateMe (filter, user, opts, cb) {
+
+  if (typeof opts === 'function') {
+    cb = opts
+    opts = {}
+  }
+
+  // role can only be user
+  if (user.role && user.role !== 'user') {
+    return cb(Boom.unauthorized('Can only demote self, not promte'))
+  }
+
+  update(filter, user, opts, cb)
 }
 
 function update (filter, user, opts, cb) {
