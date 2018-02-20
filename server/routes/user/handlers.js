@@ -82,6 +82,7 @@ exports.updateMe = {
       img: Joi.string().uri().description('Image of the user'),
       mail: Joi.string().email().description('Mail of the user'),
       area: Joi.string().description('Work field of the user'),
+      role: Joi.string().description('Use to demote self to user'),
       skills: Joi.array().description('Skills of the user'),
       job: Joi.object().keys({
         startup: Joi.boolean().description('Interested in a startup'),
@@ -91,7 +92,7 @@ exports.updateMe = {
     }
   },
   pre: [
-    { method: 'user.update(auth.credentials.user.id, payload)', assign: 'user' }
+    { method: 'user.updateMe(auth.credentials.user.id, payload)', assign: 'user' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.user, request.auth.credentials && request.auth.credentials.user))
