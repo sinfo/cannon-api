@@ -39,6 +39,12 @@ server.route({
 
 server.route({
   method: 'DELETE',
+  path: '/users/{id}/company',
+  config: handlers.removeCompany
+})
+
+server.route({
+  method: 'DELETE',
   path: '/users/{id}',
   config: handlers.remove
 })
