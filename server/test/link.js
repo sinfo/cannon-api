@@ -14,7 +14,7 @@ const auxC = token.getJWT('conor.mcgregor')
 const credentialsAdmin = {
   user: {
     id: 'admin',
-    name: 'John Doe',
+    name: 'John Doe'
   },
   bearer: aux.token,
   scope: 'admin'
@@ -124,7 +124,7 @@ lab.experiment('Link', () => {
 
     server.inject(options, (response) => {
       const result = response.result
-      
+
       Code.expect(response.statusCode).to.equal(201)
       Code.expect(result).to.be.instanceof(Object)
       Code.expect(result.user).to.equal(linkA.userId)

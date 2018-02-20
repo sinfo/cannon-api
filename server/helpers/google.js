@@ -39,7 +39,6 @@ google.getUser = gUser => {
   return new Promise((resolve, reject) => {
     server.methods.user.get({ 'mail': gUser.email }, (err, user) => {
       if (err) {
-
         // If does not find a user with a given Google email, we create a new user
         if (err.output && err.output.statusCode === 404) {
           return resolve({ createUser: true, gUser })
