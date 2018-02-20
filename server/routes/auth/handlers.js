@@ -84,25 +84,3 @@ exports.addFenix = {
   },
   description: 'Add fenix login'
 }
-
-exports.refreshToken = {
-  tags: ['api', 'auth'],
-  auth: {
-    strategies: ['default'],
-    mode: 'try'
-  },
-  validate: {
-    payload: {
-      id: Joi.string().required().description('fenix code of the member'),
-      token: Joi.string().required().description('fenix code of the member'),
-      refreshToken: Joi.string().required().description('fenix code of the member')
-    }
-  },
-  pre: [
-    { method: 'auth.refreshToken(payload.id, payload.token, payload.refreshToken)', assign: 'refreshToken' }
-  ],
-  handler: function (request, reply) {
-    reply(render(request.pre.refreshToken))
-  },
-  description: 'Refresh access token'
-}

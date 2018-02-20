@@ -1,12 +1,12 @@
 const config = require('../../config')
-const Token = require('./token')
+const token = require('./token')
 
 const basic = function (username, password, cb) {
-  Token.validator(password, config.auth.token, cb)
+  token.verify(password, cb)
 }
 
 const bearer = function (token, cb) {
-  Token.validator(token, config.auth.token, cb)
+  token.verify(token, cb)
 }
 
 const internal = function (username, password, cb) {
