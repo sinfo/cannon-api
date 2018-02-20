@@ -7,7 +7,7 @@ exports = module.exports
 exports.create = {
   tags: ['api', 'file'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['admin']
   },
   validate: {
@@ -31,7 +31,7 @@ exports.create = {
 exports.update = {
   tags: ['api', 'file'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['admin']
   },
   validate: {
@@ -58,7 +58,7 @@ exports.update = {
 exports.get = {
   tags: ['api', 'file'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['admin']
   },
   validate: {
@@ -78,7 +78,7 @@ exports.get = {
 exports.getMe = {
   tags: ['api', 'file'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin']
   },
   pre: [
@@ -93,7 +93,7 @@ exports.getMe = {
 exports.download = {
   tags: ['api', 'file'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['admin']
   },
   validate: {
@@ -118,7 +118,7 @@ exports.download = {
 exports.downloadMe = {
   tags: ['api', 'file'],
   auth: {
-    strategies: ['backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin']
   },
   pre: [
@@ -138,7 +138,7 @@ exports.downloadMe = {
 exports.list = {
   tags: ['api', 'file'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['admin']
   },
   validate: {
@@ -161,7 +161,7 @@ exports.list = {
 exports.remove = {
   tags: ['api', 'file'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['admin']
 
   },
@@ -182,7 +182,7 @@ exports.remove = {
 exports.removeMe = {
   tags: ['api', 'file'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin']
 
   },
@@ -198,7 +198,7 @@ exports.removeMe = {
 exports.upload = {
   tags: ['api', 'file'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['admin']
   },
   payload: {
@@ -245,7 +245,7 @@ exports.upload = {
 exports.uploadMe = {
   tags: ['api', 'file'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin']
   },
   payload: {

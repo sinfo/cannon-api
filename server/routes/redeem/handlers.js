@@ -7,7 +7,7 @@ exports = module.exports
 exports.create = {
   tags: ['api', 'redeem'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['admin']
   },
   validate: {
@@ -30,7 +30,7 @@ exports.create = {
 exports.get = {
   tags: ['api', 'redeem'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
@@ -59,7 +59,7 @@ exports.get = {
 exports.remove = {
   tags: ['api', 'redeem'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['admin']
   },
   validate: {

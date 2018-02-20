@@ -7,7 +7,7 @@ exports = module.exports
 exports.submit = {
   tags: ['api', 'survey'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
@@ -36,7 +36,7 @@ exports.submit = {
 exports.getSchema = {
   tags: ['api', 'survey'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
@@ -89,7 +89,7 @@ exports.getSessionProcessedResponses = {
 exports.checkIn = {
   tags: ['api', 'survey'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['team', 'admin']
   },
   validate: {
