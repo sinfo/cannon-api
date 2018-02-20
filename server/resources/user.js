@@ -14,6 +14,7 @@ server.method('user.getByToken', getByToken, {})
 server.method('user.list', list, {})
 server.method('user.getMulti', getMulti, {})
 server.method('user.remove', remove, {})
+server.method('user.removeCompany', removeCompany, {})
 
 function create (user, cb) {
   user.id = user.id || Math.random().toString(36).substr(2, 20)
@@ -63,24 +64,55 @@ function update (filter, user, opts, cb) {
   }
 
   if (user && user.company) {
-    user.$addToSet = {
-      'company': user.company
+    const user2 = Object.assign({}, user);
+    user.$pull = { 'company': { 'edition': user.company.edition } }
+    user2.$push = { 'company': user.company }
+    delete user.company
+    delete user2.company
+
+    removeCompany(pushCompany)
+
+    function removeCompany (done) {
+
+      User.findOneAndUpdate(filter, user, opts, function(err, _user) {
+        if (err && err.code !== 16837) {
+          log.error({err: err, requestedUser: filter}, 'error pulling user.company')
+          return cb(Boom.internal())
+        }
+
+        done()
+      })
     }
+
+    function pushCompany () {
+
+      opts.new = true
+
+      User.findOneAndUpdate(filter, user2, opts, function(err, user){
+        if (err) {
+          log.error({err: err, requestedUser: filter}, 'error pushing user.company')
+          return cb(Boom.internal())
+        }
+
+         return cb(null, user.toObject({ getters: true }))
+      })
+    }
+  } else {
+
+    User.findOneAndUpdate(filter, user, opts, (err, _user) => {
+      if (err) {
+        log.error({err: err, requestedUser: filter}, 'error updating user')
+        return cb(Boom.internal())
+      }
+      if (!_user) {
+        log.error({err: err, requestedUser: filter}, 'user not found')
+        return cb(Boom.notFound())
+      }
+
+      cb(null, _user.toObject({ getters: true }))
+    })
+
   }
-  delete user.company
-
-  User.findOneAndUpdate(filter, user, opts, (err, _user) => {
-    if (err) {
-      log.error({err: err, requestedUser: filter}, 'error updating user')
-      return cb(Boom.internal())
-    }
-    if (!_user) {
-      log.error({err: err, requestedUser: filter}, 'user not found')
-      return cb(Boom.notFound())
-    }
-
-    cb(null, _user.toObject({ getters: true }))
-  })
 }
 
 function get (filter, query, cb) {
@@ -160,6 +192,31 @@ function getMulti (ids, query, cb) {
     }
 
     cb(null, users)
+  })
+}
+
+function removeCompany (filter, editionId, cb) {
+  if (typeof filter === 'string') {
+    filter = { id: filter }
+  }
+
+  const update = { 
+    $pull: {
+      'company': { edition: editionId }
+    }
+  }
+
+  User.findOneAndUpdate(filter, update, (err, user) => {
+    if (err) {
+      log.error({err: err, requestedUser: filter, edition: editionId}, 'error deleting user.company')
+      return cb(Boom.internal())
+    }
+    if (!user) {
+      log.error({err: err, requestedUser: filter, edition: editionId}, 'error deleting user.company')
+      return cb(Boom.notFound())
+    }
+
+    cb(null, user.toObject({ getters: true }))
   })
 }
 

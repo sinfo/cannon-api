@@ -222,6 +222,29 @@ exports.list = {
   description: 'Gets all the users'
 }
 
+exports.removeCompany = {
+  tags: ['api', 'user'],
+  auth: {
+    strategies: ['default', 'backup'],
+    scope: ['team', 'admin']
+  },
+  validate: {
+    params: {
+      id: Joi.string().required().description('Id of the user we want to remove')
+    },
+    query: {
+      editionId: Joi.string().required().description('Id of the edition of the participation you want to remove')
+    }
+  },
+  pre: [
+    { method: 'user.removeCompany(params.id, query.editionId)', assign: 'user' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.user, request.auth.credentials.user))
+  },
+  description: 'Removes company from a user'
+}
+
 exports.remove = {
   tags: ['api', 'user'],
   auth: {
