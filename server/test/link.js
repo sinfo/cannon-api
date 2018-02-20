@@ -6,10 +6,10 @@ const server = require('../').hapi
 const lab = exports.lab = Lab.script()
 const token = require('../auth/token')
 
-const aux = token.getJWT('admin')
-const auxA = token.getJWT('john.doe')
-const auxB = token.getJWT('jane.doe')
-const auxC = token.getJWT('conor.mcgregor')
+const aux = token.createJwt('admin')
+const auxA = token.createJwt('john.doe')
+const auxB = token.createJwt('jane.doe')
+const auxC = token.createJwt('conor.mcgregor')
 
 const credentialsAdmin = {
   user: {
