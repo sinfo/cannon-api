@@ -23,7 +23,6 @@ server.pack.register(
     }
 
     server.auth.strategy('default', 'bearer-access-token', options.auth.default)
-    server.auth.strategy('backup', 'basic', options.auth.backup)
     server.auth.strategy('internal', 'basic', options.auth.internal)
 
     require('./resources')

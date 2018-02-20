@@ -6,7 +6,7 @@ exports = module.exports
 exports.create = {
   tags: ['api', 'achievement'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['admin']
   },
   validate: {
@@ -34,7 +34,7 @@ exports.create = {
 exports.update = {
   tags: ['api', 'achievement'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['admin']
   },
   validate: {
@@ -64,7 +64,7 @@ exports.update = {
 exports.get = {
   tags: ['api', 'achievement'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
@@ -88,7 +88,7 @@ exports.get = {
 exports.getUser = {
   tags: ['api', 'achievement'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
@@ -112,7 +112,7 @@ exports.getUser = {
 exports.list = {
   tags: ['api', 'achievement'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
@@ -136,7 +136,7 @@ exports.list = {
 exports.remove = {
   tags: ['api', 'achievement'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['admin']
   },
   validate: {

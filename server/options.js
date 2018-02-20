@@ -15,10 +15,6 @@ module.exports = {
       accessTokenName: 'access_token',
       validateFunc: auth.bearer
     },
-    backup: {
-      allowEmptyUsername: false,
-      validateFunc: auth.basic
-    },
     internal: {
       allowEmptyUsername: false,
       validateFunc: auth.internal

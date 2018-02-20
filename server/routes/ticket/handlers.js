@@ -7,7 +7,7 @@ exports = module.exports
 exports.registerTicket = {
   tags: ['api', 'ticket'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
@@ -32,7 +32,7 @@ exports.registerTicket = {
 exports.voidTicket = {
   tags: ['api', 'ticket'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
@@ -57,7 +57,7 @@ exports.voidTicket = {
 exports.confirmTicket = {
   tags: ['api', 'ticket'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
@@ -82,7 +82,7 @@ exports.confirmTicket = {
 exports.get = {
   tags: ['api', 'ticket'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
@@ -106,7 +106,7 @@ exports.get = {
 exports.list = {
   tags: ['api', 'ticket'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
@@ -129,7 +129,7 @@ exports.list = {
 exports.registerPresence = {
   tags: ['api', 'ticket'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['admin']
   },
   validate: {
@@ -153,7 +153,7 @@ exports.registerPresence = {
 exports.getUsers = {
   tags: ['api', 'ticket'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
@@ -178,7 +178,7 @@ exports.getUsers = {
 exports.getWaiting = {
   tags: ['api', 'ticket'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
@@ -203,7 +203,7 @@ exports.getWaiting = {
 exports.getConfirmed = {
   tags: ['api', 'ticket'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
@@ -228,7 +228,7 @@ exports.getConfirmed = {
 exports.getUserSessions = {
   tags: ['api', 'ticket'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },

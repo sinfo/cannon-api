@@ -68,7 +68,7 @@ exports.fenix = {
 exports.addFenix = {
   tags: ['api', 'auth'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
