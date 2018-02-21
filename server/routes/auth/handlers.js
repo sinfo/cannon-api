@@ -64,23 +64,3 @@ exports.fenix = {
   },
   description: 'Fenix login'
 }
-
-exports.addFenix = {
-  tags: ['api', 'auth'],
-  auth: {
-    strategies: ['default'],
-    scope: ['user', 'company', 'team', 'admin']
-  },
-  validate: {
-    payload: {
-      code: Joi.string().required().description('fenix code of the member')
-    }
-  },
-  pre: [
-    { method: 'auth.addFenix(auth.credentials.user, payload.code)', assign: 'member' }
-  ],
-  handler: function (request, reply) {
-    reply(render(request.pre.member))
-  },
-  description: 'Add fenix login'
-}

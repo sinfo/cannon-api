@@ -3,8 +3,6 @@ const server = require('../').hapi
 const config = require('../../config')
 const log = require('../helpers/logger')
 const async = require('async')
-const Hoek = require('hoek')
-const _ = require('underscore')
 const facebook = require('../helpers/facebook')
 const token = require('../auth/token')
 const Fenix = require('fenixedu')(config.fenix)
@@ -13,7 +11,6 @@ const google = require('../helpers/google')
 server.method('auth.facebook', facebookAuth, {})
 server.method('auth.fenix', fenixAuth, {})
 server.method('auth.google', googleAuth, {})
-server.method('auth.addFenix', addFenixAuth, {})
 
 // //////////////////////////
 // Fenix helper functions
@@ -78,35 +75,6 @@ function getFenixUser (fenixUser, cb) {
       mail: user.mail || fenixUser.email.main
     }
     authenticate(user.id, changedAttributes, cb)
-  })
-}
-
-function addFenixAccount (user, fenixUser, cb) {
-  server.methods.user.get({'fenix.id': fenixUser.auth.id}, (err, _user) => {
-    const changedAttributes = {}
-
-    if (err) {
-      if (!err.output || err.output.statusCode !== 404) {
-        log.error({err: err, fenix: fenixUser.auth.id}, '[fenix-login] error getting user')
-        return cb(err)
-      }
-
-      changedAttributes.fenix = fenixUser.auth
-
-      changedAttributes.mail = user.mail || fenixUser.email.main
-
-      log.debug({fenixUser: fenixUser.id}, '[fenix-login] got fenix user')
-
-      return updateUserAuth({id: user.id}, changedAttributes, cb)
-    }
-
-    if (_user.id === user.id) {
-      log.error({user: user.id}, '[fenix-login] user already added account')
-      return cb(Boom.conflict('Account alaready registered to this user'))
-    }
-
-    user.fenix = Hoek.applyToDefaults(_user.fenix, fenixUser.auth)
-    mergeAccount(user, _user, cb)
   })
 }
 
@@ -211,203 +179,6 @@ function fenixAuth (code, cb) {
     cb(null, result)
   })
 }
-
-// ////////////////////////////
-// Add account server methods
-// ////////////////////////////
-
-function addFenixAuth (user, code, cb) {
-  async.waterfall([
-    function debug (cbAsync) {
-      getFenixToken(code, cbAsync)
-    },
-
-    getFenixInfo,
-
-    function addAccount (fenixUser, cbAsync) {
-      addFenixAccount(user, fenixUser, cbAsync)
-    }
-
-  ], function done (err, result) {
-    if (err) {
-      log.error({err: err}, 'error adding fenix account')
-      return cb(err)
-    }
-    cb(null, result)
-  })
-}
-
-// ////////////////////////////////////////////
-// Helper functions to merge and update users
-// ////////////////////////////////////////////
-
-function updateUserAuth (filter, changedAttributes, cbAsync) {
-  // Update the details of the user with this new auth info
-  server.methods.user.update(filter, changedAttributes, (err, result) => {
-    if (err) {
-      log.error({err: err, user: filter, changedAttributes: changedAttributes}, '[login] error updating user')
-      return cbAsync(err)
-    }
-
-    log.debug({id: result.id}, '[login] updated user auth')
-
-    return cbAsync(null, result)
-  })
-}
-
-function mergeAccount (user, other, cb) {
-  const userId = user.id
-  const otherId = other.id
-
-  server.methods.user.remove(other.id, (err, result) => {
-    if (err) {
-      log.error({err: err, user: other.id}, '[merge-account] error removing dup account')
-      return cb(err)
-    }
-
-    log.debug('[merge-account] removed dup account')
-
-    async.parallel([
-      function updateFiles (cbAsync) {
-        async.parallel([
-          function getUser (cbFile) {
-            server.methods.file.get(userId, (err, result) => {
-              if (err) {
-                if (err.output && err.output.statusCode === 404) {
-                  log.warn({err: err.message, user: userId}, '[merge-account] user has no file')
-                  return cbFile()
-                }
-                log.error({err: err, user: userId, other: userId}, '[merge-account] error getting user file')
-              }
-              cbFile(err, result)
-            })
-          },
-          function getOther (cbFile) {
-            server.methods.file.get(otherId, (err, result) => {
-              if (err) {
-                if (err.output && err.output.statusCode === 404) {
-                  log.warn({err: err.message, user: otherId}, '[merge-account] other user has no file')
-                  return cbFile()
-                }
-                log.error({err: err, user: userId, other: otherId}, '[merge-account] error getting other user file')
-              }
-              cbFile(err, result)
-            })
-          }
-        ], function gotFiles (err, results) {
-          const userFile = results[0]
-          const otherFile = results[1]
-          let resultFile
-          let deleteFile
-          log.debug({results: results})
-          if (err) {
-            return cbAsync(err)
-          }
-
-          if (!userFile && !otherFile) {
-            return cbAsync()
-          }
-
-          if (!userFile || !otherFile) {
-            resultFile = userFile || otherFile
-            resultFile.user = user.id
-          } else {
-            if (userFile.updated > otherFile.updated) {
-              resultFile = userFile
-              deleteFile = otherFile
-            } else {
-              resultFile = otherFile
-              deleteFile = userFile
-            }
-            resultFile.user = user.id
-          }
-
-          async.parallel([
-            function deleteFile (cbFile) {
-              server.methods.file.delete(deleteFile.id, err => {
-                if (err) {
-                  log.warn({err: err, file: deleteFile.id}, '[merge-account] error deleting file')
-                }
-                cbFile()
-              })
-            },
-            function deleteFileDb (cbFile) {
-              server.methods.file.remove(deleteFile.id, (err, _file) => {
-                if (err) {
-                  log.error({err: err, file: deleteFile.id}, '[merge-account] error removing file from db')
-                  return cbFile(err)
-                }
-                cbFile(null, _file)
-              })
-            }
-          ], function updateFileDb (err, results) {
-            if (err) {
-              return cbAsync(err)
-            }
-
-            server.methods.file.update(resultFile.id, resultFile, (err, result) => {
-              if (err) {
-                log.error({err: err, file: resultFile.id}, '[merge-account] error updating file')
-                return cbAsync(err)
-              }
-              return cbAsync(null, result)
-            })
-          })
-        })
-      },
-
-      function updateTickets (cbAsync) {
-        const filter = {$and: [{users: otherId}, {users: {$nin: [userId]}}]}
-        const changedAttributes = {$set: {'users.$': userId}}
-        server.methods.ticket.updateMulti(filter, changedAttributes, (err, tickets) => {
-          if (err) {
-            if (err.output && err.output.statusCode === 404) {
-              log.warn({err: err.message, user: otherId}, '[merge-account] user had no tickets')
-              return cbAsync()
-            }
-            log.error({err: err, user: userId, other: otherId}, '[merge-account] error updating tickets')
-            return cbAsync(err)
-          }
-          cbAsync(null, tickets)
-        })
-      },
-
-      function updateAchievements (cbAsync) {
-        const filter = {$and: [{users: otherId}, {users: {$nin: [userId]}}]}
-        const changedAttributes = {$set: {'users.$': userId}}
-        server.methods.achievement.updateMulti(filter, changedAttributes, (err, achievements) => {
-          if (err) {
-            if (err.output && err.output.statusCode === 404) {
-              log.warn({err: err.message, user: otherId}, '[merge-account] user had no achievements')
-              return cbAsync()
-            }
-            log.error({err: err, user: userId, other: otherId}, '[merge-account] error updating achievements')
-            return cbAsync(err)
-          }
-          cbAsync(null, achievements)
-        })
-      }
-    ], function updateUser (err, results) {
-      if (err) return cb(err)
-      const filter = {id: user.id}
-      let changedAttributes = {}
-
-      changedAttributes = Hoek.applyToDefaults(other, user)
-      changedAttributes.skills = _.union(other.skills, user.skills)
-      server.methods.user.update(filter, changedAttributes, (err, user) => {
-        if (err) {
-          log.error({err: err, user: userId, other: otherId, update: changedAttributes}, '[merge-account] error updating user')
-          return cb(err)
-        }
-        cb(null, user)
-      })
-    })
-  })
-}
-
-// //////////////////////////////////////////
-// Update user with new session credentials
-// //////////////////////////////////////////
 
 function authenticate (userId, changedAttributes, cb) {
   const newToken = token.createJwt(userId)
