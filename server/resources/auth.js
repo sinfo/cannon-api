@@ -1,118 +1,14 @@
-const Boom = require('boom')
 const server = require('../').hapi
-const config = require('../../config')
+const Boom = require('boom')
 const log = require('../helpers/logger')
-const async = require('async')
-const facebook = require('../helpers/facebook')
 const token = require('../auth/token')
-const Fenix = require('fenixedu')(config.fenix)
+const facebook = require('../helpers/facebook')
 const google = require('../helpers/google')
+const fenix = require('../helpers/google')
 
 server.method('auth.facebook', facebookAuth, {})
 server.method('auth.fenix', fenixAuth, {})
 server.method('auth.google', googleAuth, {})
-
-// //////////////////////////
-// Fenix helper functions
-// //////////////////////////
-
-function getFenixToken (code, cb) {
-  Fenix.auth.getAccessToken(code, (err, response, body) => {
-    let auth
-
-    if (err || !body) {
-      log.error({err: err, response: response.statusCode, body: body}, '[fenix-login] error getting access token')
-      return cb(Boom.unauthorized(body))
-    }
-
-    auth = {
-      token: body.access_token, // jshint ignore:line
-      refreshToken: body.refresh_token, // jshint ignore:line
-      ttl: body.expires_in, // jshint ignore:line
-      created: Date.now()
-    }
-
-    cb(null, auth)
-  })
-}
-
-function getFenixInfo (auth, cb) {
-  Fenix.person.getPerson(auth.token, (err, fenixUser) => {
-    let user
-    const _auth = auth
-
-    if (err || !fenixUser) {
-      log.error({err: err, user: fenixUser}, '[fenix-login] error getting person')
-      return cb(Boom.unauthorized())
-    }
-
-    _auth.id = fenixUser.username
-    user = {
-      auth: _auth,
-      name: fenixUser.name,
-      email: {
-        main: fenixUser.email,
-        others: fenixUser.personalEmails.concat(fenixUser.workEmails)
-      }
-    }
-    cb(null, user)
-  })
-}
-
-function getFenixUser (fenixUser, cb) {
-  server.methods.user.get({'fenix.id': fenixUser.auth.id}, (err, user) => {
-    if (err) {
-      if (err.output && err.output.statusCode === 404) {
-        return fenixUserNotFound(fenixUser, cb)
-      }
-
-      log.error({err: err, fenix: fenixUser.auth.id}, '[fenix-login] error getting user')
-      return cb(err)
-    }
-
-    const changedAttributes = {
-      fenix: fenixUser.auth,
-      mail: user.mail || fenixUser.email.main
-    }
-    authenticate(user.id, changedAttributes, cb)
-  })
-}
-
-function fenixUserNotFound (fenixUser, cb) {
-  const changedAttributes = {}
-  const filter = {}
-
-  changedAttributes.fenix = fenixUser.auth
-
-  // If user does not exist, lets set the id, name and email
-  changedAttributes.$setOnInsert = {
-    id: Math.random().toString(36).substr(2, 20), // generate random id
-    name: fenixUser.name,
-    mail: fenixUser.email.main
-  }
-
-  fenixUser.email.others.push(fenixUser.email.main)
-
-  filter.mail = {$in: fenixUser.email.others}
-
-  log.debug({fenixUser: fenixUser.id}, '[fenix-login] got fenix user')
-
-  // Update the fenix details of the user with any this emails, ou create a new user if it does not exist
-  server.methods.user.update(filter, changedAttributes, {upsert: true}, (err, result) => {
-    if (err) {
-      log.error({query: filter, changedAttributes: changedAttributes}, '[fenix-login] error upserting user')
-      return cb(err)
-    }
-
-    log.debug({id: result.id}, '[fenix-login] upserted user')
-
-    return authenticate(result.id, null, cb)
-  })
-}
-
-// /////////////////////////////////
-// Third party login server methods
-// /////////////////////////////////
 
 function facebookAuth (id, token, cb) {
   // Check with Facebook if token is valid
@@ -124,8 +20,8 @@ function facebookAuth (id, token, cb) {
         // If user does not exist we create, otherwise we update existing user
         if (res.createUser) {
           return facebook.createUser(fbUser)
-          .then(userId => authenticate(userId, null, cb))
-          .catch(err => cb(Boom.unauthorized(err)))
+            .then(userId => authenticate(userId, null, cb))
+            .catch(err => cb(Boom.unauthorized(err)))
         }
 
         const changedAttributes = {
@@ -148,8 +44,8 @@ function googleAuth (id, token, cb) {
       // If user does not exist we create, otherwise we update existing user
       if (res.createUser) {
         return google.createUser(gUser)
-        .then(userId => authenticate(userId, null, cb))
-        .catch(err => cb(Boom.unauthorized(err)))
+          .then(userId => authenticate(userId, null, cb))
+          .catch(err => cb(Boom.unauthorized(err)))
       }
 
       const changedAttributes = {
@@ -164,19 +60,28 @@ function googleAuth (id, token, cb) {
 }
 
 function fenixAuth (code, cb) {
-  async.waterfall([
-    function debug (cbAsync) {
-      getFenixToken(code, cbAsync)
-    },
-    getFenixInfo,
-    getFenixUser
+  // Exchange the code given by the user by a token from Fenix
+  fenix.getToken(code).then(token => {
+    // Get user profile information from Fenix
+    fenix.getFenixUser(token).then(fenixUser => {
+      // Get user in cannon by Fenix User email
+      fenix.getUser(fenixUser).then(res => {
+        // If user does not exist we create, otherwise we update existing user
+        if (res.createUser) {
+          return google.createUser(fenixUser)
+            .then(userId => authenticate(userId, null, cb))
+            .catch(err => cb(Boom.unauthorized(err)))
+        }
 
-  ], function done (err, result) {
-    if (err) {
-      log.error({err: err}, '[fenix-login] error on fenix login')
-      return cb(err)
-    }
-    cb(null, result)
+        const changedAttributes = {
+          fenix: {
+            id: fenixUser.username
+          },
+          img: `https://fenix.tecnico.ulisboa.pt/user/photo/${fenixUser.username}`
+        }
+        return authenticate(res.userId, changedAttributes, cb)
+      })
+    })
   })
 }
 
@@ -184,12 +89,13 @@ function authenticate (userId, changedAttributes, cb) {
   const newToken = token.createJwt(userId)
   changedAttributes = changedAttributes || {}
 
-  server.methods.user.update({id: userId}, changedAttributes, (err, result) => {
+  server.methods.user.update({ id: userId }, changedAttributes, (err, result) => {
     if (err) {
       log.error({user: userId, changedAttributes: changedAttributes}, '[login] error updating user')
       return cb(err)
     }
-    log.info({user: userId}, '[login] user logged in ')
+    log.info({ userId }, '[login] user logged in')
+    // Finally resolves a new JWT token from Cannon that authenticates the user on the following requests
     return cb(null, newToken)
   })
 }
