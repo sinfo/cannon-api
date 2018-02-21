@@ -11,7 +11,6 @@ function createJwt (userId) {
     issuer: tokenConfig.issuer
   }
   const token = jwt.sign({ userId }, tokenConfig.privateKey, options)
-  log.debug(token, options)
   return { token }
 }
 
