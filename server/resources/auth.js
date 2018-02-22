@@ -168,7 +168,6 @@ function facebookAuth (id, token, cb) {
           img: fbUser.picture.data.url
         }
         return authenticate(res.userId, changedAttributes, cb)
-
       }).catch(err => cb(Boom.unauthorized(err)))
     }).catch(err => cb(Boom.unauthorized(err)))
   }).catch(err => cb(Boom.unauthorized(err)))
@@ -184,7 +183,7 @@ function googleAuth (id, token, cb) {
         return google.createUser(gUser)
         .then(userId => authenticate(userId, null, cb))
         .catch(err => cb(Boom.unauthorized(err)))
-      } 
+      }
 
       const changedAttributes = {
         google: {
@@ -193,7 +192,6 @@ function googleAuth (id, token, cb) {
         img: gUser.picture
       }
       return authenticate(res.userId, changedAttributes, cb)
-
     }).catch(err => cb(Boom.unauthorized(err)))
   }).catch(err => cb(Boom.unauthorized(err)))
 }

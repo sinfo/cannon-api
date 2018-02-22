@@ -56,7 +56,7 @@ const userD = {
 const credentialsAdmin = {
   user: {
     id: 'admin',
-    name: 'John Doe',
+    name: 'John Doe'
   },
   bearer: aux.token,
   scope: 'admin'
@@ -162,7 +162,7 @@ lab.experiment('Link', () => {
     const optionsB = {
       method: 'DELETE',
       url: '/users/' + userB.id,
-      credentials: credentialsAdmin,
+      credentials: credentialsAdmin
     }
     const optionsC = {
       method: 'DELETE',
@@ -226,8 +226,8 @@ lab.experiment('Link', () => {
 
   lab.test('Sign B as company I day I', (done) => {
     const sign = {
-      editionId: "25-SINFO",
-      day: "Monday"
+      editionId: '25-SINFO',
+      day: 'Monday'
     }
 
     const options = {
@@ -252,8 +252,8 @@ lab.experiment('Link', () => {
 
   lab.test('Sign B as company II day I', (done) => {
     const sign = {
-      editionId: "25-SINFO",
-      day: "Monday"
+      editionId: '25-SINFO',
+      day: 'Monday'
     }
 
     const options = {
@@ -278,8 +278,8 @@ lab.experiment('Link', () => {
 
   lab.test('Sign B as company I day II', (done) => {
     const sign = {
-      editionId: "25-SINFO",
-      day: "Thursday"
+      editionId: '25-SINFO',
+      day: 'Thursday'
     }
 
     const options = {
@@ -341,7 +341,7 @@ lab.experiment('Link', () => {
       method: 'PUT',
       url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
       credentials: credentialsA,
-      payload: {note: ""}
+      payload: {note: ''}
     }
 
     server.inject(options, (response) => {
@@ -353,7 +353,7 @@ lab.experiment('Link', () => {
       Code.expect(result.company).to.equal(userA.company[0].company)
       Code.expect(result.edition).to.equal(linkA.editionId)
       Code.expect(result.attendee).to.equal(linkA.attendeeId)
-      Code.expect(result.note).to.equal("")
+      Code.expect(result.note).to.equal('')
 
       done()
     })

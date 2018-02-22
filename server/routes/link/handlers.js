@@ -42,7 +42,7 @@ exports.update = {
       attendeeId: Joi.string().required().description('Id of the attendee')
     },
     query: {
-      editionId: Joi.string().required().description('Id of the edition'),
+      editionId: Joi.string().required().description('Id of the edition')
     },
     payload: {
       userId: Joi.string().description('Id of the user working for the company'),
