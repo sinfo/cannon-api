@@ -12,7 +12,7 @@ exports.create = {
   validate: {
     params: {
       companyId: Joi.string().required().description('Id of the company we are linking from'),
-      attendeeId: Joi.string().required().description('Id of the attendee'),
+      attendeeId: Joi.string().required().description('Id of the attendee')
     },
     payload: {
       editionId: Joi.string().required().description('Id of the edition'),

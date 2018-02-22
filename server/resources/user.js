@@ -54,7 +54,6 @@ function updatePoints (filter, points, cb) {
 }
 
 function updateMe (filter, user, opts, cb) {
-
   if (typeof opts === 'function') {
     cb = opts
     opts = {}
@@ -81,7 +80,7 @@ function update (filter, user, opts, cb) {
   }
 
   if (user && user.company) {
-    const user2 = Object.assign({}, user);
+    const user2 = Object.assign({}, user)
     user.$pull = { 'company': { 'edition': user.company.edition } }
     user2.$push = { 'company': user.company }
     delete user.company
@@ -90,8 +89,7 @@ function update (filter, user, opts, cb) {
     removeCompany(pushCompany)
 
     function removeCompany (done) {
-
-      User.findOneAndUpdate(filter, user, opts, function(err, _user) {
+      User.findOneAndUpdate(filter, user, opts, function (err, _user) {
         if (err && err.code !== 16837) {
           log.error({err: err, requestedUser: filter}, 'error pulling user.company')
           return cb(Boom.internal())
@@ -102,20 +100,18 @@ function update (filter, user, opts, cb) {
     }
 
     function pushCompany () {
-
       opts.new = true
 
-      User.findOneAndUpdate(filter, user2, opts, function(err, user){
+      User.findOneAndUpdate(filter, user2, opts, function (err, user) {
         if (err) {
           log.error({err: err, requestedUser: filter}, 'error pushing user.company')
           return cb(Boom.internal())
         }
 
-         return cb(null, user.toObject({ getters: true }))
+        return cb(null, user.toObject({ getters: true }))
       })
     }
   } else {
-
     User.findOneAndUpdate(filter, user, opts, (err, _user) => {
       if (err) {
         log.error({err: err, requestedUser: filter}, 'error updating user')
@@ -128,7 +124,6 @@ function update (filter, user, opts, cb) {
 
       cb(null, _user.toObject({ getters: true }))
     })
-
   }
 }
 
@@ -257,7 +252,7 @@ function remove (filter, cb) {
 }
 
 function sign (attendeeId, companyId, payload, cb) {
-  //todo verify
+  // todo verify
   const filter = {
     id: attendeeId,
     signatures: {
@@ -297,7 +292,7 @@ function sign (attendeeId, companyId, payload, cb) {
     cb(null, user.toObject({ getters: true }))
   })
 
-  function addNewDayEntry(filter, update, cb) {
+  function addNewDayEntry (filter, update, cb) {
     User.findOneAndUpdate(filter, update, (err, user) => {
       if (err) {
         log.error({err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId}, 'Error signing user')

@@ -298,7 +298,7 @@ lab.experiment('User', () => {
       method: 'PUT',
       url: '/users/me',
       credentials: credentialsC,
-      payload: {role: "user"}
+      payload: {role: 'user'}
     }
 
     server.inject(options, (response) => {
@@ -307,7 +307,7 @@ lab.experiment('User', () => {
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceOf(Object)
       Code.expect(result.id).to.equal(userA.id)
-      Code.expect(result.role).to.be.equal("user")
+      Code.expect(result.role).to.be.equal('user')
       done()
     })
   })
@@ -317,7 +317,7 @@ lab.experiment('User', () => {
       method: 'PUT',
       url: '/users/me',
       credentials: credentialsB,
-      payload: {role: "team"}
+      payload: {role: 'team'}
     }
 
     server.inject(options, (response) => {

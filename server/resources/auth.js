@@ -44,8 +44,8 @@ function googleAuth (id, token, cb) {
       // If user does not exist we create, otherwise we update existing user
       if (res.createUser) {
         return google.createUser(gUser)
-          .then(userId => authenticate(userId, null, cb))
-          .catch(err => cb(Boom.unauthorized(err)))
+        .then(userId => authenticate(userId, null, cb))
+        .catch(err => cb(Boom.unauthorized(err)))
       }
 
       const changedAttributes = {
