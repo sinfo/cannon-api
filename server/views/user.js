@@ -26,6 +26,11 @@ function renderObject (model, user) {
   result.area = model.area
   result.skills = model.skills
   result.registered = model.registered
+  result.signatures = model.signatures && model.signatures.map(signature => ({
+    edition: signature && signature.edition,
+    day: signature && signature.day,
+    signatures: signature && signature.signatures
+  }))
 
   if (isAdmin) {
     result.mail = model.mail
