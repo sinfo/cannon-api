@@ -46,7 +46,7 @@ exports.update = {
     },
     payload: {
       userId: Joi.string().description('Id of the user working for the company'),
-      note: Joi.string().description('Notes the user wants to keep on the attendee')
+      note: Joi.string().trim().allow('').description('Notes the user wants to keep on the attendee')
     }
   },
   pre: [

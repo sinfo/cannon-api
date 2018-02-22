@@ -171,6 +171,29 @@ lab.experiment('Link', () => {
     })
   })
 
+  lab.test('Update remove note as company', (done) => {
+    const options = {
+      method: 'PUT',
+      url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
+      credentials: credentialsA,
+      payload: {note: ""}
+    }
+
+    server.inject(options, (response) => {
+      const result = response.result
+
+      Code.expect(response.statusCode).to.equal(200)
+      Code.expect(result).to.be.instanceof(Object)
+      Code.expect(result.user).to.equal(linkA.userId)
+      Code.expect(result.company).to.equal(userA.company[0].company)
+      Code.expect(result.edition).to.equal(linkA.editionId)
+      Code.expect(result.attendee).to.equal(linkA.attendeeId)
+      Code.expect(result.note).to.equal("")
+
+      done()
+    })
+  })
+
   lab.test('Update as company', (done) => {
     const options = {
       method: 'PUT',
