@@ -1,5 +1,6 @@
 const Lab = require('lab')
 const Code = require('code')
+const async = require('async')
 
 const server = require('../').hapi
 
@@ -11,15 +12,6 @@ const auxA = token.createJwt('john.doe')
 const auxB = token.createJwt('jane.doe')
 const auxC = token.createJwt('conor.mcgregor')
 
-const credentialsAdmin = {
-  user: {
-    id: 'admin',
-    name: 'John Doe'
-  },
-  bearer: aux.token,
-  scope: 'admin'
-}
-
 const userA = {
   id: 'john.doe',
   name: 'John Doe',
@@ -29,6 +21,44 @@ const userA = {
     edition: '25-SINFO',
     company: 'SINFO'
   }]
+}
+
+const userB = {
+  id: 'jane.doe',
+  name: 'Jane Doe',
+  mail: 'jane@ufc.com',
+  role: 'user'
+}
+
+const userC = {
+  id: 'conor.mcgregor',
+  name: 'Conner Mcgregor',
+  mail: 'conor@ufc.com',
+  role: 'company',
+  company: [{
+    edition: '25-SINFO',
+    company: 'UFC'
+  }]
+}
+
+const userD = {
+  id: 'tuda.chavaile',
+  name: 'Tudarete Chavaile',
+  mail: 'tuda@chavaile.com',
+  role: 'company',
+  company: [{
+    edition: '25-SINFO',
+    company: 'Chavaile.Inc'
+  }]
+}
+
+const credentialsAdmin = {
+  user: {
+    id: 'admin',
+    name: 'John Doe',
+  },
+  bearer: aux.token,
+  scope: 'admin'
 }
 
 const credentialsA = {
@@ -46,20 +76,15 @@ const credentialsB = {
   scope: 'user'
 }
 
-const userC = {
-  id: 'conor.mcgregor',
-  name: 'Conner Mcgregor',
-  mail: 'conor@ufc.com',
-  role: 'company',
-  company: [{
-    edition: '25-SINFO',
-    company: 'UFC'
-  }]
-}
-
 const credentialsC = {
   user: userC,
   bearer: auxC.token,
+  scope: 'company'
+}
+
+const credentialsD = {
+  user: userD,
+  bearer: auxD.token,
   scope: 'company'
 }
 
@@ -86,12 +111,44 @@ lab.experiment('Link', () => {
       method: 'POST',
       url: '/users',
       credentials: credentialsAdmin,
+      payload: userB
+    }
+    const optionsC = {
+      method: 'POST',
+      url: '/users',
+      credentials: credentialsAdmin,
       payload: userC
     }
-    server.inject(optionsA, (response) => {
-      server.inject(optionsB, (response) => {
-        done()
-      })
+    const optionsD = {
+      method: 'POST',
+      url: '/users',
+      credentials: credentialsAdmin,
+      payload: userD
+    }
+
+    async.parallel([
+      (cb) => {
+        server.inject(optionsA, (response) => {
+          return cb()
+        })
+      },
+      (cb) => {
+        server.inject(optionsB, (response) => {
+          return cb()
+        })
+      },
+      (cb) => {
+        server.inject(optionsC, (response) => {
+          return cb()
+        })
+      },
+      (cb) => {
+        server.inject(optionsD, (response) => {
+          return cb()
+        })
+      }
+    ], (err, results) => {
+      done()
     })
   })
 
@@ -103,14 +160,43 @@ lab.experiment('Link', () => {
     }
     const optionsB = {
       method: 'DELETE',
+      url: '/users/' + userB.id,
+      credentials: credentialsAdmin,
+    }
+    const optionsC = {
+      method: 'DELETE',
       url: '/users/' + userC.id,
       credentials: credentialsAdmin
     }
+    const optionsD = {
+      method: 'DELETE',
+      url: '/users/' + userD.id,
+      credentials: credentialsAdmin
+    }
 
-    server.inject(optionsA, (response) => {
-      server.inject(optionsB, (response) => {
-        done()
-      })
+    async.parallel([
+      (cb) => {
+        server.inject(optionsA, (response) => {
+          return cb()
+        })
+      },
+      (cb) => {
+        server.inject(optionsB, (response) => {
+          return cb()
+        })
+      },
+      (cb) => {
+        server.inject(optionsC, (response) => {
+          return cb()
+        })
+      },
+      (cb) => {
+        server.inject(optionsD, (response) => {
+          return cb()
+        })
+      }
+    ], (err, results) => {
+      done()
     })
   })
 
@@ -132,6 +218,84 @@ lab.experiment('Link', () => {
       Code.expect(result.edition).to.equal(linkA.editionId)
       Code.expect(result.attendee).to.equal(linkA.attendeeId)
       Code.expect(result.note).to.equal(linkA.note)
+
+      done()
+    })
+  })
+
+  lab.test('Sign B as company I day I', (done) => {
+    const sign = {
+      editionId: "25-SINFO",
+      day: "Monday"
+    }
+
+    const options = {
+      method: 'POST',
+      url: `/company/${userA.company[0].company}/sign/${userB.id}`,
+      credentials: credentialsA,
+      payload: sign
+    }
+
+    server.inject(options, (response) => {
+      const result = response.result
+
+      Code.expect(response.statusCode).to.equal(200)
+      Code.expect(result).to.be.instanceof(Object)
+      Code.expect(result.signatures[0].edition).to.equal(sign.editionId)
+      Code.expect(result.signatures[0].day).to.equal(sign.day)
+      Code.expect(result.signatures[0].signatures).to.include(userA.company[0].company)
+
+      done()
+    })
+  })
+
+  lab.test('Sign B as company II day I', (done) => {
+    const sign = {
+      editionId: "25-SINFO",
+      day: "Monday"
+    }
+
+    const options = {
+      method: 'POST',
+      url: `/company/${userD.company[0].company}/sign/${userB.id}`,
+      credentials: credentialsD,
+      payload: sign
+    }
+
+    server.inject(options, (response) => {
+      const result = response.result
+
+      Code.expect(response.statusCode).to.equal(200)
+      Code.expect(result).to.be.instanceof(Object)
+      Code.expect(result.signatures[0].edition).to.equal(sign.editionId)
+      Code.expect(result.signatures[0].day).to.equal(sign.day)
+      Code.expect(result.signatures[0].signatures).to.include(userA.company[0].company)
+
+      done()
+    })
+  })
+
+  lab.test('Sign B as company I day II', (done) => {
+    const sign = {
+      editionId: "25-SINFO",
+      day: "Thursday"
+    }
+
+    const options = {
+      method: 'POST',
+      url: `/company/${userA.company[0].company}/sign/${userB.id}`,
+      credentials: credentialsA,
+      payload: sign
+    }
+
+    server.inject(options, (response) => {
+      const result = response.result
+
+      Code.expect(response.statusCode).to.equal(200)
+      Code.expect(result).to.be.instanceof(Object)
+      Code.expect(result.signatures[1].edition).to.equal(sign.editionId)
+      Code.expect(result.signatures[1].day).to.equal(sign.day)
+      Code.expect(result.signatures[1].signatures).to.include(userA.company[0].company)
 
       done()
     })

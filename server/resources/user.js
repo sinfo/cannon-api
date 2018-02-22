@@ -16,6 +16,7 @@ server.method('user.list', list, {})
 server.method('user.getMulti', getMulti, {})
 server.method('user.remove', remove, {})
 server.method('user.removeCompany', removeCompany, {})
+server.method('user.sign', sign, {})
 
 function create (user, cb) {
   user.id = user.id || Math.random().toString(36).substr(2, 20)
@@ -216,7 +217,7 @@ function removeCompany (filter, editionId, cb) {
     filter = { id: filter }
   }
 
-  const update = { 
+  const update = {
     $pull: {
       'company': { edition: editionId }
     }
@@ -253,4 +254,61 @@ function remove (filter, cb) {
 
     return cb(null, user)
   })
+}
+
+function sign (attendeeId, companyId, payload, cb) {
+  //todo verify
+  const filter = {
+    id: attendeeId,
+    signatures: {
+      $elemMatch: {
+        day: payload.day,
+        edition: payload.editionId
+      }
+    }
+  }
+
+  const update = {
+    $addToSet: {
+      'signatures.$.signatures': companyId
+    }
+  }
+
+  User.findOneAndUpdate(filter, update, (err, user) => {
+    if (err) {
+      log.error({err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId}, 'Error signing user')
+      return cb(Boom.internal())
+    }
+    if (!user) {
+      // day,event combination entry did not exist
+      return addNewDayEntry(
+        {id: filter.id},
+        {
+          $push: {
+            signatures: {
+              day: payload.day,
+              edition: payload.editionId,
+              signatures: [companyId]
+            }
+          }
+        }, cb)
+    }
+
+    cb(null, user.toObject({ getters: true }))
+  })
+
+  function addNewDayEntry(filter, update, cb) {
+    User.findOneAndUpdate(filter, update, (err, user) => {
+      if (err) {
+        log.error({err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId}, 'Error signing user')
+        return cb(Boom.internal())
+      }
+      if (!user) {
+        log.error({err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId}, 'Error signing user')
+        return cb(Boom.notFound())
+      }
+
+      return cb(null, user.toObject({ getters: true }))
+    })
+  }
 }

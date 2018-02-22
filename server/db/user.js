@@ -12,6 +12,11 @@ const schema = new mongoose.Schema({
     ttl: Number,
     date: Date
   }],
+  signatures: [{
+    day: String,
+    edition: String,
+    signatures: [String]
+  }],
   company: [{
     edition: String,
     company: String
