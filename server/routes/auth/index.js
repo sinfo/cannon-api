@@ -18,9 +18,3 @@ server.route({
   path: '/auth/fenix',
   config: handlers.fenix
 })
-
-server.route({
-  method: ['POST'],
-  path: '/auth/add/fenix',
-  config: handlers.addFenix
-})
