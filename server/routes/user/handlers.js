@@ -6,7 +6,7 @@ exports = module.exports
 exports.create = {
   tags: ['api', 'user'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['admin']
   },
   validate: {
@@ -72,7 +72,7 @@ exports.create = {
 exports.updateMe = {
   tags: ['api', 'user'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
@@ -103,7 +103,7 @@ exports.updateMe = {
 exports.update = {
   tags: ['api', 'user'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['team', 'admin']
   },
   validate: {
@@ -169,7 +169,7 @@ exports.update = {
 exports.get = {
   tags: ['api', 'user'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
@@ -190,7 +190,7 @@ exports.get = {
 exports.getMe = {
   tags: ['api', 'user'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin']
   },
   handler: function (request, reply) {
@@ -202,7 +202,7 @@ exports.getMe = {
 exports.list = {
   tags: ['api', 'user'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
@@ -226,7 +226,7 @@ exports.list = {
 exports.removeCompany = {
   tags: ['api', 'user'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['team', 'admin']
   },
   validate: {
@@ -249,7 +249,7 @@ exports.removeCompany = {
 exports.remove = {
   tags: ['api', 'user'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['admin']
   },
   validate: {
@@ -269,7 +269,7 @@ exports.remove = {
 exports.removeMe = {
   tags: ['api', 'user'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['user', 'company', 'team', 'admin']
   },
   pre: [

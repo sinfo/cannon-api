@@ -6,7 +6,7 @@ const async = require('async')
 const Hoek = require('hoek')
 const _ = require('underscore')
 const facebook = require('../helpers/facebook')
-const Token = require('../auth/token')
+const token = require('../auth/token')
 const Fenix = require('fenixedu')(config.fenix)
 const google = require('../helpers/google')
 
@@ -14,7 +14,6 @@ server.method('auth.facebook', facebookAuth, {})
 server.method('auth.fenix', fenixAuth, {})
 server.method('auth.google', googleAuth, {})
 server.method('auth.addFenix', addFenixAuth, {})
-server.method('auth.refreshToken', refreshToken, {})
 
 // //////////////////////////
 // Fenix helper functions
@@ -411,9 +410,8 @@ function mergeAccount (user, other, cb) {
 // //////////////////////////////////////////
 
 function authenticate (userId, changedAttributes, cb) {
-  const newToken = Token.getJWT(userId)
+  const newToken = token.createJwt(userId)
   changedAttributes = changedAttributes || {}
-  changedAttributes.$push = { bearer: newToken }
 
   server.methods.user.update({id: userId}, changedAttributes, (err, result) => {
     if (err) {
@@ -422,29 +420,5 @@ function authenticate (userId, changedAttributes, cb) {
     }
     log.info({user: userId}, '[login] user logged in ')
     return cb(null, newToken)
-  })
-}
-
-// ///////////////////////////
-// Refresh session method
-// ///////////////////////////
-
-function refreshToken (user, token, refresh, cb) {
-  Token.verifyToken(user, refresh, true, (err, decoded) => {
-    if (err) {
-      return cb(err)
-    }
-
-    const newToken = Token.getJWT(user)
-    const filter = {id: user, bearer: {$elemMatch: {refreshToken: refresh, token: token}}}
-    const update = {$set: {'bearer.$': newToken}}
-
-    server.methods.user.update(filter, update, (err, result) => {
-      if (err) {
-        log.error({user: user}, '[login] error updating user')
-        return cb(Boom.unauthorized())
-      }
-      return cb(err, newToken)
-    })
   })
 }

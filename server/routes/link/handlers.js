@@ -6,7 +6,7 @@ exports = module.exports
 exports.create = {
   tags: ['api', 'link'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['company', 'team', 'admin']
   },
   validate: {
@@ -33,7 +33,7 @@ exports.create = {
 exports.update = {
   tags: ['api', 'link'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['company', 'team', 'admin']
   },
   validate: {
@@ -62,7 +62,7 @@ exports.update = {
 exports.get = {
   tags: ['api', 'link'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['company', 'team', 'admin']
   },
   validate: {
@@ -87,7 +87,7 @@ exports.get = {
 exports.list = {
   tags: ['api', 'link'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['company', 'team', 'admin']
   },
   validate: {
@@ -115,7 +115,7 @@ exports.list = {
 exports.remove = {
   tags: ['api', 'link'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['company', 'team', 'admin']
   },
   validate: {

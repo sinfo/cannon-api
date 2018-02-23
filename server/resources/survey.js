@@ -1,4 +1,5 @@
 const Boom = require('boom')
+const path = require('path')
 const server = require('../').hapi
 const log = require('../helpers/logger')
 const Survey = require('../db/survey')
@@ -57,7 +58,7 @@ function sendMail (redeemCodes, users, session, cb) {
     'recipient-variables': recipientVars
   }
 
-  fs.readFile(__dirname + '/../helpers/surveyEmail.html', 'utf8', (err, surveyTemplateSource) => {
+  fs.readFile(path.join(__dirname, '/../helpers/surveyEmail.html'), 'utf8', (err, surveyTemplateSource) => {
     if (err) {
       log.error({ err }, 'Error reading email template. Mails not sent')
       return cb(Boom.internal())

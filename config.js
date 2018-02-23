@@ -77,21 +77,15 @@ config.auth.paths.refreshKeys = {
 }
 
 config.auth.token = {
-  ttl: process.env.CANNON_TOKEN_EXPIRATION || 120, // in minutes
+  /**
+   * expiresIn: expressed in seconds or a string describing a time span
+   * using: zeit/ms https://github.com/zeit/ms
+   */
+  expiresIn: process.env.CANNON_TOKEN_EXPIRATION || '7d',
   privateKey: fs.readFileSync(config.auth.paths.tokenKeys.priv),
   publicKey: fs.readFileSync(config.auth.paths.tokenKeys.pub),
   algorithm: process.env.CANNON_TOKEN_ALGORITHM || 'RS256',
-  issuer: process.env.CANNON_TOKEN_ISSUER || 'cannon_masters',
-  audience: process.env.CANNON_TOKEN_AUDIENCE || 'audience'
-}
-
-config.auth.refreshToken = {
-  ttl: process.env.CANNON_REFRESH_TOKEN_EXPIRATION || 43200, // in minutes
-  privateKey: fs.readFileSync(config.auth.paths.refreshKeys.priv),
-  publicKey: fs.readFileSync(config.auth.paths.refreshKeys.pub),
-  algorithm: process.env.CANNON_REFRESH_TOKEN_ALGORITHM || config.auth.token.algorithm,
-  issuer: process.env.CANNON_REFRESH_TOKEN_ISSUER || config.auth.token.issuer,
-  audience: process.env.CANNON_REFRESH_TOKEN_AUDIENCE || config.auth.token.audience
+  issuer: process.env.CANNON_TOKEN_ISSUER || 'cannon'
 }
 
 config.auth.internal = {

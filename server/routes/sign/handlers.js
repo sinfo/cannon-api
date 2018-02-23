@@ -6,7 +6,7 @@ exports = module.exports
 exports.create = {
   tags: ['api', 'sign'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['company']
   },
   validate: {
