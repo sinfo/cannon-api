@@ -226,7 +226,7 @@ exports.list = {
 exports.removeCompany = {
   tags: ['api', 'user'],
   auth: {
-    strategies: ['default', 'backup'],
+    strategies: ['default'],
     scope: ['team', 'admin']
   },
   validate: {
