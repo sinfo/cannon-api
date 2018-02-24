@@ -4,7 +4,7 @@ const log = require('../helpers/logger')
 const token = require('../auth/token')
 const facebook = require('../helpers/facebook')
 const google = require('../helpers/google')
-const fenix = require('../helpers/google')
+const fenix = require('../helpers/fenix')
 
 server.method('auth.facebook', facebookAuth, {})
 server.method('auth.fenix', fenixAuth, {})
@@ -80,9 +80,9 @@ function fenixAuth (code, cb) {
           img: `https://fenix.tecnico.ulisboa.pt/user/photo/${fenixUser.username}`
         }
         return authenticate(res.userId, changedAttributes, cb)
-      })
-    })
-  })
+      }).catch(err => cb(Boom.unauthorized(err)))
+    }).catch(err => cb(Boom.unauthorized(err)))
+  }).catch(err => cb(Boom.unauthorized(err)))
 }
 
 function authenticate (userId, changedAttributes, cb) {
