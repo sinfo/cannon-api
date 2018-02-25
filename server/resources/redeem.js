@@ -33,7 +33,7 @@ function get (id, cb) {
     }
     if (!redeem) {
       log.error({err: 'not found', redeem: id}, 'error getting redeem')
-      return cb(Boom.notFound())
+      return cb(Boom.notFound('redeem code not found'))
     }
 
     cb(null, redeem.toObject({ getters: true }))

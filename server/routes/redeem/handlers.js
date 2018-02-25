@@ -27,7 +27,7 @@ exports.create = {
   description: 'Creates a new Redeem Code.'
 }
 
-exports.get = {
+exports.redeem = {
   tags: ['api', 'redeem'],
   auth: {
     strategies: ['default'],
@@ -53,7 +53,27 @@ exports.get = {
       achievement: renderAchievement(request.pre.achievement)
     })
   },
-  description: 'Gets a redeem code'
+  description: 'Redeem a code'
+}
+
+exports.get = {
+  tags: ['api', 'redeem'],
+  auth: {
+    strategies: ['default'],
+    scope: ['user', 'company', 'team', 'admin']
+  },
+  validate: {
+    params: {
+      id: Joi.string().required().description('Id of the redeem code')
+    }
+  },
+  pre: [
+    { method: 'redeem.get(params.id)', assign: 'redeem' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.redeem))
+  },
+  description: 'Get information about the redeem a code'
 }
 
 exports.remove = {
