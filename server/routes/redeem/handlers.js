@@ -27,7 +27,7 @@ exports.create = {
   description: 'Creates a new Redeem Code.'
 }
 
-exports.redeem = {
+exports.get = {
   tags: ['api', 'redeem'],
   auth: {
     strategies: ['default'],
@@ -53,7 +53,7 @@ exports.redeem = {
       achievement: renderAchievement(request.pre.achievement)
     })
   },
-  description: 'Redeem a code'
+  description: 'Gets a redeem code'
 }
 
 exports.remove = {

@@ -2,9 +2,9 @@ const server = require('../../').hapi
 const handlers = require('./handlers')
 
 server.route({
-  method: 'POST',
+  method: 'GET',
   path: '/redeem/{id}',
-  config: handlers.redeem
+  config: handlers.get
 })
 
 server.route({
