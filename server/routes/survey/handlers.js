@@ -24,10 +24,7 @@ exports.submit = {
     { method: 'redeem.remove(params.redeemCode)' }
   ],
   handler: function (request, reply) {
-    reply({
-      success: true,
-      achievement: renderAchievement(request.pre.achievement)
-    })
+    reply(renderAchievement(request.pre.achievement))
   },
   description: 'Submit a survey'
 }

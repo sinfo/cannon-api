@@ -8,12 +8,6 @@ server.route({
 })
 
 server.route({
-  method: 'GET',
-  path: '/redeem/{id}',
-  config: handlers.get
-})
-
-server.route({
   method: 'POST',
   path: '/redeem',
   config: handlers.create
