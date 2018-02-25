@@ -43,7 +43,7 @@ function send (mailOptions, cb) {
         log.error({ err }, 'error sending email')
         return cb(err)
       }
-      log.info(body, 'email sent')
+      log.info('email sent to', mailOptions.name)
       cb(body)
     })
   })
