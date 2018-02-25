@@ -60,7 +60,7 @@ function sendMail (redeemCodes, users, session, cb) {
 
   fs.readFile(path.join(__dirname, '/../helpers/surveyEmail.html'), 'utf8', (err, surveyTemplateSource) => {
     if (err) {
-      log.error({ err }, 'Error reading email template. Mails not sent')
+      log.error({ err }, 'Error reading email template. Mail not sent')
       return cb(Boom.internal())
     }
 
