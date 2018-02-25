@@ -114,7 +114,7 @@ lab.experiment('Redeem', () => {
 
   lab.test('Get one as an user', (done) => {
     const options = {
-      method: 'GET',
+      method: 'POST',
       url: '/redeem/' + redeemA.id,
       credentials: credentialsB
     }
