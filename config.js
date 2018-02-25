@@ -9,7 +9,7 @@ const config = {
 }
 
 config.webapp = {
-  url: process.env.CANNON_WEBAPP_URL || 'https://app.sinfo.org'
+  url: process.env.CANNON_WEBAPP_URL || 'https://sinfo.org'
 }
 
 config.deck = {
