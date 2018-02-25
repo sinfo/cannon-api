@@ -1,41 +1,50 @@
 const config = require('../../config')
+const Boom = require('boom')
 const server = require('../').hapi
 const log = require('../helpers/logger')
-const nodemailer = require('nodemailer')
-const sendmailTransport = require('nodemailer-sendmail-transport')
-
-const options = {
-  path: config.email.path
-}
-
-const transporter = nodemailer.createTransport(sendmailTransport(options))
+const path = require('path')
+const Handlebars = require('handlebars')
+const fs = require('fs')
+const mailgun = require('mailgun-js')(
+  {
+    apiKey: config.mailgun.apiKey,
+    domain: config.mailgun.domain
+  }
+)
 
 server.method('email.send', send, {})
 
 function send (mailOptions, cb) {
-  log.debug({mailOptions: mailOptions}, 'sending email')
+  log.debug({ mailOptions }, 'sending email')
 
-  mailOptions.from = mailOptions.from || config.email.from
-  mailOptions.replyTo = mailOptions.replyTo || config.email.replyTo
-  mailOptions.text = formatText(mailOptions.text)
+  let data = {
+    from: config.email.from,
+    to: mailOptions.to,
+    subject: mailOptions.subject
+  }
 
-  transporter.sendMail(mailOptions, (err, info) => {
+  fs.readFile(path.join(__dirname, '/../helpers/ticketEmail.html'), 'utf8', (err, ticketTemplateSource) => {
     if (err) {
-      log.error({mailOptions: mailOptions, info: info}, 'error sending email')
-      return cb && cb()
+      log.error({ err }, 'Error reading email template. Mails not sent')
+      return cb(Boom.internal())
     }
 
-    log.debug({mailOptions: mailOptions, info: info}, 'sending email')
+    const surveyTemplate = Handlebars.compile(ticketTemplateSource)
+    const context = {
+      name: mailOptions.name,
+      workshopsUrl: `${config.webapp.url}/myworkshops`,
+      body: mailOptions.body
+    }
+    const surveyHtml = surveyTemplate(context)
+    data.html = surveyHtml
 
-    cb && cb()
+    mailgun.messages().send(data, (err, body) => {
+      if (err) {
+        log.error({ err }, 'error sending email')
+        return cb(err)
+      }
+      log.info(body, 'email sent')
+      cb(body)
+    })
   })
-}
-
-function formatText (text) {
-  const header = 'BOOOMMM!!\n\n'
-  const footer = '\n\nSuch <3,\n\n' +
-                '\xA0\xA0\xA0_||SINFOOOOOOO\n' +
-                '_|   |__\n' +
-                '\\oooooo/'
-  return header + text + footer
 }

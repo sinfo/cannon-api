@@ -60,7 +60,7 @@ function userRegistered (sessionId, userId, cb) {
 }
 
 function addUser (sessionId, userId, session, cb) {
-  log.debug({session: session}, 'got session')
+  log.debug({ userId, sessionName: session.name }, 'got session')
 
   const changes = {
     $addToSet: {
@@ -366,32 +366,38 @@ function registrationEmail (ticket, session, user, cb) {
 function getWaitingListEmail (session, user) {
   return {
     to: user.mail,
-    subject: '[SINFO] Waiting list for ' + session.name,
-
-    text: 'You are in the waiting list for the session ' + session.name + '\n - ' + config.webapp.url + '/events/' + session.event + '/sessions/' + session.id + '\nIf there is an opening you will receive an email.'
+    name: user.name,
+    subject: 'Waiting list for ' + session.name,
+    body: `<h3>You are in the waiting list for the session <a href="${config.webapp.url}/sessions/${session.id}">${session.name}</a></h3>
+    <h2>If there is an opening you will receive an email.</h2>`
   }
 }
 
 function getResgisteredListEmail (session, user) {
   return {
     to: user.mail,
-    subject: '[SINFO] Registered for the session ' + session.name,
-    text: 'You have just been registered for the session ' + session.name + '\n - ' + config.webapp.url + '/events/' + session.event + '/sessions/' + session.id + '\nYou will need to confirm your presence on the day of the session.'
+    name: user.name,
+    subject: 'Registered for the session ' + session.name,
+    body: `<h3>You have just been registered for the session <a href="${config.webapp.url}/sessions/${session.id}">${session.name}</a></h3>
+    <h2>You will need to confirm your presence on the day of the session.</h2>`
   }
 }
 
 function getRegistrationAcceptedEmail (session, user) {
   return {
     to: user.mail,
-    subject: '[SINFO] In the registration list for ' + session.name,
-    text: 'Due to a cancelation you just got registered for the session ' + session.name + '\n - ' + config.webapp.url + '/events/' + session.event + '/sessions/' + session.id + '\nYou will need to confirm your presence on the day of the session.'
+    name: user.name,
+    subject: 'In the registration list for ' + session.name,
+    body: `<h3>Due to a cancelation you just got registered for the session <a href="${config.webapp.url}/sessions/${session.id}">${session.name}</a></h3>
+    <h2>You will need to confirm your presence on the day of the session.</h2>`
   }
 }
 
 function getConfirmationEmail (session, user) {
   return {
     to: user.mail,
-    subject: '[SINFO] You are confirmed for ' + session.name,
-    text: 'You are now confirmed for ' + session.name + '\n - ' + config.webapp.url + '/events/' + session.event + '/sessions/' + session.id + '\n\n'
+    name: user.name,
+    subject: 'You are confirmed for ' + session.name,
+    body: `<h3>You are now confirmed for <a href="${config.webapp.url}/sessions/${session.id}">${session.name}</a></h3>`
   }
 }
