@@ -28,7 +28,7 @@ function facebookAuth (id, token, cb) {
           facebook: {
             id: fbUser.id
           },
-          img: fbUser.picture.data.url
+          img: fbUser.picture
         }
         return authenticate(res.userId, changedAttributes, cb)
       }).catch(err => cb(Boom.unauthorized(err)))

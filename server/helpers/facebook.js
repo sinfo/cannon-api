@@ -3,11 +3,12 @@ const server = require('../').hapi
 const log = require('./logger')
 const facebookConfig = require('../../config').facebook
 
+const FB_API_URL = 'https://graph.facebook.com'
 const facebook = {}
 
 facebook.verifyToken = (facebookUserId, facebookUserToken) => {
   return new Promise((resolve, reject) => {
-    const url = `https://graph.facebook.com/debug_token?input_token=${facebookUserToken}&access_token=${facebookConfig.clientId}|${facebookConfig.clientSecret}`
+    const url = `${FB_API_URL}/debug_token?input_token=${facebookUserToken}&access_token=${facebookConfig.clientId}|${facebookConfig.clientSecret}`
 
     request.get(url, { json: true }, (error, response, result) => {
       if (error || response.statusCode !== 200) {
@@ -37,15 +38,23 @@ facebook.verifyToken = (facebookUserId, facebookUserToken) => {
 
 facebook.getFacebookUser = facebookUserToken => {
   return new Promise((resolve, reject) => {
-    const url = `https://graph.facebook.com/me?fields=id,name,email,picture&access_token=${facebookUserToken}`
+    const urlProfile = `${FB_API_URL}/me?fields=id,name,email&access_token=${facebookUserToken}`
+    const urlPicture = `${FB_API_URL}/me/picture?height=300&width=300&redirect=0&access_token=${facebookUserToken}`
 
-    request.get(url, { json: true }, (error, response, fbUser) => {
+    request.get(urlProfile, { json: true }, (error, response, fbUser) => {
       if (error || response.statusCode !== 200) {
         log.warn({ error, response: response.statusMessage })
         return reject('error getting facebook user profile')
       }
 
-      return resolve(fbUser)
+      request.get(urlPicture, { json: true }, (error, response, picture) => {
+        if (error || response.statusCode !== 200) {
+          log.warn({ error, response: response.statusMessage })
+          return reject('error getting facebook user picture')
+        }
+        fbUser.picture = picture.data.url
+        return resolve(fbUser)
+      })
     })
   })
 }
@@ -56,7 +65,7 @@ facebook.getFacebookUser = facebookUserToken => {
  * @param {string} fbUser.id User Id
  * @param {string} fbUser.email
  * @param {string} fbUser.name
- * @param {string} fbUser.picture.data.url Profile image
+ * @param {string} fbUser.picture Profile image
  */
 facebook.getUser = fbUser => {
   return new Promise((resolve, reject) => {
@@ -85,7 +94,7 @@ facebook.createUser = fbUser => {
       },
       name: fbUser.name,
       mail: fbUser.email,
-      img: fbUser.picture.data.url
+      img: fbUser.picture
     }
 
     log.debug('[facebook-login] creating user', user)
