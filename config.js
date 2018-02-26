@@ -100,8 +100,8 @@ config.email = {
 }
 
 config.mailgun = {
-  apiKey: process.env.MAILGUN_APIKEY || 'YOUR API KEY',
-  domain: process.env.MAILGUN_DOMAIN || 'sinfo.org'
+  apiKey: process.env.CANNON_MAILGUN_APIKEY || 'YOUR API KEY',
+  domain: process.env.CANNON_MAILGUN_DOMAIN || 'sinfo.org'
 }
 
 if (process.env.NODE_ENV === 'test') {

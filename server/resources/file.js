@@ -148,6 +148,7 @@ function remove (id, cb) {
 }
 
 function uploadCV (data, cb) {
+  console.log(data)
   return upload('cv', data, cb)
 }
 
