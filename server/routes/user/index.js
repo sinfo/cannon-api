@@ -38,6 +38,12 @@ server.route({
 })
 
 server.route({
+  method: 'POST',
+  path: '/users/users',
+  config: handlers.getMulti
+})
+
+server.route({
   method: 'DELETE',
   path: '/users/{id}/company',
   config: handlers.removeCompany

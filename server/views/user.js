@@ -32,7 +32,7 @@ function renderObject (model, user) {
     signatures: signature && signature.signatures
   }))
 
-  if (isAdmin) {
+  if (isAdmin || isTeam) {
     result.mail = model.mail
     result.facebook = model.facebook && {
       id: model.facebook && model.facebook.id
@@ -50,8 +50,6 @@ function renderObject (model, user) {
       start: model.job && model.job.start
     }
     result.updated = model.updated
-  }
-  if (isTeam) {
     result.company = model.company && model.company.map(participation => ({
       edition: participation && participation.edition,
       company: participation && participation.company

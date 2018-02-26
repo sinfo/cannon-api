@@ -187,6 +187,27 @@ exports.get = {
   description: 'Gets an user'
 }
 
+exports.getMulti = {
+  tags: ['api', 'user'],
+  auth: {
+    strategies: ['default'],
+    scope: ['user', 'company', 'team', 'admin'],
+    mode: 'try'
+  },
+  validate: {
+    payload: {
+      users: Joi.array().required().description('An array of users IDs')
+    }
+  },
+  pre: [
+    { method: 'user.getMulti(payload.users)', assign: 'users' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.users, request.auth.credentials && request.auth.credentials.user))
+  },
+  description: 'Gets an array of users'
+}
+
 exports.getMe = {
   tags: ['api', 'user'],
   auth: {
