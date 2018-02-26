@@ -27,7 +27,7 @@ API.session.list({event: EVENT}, (err, sessions) => {
       'id': 'session-' + session.id,
       'session': session.id,
       'value': achievementValue,
-      'img': `http://static.sinfo.org/SINFO_25/achievements/${session.kind.toLowerCase()}/session-${session.id}.png`
+      'img': `http://static.sinfo.org/SINFO_25/achievements/${session.kind.toLowerCase()}/${session.id}.png`
     }
 
     // log.debug({sessionAchievement: sessionAchievement}, 'creating achievement');
