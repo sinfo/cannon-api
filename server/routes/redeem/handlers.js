@@ -15,11 +15,12 @@ exports.create = {
       id: Joi.string().required().description('Redeem Code id.'),
       achievement: Joi.string().required().description('Achievement you want to redeem.'),
       // entries: Joi.number().required().description('Number of entries this code can be applied to.'),
-      expires: Joi.date().description('Date of redeem code expiration.')
+      expires: Joi.date().description('Date of redeem code expiration.'),
+      user: Joi.string().required().description('User id.')
     }
   },
   pre: [
-    { method: 'redeem.create(payload)', assign: 'redeem' }
+    { method: 'redeem.create(payload, auth.credentials.user.id)', assign: 'redeem' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.redeem)).created('/redeem/' + request.pre.redeem.id)
@@ -54,6 +55,21 @@ exports.get = {
     })
   },
   description: 'Gets a redeem code'
+}
+
+exports.getMe = {
+  tags: ['api', 'redeem'],
+  auth: {
+    strategies: ['default'],
+    scope: ['user', 'company', 'team', 'admin']
+  },
+  pre: [
+    { method: 'redeem.getMe(auth.credentials.user.id)', assign: 'redeemCodes' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.redeemCodes))
+  },
+  description: 'Gets all my redeem codes'
 }
 
 exports.remove = {

@@ -18,7 +18,7 @@ config.deck = {
 
 config.upload = {
   path: process.env.CANNON_UPLOAD_PATH || join(__dirname, '/cannon_uploads'),
-  maxSize: process.env.CANNON_UPLOAD_MAX_SIZE || 1000 * 1000
+  maxSize: process.env.CANNON_UPLOAD_MAX_SIZE || 1048576 * 10 // 10 MB
 }
 
 config.mongo = {
