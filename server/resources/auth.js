@@ -105,7 +105,7 @@ function linkedInAuth (code, cb) {
         }
 
         const changedAttributes = {
-          linkedin: {
+          linkedIn: {
             id: linkedinUser.id
           },
           name: `${linkedinUser.firstName} ${linkedinUser.lastName}`,
