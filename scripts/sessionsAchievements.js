@@ -9,16 +9,16 @@ API.session.list({event: EVENT}, (err, sessions) => {
 
   async.each(sessions, (session, cb) => {
     let achievementValue = 0
-    switch(session.kind) {
-      case "Keynote":
+    switch (session.kind) {
+      case 'Keynote':
         achievementValue = 10
-      break;
-      case "Workshop":
+        break
+      case 'Workshop':
         achievementValue = 20
-      break;
-      case "Presentation":
+        break
+      case 'Presentation':
         achievementValue = 30
-      break;
+        break
       default:
         achievementValue = 10
     }

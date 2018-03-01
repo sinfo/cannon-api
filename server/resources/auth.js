@@ -28,6 +28,7 @@ function facebookAuth (id, token, cb) {
           facebook: {
             id: fbUser.id
           },
+          name: fbUser.name,
           img: fbUser.picture
         }
         return authenticate(res.userId, changedAttributes, cb)
@@ -52,6 +53,7 @@ function googleAuth (id, token, cb) {
         google: {
           id: gUser.sub
         },
+        name: gUser.name,
         img: gUser.picture
       }
       return authenticate(res.userId, changedAttributes, cb)
@@ -77,6 +79,7 @@ function fenixAuth (code, cb) {
           fenix: {
             id: fenixUser.username
           },
+          name: fenixUser.name,
           img: `https://fenix.tecnico.ulisboa.pt/user/photo/${fenixUser.username}`
         }
         return authenticate(res.userId, changedAttributes, cb)
@@ -87,7 +90,7 @@ function fenixAuth (code, cb) {
 
 function authenticate (userId, changedAttributes, cb) {
   const newToken = token.createJwt(userId)
-  changedAttributes = changedAttributes || {}
+  changedAttributes = {$set: changedAttributes} || {}
 
   server.methods.user.update({ id: userId }, changedAttributes, (err, result) => {
     if (err) {
