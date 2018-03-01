@@ -39,7 +39,7 @@ config.google = {
 config.linkedIn = {
   clientId: process.env.CANNON_LINKEDIN_CLIENT_ID || 'YOUR CLIENT ID',
   clientSecret: process.env.CANNON_LINKEDIN_CLIENT_SECRET || 'YOUR CLIENT SECRET',
-  redirectUri: process.env.CANNON_LINKEDIN_REDIRECT_URI || 'http://localhost:4200/login'
+  redirectUri: process.env.CANNON_LINKEDIN_REDIRECT_URI || 'http://localhost:4200/login/linkedIn'
 }
 
 config.fenix = {

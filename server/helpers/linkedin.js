@@ -1,7 +1,7 @@
 const server = require('../').hapi
 const request = require('request')
 const log = require('./logger')
-const linkedinConfig = require('../../config').linkedin
+const linkedinConfig = require('../../config').linkedIn
 
 const LI_API_URL = 'https://www.linkedin.com/oauth/v2'
 const linkedin = {}
@@ -12,10 +12,9 @@ linkedin.getToken = code => {
 
     request.post(url, { json: true }, (error, response, result) => {
       if (error || response.statusCode !== 200) {
-        log.warn({ error, linkedinConfig, response: response.statusMessage })
+        log.warn({ error, response: response.statusMessage })
         return reject('invalid LinkedIn token')
       }
-      console.log(result)
       return resolve(result.access_token)
     })
   })
@@ -35,7 +34,6 @@ linkedin.getLinkedinUser = linkedinUserToken => {
         log.warn({ error, response: response.statusMessage })
         return reject('error getting linkedIn user profile')
       }
-      console.log(linkedinUser)
       return resolve(linkedinUser)
     })
   })
@@ -58,11 +56,9 @@ linkedin.getUser = linkedinUser => {
         if (err.output && err.output.statusCode === 404) {
           return resolve({ createUser: true, linkedinUser })
         }
-
         log.error({ err: err, linkedinUser }, '[linkedin-login] error getting user by linkedin email')
         return reject(err)
       }
-
       // A user exist with a given linkedin email, we only need to update 'linkedin.id' and 'img' in DB
       return resolve({ createUser: false, userId: user.id })
     })
