@@ -15,7 +15,8 @@ exports.create = {
       id: Joi.string().required().description('Redeem Code id.'),
       achievement: Joi.string().required().description('Achievement you want to redeem.'),
       // entries: Joi.number().required().description('Number of entries this code can be applied to.'),
-      expires: Joi.date().description('Date of redeem code expiration.')
+      expires: Joi.date().description('Date of redeem code expiration.'),
+      user: Joi.string().required().description('User id.')
     }
   },
   pre: [
@@ -45,7 +46,7 @@ exports.get = {
     { method: 'session.surveyNotNeeded(pre.session)' },
     { method: 'achievement.addUser(pre.redeem.achievement, auth.credentials.user.id)', assign: 'achievement' },
     { method: 'user.updatePoints(auth.credentials.user.id, pre.achievement.value)' },
-    { method: 'redeem.remove(params.id)' }
+    { method: 'redeem.remove(params.id, auth.credentials.user.id, pre.achievement)' }
   ],
   handler: function (request, reply) {
     reply({
@@ -54,6 +55,21 @@ exports.get = {
     })
   },
   description: 'Gets a redeem code'
+}
+
+exports.getMe = {
+  tags: ['api', 'redeem'],
+  auth: {
+    strategies: ['default'],
+    scope: ['user', 'company', 'team', 'admin']
+  },
+  pre: [
+    { method: 'redeem.getMe(auth.credentials.user.id)', assign: 'redeemCodes' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.redeemCodes))
+  },
+  description: 'Gets all my redeem codes'
 }
 
 exports.remove = {
@@ -71,7 +87,7 @@ exports.remove = {
     { method: 'redeem.remove(params.id)', assign: 'redeem' }
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.redeem))
+    reply(request.pre.redeem)
   },
   description: 'Removes a redeem code'
 }

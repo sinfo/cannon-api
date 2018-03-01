@@ -12,6 +12,7 @@ function renderObject (model) {
     achievement: model.achievement,
     entries: model.entries,
     created: model.created,
-    expires: model.expires
+    expires: model.expires,
+    user: model.user
   }
 }
