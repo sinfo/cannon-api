@@ -12,7 +12,14 @@ linkedin.getToken = code => {
 
     request.post(url, { json: true }, (error, response, result) => {
       if (error || response.statusCode !== 200) {
-        log.warn({ error, response: response.statusMessage })
+        log.warn({
+          error,
+          linkedinConfig: {
+            clientId: linkedinConfig.clientId,
+            redirectUri: linkedinConfig.redirectUri
+          },
+          response: response.statusMessage
+        })
         return reject('invalid LinkedIn token')
       }
       return resolve(result.access_token)
@@ -68,7 +75,7 @@ linkedin.getUser = linkedinUser => {
 linkedin.createUser = linkedinUser => {
   return new Promise((resolve, reject) => {
     const user = {
-      linkedin: {
+      linkedIn: {
         id: linkedinUser.id
       },
       name: `${linkedinUser.firstName} ${linkedinUser.lastName}`,
