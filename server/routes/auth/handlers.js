@@ -64,3 +64,23 @@ exports.fenix = {
   },
   description: 'Fenix login'
 }
+
+exports.linkedin = {
+  tags: ['api', 'auth'],
+  auth: {
+    strategies: ['default'],
+    mode: 'try'
+  },
+  validate: {
+    payload: {
+      code: Joi.string().required().description('LinkedIn code of the member')
+    }
+  },
+  pre: [
+    { method: 'auth.linkedIn(payload.code)', assign: 'member' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.member))
+  },
+  description: 'LinkedIn login'
+}
