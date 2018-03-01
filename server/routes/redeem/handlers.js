@@ -87,7 +87,7 @@ exports.remove = {
     { method: 'redeem.remove(params.id)', assign: 'redeem' }
   ],
   handler: function (request, reply) {
-    reply(render(request.pre.redeem))
+    reply(request.pre.redeem)
   },
   description: 'Removes a redeem code'
 }

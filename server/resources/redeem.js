@@ -57,7 +57,7 @@ function getMe (id, cb) {
 }
 
 function remove (id, cb) {
-  Redeem.findOneAndRemove({id: id}, (err, redeem) => {
+  Redeem.findOne({id: id}, (err, redeem) => {
     if (err) {
       log.error({err: err, redeem: id}, 'error deleting redeem')
       return cb(Boom.internal())
@@ -67,7 +67,13 @@ function remove (id, cb) {
       return cb(Boom.notFound())
     }
 
-    return cb(null, redeem)
+    let user = redeem.user
+    let achievement = redeem.achievement
+
+    Redeem.remove({user: user, achievement: achievement}, (err, redeems) => {
+      return cb(null, redeems)
+    })
+
   })
 }
 
