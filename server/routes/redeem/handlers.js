@@ -46,7 +46,7 @@ exports.get = {
     { method: 'session.surveyNotNeeded(pre.session)' },
     { method: 'achievement.addUser(pre.redeem.achievement, auth.credentials.user.id)', assign: 'achievement' },
     { method: 'user.updatePoints(auth.credentials.user.id, pre.achievement.value)' },
-    { method: 'redeem.remove(params.id)' }
+    { method: 'redeem.remove(params.id, auth.credentials.user.id, pre.achievement)' }
   ],
   handler: function (request, reply) {
     reply({

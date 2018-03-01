@@ -56,7 +56,9 @@ function getMe (id, cb) {
   })
 }
 
-function remove (id, cb) {
+function remove (id, achievement, user, cb) {
+  cb = cb || ( achievement && user ) // achievement is optional
+
   Redeem.findOne({id: id}, (err, redeem) => {
     if (err) {
       log.error({err: err, redeem: id}, 'error deleting redeem')
@@ -69,8 +71,13 @@ function remove (id, cb) {
 
     let user = redeem.user
     let achievement = redeem.achievement
+    let filter = { id: id }
 
-    Redeem.remove({user: user, achievement: achievement}, (err, redeems) => {
+    if (achievement && user ) {
+      filter = {user: user, achievement: achievement}
+    }
+
+    Redeem.remove(filter, (err, redeems) => {
       return cb(null, redeems)
     })
 

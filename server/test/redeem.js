@@ -81,8 +81,7 @@ const achievementC = {
 
 const redeemA = {
   id: 'RANDOM-STRING',
-  achievement: achievementA.id,
-  user: userA.id
+  achievement: achievementA.id
   // entries: 5,
 }
 
