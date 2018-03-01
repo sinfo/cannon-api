@@ -36,6 +36,12 @@ config.google = {
   apiKey: process.env.CANNON_GOOGLE_API_KEY || 'YOUR API KEY'
 }
 
+config.linkedIn = {
+  clientId: process.env.CANNON_LINKEDIN_CLIENT_ID || 'YOUR CLIENT ID',
+  clientSecret: process.env.CANNON_LINKEDIN_CLIENT_SECRET || 'YOUR CLIENT SECRET',
+  redirectUri: process.env.CANNON_LINKEDIN_REDIRECT_URI || 'http://localhost:4200/login'
+}
+
 config.fenix = {
   url: process.env.CANNON_FENIX_URL || 'https://fenix.tecnico.ulisboa.pt/api/fenix/v1/',
   oauthUrl: process.env.CANNON_FENIX_OAUTH_URL || 'https://fenix.tecnico.ulisboa.pt/oauth/',
