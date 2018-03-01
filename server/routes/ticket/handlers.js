@@ -168,8 +168,6 @@ exports.getUsers = {
     { method: 'user.getMulti(pre.userIds)', assign: 'users' }
   ],
   handler: function (request, reply) {
-    console.log(request.pre.userIds)
-
     reply(renderUsers(request.pre.users, request.auth.credentials && request.auth.credentials.user))
   },
   description: 'Gets the users'
@@ -193,8 +191,6 @@ exports.getWaiting = {
     { method: 'user.getMulti(pre.userIds)', assign: 'users' }
   ],
   handler: function (request, reply) {
-    console.log(request.pre.userIds)
-
     reply(renderUsers(request.pre.users, request.auth.credentials && request.auth.credentials.user))
   },
   description: 'Gets the waiting users'
@@ -218,8 +214,6 @@ exports.getConfirmed = {
     { method: 'user.getMulti(pre.userIds)', assign: 'users' }
   ],
   handler: function (request, reply) {
-    console.log(request.pre.userIds)
-
     reply(renderUsers(request.pre.users, request.auth.credentials && request.auth.credentials.user))
   },
   description: 'Gets the confirmed users'
@@ -241,7 +235,6 @@ exports.getUserSessions = {
     { method: 'ticket.getUserSessions(params.userId)', assign: 'tickets' }
   ],
   handler: function (request, reply) {
-    console.log(request.pre.tickets)
     reply(request.pre.tickets)
   },
   description: 'Gets the sessions for a user'

@@ -54,8 +54,6 @@ API.session.list({event: EVENT}, (err, sessions) => {
     if (err) throw err
     // log.info({err: err}, 'redeem codes created');
 
-    console.log(redeemGrids) // is this needed?
-
     process.exit(0)
   })
 })

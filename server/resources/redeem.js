@@ -93,7 +93,6 @@ function prepareRedeemCodes (sessionId, users, cb) {
       achievement: 'session-' + sessionId
     })
   }
-  console.log('redeem Codes', JSON.stringify(redeemCodes))
   log.info(`${redeemCodes.length} redeem codes created for ${users.length} users`)
   cb(null, redeemCodes)
 }
