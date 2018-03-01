@@ -10,7 +10,7 @@ server.method('redeem.getMe', getMe, {})
 server.method('redeem.remove', remove, {})
 server.method('redeem.prepareRedeemCodes', prepareRedeemCodes, {})
 
-function create (redeem, id, cb) {
+function create (redeem, cb) {
   redeem.created = Date.now()
 
   Redeem.create(redeem, (err, _redeem) => {
@@ -42,7 +42,7 @@ function get (id, cb) {
 }
 
 function getMe (id, cb) {
-  Redeem.find({}, (err, redeemCodes) => {
+  Redeem.find({user: id}, (err, redeemCodes) => {
     if (err) {
       log.error({err: err, user: id}, 'error getting my redeem codes')
       return cb(Boom.internal())
@@ -80,6 +80,7 @@ function prepareRedeemCodes (sessionId, users, cb) {
       achievement: 'session-' + sessionId
     })
   }
+  console.log('redeem Codes', JSON.stringify(redeemCodes))
   log.info(`${redeemCodes.length} redeem codes created for ${users.length} users`)
   cb(null, redeemCodes)
 }

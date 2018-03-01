@@ -20,7 +20,7 @@ exports.create = {
     }
   },
   pre: [
-    { method: 'redeem.create(payload, auth.credentials.user.id)', assign: 'redeem' }
+    { method: 'redeem.create(payload)', assign: 'redeem' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.redeem)).created('/redeem/' + request.pre.redeem.id)

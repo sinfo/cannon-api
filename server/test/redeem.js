@@ -31,7 +31,22 @@ const userA = {
     token: '1agasgre',
     refreshToken: '2fherhbhd'
   }
+}
 
+const userB = {
+  id: 'john.doe.the.second',
+  name: 'John Doe The Second',
+  mail: 'john_the_second@doe.com',
+  facebook: {
+    token: 'kjasgfasgfhjasgijki8'
+  },
+  google: {
+    token: '13751fdsgsd7'
+  },
+  fenix: {
+    token: '1agasgre',
+    refreshToken: '2fherhbhd'
+  }
 }
 
 const credentialsB = {
@@ -52,14 +67,14 @@ const achievementA = {
 
 const achievementB = {
   id: 'WENT-TO-SOME-WORKHOP-AT-SINFO-XXII',
-  name: 'WENT TO SOME WORKSHOP-AT-SINFO-XXII',
+  name: 'WENT TO SOME WORKSHOP AT SINFO XXII',
   event: 'SINFO XXII',
   value: 5
 }
 
 const achievementC = {
   id: 'WENT-TO-SOME-OTHER-WORKHOP-AT-SINFO-XXII',
-  name: 'WENT TO SOME OTHER WORKSHOP-AT-SINFO-XXII',
+  name: 'WENT TO SOME OTHER WORKSHOP AT SINFO XXII',
   event: 'SINFO XXII',
   value: 6
 }
@@ -81,6 +96,12 @@ const redeemC = {
   id: 'REDEEM-C',
   achievement: achievementC.id,
   user: userA.id
+}
+
+const redeemD = {
+  id: 'REDEEM-D',
+  achievement: achievementB.id,
+  user: userB.id
 }
 
 lab.experiment('Redeem', () => {
@@ -186,6 +207,27 @@ lab.experiment('Redeem', () => {
       payload: redeemA
     }
 
+    const optionsB = {
+      method: 'POST',
+      url: '/redeem',
+      credentials: credentialsA,
+      payload: redeemB
+    }
+
+    const optionsC = {
+      method: 'POST',
+      url: '/redeem',
+      credentials: credentialsA,
+      payload: redeemC
+    }
+
+    const optionsD = {
+      method: 'POST',
+      url: '/redeem',
+      credentials: credentialsA,
+      payload: redeemD
+    }
+
     server.inject(options, (response) => {
       const result = response.result
 
@@ -195,6 +237,66 @@ lab.experiment('Redeem', () => {
       Code.expect(result.name).to.equal(redeemA.name)
       Code.expect(result.user).to.equal(redeemA.user)
 
+      server.inject(optionsB, (responseB) => {
+        const resultB = responseB.result
+
+        Code.expect(responseB.statusCode).to.equal(201)
+        Code.expect(resultB).to.be.instanceof(Object)
+        Code.expect(resultB.id).to.equal(redeemB.id)
+        Code.expect(resultB.name).to.equal(redeemB.name)
+        Code.expect(resultB.user).to.equal(redeemB.user)
+
+        server.inject(optionsC, (responseC) => {
+          const resultC = responseC.result
+
+          Code.expect(responseC.statusCode).to.equal(201)
+          Code.expect(resultC).to.be.instanceof(Object)
+          Code.expect(resultC.id).to.equal(redeemC.id)
+          Code.expect(resultC.name).to.equal(redeemC.name)
+          Code.expect(resultC.user).to.equal(redeemC.user)
+
+          server.inject(optionsD, (responseD) => {
+            const resultD = responseD.result
+
+            Code.expect(responseD.statusCode).to.equal(201)
+            Code.expect(resultD).to.be.instanceof(Object)
+            Code.expect(resultD.id).to.equal(redeemD.id)
+            Code.expect(resultD.name).to.equal(redeemD.name)
+            Code.expect(resultD.user).to.equal(redeemD.user)
+
+            done()
+          })
+        })
+      })
+    })
+  })
+
+  lab.test('Get all redeem codes of user as user', (done) => {
+    const options = {
+      method: 'GET',
+      url: '/redeem/me',
+      credentials: credentialsB
+    }
+
+    server.inject(options, (response) => {
+      const result = response.result
+
+      Code.expect(response.statusCode).to.equal(200)
+      Code.expect(result).to.be.instanceof(Array)
+
+      Code.expect(result.length).to.equal(3)
+
+      Code.expect(result[0].id).to.equal(redeemA.id)
+      Code.expect(result[0].name).to.equal(redeemA.name)
+      Code.expect(result[0].user).to.equal(userA.id)
+
+      Code.expect(result[1].id).to.equal(redeemB.id)
+      Code.expect(result[1].name).to.equal(redeemB.name)
+      Code.expect(result[1].user).to.equal(userA.id)
+
+      Code.expect(result[2].id).to.equal(redeemC.id)
+      Code.expect(result[2].name).to.equal(redeemC.name)
+      Code.expect(result[2].user).to.equal(userA.id)
       done()
     })
   })
@@ -211,9 +313,16 @@ lab.experiment('Redeem', () => {
       url: '/redeem/' + redeemB.id,
       credentials: credentialsA
     }
+
     const optionsC = {
       method: 'DELETE',
       url: '/redeem/' + redeemC.id,
+      credentials: credentialsA
+    }
+
+    const optionsD = {
+      method: 'DELETE',
+      url: '/redeem/' + redeemD.id,
       credentials: credentialsA
     }
 
@@ -229,7 +338,7 @@ lab.experiment('Redeem', () => {
       server.inject(optionsB, (responseB) => {
         const resultB = responseB.result
 
-        Code.expect(responseB.statusCode).to.equal(200)
+        Code.expect(response.statusCode).to.equal(200)
         Code.expect(resultB).to.be.instanceof(Object)
         Code.expect(resultB.id).to.equal(redeemB.id)
         Code.expect(resultB.name).to.equal(redeemB.name)
@@ -244,7 +353,17 @@ lab.experiment('Redeem', () => {
           Code.expect(resultC.name).to.equal(redeemC.name)
           Code.expect(resultC.user).to.equal(userA.id)
 
-          done()
+          server.inject(optionsD, (responseD) => {
+            const resultD = responseD.result
+
+            Code.expect(responseD.statusCode).to.equal(200)
+            Code.expect(resultD).to.be.instanceof(Object)
+            Code.expect(resultD.id).to.equal(redeemD.id)
+            Code.expect(resultD.name).to.equal(redeemD.name)
+            Code.expect(resultD.user).to.equal(userB.id)
+
+            done()
+          })
         })
       })
     })
@@ -261,41 +380,6 @@ lab.experiment('Redeem', () => {
     server.inject(options, (response) => {
       Code.expect(response.statusCode).to.equal(403)
       done()
-    })
-  })
-
-  lab.test('Get all redeem codes of user as user', (done) => {
-    const options = {
-      method: 'GET',
-      url: '/redeem/me',
-      credentials: credentialsB
-    }
-
-    const optionsB = {
-      method: 'POST',
-      url: '/redeem',
-      credentials: credentialsA,
-      payload: redeemB
-    }
-
-    const optionsC = {
-      method: 'POST',
-      url: '/redeem',
-      credentials: credentialsA,
-      payload: redeemC
-    }
-
-    server.inject(optionsB, (responseB) => {
-      Code.expect(responseB.statusCode).to.equal(201)
-
-      server.inject(optionsC, (responseC) => {
-        Code.expect(responseC.statusCode).to.equal(201)
-
-        server.inject(options, (response) => {
-          Code.expect(response.statusCode).to.equal(200)
-          done()
-        })
-      })
     })
   })
 
