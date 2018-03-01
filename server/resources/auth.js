@@ -67,7 +67,7 @@ function fenixAuth (code, cb) {
   // Exchange the code given by the user by a token from Fenix
   fenix.getToken(code).then(token => {
     // Get user profile information from Fenix
-    fenix.get(token).then(fenixUser => {
+    fenix.getFenixUser(token).then(fenixUser => {
       // Get user in cannon by Fenix User email
       fenix.getUser(fenixUser).then(res => {
         // If user does not exist we create, otherwise we update existing user
