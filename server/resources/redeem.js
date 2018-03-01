@@ -57,7 +57,7 @@ function getMe (id, cb) {
 }
 
 function remove (id, achievement, user, cb) {
-  cb = cb || ( achievement && user ) // achievement is optional
+  cb = cb || user || achievement // achievement and user are optional
 
   Redeem.findOne({id: id}, (err, redeem) => {
     if (err) {
