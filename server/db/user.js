@@ -22,20 +22,13 @@ const schema = new mongoose.Schema({
     company: String
   }],
   facebook: {
-    id: String,
-    token: {type: String, unique: true, sparse: true}
+    id: String
   },
   google: {
-    id: String,
-    img: String,
-    token: {type: String, unique: true, sparse: true}
+    id: String
   },
   fenix: {
-    id: String,
-    token: {type: String, unique: true, sparse: true},
-    refreshToken: {type: String, unique: true, sparse: true},
-    ttl: Number,
-    created: Date
+    id: String
   },
   points: {
     available: Number,
