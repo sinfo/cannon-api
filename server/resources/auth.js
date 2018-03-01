@@ -90,7 +90,7 @@ function fenixAuth (code, cb) {
 
 function authenticate (userId, changedAttributes, cb) {
   const newToken = token.createJwt(userId)
-  changedAttributes = changedAttributes || {}
+  changedAttributes = {$set: changedAttributes} || {}
 
   server.methods.user.update({ id: userId }, changedAttributes, (err, result) => {
     if (err) {
