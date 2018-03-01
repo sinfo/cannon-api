@@ -29,6 +29,7 @@ function renderObject (model, user) {
   result.signatures = model.signatures && model.signatures.map(signature => ({
     edition: signature && signature.edition,
     day: signature && signature.day,
+    redeemed: signature && signature.redeemed,
     signatures: signature && signature.signatures
   }))
 

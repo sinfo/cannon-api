@@ -69,10 +69,7 @@ const credentialsA = {
 }
 
 const credentialsB = {
-  user: {
-    id: 'jane.doe',
-    name: 'Jane Doe'
-  },
+  user: userB,
   bearer: auxB.token,
   scope: 'user'
 }
@@ -302,6 +299,29 @@ lab.experiment('Link', () => {
     })
   })
 
+  lab.test('Redeem Card day II as User', (done) => {
+    const options = {
+      method: 'POST',
+      url: `/users/me/redeem-card`,
+      credentials: credentialsB,
+      payload: {
+        day: 'Thursday',
+        editionId: '25-SINFO'
+      }
+    }
+
+    server.inject(options, (response) => {
+      const result = response.result
+      console.log(result)
+
+      Code.expect(response.statusCode).to.equal(200)
+      Code.expect(result).to.be.instanceof(Object)
+      Code.expect(result.signatures.find(sign => { return sign.day === 'Thursday' }).redeemed).to.be.true()
+
+      done()
+    })
+  })
+
   lab.test('Get as company', (done) => {
     const options = {
       method: 'Get',
@@ -409,12 +429,8 @@ lab.experiment('Link', () => {
 
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceof(Array)
-      Code.expect(result[1]).to.not.exist()
       Code.expect(result[0].user).to.equal(linkA.userId)
       Code.expect(result[0].company).to.equal(userA.company[0].company)
-      Code.expect(result[0].edition).to.equal(linkA.editionId)
-      Code.expect(result[0].attendee).to.equal(linkA.attendeeId)
-      Code.expect(result[0].note).to.equal(changesToA.note)
 
       done()
     })
