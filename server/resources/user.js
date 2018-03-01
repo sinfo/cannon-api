@@ -17,6 +17,7 @@ server.method('user.getMulti', getMulti, {})
 server.method('user.remove', remove, {})
 server.method('user.removeCompany', removeCompany, {})
 server.method('user.sign', sign, {})
+server.method('user.redeemCard', redeemCard, {})
 
 function create (user, cb) {
   user.id = user.id || Math.random().toString(36).substr(2, 20)
@@ -306,4 +307,37 @@ function sign (attendeeId, companyId, payload, cb) {
       return cb(null, user.toObject({ getters: true }))
     })
   }
+}
+
+function redeemCard (attendeeId, payload, cb) {
+  // todo verify
+  const filter = {
+    id: attendeeId,
+    signatures: {
+      $elemMatch: {
+        day: payload.day,
+        edition: payload.editionId
+      }
+    }
+  }
+
+  const update = {
+    $set: {
+      'signatures.$.redeemed': true
+    }
+  }
+
+  User.findOneAndUpdate(filter, update, (err, user) => {
+    if (err) {
+      log.error({err: err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId}, 'Error signing user')
+      return cb(Boom.internal())
+    }
+    if (!user) {
+      // day,event combination entry did not exist
+      log.error({err: err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId}, 'Error signing user')
+      return cb(Boom.notFound())
+    }
+
+    cb(null, user.toObject({ getters: true }))
+  })
 }
