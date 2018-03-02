@@ -21,7 +21,7 @@ server.route({
 
 server.route({
   method: 'POST',
-  path: '/users/me/redeem-card',
+  path: '/users/{id}/redeem-card',
   config: handlers.redeemCard
 })
 

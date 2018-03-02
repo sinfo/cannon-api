@@ -12,6 +12,7 @@ const auxA = token.createJwt('john.doe')
 const auxB = token.createJwt('jane.doe')
 const auxC = token.createJwt('conor.mcgregor')
 const auxD = token.createJwt('tuda.chavaile')
+const auxTeam = token.createJwt('johny.team')
 
 const userA = {
   id: 'john.doe',
@@ -53,6 +54,13 @@ const userD = {
   }]
 }
 
+const userTeam = {
+  id: 'johny.team',
+  name: 'johny team',
+  mail: 'johny@sinfo.org',
+  role: 'team'
+}
+
 const credentialsAdmin = {
   user: {
     id: 'admin',
@@ -86,6 +94,12 @@ const credentialsD = {
   scope: 'company'
 }
 
+const credentialsTeam = {
+  user: userTeam,
+  bearer: auxTeam.token,
+  scope: 'team'
+}
+
 const linkA = {
   userId: credentialsA.user.id,
   attendeeId: credentialsB.user.id,
@@ -93,6 +107,18 @@ const linkA = {
   note: 'Jane had a great sence of humor'
 }
 
+const linkB = {
+  userId: credentialsA.user.id,
+  attendeeId: credentialsD.user.id,
+  editionId: userA.company[0].edition
+}
+
+const linkC = {
+  userId: credentialsA.user.id,
+  attendeeId: credentialsC.user.id,
+  editionId: userA.company[0].edition,
+  note: ''
+}
 const changesToA = {
   note: 'Jane had a great sence of humor and great Perl skils'
 }
@@ -123,6 +149,12 @@ lab.experiment('Link', () => {
       credentials: credentialsAdmin,
       payload: userD
     }
+    const optionsTeam = {
+      method: 'POST',
+      url: '/users',
+      credentials: credentialsAdmin,
+      payload: userTeam
+    }
 
     async.parallel([
       (cb) => {
@@ -142,6 +174,11 @@ lab.experiment('Link', () => {
       },
       (cb) => {
         server.inject(optionsD, (response) => {
+          return cb()
+        })
+      },
+      (cb) => {
+        server.inject(optionsTeam, (response) => {
           return cb()
         })
       }
@@ -171,6 +208,11 @@ lab.experiment('Link', () => {
       url: '/users/' + userD.id,
       credentials: credentialsAdmin
     }
+    const optionsTeam = {
+      method: 'DELETE',
+      url: '/users/' + userTeam.id,
+      credentials: credentialsAdmin
+    }
 
     async.parallel([
       (cb) => {
@@ -192,13 +234,18 @@ lab.experiment('Link', () => {
         server.inject(optionsD, (response) => {
           return cb()
         })
+      },
+      (cb) => {
+        server.inject(optionsTeam, (response) => {
+          return cb()
+        })
       }
     ], (err, results) => {
       done()
     })
   })
 
-  lab.test('Create A as company', (done) => {
+  lab.test('Create link ok as company', (done) => {
     const options = {
       method: 'POST',
       url: `/company/${userA.company[0].company}/link`,
@@ -216,6 +263,52 @@ lab.experiment('Link', () => {
       Code.expect(result.edition).to.equal(linkA.editionId)
       Code.expect(result.attendee).to.equal(linkA.attendeeId)
       Code.expect(result.note).to.equal(linkA.note)
+
+      done()
+    })
+  })
+
+  lab.test('Create Link empty string as company', (done) => {
+    const options = {
+      method: 'POST',
+      url: `/company/${userA.company[0].company}/link`,
+      credentials: credentialsA,
+      payload: linkC
+    }
+
+    server.inject(options, (response) => {
+      const result = response.result
+
+      Code.expect(response.statusCode).to.equal(201)
+      Code.expect(result).to.be.instanceof(Object)
+      Code.expect(result.user).to.equal(linkC.userId)
+      Code.expect(result.company).to.equal(userA.company[0].company)
+      Code.expect(result.edition).to.equal(linkC.editionId)
+      Code.expect(result.attendee).to.equal(linkC.attendeeId)
+      Code.expect(result.note).to.be.empty()
+
+      done()
+    })
+  })
+
+  lab.test('Create Link null note as company', (done) => {
+    const options = {
+      method: 'POST',
+      url: `/company/${userA.company[0].company}/link`,
+      credentials: credentialsA,
+      payload: linkB
+    }
+
+    server.inject(options, (response) => {
+      const result = response.result
+
+      Code.expect(response.statusCode).to.equal(201)
+      Code.expect(result).to.be.instanceof(Object)
+      Code.expect(result.user).to.equal(linkB.userId)
+      Code.expect(result.company).to.equal(userA.company[0].company)
+      Code.expect(result.edition).to.equal(linkB.editionId)
+      Code.expect(result.attendee).to.equal(linkB.attendeeId)
+      Code.expect(result.note).to.be.undefined()
 
       done()
     })
@@ -302,8 +395,8 @@ lab.experiment('Link', () => {
   lab.test('Redeem Card day II as User', (done) => {
     const options = {
       method: 'POST',
-      url: `/users/me/redeem-card`,
-      credentials: credentialsB,
+      url: `/users/${userB.id}/redeem-card`,
+      credentials: credentialsTeam,
       payload: {
         day: 'Thursday',
         editionId: '25-SINFO'
@@ -312,7 +405,6 @@ lab.experiment('Link', () => {
 
     server.inject(options, (response) => {
       const result = response.result
-      console.log(result)
 
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceof(Object)
@@ -426,6 +518,7 @@ lab.experiment('Link', () => {
 
     server.inject(options, (response) => {
       const result = response.result
+      result.sort()
 
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceof(Array)
@@ -482,6 +575,30 @@ lab.experiment('Link', () => {
       Code.expect(result.attendee).to.equal(linkA.attendeeId)
       Code.expect(result.note).to.equal(changesToA.note)
 
+      done()
+    })
+  })
+  lab.test('Delete B as company', (done) => {
+    const options = {
+      method: 'DELETE',
+      url: `/company/${userA.company[0].company}/link/${linkB.attendeeId}?editionId=${linkB.editionId}`,
+      credentials: credentialsA
+    }
+
+    server.inject(options, (response) => {
+      Code.expect(response.statusCode).to.equal(200)
+      done()
+    })
+  })
+  lab.test('Delete C as company', (done) => {
+    const options = {
+      method: 'DELETE',
+      url: `/company/${userA.company[0].company}/link/${linkC.attendeeId}?editionId=${linkC.editionId}`,
+      credentials: credentialsA
+    }
+
+    server.inject(options, (response) => {
+      Code.expect(response.statusCode).to.equal(200)
       done()
     })
   })
