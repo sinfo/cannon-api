@@ -103,14 +103,13 @@ function linkedInAuth (code, cb) {
             .then(userId => authenticate(userId, null, cb))
             .catch(err => cb(Boom.unauthorized(err)))
         }
-
         const changedAttributes = {
           linkedin: {
             id: linkedinUser.id
           },
           name: `${linkedinUser.firstName} ${linkedinUser.lastName}`,
           mail: linkedinUser.emailAddress,
-          img: linkedinUser.pictureUrls.values[0]
+          img: linkedinUser.pictureUrl
         }
         return authenticate(res.userId, changedAttributes, cb)
       }).catch(err => cb(Boom.unauthorized(err)))
