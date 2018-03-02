@@ -29,7 +29,7 @@ linkedin.getToken = code => {
 
 linkedin.getLinkedinUser = linkedinUserToken => {
   return new Promise((resolve, reject) => {
-    const urlProfile = 'https://api.linkedin.com/v1/people/~:(id,firstName,lastName,picture-urls::(original),emailAddress)?format=json'
+    const urlProfile = 'https://api.linkedin.com/v1/people/~:(id,email-address,first-name,last-name,picture-url)?format=json'
 
     request.get(urlProfile, {
       json: true,
@@ -53,7 +53,7 @@ linkedin.getLinkedinUser = linkedinUserToken => {
  * @param {string} linkedinUser.emailAddress
  * @param {string} linkedinUser.firstName
  * @param {string} linkedinUser.lastName
- * @param {string} linkedinUser.pictureUrls.values[0] Profile image
+ * @param {string} linkedinUser.pictureUrl Profile image
  */
 linkedin.getUser = linkedinUser => {
   return new Promise((resolve, reject) => {
@@ -80,7 +80,7 @@ linkedin.createUser = linkedinUser => {
       },
       name: `${linkedinUser.firstName} ${linkedinUser.lastName}`,
       mail: linkedinUser.emailAddress,
-      img: linkedinUser.pictureUrls.values[0]
+      img: linkedinUser.pictureUrl
     }
 
     log.debug('[linkedin-login] creating user', user)

@@ -104,7 +104,6 @@ function get (id, query, cb) {
       return cb(Boom.internal())
     }
     if (!file) {
-      log.error({err: 'not found', file: id}, 'file not found')
       return cb(Boom.notFound())
     }
     cb(null, file.toObject({ getters: true }))
