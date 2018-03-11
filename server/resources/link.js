@@ -72,7 +72,6 @@ function get (filter, editionId, cb) {
   }
 
   Link.findOne(filter, (err, link) => {
-    log.error({err: err})
     if (err) {
       log.error({err: err, link: filter}, 'error getting link')
       return cb(Boom.internal('error getting link'))

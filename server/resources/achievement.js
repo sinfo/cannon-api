@@ -84,7 +84,6 @@ function get (filter, cb) {
   }
 
   Achievement.findOne(filter, (err, achievement) => {
-    log.error({err: err})
     if (err) {
       log.error({err: err, achievement: filter}, 'error getting achievement')
       return cb(Boom.internal('error getting achievement'))

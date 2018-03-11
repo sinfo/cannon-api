@@ -73,14 +73,13 @@ function remove (id, achievement, user, cb) {
     let achievement = redeem.achievement
     let filter = { id: id }
 
-    if (achievement && user ) {
+    if (achievement && user) {
       filter = {user: user, achievement: achievement}
     }
 
     Redeem.remove(filter, (err, redeems) => {
       return cb(null, redeems)
     })
-
   })
 }
 
