@@ -37,8 +37,8 @@ lab.experiment('Endpoint', () => {
       url: '/company-endpoint',
       credentials: credentialsAdmin,
       payload: {
-        companies: ["sinfo-consulting", "chavaile-consulting"],
-        edition: "25-SINFO",
+        companies: ['sinfo-consulting', 'chavaile-consulting'],
+        edition: '25-SINFO',
         validaty: {
           from,
           to // will be open for 2 weeks
@@ -51,7 +51,7 @@ lab.experiment('Endpoint', () => {
 
       Code.expect(response.statusCode).to.equal(201)
       Code.expect(result).to.be.instanceof(Array)
-      Code.expect(result).to.have.lenght(2)
+      Code.expect(result).to.have.length(2)
 
       done()
     })
@@ -66,8 +66,8 @@ lab.experiment('Endpoint', () => {
       url: '/company-endpoint',
       credentials: credentialsUser,
       payload: {
-        companies: ["sinfo-consulting", "chavaile-consulting"],
-        edition: "25-SINFO",
+        companies: ['sinfo-consulting', 'chavaile-consulting'],
+        edition: '25-SINFO',
         validaty: {
           from,
           to // will be open for 2 weeks
@@ -84,7 +84,7 @@ lab.experiment('Endpoint', () => {
   lab.test('List as an admin', (done) => {
     const options = {
       method: 'GET',
-      url: '/company-endpoint',
+      url: '/company-endpoint?edition=25-SINFO',
       credentials: credentialsAdmin
     }
 
@@ -93,7 +93,7 @@ lab.experiment('Endpoint', () => {
 
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceof(Array)
-      Code.expect(result).to.have.lenght(2)
+      Code.expect(result).to.have.length(2)
 
       done()
     })
@@ -124,10 +124,10 @@ lab.experiment('Endpoint', () => {
 
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.company).to.be("sinfo-consulting")
-      Code.expect(result.edition).to.be("25-SINFO")
-      Code.expect(result.validaty.from).to.be.string()
-      Code.expect(result.validaty.to).to.be.string()
+      Code.expect(result.company).to.equal('sinfo-consulting')
+      Code.expect(result.edition).to.equal('25-SINFO')
+      Code.expect(result.validaty.from).to.be.date()
+      Code.expect(result.validaty.to).to.be.date()
 
       done()
     })
@@ -147,7 +147,7 @@ lab.experiment('Endpoint', () => {
   })
 
   lab.test('Update as an Admin', (done) => {
-    const to = new Date(new Date().getTime() + 24 * 60 * 60 * 1000) 
+    const to = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
     const options = {
       method: 'PUT',
       url: '/company-endpoint/sinfo-consulting?edition=25-SINFO',
@@ -160,19 +160,19 @@ lab.experiment('Endpoint', () => {
     }
 
     server.inject(options, (response) => {
-      const result = reponse.result
+      const result = response.result
 
-      Code.expect(response.statusCode).to.equal(201)
-      Code.expect(result.company).to.be("sinfo-consulting")
-      Code.expect(result.edition).to.be("25-SINFO")
-      Code.expect(result.validity.to).to.be.equal.to(to)
+      Code.expect(response.statusCode).to.equal(200)
+      Code.expect(result.company).to.equal('sinfo-consulting')
+      Code.expect(result.edition).to.equal('25-SINFO')
+      Code.expect(new Date(result.validaty.to).toString()).to.equal(to.toString())
 
       done()
     })
   })
 
   lab.test('Update as a User', (done) => {
-    const to = new Date(new Date().getTime() + 24 * 60 * 60 * 1000) 
+    const to = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
     const options = {
       method: 'PUT',
       url: '/company-endpoint/sinfo-consulting?edition=25-SINFO',
@@ -192,7 +192,7 @@ lab.experiment('Endpoint', () => {
 
   lab.test('Delete as a User', (done) => {
     const options = {
-      method: 'PUT',
+      method: 'DELETE',
       url: '/company-endpoint/sinfo-consulting?edition=25-SINFO',
       credentials: credentialsUser
     }
@@ -205,14 +205,18 @@ lab.experiment('Endpoint', () => {
 
   lab.test('Delete as an Admin', (done) => {
     const options = {
-      method: 'PUT',
+      method: 'DELETE',
       url: '/company-endpoint/sinfo-consulting?edition=25-SINFO',
       credentials: credentialsAdmin
     }
 
     server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(201)
-      done()
+      Code.expect(response.statusCode).to.equal(200)
+      options.url = '/company-endpoint/chavaile-consulting?edition=25-SINFO'
+      server.inject(options, (response) => {
+        Code.expect(response.statusCode).to.equal(200)
+        done()
+      })
     })
   })
 })
