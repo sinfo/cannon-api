@@ -1,5 +1,6 @@
 const Lab = require('lab')
 const Code = require('code')
+const async = require('async')
 
 const server = require('../').hapi
 
@@ -7,6 +8,7 @@ const lab = exports.lab = Lab.script()
 const token = require('../auth/token')
 
 const auxAdmin = token.createJwt('john.doe')
+const auxCompany = token.createJwt('tuda.chavaile')
 const auxUser = token.createJwt('jane.doe')
 
 const credentialsAdmin = {
@@ -18,16 +20,127 @@ const credentialsAdmin = {
   scope: 'admin'
 }
 
+const userCompany = {
+  id: 'tuda.chavaile',
+  name: 'Tuda Chavaile',
+  mail: 'tuda@chavaile.com',
+  role: 'company',
+  company: [{
+    edition: '25-SINFO',
+    company: 'chavaile-consulting'
+  }]
+}
+
+const credentialsCompany = {
+  user: userCompany,
+  bearer: auxCompany.token,
+  scope: 'company'
+}
+
+const userUser = {
+  id: 'jane.doe',
+  name: 'Jane Doe',
+  mail: 'jane@doe.com'
+}
+
 const credentialsUser = {
-  user: {
-    id: 'jane.doe',
-    name: 'Jane Doe'
-  },
+  user: userUser,
   bearer: auxUser.token,
   scope: 'user'
 }
 
+const fileA = {
+  id: 'file4tests',
+  user: 'jane.doe',
+  name: 'readme',
+  kind: 'important',
+  extension: 'txt'
+}
+
 lab.experiment('Endpoint', () => {
+  lab.before((done) => {
+    const optionsUser = {
+      method: 'POST',
+      url: '/users',
+      credentials: credentialsAdmin,
+      payload: userCompany
+    }
+    const optionsLink = {
+      method: 'POST',
+      url: '/company/chavaile-consulting/link',
+      credentials: credentialsAdmin,
+      payload: {
+        userId: 'tuda.chavaile',
+        attendeeId: 'jane.doe',
+        editionId: 'chavaile.consulting'
+      }
+    }
+    const optionsFile = {
+      method: 'POST',
+      url: '/files',
+      credentials: credentialsAdmin,
+      payload: fileA
+    }
+
+    async.parallel([
+      (cb) => {
+        server.inject(optionsUser, (response) => {
+          return cb()
+        })
+      },
+      (cb) => {
+        server.inject(optionsLink, (response) => {
+          return cb()
+        })
+      },
+      (cb) => {
+        server.inject(optionsFile, (response) => {
+          return cb()
+        })
+      }
+    ], (err, results) => {
+      done()
+    })
+  })
+
+  lab.after((done) => {
+    const optionsUser = {
+      method: 'DELETE',
+      url: `/users/${userCompany.id}`,
+      credentials: credentialsAdmin
+    }
+    const optionsLink = {
+      method: 'DELETE',
+      url: '/company/chavaile-consulting/link/jane.doe',
+      credentials: credentialsAdmin
+    }
+    const optionsFile = {
+      method: 'DELETE',
+      url: `/files/${fileA.id}`,
+      credentials: credentialsAdmin
+    }
+
+    async.parallel([
+      (cb) => {
+        server.inject(optionsUser, (response) => {
+          return cb()
+        })
+      },
+      (cb) => {
+        server.inject(optionsLink, (response) => {
+          return cb()
+        })
+      },
+      (cb) => {
+        server.inject(optionsFile, (response) => {
+          return cb()
+        })
+      }
+    ], (err, results) => {
+      done()
+    })
+  })
+
   lab.test('Create as an admin', (done) => {
     const from = new Date()
     const to = new Date(new Date().getTime() + 14 * 24 * 60 * 60 * 1000) // will be open for 2 weeks
@@ -186,6 +299,34 @@ lab.experiment('Endpoint', () => {
 
     server.inject(options, (response) => {
       Code.expect(response.statusCode).to.equal(403)
+      done()
+    })
+  })
+
+  lab.test('Get CVs as Company', (done) => {
+    const options = {
+      method: 'Get',
+      url: `/company/sinfo-consulting/files/download`,
+      credentials: credentialsCompany
+    }
+
+    server.inject(options, (response) => {
+      console.log(response.result)
+      Code.expect(response.statusCode).to.equal(200)
+      done()
+    })
+  })
+
+  lab.test('Get Links CVs as Company', (done) => {
+    const options = {
+      method: 'Get',
+      url: `/company/sinfo-consulting/files/download?links=true`,
+      credentials: credentialsCompany
+    }
+
+    server.inject(options, (response) => {
+      console.log(response.result)
+      Code.expect(response.statusCode).to.equal(200)
       done()
     })
   })

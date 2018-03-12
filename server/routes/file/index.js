@@ -66,3 +66,9 @@ server.route({
   path: '/files/me',
   config: handlers.removeMe
 })
+
+server.route({
+  method: 'GET',
+  path: '/company/{companyId}/files/download',
+  config: handlers.downloadCompany
+})

@@ -135,6 +135,39 @@ exports.downloadMe = {
   description: 'Downloads the file of the user'
 }
 
+exports.downloadCompany = {
+  tags: ['api', 'file'],
+  auth: {
+    strategies: ['default'],
+    scope: ['admin']
+  },
+  validate: {
+    params: {
+      companyId: Joi.string().required().description('Company Id')
+    },
+    query: {
+      edition: Joi.string().required().description('The edition of the event'),
+      links: Joi.boolean().description('Selects only the files from linked users')
+    }
+  },
+  pre: [
+    // Try reusing this function
+    { method: 'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)', assign: 'verification' },
+    // Make sure enpoint is still open
+    { method: 'link.validateEndpoint(params.companyId, query.editionId)', assign: 'validation' },
+    { method: 'file.get(params.companyId, query)', assign: 'file' }
+  ],
+  handler: function (request, reply) {
+    const path = configUpload.path + '/' + request.pre.file.id
+    const options = {
+      filename: request.pre.file.name,
+      mode: 'attachment'
+    }
+    reply.file(path, options)
+  },
+  description: 'Downloads users files'
+}
+
 exports.list = {
   tags: ['api', 'file'],
   auth: {
