@@ -284,7 +284,6 @@ function zipFiles (links, cb) {
             return cb(Boom.internal())
           }
           zip.toBuffer((buffer) => {
-            console.log('saiu')
             return cb(null, buffer)
           })
         })
@@ -299,7 +298,7 @@ function zipFiles (links, cb) {
       }
 
       // Prevents Big Zip from being generated on every request. Acts like a cache
-      if (Date.now() < new Date(stats.mtime).getTime() + config.upload.cvsZipAge) {
+      if (err && err.code !== 'ENOENT' && Date.now() < new Date(stats.mtime).getTime() + config.upload.cvsZipAge) {
         return cb()
       }
 
