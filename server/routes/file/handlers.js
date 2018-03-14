@@ -163,8 +163,8 @@ exports.downloadCompany = {
   handler: function (request, reply) {
     // Concat links CVs if asked. Select generic CVs zip if not
     if (request.query.links) {
-      return server.methods.link.list(request.params.companyId, request.query, (err, links) => {
-        server.methods.file.zipFiles(links, handleZip)
+      server.methods.link.list(request.params.companyId, request.query, (err, links) => {
+        return server.methods.file.zipFiles(links, handleZip)
       })
     }
     return server.methods.file.zipFiles(null, handleZip)

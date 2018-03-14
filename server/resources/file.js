@@ -275,12 +275,18 @@ function zipFiles (links, cb) {
       }
 
       if (files) {
-        files.forEach((file) => {
+        async.eachSeries(files, (file, cbAsync) => {
           let link = links.find((link) => { return link.attendee === file.user })
           zip.addFile(file.name, fs.readFileSync(`${config.upload.path}/${file.id}`), `Notes: ${link.notes}`)
-        })
-        zip.toBuffer((buffer) => {
-          return cb(null, buffer)
+          return cbAsync()
+        }, (err) => {
+          if (err) {
+            return cb(Boom.internal())
+          }
+          zip.toBuffer((buffer) => {
+            console.log('saiu')
+            return cb(null, buffer)
+          })
         })
       }
     })
