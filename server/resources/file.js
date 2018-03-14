@@ -277,7 +277,7 @@ function zipFiles (links, cb) {
       if (files) {
         files.forEach((file) => {
           let link = links.find((link) => { return link.attendee === file.user })
-          zip.addFile(file.name, fs.readFileSync(config.upload.path + '/' + file.id), `Notes: ${link.notes}`)
+          zip.addFile(file.name, fs.readFileSync(`${config.upload.path}/${file.id}`), `Notes: ${link.notes}`)
         })
         zip.toBuffer((buffer) => {
           return cb(null, buffer)
@@ -298,13 +298,28 @@ function zipFiles (links, cb) {
       }
 
       let zip = new Zip()
-      zip.addLocalFolder(config.upload.path)
-      zip.toBuffer(buffer => {
-        fs.writeFile(config.upload.cvsZipPath, buffer, (err) => {
+      fs.readdir(config.upload.path, (err, files) => {
+        if (err) {
+          return cb(Boom.internal())
+        }
+
+        async.eachSeries(files, (file, cbAsync) => {
+          fs.readFile(`${config.upload.path}/${file}`, (err, fileData) => {
+            zip.addFile(`${file}.pdf`, fileData) // .pdf hardcoded ¯\_(ツ)_/¯
+            return cbAsync()
+          })
+        }, (err) => {
           if (err) {
-            return (Boom.internal())
+            return cb(Boom.internal())
           }
-          return cb()
+          zip.toBuffer(buffer => {
+            fs.writeFile(config.upload.cvsZipPath, buffer, (err) => {
+              if (err) {
+                return (Boom.internal())
+              }
+              return cb()
+            })
+          })
         })
       })
     })

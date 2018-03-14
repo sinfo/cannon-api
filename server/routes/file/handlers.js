@@ -126,7 +126,7 @@ exports.downloadMe = {
     { method: 'file.get(auth.credentials.user.id, query)', assign: 'file' }
   ],
   handler: function (request, reply) {
-    const path = configUpload.path + '/' + request.pre.file.id
+    const path = configUpload.path + '/' + request.pre.file.id + '.' + request.pre.file.extension
     const options = {
       filename: request.pre.file.name,
       mode: 'attachment'
@@ -147,21 +147,20 @@ exports.downloadCompany = {
       companyId: Joi.string().required().description('Company Id')
     },
     query: {
-      editionId: Joi.string().required().description('The edition of the event'), 
+      editionId: Joi.string().required().description('The edition of the event'),
       links: Joi.boolean().description('Selects only the files from linked users')
     }
   },
   pre: [
     [
-      //Verify the user has access to the company
+      // Verify the user has access to the company
       { method: 'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)'},
-      //Make sure enpoint is still open
-      { method: 'endpoint.isValid(params.companyId, query.editionId)'},
+      // Make sure enpoint is still open
+      { method: 'endpoint.isValid(params.companyId, query.editionId)'}
     ],
-    { method: 'endpoint.incrementVisited(params.companyId, query.editionId)'},
+    { method: 'endpoint.incrementVisited(params.companyId, query.editionId)'}
   ],
   handler: function (request, reply) {
-
     // Concat links CVs if asked. Select generic CVs zip if not
     if (request.query.links) {
       return server.methods.link.list(request.params.companyId, request.query, (err, links) => {
@@ -170,14 +169,13 @@ exports.downloadCompany = {
     }
     return server.methods.file.zipFiles(null, handleZip)
 
-    function handleZip(err, zip) {
-      if (!zip) { 
-        return reply.file(configUpload.cvsZipPath, { mode: 'attachment', filename: "CVs.zip" }) // Return generic zip
+    function handleZip (err, zip) {
+      if (!zip) {
+        return reply.file(configUpload.cvsZipPath, { mode: 'attachment', filename: 'CVs.zip' }) // Return generic zip
       }
       return reply(zip).bytes(zip.length).header('Content-Type', 'application/zip')
       .header('Content-Disposition', 'attachment; filename=linksCVs.zip') // Return Links zip
     }
-
   },
   description: 'Downloads users files'
 }
