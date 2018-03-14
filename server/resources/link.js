@@ -112,7 +112,7 @@ function list (filter, query, cb) {
       return cb(Boom.internal())
     }
 
-    cb(null, links)
+    cb(null, Array.from(links, (l) => { return l.toObject() }))
   })
 }
 

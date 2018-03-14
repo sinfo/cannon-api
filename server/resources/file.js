@@ -6,9 +6,11 @@ const server = require('../').hapi
 const log = require('../helpers/logger')
 const async = require('async')
 const fs = require('fs')
+const util = require('util')
 const urlencode = require('urlencode')
 const fieldsParser = require('../helpers/fieldsParser')
 const File = require('../db/file')
+const Zip = require('adm-zip')
 
 server.method('file.create', create, {})
 server.method('file.createArray', createArray, {})
@@ -20,6 +22,7 @@ server.method('file.delete', deleteFile, {})
 server.method('file.saveFiles', saveFiles, {})
 server.method('file.upload', upload, {})
 server.method('file.uploadCV', uploadCV, {})
+server.method('file.zipFiles', zipFiles, {})
 
 function createArray (files, cb) {
   if (!files.length) {
@@ -34,8 +37,8 @@ function createArray (files, cb) {
 }
 
 function create (file, user, cb) {
+  file.user = (cb && user) || file.user
   cb = cb || user
-  file.user = user || file.user
 
   file.created = file.updated = Date.now()
 
@@ -250,4 +253,60 @@ function saveFile (kind, data, cb) {
       return cb(null, fileInfo)
     })
   })
+}
+
+function zipFiles (links, cb) {
+  if (links) {
+    // Generate new zip with links
+    const linksIds = links.map((link) => { return link.attendee })
+    const filter = {
+      user: {'$in': linksIds }
+    }
+    const zip = new Zip()
+
+    File.find(filter, (err, files) => {
+      if (err) {
+        log.error({err: err}, 'error getting links files')
+        return cb(Boom.internal())
+      }
+
+      if (!files) {
+        return cb(Boom.notFound())
+      }
+
+      if (files) {
+        files.forEach((file) => {
+          let link = links.find((link) => { return link.attendee === file.user })
+          zip.addFile(file.name, fs.readFileSync(config.upload.path + '/' + file.id), `Notes: ${link.notes}`)
+        })
+        zip.toBuffer((buffer) => {
+          return cb(null, buffer)
+        })
+      }
+    })
+  } else {
+    // - see if old exists && verify freshness
+    fs.stat(config.upload.cvsZipPath, (err, stats) => {
+      if (err && err.code !== 'ENOENT') {
+        log.error({err: err, links: links}, '[file] Error reading cvsZipFile')
+        return cb(Boom.internal())
+      }
+
+      // Prevents Big Zip from being generated on every request. Acts like a cache
+      if (Date.now() < new Date(stats.mtime).getTime() + config.upload.cvsZipAge) {
+        return cb()
+      }
+
+      let zip = new Zip()
+      zip.addLocalFolder(config.upload.path)
+      zip.toBuffer(buffer => {
+        fs.writeFile(config.upload.cvsZipPath, buffer, (err) => {
+          if (err) {
+            return (Boom.internal())
+          }
+          return cb()
+        })
+      })
+    })
+  }
 }

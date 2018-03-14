@@ -81,7 +81,6 @@ lab.experiment('Endpoint', () => {
       credentials: credentialsAdmin,
       payload: fileA
     }
-
     async.parallel([
       (cb) => {
         server.inject(optionsUser, (response) => {
@@ -306,28 +305,24 @@ lab.experiment('Endpoint', () => {
   lab.test('Get CVs as Company', (done) => {
     const options = {
       method: 'Get',
-      url: `/company/sinfo-consulting/files/download`,
+      url: `/company/chavaile-consulting/files/download?editionId=25-SINFO`,
       credentials: credentialsCompany
     }
 
     server.inject(options, (response) => {
-      console.log(response.result)
       Code.expect(response.statusCode).to.equal(200)
-      done()
     })
   })
 
   lab.test('Get Links CVs as Company', (done) => {
     const options = {
       method: 'Get',
-      url: `/company/sinfo-consulting/files/download?links=true`,
+      url: `/company/chavaile-consulting/files/download?links=true&editionId=25-SINFO`,
       credentials: credentialsCompany
     }
 
     server.inject(options, (response) => {
-      console.log(response.result)
       Code.expect(response.statusCode).to.equal(200)
-      done()
     })
   })
 
