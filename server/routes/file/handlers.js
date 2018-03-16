@@ -136,6 +136,24 @@ exports.downloadMe = {
   description: 'Downloads the file of the user'
 }
 
+exports.downloadZip = {
+  tags: ['api', 'file'],
+  auth: {
+    strategies: ['default'],
+    scope: ['team', 'admin']
+  },
+  validate: {
+    query: {
+      editionId: Joi.string().required().description('The edition of the event')
+    }
+  },
+  handler: function (request, reply) {
+    server.methods.file.zipFiles(null, (err, zip) => {
+      return reply.file(configUpload.cvsZipPath, { mode: 'attachment', filename: 'CVs.zip' }) // Return generic zip
+    })
+  },
+  description: 'Downloads users files'
+}
 exports.downloadCompany = {
   tags: ['api', 'file'],
   auth: {

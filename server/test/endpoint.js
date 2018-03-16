@@ -355,18 +355,57 @@ lab.experiment('Endpoint', () => {
     })
   })
 
-  //lab.test('Get CVs as Company', (done) => {
-    //const options = {
-      //method: 'Get',
-      //url: `/company/chavaile-consulting/files/download?editionId=25-SINFO`,
-      //credentials: credentialsCompany
-    //}
+  // lab.test('Get CVs as Company', (done) => {
+    // const options = {
+      // method: 'Get',
+      // url: `/company/chavaile-consulting/files/download?editionId=25-SINFO`,
+      // credentials: credentialsCompany
+    // }
 
-    //server.inject(options, (response) => {
-      //Code.expect(response.statusCode).to.equal(200)
-      //done()
-    //})
-  //})
+    // server.inject(options, (response) => {
+      // Code.expect(response.statusCode).to.equal(200)
+      // done()
+    // })
+  // })
+
+  lab.test('Get All CVs as Admin', (done) => {
+    const options = {
+      method: 'Get',
+      url: `/files/download?editionId=25-SINFO`,
+      credentials: credentialsAdmin
+    }
+
+    server.inject(options, (response) => {
+      Code.expect(response.statusCode).to.equal(200)
+      done()
+    })
+  })
+
+  lab.test('Get All CVs as User', (done) => {
+    const options = {
+      method: 'Get',
+      url: `/files/download?editionId=25-SINFO`,
+      credentials: credentialsUser
+    }
+
+    server.inject(options, (response) => {
+      Code.expect(response.statusCode).to.equal(403)
+      done()
+    })
+  })
+
+  lab.test('Get All CVs as Company', (done) => {
+    const options = {
+      method: 'Get',
+      url: `/files/download?editionId=25-SINFO`,
+      credentials: credentialsCompany
+    }
+
+    server.inject(options, (response) => {
+      Code.expect(response.statusCode).to.equal(403)
+      done()
+    })
+  })
 
   lab.test('Get CVs as Company Endpoint closed', (done) => {
     const options = {
@@ -381,18 +420,18 @@ lab.experiment('Endpoint', () => {
     })
   })
 
-  //lab.test('Get Links CVs as Company', (done) => {
-    //const options = {
-      //method: 'Get',
-      //url: `/company/chavaile-consulting/files/download?links=true&editionId=25-SINFO`,
-      //credentials: credentialsCompany
-    //}
+  // lab.test('Get Links CVs as Company', (done) => {
+    // const options = {
+      // method: 'Get',
+      // url: `/company/chavaile-consulting/files/download?links=true&editionId=25-SINFO`,
+      // credentials: credentialsCompany
+    // }
 
-    //server.inject(options, (response) => {
-      //Code.expect(response.statusCode).to.equal(200)
-      //done()
-    //})
-  //})
+    // server.inject(options, (response) => {
+      // Code.expect(response.statusCode).to.equal(200)
+      // done()
+    // })
+  // })
 
   lab.test('Get Links CVs as Other Company', (done) => {
     const options = {

@@ -50,6 +50,12 @@ server.route({
 })
 
 server.route({
+  method: 'GET',
+  path: '/files/download',
+  config: handlers.downloadZip
+})
+
+server.route({
   method: ['PUT', 'PATCH'],
   path: '/files/{id}',
   config: handlers.update
