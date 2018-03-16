@@ -9,6 +9,8 @@ server.method('endpoint.update', update, {})
 server.method('endpoint.get', get, {})
 server.method('endpoint.list', list, {})
 server.method('endpoint.remove', remove, {})
+server.method('endpoint.isValid', isValid, {})
+server.method('endpoint.incrementVisited', incrementVisited, {})
 
 function create (endpoint, cb) {
   // generates an enpoint item for every company in endpoin.companies
@@ -113,6 +115,55 @@ function remove (companyId, editionId, cb) {
     if (!endpoint) {
       log.error({err: 'not found', company: companyId, edition: editionId }, 'error deleting endpoint')
       return cb(Boom.notFound('Endpoint not found'))
+    }
+
+    return cb(null, endpoint)
+  })
+}
+
+function isValid (companyId, editionId, cb) {
+  const filter = {
+    company: companyId,
+    edition: editionId
+  }
+
+  Endpoint.findOne(filter, (err, endpoint) => {
+    if (err) {
+      log.error({err: err, company: companyId, edition: editionId }, 'error validating endpoint')
+      return cb(Boom.internal('error getting endpoint'))
+    }
+    if (!endpoint) {
+      log.error({err: 'not found', company: companyId, edition: editionId }, 'error validating endpoint')
+      return cb(Boom.notFound('endpoint not found'))
+    }
+
+    let now = new Date()
+    if (now > new Date(endpoint.validaty.from) && now < new Date(endpoint.validaty.to)) {
+      return cb(null, true)
+    }
+
+    return cb(Boom.notFound())
+  })
+}
+
+function incrementVisited (companyId, editionId, cb) {
+  const filter = {
+    company: companyId,
+    edition: editionId
+  }
+
+  const update = {
+    $inc: { 'visited': 1 }
+  }
+
+  Endpoint.findOneAndUpdate(filter, update, (err, endpoint) => {
+    if (err) {
+      log.error({err: err, company: companyId, edition: editionId }, 'error incrementing endpoint visited')
+      return cb(Boom.internal('error getting endpoint'))
+    }
+    if (!endpoint) {
+      log.error({err: 'not found', company: companyId, edition: editionId }, 'error incrementing endpoint visited')
+      return cb(Boom.notFound('endpoint not found'))
     }
 
     return cb(null, endpoint)

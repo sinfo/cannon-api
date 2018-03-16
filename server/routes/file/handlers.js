@@ -1,6 +1,7 @@
 const Joi = require('joi')
 const render = require('../../views/file')
 const configUpload = require('../../../config').upload
+const server = require('../../').hapi
 
 exports = module.exports
 
@@ -125,7 +126,7 @@ exports.downloadMe = {
     { method: 'file.get(auth.credentials.user.id, query)', assign: 'file' }
   ],
   handler: function (request, reply) {
-    const path = configUpload.path + '/' + request.pre.file.id
+    const path = configUpload.path + '/' + request.pre.file.id + '.' + request.pre.file.extension
     const options = {
       filename: request.pre.file.name,
       mode: 'attachment'
@@ -133,6 +134,68 @@ exports.downloadMe = {
     reply.file(path, options).type('application/pdf')
   },
   description: 'Downloads the file of the user'
+}
+
+exports.downloadZip = {
+  tags: ['api', 'file'],
+  auth: {
+    strategies: ['default'],
+    scope: ['team', 'admin']
+  },
+  validate: {
+    query: {
+      editionId: Joi.string().required().description('The edition of the event')
+    }
+  },
+  handler: function (request, reply) {
+    server.methods.file.zipFiles(null, (err, zip) => {
+      return reply.file(configUpload.cvsZipPath, { mode: 'attachment', filename: 'CVs.zip' }) // Return generic zip
+    })
+  },
+  description: 'Downloads users files'
+}
+exports.downloadCompany = {
+  tags: ['api', 'file'],
+  auth: {
+    strategies: ['default'],
+    scope: ['company', 'team', 'admin']
+  },
+  validate: {
+    params: {
+      companyId: Joi.string().required().description('Company Id')
+    },
+    query: {
+      editionId: Joi.string().required().description('The edition of the event'),
+      links: Joi.boolean().description('Selects only the files from linked users')
+    }
+  },
+  pre: [
+    [
+      // Verify the user has access to the company
+      { method: 'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)'},
+      // Make sure enpoint is still open
+      { method: 'endpoint.isValid(params.companyId, query.editionId)'}
+    ],
+    { method: 'endpoint.incrementVisited(params.companyId, query.editionId)'}
+  ],
+  handler: function (request, reply) {
+    // Concat links CVs if asked. Select generic CVs zip if not
+    if (request.query.links) {
+      server.methods.link.list(request.params.companyId, request.query, (err, links) => {
+        return server.methods.file.zipFiles(links, handleZip)
+      })
+    }
+    return server.methods.file.zipFiles(null, handleZip)
+
+    function handleZip (err, zip) {
+      if (!zip) {
+        return reply.file(configUpload.cvsZipPath, { mode: 'attachment', filename: 'CVs.zip' }) // Return generic zip
+      }
+      return reply(zip).bytes(zip.length).header('Content-Type', 'application/zip')
+      .header('Content-Disposition', 'attachment; filename=linksCVs.zip') // Return Links zip
+    }
+  },
+  description: 'Downloads users files'
 }
 
 exports.list = {
