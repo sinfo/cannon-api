@@ -368,18 +368,18 @@ lab.experiment('Endpoint', () => {
     // })
   // })
 
-  lab.test('Get All CVs as Admin', (done) => {
-    const options = {
-      method: 'Get',
-      url: `/files/download?editionId=25-SINFO`,
-      credentials: credentialsAdmin
-    }
+  //lab.test('Get All CVs as Admin', (done) => {
+    //const options = {
+      //method: 'Get',
+      //url: `/files/download?editionId=25-SINFO`,
+      //credentials: credentialsAdmin
+    //}
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(200)
-      done()
-    })
-  })
+    //server.inject(options, (response) => {
+      //Code.expect(response.statusCode).to.equal(200)
+      //done()
+    //})
+  //})
 
   lab.test('Get All CVs as User', (done) => {
     const options = {
