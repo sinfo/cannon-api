@@ -277,8 +277,18 @@ function zipFiles (links, cb) {
       if (files) {
         async.eachSeries(files, (file, cbAsync) => {
           let link = links.find((link) => { return link.attendee === file.user })
-          zip.addFile(file.name, fs.readFileSync(`${config.upload.path}/${file.id}`), `Notes: ${link.notes}`)
-          return cbAsync()
+
+          server.methods.user.get({'id': file.user}, (err, user) => {
+            if (err) {
+              return cbAsync(Boom.internal())
+            }
+
+            zip.addFile(`${user.name}.pdf`, fs.readFileSync(`${config.upload.path}/${file.id}`), `Notes: ${link.note}`)
+            if (link.note) {
+              zip.addFile(`${user.name}.txt`, new Buffer(`Your notes, taken on ${new Date(link.created).toUTCString()}: ${link.note}`))
+            }
+            return cbAsync()
+          })
         }, (err) => {
           if (err) {
             return cb(Boom.internal())
