@@ -306,16 +306,19 @@ exports.redeemCard = {
   tags: ['api', 'user'],
   auth: {
     strategies: ['default'],
-    scope: ['user', 'company', 'team', 'admin']
+    scope: ['team', 'admin']
   },
   validate: {
+    params: {
+      id: Joi.string().required().description('Id of the user we want to redeem the card from')
+    },
     payload: {
       day: Joi.string().required().description('ISO Date of the day you are redeeming the card from'),
       editionId: Joi.string().required().description('Id of the current edition')
     }
   },
   pre: [
-    { method: 'user.redeemCard(auth.credentials.user.id, payload)', assign: 'user' }
+    { method: 'user.redeemCard(params.id, payload)', assign: 'user' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.user, request.auth.credentials && request.auth.credentials.user))

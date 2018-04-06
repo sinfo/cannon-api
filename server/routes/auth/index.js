@@ -18,3 +18,9 @@ server.route({
   path: '/auth/fenix',
   config: handlers.fenix
 })
+
+server.route({
+  method: ['POST'],
+  path: '/auth/linkedin',
+  config: handlers.linkedin
+})

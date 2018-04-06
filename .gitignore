@@ -27,6 +27,7 @@ keys/
 sftp-config.json
 
 cannon_uploads
+*.zip
 
 scripts/output
 package-lock.json

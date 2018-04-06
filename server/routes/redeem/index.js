@@ -14,6 +14,12 @@ server.route({
 })
 
 server.route({
+  method: 'GET',
+  path: '/redeem/me',
+  config: handlers.getMe
+})
+
+server.route({
   method: ['DELETE'],
   path: '/redeem/{id}',
   config: handlers.remove

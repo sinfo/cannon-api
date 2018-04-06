@@ -18,7 +18,9 @@ config.deck = {
 
 config.upload = {
   path: process.env.CANNON_UPLOAD_PATH || join(__dirname, '/cannon_uploads'),
-  maxSize: process.env.CANNON_UPLOAD_MAX_SIZE || 1048576 * 10 // 10 MB
+  maxSize: process.env.CANNON_UPLOAD_MAX_SIZE || 1048576 * 10, // 10 MB
+  cvsZipPath: process.env.CANNON_UPLOAD_CVSZIP_PATH || join(__dirname, `/CVS.zip`),
+  cvsZipAge: process.env.CANNON_UPLOAD_CVSZIP_AGE || 3600 * 1000 // 1 hour in miliseconds
 }
 
 config.mongo = {
@@ -34,6 +36,12 @@ config.google = {
   clientId: process.env.CANNON_GOOGLE_APP_ID || 'YOUR APP ID',
   clientSecret: process.env.CANNON_GOOGLE_CLIENT_SECRET || 'YOUR CLIENT SECRET',
   apiKey: process.env.CANNON_GOOGLE_API_KEY || 'YOUR API KEY'
+}
+
+config.linkedIn = {
+  clientId: process.env.CANNON_LINKEDIN_CLIENT_ID || 'YOUR CLIENT ID',
+  clientSecret: process.env.CANNON_LINKEDIN_CLIENT_SECRET || 'YOUR CLIENT SECRET',
+  redirectUri: process.env.CANNON_LINKEDIN_REDIRECT_URI || 'http://localhost:4200/login/linkedIn'
 }
 
 config.fenix = {

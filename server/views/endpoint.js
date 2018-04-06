@@ -8,11 +8,14 @@ module.exports = function render (content) {
 
 function renderObject (model) {
   return {
-    id: model.id,
-    achievement: model.achievement,
-    entries: model.entries,
+    company: model.company,
+    edition: model.edition,
+    visited: model.visited,
+    validaty: {
+      from: model.validaty.from,
+      to: model.validaty.to
+    },
     created: model.created,
-    expires: model.expires,
-    user: model.user
+    updated: model.updated
   }
 }

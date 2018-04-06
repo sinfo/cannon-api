@@ -25,6 +25,9 @@ const schema = new mongoose.Schema({
   facebook: {
     id: String
   },
+  linkedIn: {
+    id: String
+  },
   google: {
     id: String
   },

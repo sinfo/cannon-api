@@ -5,10 +5,12 @@ const token = require('../auth/token')
 const facebook = require('../helpers/facebook')
 const google = require('../helpers/google')
 const fenix = require('../helpers/fenix')
+const linkedin = require('../helpers/linkedin')
 
 server.method('auth.facebook', facebookAuth, {})
 server.method('auth.fenix', fenixAuth, {})
 server.method('auth.google', googleAuth, {})
+server.method('auth.linkedIn', linkedInAuth, {})
 
 function facebookAuth (id, token, cb) {
   // Check with Facebook if token is valid
@@ -81,6 +83,33 @@ function fenixAuth (code, cb) {
           },
           name: fenixUser.name,
           img: `https://fenix.tecnico.ulisboa.pt/user/photo/${fenixUser.username}`
+        }
+        return authenticate(res.userId, changedAttributes, cb)
+      }).catch(err => cb(Boom.unauthorized(err)))
+    }).catch(err => cb(Boom.unauthorized(err)))
+  }).catch(err => cb(Boom.unauthorized(err)))
+}
+
+function linkedInAuth (code, cb) {
+  // Exchange the code given by the user by a token from LinkedIn
+  linkedin.getToken(code).then(token => {
+    // Get user profile information from LinkedIn
+    linkedin.getLinkedinUser(token).then(linkedinUser => {
+      // Get user in cannon by LinkedIn User email
+      linkedin.getUser(linkedinUser).then(res => {
+        // If user does not exist we create, otherwise we update existing user
+        if (res.createUser) {
+          return linkedin.createUser(linkedinUser)
+            .then(userId => authenticate(userId, null, cb))
+            .catch(err => cb(Boom.unauthorized(err)))
+        }
+        const changedAttributes = {
+          linkedIn: {
+            id: linkedinUser.id
+          },
+          name: `${linkedinUser.firstName} ${linkedinUser.lastName}`,
+          mail: linkedinUser.emailAddress,
+          img: linkedinUser.pictureUrl
         }
         return authenticate(res.userId, changedAttributes, cb)
       }).catch(err => cb(Boom.unauthorized(err)))

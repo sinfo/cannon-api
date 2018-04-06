@@ -50,6 +50,12 @@ server.route({
 })
 
 server.route({
+  method: 'GET',
+  path: '/files/download',
+  config: handlers.downloadZip
+})
+
+server.route({
   method: ['PUT', 'PATCH'],
   path: '/files/{id}',
   config: handlers.update
@@ -65,4 +71,10 @@ server.route({
   method: ['DELETE'],
   path: '/files/me',
   config: handlers.removeMe
+})
+
+server.route({
+  method: 'GET',
+  path: '/company/{companyId}/files/download',
+  config: handlers.downloadCompany
 })

@@ -6,11 +6,12 @@ const uuid = require('uuid')
 
 server.method('redeem.create', create, {})
 server.method('redeem.get', get, {})
+server.method('redeem.getMe', getMe, {})
 server.method('redeem.remove', remove, {})
 server.method('redeem.prepareRedeemCodes', prepareRedeemCodes, {})
 
 function create (redeem, cb) {
-  Redeem.created = Date.now()
+  redeem.created = Date.now()
 
   Redeem.create(redeem, (err, _redeem) => {
     if (err) {
@@ -40,8 +41,25 @@ function get (id, cb) {
   })
 }
 
-function remove (id, cb) {
-  Redeem.findOneAndRemove({id: id}, (err, redeem) => {
+function getMe (id, cb) {
+  Redeem.find({user: id}, (err, redeemCodes) => {
+    if (err) {
+      log.error({err: err, user: id}, 'error getting my redeem codes')
+      return cb(Boom.internal())
+    }
+    if (!redeemCodes) {
+      log.error({err: 'not found', user: id}, 'error getting my redeem codes')
+      return cb(Boom.notFound('redeem code not found'))
+    }
+
+    cb(null, redeemCodes)
+  })
+}
+
+function remove (id, achievement, user, cb) {
+  cb = cb || user || achievement // achievement and user are optional
+
+  Redeem.findOne({id: id}, (err, redeem) => {
     if (err) {
       log.error({err: err, redeem: id}, 'error deleting redeem')
       return cb(Boom.internal())
@@ -51,7 +69,17 @@ function remove (id, cb) {
       return cb(Boom.notFound())
     }
 
-    return cb(null, redeem)
+    let user = redeem.user
+    let achievement = redeem.achievement
+    let filter = { id: id }
+
+    if (achievement && user) {
+      filter = {user: user, achievement: achievement}
+    }
+
+    Redeem.remove(filter, (err, redeems) => {
+      return cb(null, redeems)
+    })
   })
 }
 
@@ -60,6 +88,7 @@ function prepareRedeemCodes (sessionId, users, cb) {
   for (let i = 0; i < users.length; i++) {
     redeemCodes.push({
       id: uuid.v4(),
+      user: users[i].id,
       achievement: 'session-' + sessionId
     })
   }

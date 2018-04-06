@@ -6,9 +6,11 @@ const server = require('../').hapi
 const log = require('../helpers/logger')
 const async = require('async')
 const fs = require('fs')
+const util = require('util')
 const urlencode = require('urlencode')
 const fieldsParser = require('../helpers/fieldsParser')
 const File = require('../db/file')
+const Zip = require('adm-zip')
 
 server.method('file.create', create, {})
 server.method('file.createArray', createArray, {})
@@ -20,6 +22,7 @@ server.method('file.delete', deleteFile, {})
 server.method('file.saveFiles', saveFiles, {})
 server.method('file.upload', upload, {})
 server.method('file.uploadCV', uploadCV, {})
+server.method('file.zipFiles', zipFiles, {})
 
 function createArray (files, cb) {
   if (!files.length) {
@@ -34,8 +37,8 @@ function createArray (files, cb) {
 }
 
 function create (file, user, cb) {
+  file.user = (cb && user) || file.user
   cb = cb || user
-  file.user = user || file.user
 
   file.created = file.updated = Date.now()
 
@@ -104,7 +107,6 @@ function get (id, query, cb) {
       return cb(Boom.internal())
     }
     if (!file) {
-      log.error({err: 'not found', file: id}, 'file not found')
       return cb(Boom.notFound())
     }
     cb(null, file.toObject({ getters: true }))
@@ -148,7 +150,6 @@ function remove (id, cb) {
 }
 
 function uploadCV (data, cb) {
-  console.log(data)
   return upload('cv', data, cb)
 }
 
@@ -252,4 +253,90 @@ function saveFile (kind, data, cb) {
       return cb(null, fileInfo)
     })
   })
+}
+
+function zipFiles (links, cb) {
+  if (links) {
+    // Generate new zip with links
+    const linksIds = links.map((link) => { return link.attendee })
+    const filter = {
+      user: {'$in': linksIds }
+    }
+    const zip = new Zip()
+
+    File.find(filter, (err, files) => {
+      if (err) {
+        log.error({err: err}, 'error getting links files')
+        return cb(Boom.internal())
+      }
+
+      if (!files) {
+        return cb(Boom.notFound())
+      }
+
+      if (files) {
+        async.eachSeries(files, (file, cbAsync) => {
+          let link = links.find((link) => { return link.attendee === file.user })
+
+          server.methods.user.get({'id': file.user}, (err, user) => {
+            if (err) {
+              return cbAsync(Boom.internal())
+            }
+
+            zip.addFile(`${user.name}.pdf`, fs.readFileSync(`${config.upload.path}/${file.id}`), `Notes: ${link.note}`)
+            if (link.note) {
+              zip.addFile(`${user.name}.txt`, new Buffer(`Your notes, taken on ${new Date(link.created).toUTCString()}: ${link.note}`))
+            }
+            return cbAsync()
+          })
+        }, (err) => {
+          if (err) {
+            return cb(Boom.internal())
+          }
+          zip.toBuffer((buffer) => {
+            return cb(null, buffer)
+          })
+        })
+      }
+    })
+  } else {
+    // - see if old exists && verify freshness
+    fs.stat(config.upload.cvsZipPath, (err, stats) => {
+      if (err && err.code !== 'ENOENT') {
+        log.error({err: err, links: links}, '[file] Error reading cvsZipFile')
+        return cb(Boom.internal())
+      }
+
+      // Prevents Big Zip from being generated on every request. Acts like a cache
+      if (err && err.code !== 'ENOENT' && Date.now() < new Date(stats.mtime).getTime() + config.upload.cvsZipAge) {
+        return cb()
+      }
+
+      let zip = new Zip()
+      fs.readdir(config.upload.path, (err, files) => {
+        if (err) {
+          return cb(Boom.internal())
+        }
+
+        async.eachSeries(files, (file, cbAsync) => {
+          fs.readFile(`${config.upload.path}/${file}`, (err, fileData) => {
+            zip.addFile(`${file}.pdf`, fileData) // .pdf hardcoded ¯\_(ツ)_/¯
+            return cbAsync()
+          })
+        }, (err) => {
+          if (err) {
+            return cb(Boom.internal())
+          }
+          zip.toBuffer(buffer => {
+            fs.writeFile(config.upload.cvsZipPath, buffer, (err) => {
+              if (err) {
+                return (Boom.internal())
+              }
+              return cb()
+            })
+          })
+        })
+      })
+    })
+  }
 }

@@ -17,7 +17,7 @@ exports.create = {
       userId: Joi.string().required().description('Id of the user working for the company'),
       attendeeId: Joi.string().required().description('Id of the attendee'),
       editionId: Joi.string().required().description('Id of the edition'),
-      note: Joi.string().default('').description('Notes the user wants to keep on the attendee')
+      note: Joi.string().allow('').description('Notes the user wants to keep on the attendee')
     }
   },
   pre: [

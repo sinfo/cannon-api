@@ -38,12 +38,14 @@ function renderObject (model, user) {
     result.facebook = model.facebook && {
       id: model.facebook && model.facebook.id
     }
+    result.linkedIn = model.linkedIn && {
+      id: model.linkedIn && model.linkedIn.id
+    }
     result.google = model.google && {
       id: model.google && model.google.id
     }
     result.fenix = model.fenix && {
-      id: model.fenix && model.fenix.id,
-      created: model.fenix && model.fenix.created
+      id: model.fenix && model.fenix.id
     }
     result.job = model.job && {
       startup: model.job && model.job.startup,
