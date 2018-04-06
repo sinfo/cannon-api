@@ -30,3 +30,5 @@ cannon_uploads
 
 scripts/output
 package-lock.json
+
+env.sh
