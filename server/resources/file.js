@@ -283,9 +283,9 @@ function zipFiles (links, cb) {
               return cbAsync(Boom.internal())
             }
 
-            zip.addFile(`${user.name}.pdf`, fs.readFileSync(`${config.upload.path}/${file.id}`), `Notes: ${link.note}`)
+            zip.addFile(`${user.name}.pdf`, fs.readFileSync(`${config.upload.path}/${file.id}`), `Notes: ${link.note}`, 0644)
             if (link.note) {
-              zip.addFile(`${user.name}.txt`, new Buffer(`Your notes, taken on ${new Date(link.created).toUTCString()}: ${link.note}`))
+              zip.addFile(`${user.name}.txt`, new Buffer(`Your notes, taken on ${new Date(link.created).toUTCString()}: ${link.note}`), 0644)
             }
             return cbAsync()
           })
@@ -320,7 +320,7 @@ function zipFiles (links, cb) {
 
         async.eachSeries(files, (file, cbAsync) => {
           fs.readFile(`${config.upload.path}/${file}`, (err, fileData) => {
-            zip.addFile(`${file}.pdf`, fileData) // .pdf hardcoded ¯\_(ツ)_/¯
+            zip.addFile(`${file}.pdf`, fileData, '', 0644) // .pdf hardcoded ¯\_(ツ)_/¯
             return cbAsync()
           })
         }, (err) => {
