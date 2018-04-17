@@ -285,7 +285,7 @@ function zipFiles (links, cb) {
 
             zip.addFile(`${user.name}.pdf`, fs.readFileSync(`${config.upload.path}/${file.id}`), `Notes: ${link.note}`, 0644)
             if (link.note) {
-              zip.addFile(`${user.name}.txt`, new Buffer(`Your notes, taken on ${new Date(link.created).toUTCString()}: ${link.note}`), 0644)
+              zip.addFile(`${user.name}.txt`, new Buffer(`Your notes, taken on ${new Date(link.created).toUTCString()}: ${link.note}`), `Notes: ${link.note}`, 0644)
             }
             return cbAsync()
           })
