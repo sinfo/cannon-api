@@ -126,7 +126,7 @@ exports.downloadMe = {
     { method: 'file.get(auth.credentials.user.id, query)', assign: 'file' }
   ],
   handler: function (request, reply) {
-    const path = configUpload.path + '/' + request.pre.file.id + '.' + request.pre.file.extension
+    const path = configUpload.path + '/' + request.pre.file.id
     const options = {
       filename: request.pre.file.name,
       mode: 'attachment'
