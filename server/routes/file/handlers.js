@@ -250,7 +250,7 @@ exports.removeMe = {
 
   },
   pre: [
-    { method: 'file.remove(auth.credentials.user.id)', assign: 'file' }
+    { method: 'file.removeFromUser(auth.credentials.user.id)', assign: 'file' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.file))

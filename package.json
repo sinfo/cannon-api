@@ -7,7 +7,7 @@
     "run": "nodemon server/index.js | bunyan",
     "start": "node server/index.js | bunyan",
     "mon": "nodemon -e js,hbs server/index.js | bunyan",
-    "test": "lab server/test -l  -m 2000 --verbose",
+    "test": "./node_modules/.bin/lab server/test -l  -m 2000 --verbose",
     "test-cov": "lab server/test -c",
     "lint": "standard | snazzy"
   },
@@ -30,6 +30,7 @@
     "async": "^0.9.0",
     "boom": "~2.5.1",
     "bunyan": "^1.8.12",
+    "esprima": "^4.0.1",
     "fenixedu": "https://github.com/jgantunes/fenixedu/tarball/master",
     "good": "^2.3.0",
     "google-auth-library": "^1.2.1",

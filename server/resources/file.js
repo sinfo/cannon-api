@@ -18,6 +18,7 @@ server.method('file.update', update, {})
 server.method('file.get', get, {})
 server.method('file.list', list, {})
 server.method('file.remove', remove, {})
+server.method('file.removeFromUser', removeFromUser, {})
 server.method('file.delete', deleteFile, {})
 server.method('file.saveFiles', saveFiles, {})
 server.method('file.upload', upload, {})
@@ -146,6 +147,12 @@ function remove (id, cb) {
     }
 
     return cb(null, file)
+  })
+}
+
+function removeFromUser (id, cb) {
+  get({ user: id }, (err, file) => {
+    if (err !== null) { remove(file.id, cb) }
   })
 }
 
