@@ -151,8 +151,15 @@ function remove (id, cb) {
 }
 
 function removeFromUser (id, cb) {
-  get({ user: id }, (err, file) => {
-    if (err !== null) { remove(file.id, cb) }
+  File.findOne(filter, fields, (err, file) => {
+    if (err) {
+      log.error({err: err, file: id}, 'error getting file')
+      return cb(Boom.internal())
+    }
+    if (!file) {
+      return cb(Boom.notFound())
+    }
+    remove(file.id, cb)
   })
 }
 
