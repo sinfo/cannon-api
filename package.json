@@ -9,6 +9,7 @@
     "mon": "nodemon -e js,hbs server/index.js | bunyan",
     "test": "./node_modules/.bin/lab server/test -l  -m 2000 --verbose",
     "test-cov": "lab server/test -c",
+    "gen-keys": "mkdir -p keys; ssh-keygen -t rsa -b 4096 -f ./keys/token.key -q -N \"\"; openssl rsa -in ./keys/token.key -pubout -outform PEM -out ./keys/token.pub",
     "lint": "standard | snazzy"
   },
   "pre-commit": [
