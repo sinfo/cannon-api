@@ -166,23 +166,27 @@ function getByToken (token, cb) {
   })
 }
 
-function list (query, cb) {
-  cb = cb || query // fields is optional
+function list (cb) {
 
-  const filter = {}
-  const fields = fieldsParser(query.fields)
+  const fields ={ 
+    name: 1,
+    points: 1,
+    img: 1
+  }
   const options = {
-    skip: query.skip,
-    limit: query.limit,
-    sort: fieldsParser(query.sort)
+    limit: 20,
+    sort: '-points.total'
   }
 
-  User.find(filter, fields, options, (err, users) => {
+  console.log("before db request")
+
+  User.find({},fields , options, (err, users) => {
+    console.log('inside users query')
     if (err) {
       log.error({err: err}, 'error getting all users')
       return cb(Boom.internal())
     }
-
+    console.log('before callback')
     cb(null, users)
   })
 }

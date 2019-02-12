@@ -81,6 +81,23 @@ lab.experiment('User', () => {
     })
   })
 
+  lab.test('List all as admin', (done) => {
+    const options = {
+      method: 'GET',
+      url: '/users',
+      credentials: credentialsA
+    }
+
+    server.inject(options, (response) => {
+      const result = response.result
+
+      Code.expect(response.statusCode).to.equal(200)
+      Code.expect(result).to.be.instanceof(Array)
+      Code.expect(result[0].name).to.be.string
+      done()
+    })
+})
+
   lab.test('Get one as admin', (done) => {
     const options = {
       method: 'GET',
@@ -324,6 +341,23 @@ lab.experiment('User', () => {
       done()
     })
   })
+
+  lab.test('List all as user', (done) => {
+    const options = {
+      method: 'GET',
+      url: '/users',
+      credentials: credentialsB
+    }
+
+    server.inject(options, (response) => {
+      const result = response.result
+
+      Code.expect(response.statusCode).to.equal(200)
+      Code.expect(result).to.be.instanceof(Array)
+      Code.expect(result[0].name).to.be.string
+      done()
+    })
+})
 
   lab.test('Update as user', (done) => {
     const options = {

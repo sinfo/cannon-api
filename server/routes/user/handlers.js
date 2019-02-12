@@ -100,6 +100,23 @@ exports.updateMe = {
   description: 'Updates the user'
 }
 
+exports.find = {
+  tags: ['api', 'user'],
+  auth: {
+    strategies: ['default'],
+    scope: ['user', 'company', 'team', 'admin'],
+    mode: 'try'
+  },
+  pre: [
+    { method: 'user.list()', assign: 'users' }
+  ],
+  handler: function (request, reply) {
+    console.log(request.pre.users)
+    reply(render(request.pre.users, request.auth.credentials && request.auth.credentials.user))
+  },
+  description: 'Gets top 20 users'
+}
+
 exports.update = {
   tags: ['api', 'user'],
   auth: {

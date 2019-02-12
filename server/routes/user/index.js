@@ -8,6 +8,12 @@ server.route({
 })
 
 server.route({
+  method: 'GET',
+  path: '/users',
+  config: handlers.find
+})
+
+server.route({
   method: ['PATCH', 'PUT'],
   path: '/users/{id}',
   config: handlers.update
