@@ -137,6 +137,7 @@ function list (query, cb) {
 
 function remove (id, cb) {
   File.findOneAndRemove({id: id}, (err, file) => {
+    log.info('remove', id)
     if (err) {
       log.error({err: err, file: id}, 'error deleting file')
       return cb(Boom.internal())
@@ -146,8 +147,9 @@ function remove (id, cb) {
       return cb(Boom.notFound())
     }
 
+    deleteFile(file.id, cb)
     return cb(null, file)
-  })
+  }, { new: false })
 }
 
 function removeFromUser (id, cb) {
@@ -159,6 +161,7 @@ function removeFromUser (id, cb) {
     if (!file) {
       return cb(Boom.notFound())
     }
+
     remove(file.id, cb)
   })
 }
