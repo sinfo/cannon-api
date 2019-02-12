@@ -178,15 +178,11 @@ function list (cb) {
     sort: '-points.total'
   }
 
-  console.log("before db request")
-
   User.find({},fields , options, (err, users) => {
-    console.log('inside users query')
     if (err) {
       log.error({err: err}, 'error getting all users')
       return cb(Boom.internal())
     }
-    console.log('before callback')
     cb(null, users)
   })
 }

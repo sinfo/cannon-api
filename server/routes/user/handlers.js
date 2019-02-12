@@ -111,7 +111,6 @@ exports.find = {
     { method: 'user.list()', assign: 'users' }
   ],
   handler: function (request, reply) {
-    console.log(request.pre.users)
     reply(render(request.pre.users, request.auth.credentials && request.auth.credentials.user))
   },
   description: 'Gets top 20 users'
