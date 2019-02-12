@@ -38,12 +38,6 @@ server.route({
 })
 
 server.route({
-  method: 'GET',
-  path: '/users',
-  config: handlers.list
-})
-
-server.route({
   method: 'POST',
   path: '/users/users',
   config: handlers.getMulti

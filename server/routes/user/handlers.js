@@ -220,29 +220,6 @@ exports.getMe = {
   description: 'Gets the user'
 }
 
-exports.list = {
-  tags: ['api', 'user'],
-  auth: {
-    strategies: ['default'],
-    scope: ['user', 'company', 'team', 'admin'],
-    mode: 'try'
-  },
-  validate: {
-    query: {
-      fields: Joi.string().description('Fields we want to retrieve'),
-      sort: Joi.string().description('Sort fields we want to retrieve'),
-      skip: Joi.number().description('Number of documents we want to skip'),
-      limit: Joi.number().description('Limit of documents we want to retrieve')
-    }
-  },
-  pre: [
-    { method: 'user.list(query)', assign: 'users' }
-  ],
-  handler: function (request, reply) {
-    reply(render(request.pre.users, request.auth.credentials && request.auth.credentials.user))
-  },
-  description: 'Gets all the users'
-}
 
 exports.removeCompany = {
   tags: ['api', 'user'],
