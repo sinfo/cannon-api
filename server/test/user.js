@@ -96,7 +96,7 @@ lab.experiment('User', () => {
       Code.expect(result[0].name).to.be.string
       done()
     })
-  })
+})
 
   lab.test('Get one as admin', (done) => {
     const options = {
@@ -357,7 +357,7 @@ lab.experiment('User', () => {
       Code.expect(result[0].name).to.be.string
       done()
     })
-  })
+})
 
   lab.test('Update as user', (done) => {
     const options = {
