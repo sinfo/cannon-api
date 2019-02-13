@@ -6,7 +6,13 @@ require('./db')
 
 log.info({ env: process.env.NODE_ENV }, '### Starting Cannon ###')
 
-const server = module.exports.hapi = new Hapi.Server(config.host, config.port, { cors: true })
+const server = module.exports.hapi = new Hapi.Server(config.host, config.port, {
+  cors: {
+    origin: process.env.NODE_ENV === 'production'
+    ? ['*sinfo.org']
+    : ['http://localhost:*']
+  }
+})
 
 server.pack.register(
   [
