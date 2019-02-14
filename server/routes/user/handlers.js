@@ -41,10 +41,6 @@ exports.create = {
         ttl: Joi.number().description('Fenix token time to live'),
         created: Joi.date().description('Fenix token creation date')
       },
-      points: {
-        available: Joi.number().description('Points available to use'),
-        total: Joi.number().description('Total points earned')
-      },
       achievements: Joi.array().items(Joi.object().keys({
         id: Joi.string().description('id of the earned achievement'),
         date: Joi.date().description('date of its receipt')
@@ -77,7 +73,6 @@ exports.updateMe = {
   },
   validate: {
     payload: {
-      // id: Joi.string().description('Id of the user'),
       name: Joi.string().description('Name of the user'),
       img: Joi.string().uri().description('Image of the user'),
       mail: Joi.string().email().description('Mail of the user'),
@@ -153,10 +148,6 @@ exports.update = {
         refreshToken: Joi.string().token().description('Fenix refresh token of the user'),
         ttl: Joi.number().description('Fenix token time to live'),
         created: Joi.date().description('Fenix token creation date')
-      },
-      points: {
-        available: Joi.number().description('Points available to use'),
-        total: Joi.number().description('Total points earned')
       },
       achievements: Joi.array().items(Joi.object().keys({
         id: Joi.string().description('id of the earned achievement'),

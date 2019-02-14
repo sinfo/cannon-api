@@ -19,7 +19,11 @@ exports.create = {
       description: Joi.string().description('Description of the achievement'),
       category: Joi.string().description('Category of the achievement'),
       instructions: Joi.string().description('Instructions on how to get the achievement'),
-      value: Joi.number().description('Amount of points associated to the achievement')
+      value: Joi.number().description('Amount of points associated to the achievement'),
+      validity: Joi.object().keys({
+        from: Joi.date().description('Date when the achievement starts being available for grabs'),
+        to: Joi.date().description('Date when the achievement starts stops being available for grabs')
+      })
     }
   },
   pre: [
@@ -49,7 +53,11 @@ exports.update = {
       description: Joi.string().description('Description of the achievement'),
       instructions: Joi.string().description('Instructions on how to get the achievement'),
       img: Joi.string().description('Image of the achievement'),
-      value: Joi.number().description('Amount of points associated to the achievement')
+      value: Joi.number().description('Amount of points associated to the achievement'),
+      validity: Joi.object().keys({
+        from: Joi.date().description('Date when the achievement starts being available for grabs'),
+        to: Joi.date().description('Date when the achievement starts stops being available for grabs')
+      })
     }
   },
   pre: [
@@ -151,4 +159,30 @@ exports.remove = {
     reply(render(request.pre.achievement))
   },
   description: 'Removes an achievement'
+}
+
+exports.checkIn = {
+  tags: ['api', 'survey'],
+  auth: {
+    strategies: ['default'],
+    scope: ['team', 'admin']
+  },
+  validate: {
+    params: {
+      sessionId: Joi.string().required().description('id of the session which is being performed check-in of the attendees')
+    },
+    payload: {
+      users: Joi.array().required().description('An array of users IDs')
+    }
+  },
+  pre: [
+    { method: 'session.get(params.sessionId)', assign: 'session' },
+    { method: 'user.getMulti(payload.users)', assign: 'users' },
+    { method: 'achievement.get({session: pre.session.id})', assign: 'achievement' },
+    { method: 'achievement.addMultiUsers(pre.achievement.id, auth.credentials.user.id)', assign: 'result' },
+  ],
+  handler: function (request, reply) {
+    reply(request.pre.result)
+  },
+  description: 'Perform check-in for an array of users, by sending an email with the link to the survey to each user'
 }

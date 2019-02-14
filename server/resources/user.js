@@ -9,7 +9,6 @@ const User = require('../db/user')
 server.method('user.create', create, {})
 server.method('user.update', update, {})
 server.method('user.updateMe', updateMe, {})
-server.method('user.updatePoints', updatePoints, {})
 server.method('user.get', get, {})
 server.method('user.getByToken', getByToken, {})
 server.method('user.list', list, {})
@@ -38,20 +37,6 @@ function create (user, cb) {
 
     cb(null, _user.toObject({ getters: true }))
   })
-}
-
-function updatePoints (filter, points, cb) {
-  const user = {$inc: {'points.available': points}}
-
-  if (typeof points !== 'number') {
-    return cb(Boom.badRequest('points must be of type number'))
-  }
-
-  if (points > 0) {
-    user.$inc['points.total'] = points
-  }
-
-  update(filter, user, cb)
 }
 
 function updateMe (filter, user, opts, cb) {

@@ -13,6 +13,7 @@ server.method('achievement.getByUser', getByUser, {})
 server.method('achievement.list', list, {})
 server.method('achievement.remove', remove, {})
 server.method('achievement.addUser', addUser, {})
+server.method('achievement.addMultiUsers', addMultiUsers, {})
 server.method('achievement.addCV', addCV, {})
 
 function create (achievement, cb) {
@@ -176,6 +177,28 @@ function addUser (achievementId, userId, cb) {
   const changes = {
     $addToSet: {
       users: userId
+    }
+  }
+
+  Achievement.findOneAndUpdate({ id: achievementId }, changes, (err, achievement) => {
+    if (err) {
+      log.error({err: err, achievement: achievementId}, 'error adding user to achievement')
+      return cb(Boom.internal())
+    }
+
+    cb(null, achievement.toObject({ getters: true }))
+  })
+}
+
+function addMultiUsers (achievementId, usersId, cb) {
+  if (!usersId) {
+    log.error('tried to add multiple users to achievement but no users where given')
+    return cb()
+  }
+
+  const changes = {
+    $addToSet: {
+      users: { $each: usersId }
     }
   }
 
