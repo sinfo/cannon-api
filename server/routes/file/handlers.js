@@ -250,7 +250,8 @@ exports.removeMe = {
 
   },
   pre: [
-    { method: 'file.removeFromUser(auth.credentials.user.id)', assign: 'file' }
+    { method: 'file.removeFromUser(auth.credentials.user.id)', assign: 'file' },
+    {method: 'achievement.removeCV(auth.credentials.user.id)', assign: 'achievement', failAction: 'log'},
   ],
   handler: function (request, reply) {
     reply(render(request.pre.file))
@@ -341,7 +342,7 @@ exports.uploadMe = {
       {method: 'file.delete(pre.oldFile.id)', assign: 'deleteFile', failAction: 'log'},
       {method: 'file.update(pre.oldFile.id, pre.file, auth.credentials.user.id, query)', assign: 'fileInfo'}
     ],
-    {method: 'achievement.addCV(auth.credentials.user.id)', assign: 'achievement', failAction: 'log'}
+    {method: 'achievement.addCV(auth.credentials.user.id)', assign: 'achievement', failAction: 'log'},
   ],
   handler: function (request, reply) {
     reply(render(request.pre.fileInfo)).created('/api/file/' + request.pre.fileInfo.id)

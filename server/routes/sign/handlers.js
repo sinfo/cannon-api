@@ -28,3 +28,26 @@ exports.create = {
   },
   description: 'Creates a new signature'
 }
+
+exports.checkIn = {
+  tags: ['api', 'survey'],
+  auth: {
+    strategies: ['default'],
+    scope: ['team', 'admin']
+  },
+  validate: {
+    params: {
+      sessionId: Joi.string().required().description('id of the session which is being performed check-in of the attendees')
+    },
+    payload: {
+      users: Joi.array().required().description('An array of users IDs')
+    }
+  },
+  pre: [
+    { method: 'achievement.addMultiUsersBySession(params.sessionId, payload.users)', assign: 'achievement' },
+  ],
+  handler: function (request, reply) {
+    reply(request.pre.achievement)
+  },
+  description: 'Perform check-in in a session for an array of users, giving its achievement to each of them'
+}

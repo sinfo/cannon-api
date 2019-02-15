@@ -2,7 +2,7 @@ const server = require('../server').hapi
 const API = server.methods
 const log = require('../server/helpers/logger')
 const async = require('async')
-const EVENT = '25-sinfo'
+const EVENT = '26-sinfo'
 
 API.session.list({event: EVENT}, (err, sessions) => {
   log.debug({err: err, count: sessions.length}, 'got sessions')
@@ -42,6 +42,25 @@ API.session.list({event: EVENT}, (err, sessions) => {
   }, (err) => {
     log.info({err: err}, 'achievements created')
 
+    const sessionAchievement = {
+      'name': `Submitted CV`,
+      'id': 'submitted-cv-' + EVENT,
+      'value': 0,
+      'kind': 'cv',
+      'img': `http://static.sinfo.org/SINFO_25/achievements/${session.kind.toLowerCase()}/${session.id}.png`
+    }
+  
+    // log.debug({sessionAchievement: sessionAchievement}, 'creating achievement');
+  
+    API.achievement.create(sessionAchievement, (err, achievement) => {
+      if (err) {
+        log.warn({err: err, sessionAchievement: sessionAchievement}, 'achievement')
+      }
+  
+      cb()
+    })
+
     process.exit(0)
   })
+  
 })

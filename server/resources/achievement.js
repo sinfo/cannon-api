@@ -14,7 +14,11 @@ server.method('achievement.list', list, {})
 server.method('achievement.remove', remove, {})
 server.method('achievement.addUser', addUser, {})
 server.method('achievement.addMultiUsers', addMultiUsers, {})
+server.method('achievement.addMultiUsersBySession', addMultiUsersBySession, {})
 server.method('achievement.addCV', addCV, {})
+server.method('achievement.getPointsForUser', getPointsForUser, {})
+server.method('achievement.removeCV', removeCV, {})
+server.method('achievement.getActiveAchievements', getActiveAchievements, {})
 
 function create (achievement, cb) {
   achievement.id = achievement.id || slug(achievement.name)
@@ -154,17 +158,60 @@ function remove (id, cb) {
 }
 
 function addCV (userId, cb) {
-  const achievementId = 'submitted-cv'
+  const achievementKind = 'cv'
+  const now = new Date()
 
-  get({id: achievementId, users: {$in: [userId]}}, (err, result) => {
-    if (err) {
-      log.error({err: err})
-      if (err.output && err.output.statusCode === 404) {
-        return addUser(achievementId, userId, cb)
-      }
-      return cb(err)
+  const changes = {
+    $addToSet: {
+      users: userId
     }
-    return cb(Boom.conflict('user already has achievement'))
+  }
+
+  Achievement.findOneAndUpdate({
+    kind: achievementKind,
+    'validity.from': { $lte: now },
+    'validity.to': { $gte: now }
+  }, changes, (err, achievement) => {
+    if (err) {
+      log.error({err: err, achievement: achievementId}, 'error adding user to cv achievement')
+      return cb(Boom.internal())
+    }
+
+    if (achievement === null) {
+      log.error({userId: userId}, 'error trying to add user to cv achievement')
+      return cb(new Error('error trying to add user to cv achievement'), null)
+    }
+
+    cb(null, achievement.toObject({ getters: true }))
+  })
+}
+
+function removeCV (userId, cb) {
+  const achievementKind = 'cv'
+  const now = new Date()
+
+  const changes = {
+    $pull: {
+      users: userId
+    }
+  }
+
+  Achievement.findOneAndUpdate({
+    kind: achievementKind,
+    'validity.from': { $lte: now },
+    'validity.to': { $gte: now }
+  }, changes, (err, achievement) => {
+    if (err) {
+      log.error({err: err, achievement: achievementId}, 'error removing user from cv achievement')
+      return cb(Boom.internal())
+    }
+
+    if (achievement === null) {
+      log.error({userId: userId}, 'error trying to remove user from cv achievement')
+      return cb(new Error('error trying to remove user from cv achievement'), null)
+    }
+
+    cb(null, achievement.toObject({ getters: true }))
   })
 }
 
@@ -173,21 +220,47 @@ function addUser (achievementId, userId, cb) {
     log.error({userId: userId, achievementId: achievementId}, 'missing arguments on addUser')
     return cb()
   }
-
   const changes = {
     $addToSet: {
       users: userId
     }
   }
 
-  Achievement.findOneAndUpdate({ id: achievementId }, changes, (err, achievement) => {
+  const now = new Date()
+
+  Achievement.findOneAndUpdate({
+    id: achievementId,
+    'validity.from': { $lte: now },
+    'validity.to': { $gte: now }
+  }, changes, (err, achievement) => {
     if (err) {
       log.error({err: err, achievement: achievementId}, 'error adding user to achievement')
       return cb(Boom.internal())
     }
 
+    if (achievement === null) {
+      log.error({achievementId: achievementId, userId: userId}, 'error trying to add user to not valid achievement')
+      return cb(new Error('error trying to add user to not valid achievement'), null)
+    }
+
     cb(null, achievement.toObject({ getters: true }))
   })
+}
+
+function getPointsForUser (activeAchievements, userId, cb) {
+  const result = { achievements: [], points: 0 }
+
+  // list unique users at their points
+  result.achievements = activeAchievements.filter((achievement) => {
+    return achievement.users.indexOf(userId) !== -1
+  })
+
+  // fill the points
+  result.achievements.forEach(achv => {
+    result.points += achv.value
+  })
+
+  cb(null, result)
 }
 
 function addMultiUsers (achievementId, usersId, cb) {
@@ -202,12 +275,79 @@ function addMultiUsers (achievementId, usersId, cb) {
     }
   }
 
-  Achievement.findOneAndUpdate({ id: achievementId }, changes, (err, achievement) => {
+  const now = new Date()
+
+  Achievement.findOneAndUpdate({
+    id: achievementId,
+    'validity.from': { $lte: now },
+    'validity.to': { $gte: now }
+  }, changes, (err, achievement) => {
     if (err) {
       log.error({err: err, achievement: achievementId}, 'error adding user to achievement')
       return cb(Boom.internal())
     }
 
     cb(null, achievement.toObject({ getters: true }))
+  })
+}
+
+function addMultiUsersBySession (sessionId, usersId, cb) {
+  if (!usersId) {
+    log.error('tried to add multiple users to achievement but no users where given')
+    return cb()
+  }
+
+  const changes = {
+    $addToSet: {
+      users: { $each: usersId }
+    }
+  }
+
+  const now = new Date()
+  
+  Achievement.findOneAndUpdate({
+    session: sessionId,
+    'validity.from': { $lte: now },
+    'validity.to': { $gte: now }
+  }, changes, (err, achievement) => {
+    if (err) {
+      log.error({err: err, sessionId: sessionId}, 'error adding user to achievement')
+      return cb(Boom.internal())
+    }
+    
+    if (achievement === null) {
+      log.error({sessionId: sessionId}, 'error trying to add multiple users to not valid achievement in session')
+      return cb(new Error('error trying to add multiple users to not valid achievement in session'), null)
+    }
+
+    cb(null, achievement.toObject({ getters: true }))
+  })
+}
+
+// _date is a string, converted to Date inside this function
+function getActiveAchievements (query, cb) {
+  var date
+  cb = cb || query
+
+  if (query.date === undefined) {
+    date = new Date() // now
+  } else {
+    date = new Date(query.date)
+    if (isNaN(date.getTime())) {
+      log.error({ query: query.date }, 'invalid date given on query to get active achievements')
+      return cb(Boom.notAcceptable('invalid date given in query'))
+    }
+  }
+
+  Achievement.find({
+    'validity.from': { $lte: date },
+    'validity.to': { $gte: date }
+  }, (err, achievements) => {
+    if (err) {
+      log.error({ err: err, date: date }, 'error getting active achievements on a given date')
+      return cb(err)
+    }
+
+    cb(null, achievements)
   })
 }

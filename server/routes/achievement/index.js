@@ -21,6 +21,24 @@ server.route({
 
 server.route({
   method: 'GET',
+  path: '/achievements/me',
+  config: handlers.getMe
+})
+
+server.route({
+  method: 'GET',
+  path: '/achievements/active',
+  config: handlers.getActive
+})
+
+server.route({
+  method: 'GET',
+  path: '/achievements/active/me',
+  config: handlers.getMeActive
+})
+
+server.route({
+  method: 'GET',
   path: '/users/{id}/achievements',
   config: handlers.getUser
 })

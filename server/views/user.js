@@ -15,10 +15,7 @@ function renderObject (model, user) {
   result.name = model.name
   result.img = model.img || 'https://static.sinfo.org/SINFO_25/speakers/hacky.png'
   result.role = model.role
-  result.points = model.points && {
-    available: model.points && model.points.available || 0,
-    total: model.points && model.points.total || 0
-  }
+  result.points = model.points
   result.achievements = model.achievements && model.achievements.map(achievement => ({
     id: achievement && achievement.id,
     date: achievement && achievement.date

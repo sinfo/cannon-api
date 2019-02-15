@@ -102,13 +102,19 @@ exports.find = {
     scope: ['user', 'company', 'team', 'admin'],
     mode: 'try'
   },
+  validate: {
+    query: {
+      date: Joi.date().description('all users\' points on this date')
+    }
+  },
   pre: [
-    { method: 'user.list()', assign: 'users' }
+    { method: 'achievement.getActiveAchievements(query)', assign: 'activeAchievements' },
+    { method: 'user.list(pre.activeAchievements)', assign: 'users' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.users, request.auth.credentials && request.auth.credentials.user))
   },
-  description: 'Gets top 20 users'
+  description: 'Gets users with active achievements sorted by points'
 }
 
 exports.update = {
