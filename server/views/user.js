@@ -13,15 +13,10 @@ function renderObject (model, user) {
 
   result.id = model.id
   result.name = model.name
-  result.img = model.img || 'https://static.sinfo.org/SINFO_25/speakers/hacky.png'
+  result.img = model.img || 'https://sinfo.ams3.cdn.digitaloceanspaces.com/static/26-sinfo/hacky/hacky.png'
   result.role = model.role
-  result.points = model.points
-  result.achievements = model.achievements && model.achievements.map(achievement => ({
-    id: achievement && achievement.id,
-    date: achievement && achievement.date
-  }))
-  result.area = model.area
-  result.skills = model.skills
+  result.points = model.points && typeof model.points === 'number'
+    ? model.points : undefined
   result.registered = model.registered
   result.signatures = model.signatures && model.signatures.map(signature => ({
     edition: signature && signature.edition,

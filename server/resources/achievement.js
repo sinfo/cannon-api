@@ -104,8 +104,13 @@ function get (filter, cb) {
 
 function getByUser (filter, cb) {
   // log.debug({id: id}, 'getting achievement')
-
-  filter = {users: {$in: [filter]}}
+  const now = new Date()
+  
+  filter = {
+    users: {$in: [filter]},
+    'validity.from': { $lte: now },
+    'validity.to': { $gte: now }
+  }
 
   Achievement.find(filter, (err, achievements) => {
     if (err) {
@@ -343,6 +348,7 @@ function getActiveAchievements (query, cb) {
     'validity.from': { $lte: date },
     'validity.to': { $gte: date }
   }, (err, achievements) => {
+    console.log(achievements, date)
     if (err) {
       log.error({ err: err, date: date }, 'error getting active achievements on a given date')
       return cb(err)

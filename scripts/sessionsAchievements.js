@@ -6,7 +6,7 @@ const EVENT = '26-sinfo'
 
 API.session.list({event: EVENT}, (err, sessions) => {
   log.debug({err: err, count: sessions.length}, 'got sessions')
-
+  
   async.each(sessions, (session, cb) => {
     let achievementValue = 0
     switch (session.kind) {
@@ -22,12 +22,17 @@ API.session.list({event: EVENT}, (err, sessions) => {
       default:
         achievementValue = 10
     }
+
     const sessionAchievement = {
       'name': `Went to "${session.name}"`,
       'id': 'session-' + session.id,
       'session': session.id,
       'value': achievementValue,
-      'img': `http://static.sinfo.org/SINFO_25/achievements/${session.kind.toLowerCase()}/${session.id}.png`
+      'img': `https://sinfo.ams3.cdn.digitaloceanspaces.com/static/${EVENT}/achievements/${session.kind.toLowerCase()}/${session.id}.png`,
+      'validity': {
+        'from': new Date(),
+        'to': new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7) // 1 week
+      }
     }
 
     // log.debug({sessionAchievement: sessionAchievement}, 'creating achievement');
@@ -47,7 +52,11 @@ API.session.list({event: EVENT}, (err, sessions) => {
       'id': 'submitted-cv-' + EVENT,
       'value': 0,
       'kind': 'cv',
-      'img': `http://static.sinfo.org/SINFO_25/achievements/${session.kind.toLowerCase()}/${session.id}.png`
+      'img': `https://sinfo.ams3.cdn.digitaloceanspaces.com/static/${EVENT}/achievements/cv/cv.png`,
+      'validity': {
+        'from': new Date(),
+        'to': new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7) // 1 week
+      }
     }
   
     // log.debug({sessionAchievement: sessionAchievement}, 'creating achievement');
