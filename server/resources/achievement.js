@@ -15,6 +15,7 @@ server.method('achievement.remove', remove, {})
 server.method('achievement.addUser', addUser, {})
 server.method('achievement.addMultiUsers', addMultiUsers, {})
 server.method('achievement.addMultiUsersBySession', addMultiUsersBySession, {})
+server.method('achievement.addUserToStandAchievement', addUserToStandAchievement, {})
 server.method('achievement.addCV', addCV, {})
 server.method('achievement.getPointsForUser', getPointsForUser, {})
 server.method('achievement.removeCV', removeCV, {})
@@ -323,6 +324,39 @@ function addMultiUsersBySession (sessionId, usersId, cb) {
     if (achievement === null) {
       log.error({sessionId: sessionId}, 'error trying to add multiple users to not valid achievement in session')
       return cb(new Error('error trying to add multiple users to not valid achievement in session'), null)
+    }
+
+    cb(null, achievement.toObject({ getters: true }))
+  })
+}
+
+function addUserToStandAchievement (companyId, userId, cb) {
+  if (!userId) {
+    log.error('tried to user to company achievement but no user was given')
+    return cb()
+  }
+
+  const changes = {
+    $addToSet: {
+      users: userId
+    }
+  }
+
+  const now = new Date()
+  
+  Achievement.findOneAndUpdate({
+    id: { $regex: companyId },
+    'validity.from': { $lte: now },
+    'validity.to': { $gte: now }
+  }, changes, (err, achievement) => {
+    if (err) {
+      log.error({err: err, companyId: companyId, userId: userId}, 'error adding user to stand achievement')
+      return cb(Boom.internal())
+    }
+    
+    if (achievement === null) {
+      log.error({ companyId: companyId, userId: userId }, 'error trying to add user to not valid stand achievement')
+      return cb(new Error('error trying to add user to not valid stand achievement'), null)
     }
 
     cb(null, achievement.toObject({ getters: true }))

@@ -4,16 +4,19 @@ const log = require('../server/helpers/logger')
 const async = require('async')
 const request = require('request')
 
+const DECK = 'http://localhost:8080'
 const EVENT = '26-sinfo'
-const EVENT_START = new Date(2019, 01, 18, 0, 0, 0, 0)
+
 const CORLIEF = 'https://api.corlief.sinfo.org/reservation/latest'
+const DECK_EVENT_URL = DECK + '/api/events'
 const DECK_USER = 'francisco.pereira'
 const DECK_TOKEN = 'XMO7vIyMdp0Xffd1eh5ZjoLEdX9vVZ09MRyDcgkZXSaxUJPXzB9lKAiRRqpW4fyYHdV2yXPMzOFr29MQtmAZjVXHFeyqsFOfZfoK'
+
+let EVENT_START
 
 // fill the true values of validity, or just make them all valid now
 const trueValidity = true
 
-const cvFrom = EVENT_START
 const cvTo = new Date(2019, 02, 31, 23, 59, 59, 999)
 
 // points distribution (%)
@@ -66,11 +69,47 @@ const achievements = {
 const otherAchievements = []
 let pendingJobs = 0
 
+function getEvent (list_of_functions) {
+  request({
+    url: DECK_EVENT_URL,
+    headers: { 'Authorization': `${DECK_USER} ${DECK_TOKEN}` }
+  }, (err, _, body) => {
+    if (err) {
+      console.error(err)
+      process.exit(1)
+    }
+
+    let events = JSON.parse(body)
+
+    let found = false
+    for(let event of events) {
+      if (event.id === EVENT) {
+        EVENT_START = new Date(event.date)
+        found = true
+        break
+      }
+    }
+
+    if (!found) {
+      console.error(`ERROR: event ${EVENT} not found in Deck`)
+      process.exit(1)
+    }
+
+    const next = list_of_functions.pop()
+    next(list_of_functions)
+  })
+}
+
 function stands(list_of_functions) {
   request({
     url: CORLIEF,
     headers: { 'Authorization': `${DECK_USER} ${DECK_TOKEN}` }
-  }, (err, response, body) => {
+  }, (err, _, body) => {
+    if (err) {
+      console.error(err)
+      process.exit(1)
+    }
+
     const reservations = JSON.parse(body)
 
     reservations.forEach(r => {
@@ -144,7 +183,7 @@ function sessions(list_of_functions) {
         name: `Went to "${session.name}"`,
         id: 'session-' + session.id,
         session: session.id,
-        kind: 'session',
+        kind: '',
         value: 0
       }
 
@@ -159,16 +198,19 @@ function sessions(list_of_functions) {
       switch (session.kind) {
         case 'Keynote':
           kind = 'keynote'
+          sessionKind = 'keynote'
           break
         case 'Workshop':
           kind = 'workshops'
+          sessionKind = 'workshop'
           break
         case 'Presentation':
           kind = 'presentations'
+          sessionKind = 'presentation'
           break
       }
 
-      achievement['kind'] = 'session'
+      achievement['kind'] = sessionKind
       achievement['img'] = `https://sinfo.ams3.cdn.digitaloceanspaces.com/static/${EVENT}/achievements/${kind.toLowerCase()}/${session.id}.png`
       achievements[sessionDay][kind].push(achievement)
     })
@@ -186,7 +228,7 @@ function cv(list_of_functions) {
     kind: 'cv',
     img: `https://sinfo.ams3.cdn.digitaloceanspaces.com/static/${EVENT}/achievements/cv/cv.png`,
     validity: {
-      from: cvFrom,
+      from: EVENT_START,
       to: cvTo
     }
   })
@@ -258,8 +300,8 @@ function addAchievements(list_of_functions) {
 
 function waitForJobs() {
   if (pendingJobs > 0) {
-    console.log(`(${pendingJobs}) Waiting...`)
-    setTimeout(waitForJobs, 500)
+    console.log(`(${pendingJobs}) waiting...`)
+    setTimeout(waitForJobs, 1500)
   } else {
     console.log('Done!')
     process.exit(0)
@@ -285,4 +327,4 @@ function addAchievement(achievement, day, kind) {
   })
 }
 
-stands([waitForJobs, addAchievements, sessions, cv])
+getEvent([waitForJobs, addAchievements, sessions, cv, stands])

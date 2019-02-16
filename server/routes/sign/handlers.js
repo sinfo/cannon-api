@@ -21,7 +21,8 @@ exports.create = {
   },
   pre: [
     { method: 'link.checkCompany(auth.credentials.user.id, params.companyId, payload.editionId)', assign: 'verification' },
-    { method: 'user.sign(params.attendeeId, params.companyId, payload)', assign: 'user' }
+    { method: 'user.sign(params.attendeeId, params.companyId, payload)', assign: 'user' },
+    { method: 'achievement.addUserToStandAchievement(params.companyId, params.attendeeId)', assign: 'achievement' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.user, request.auth.credentials && request.auth.credentials.user))
