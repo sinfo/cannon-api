@@ -184,6 +184,7 @@ function list (activeAchievements, cb) {
       users[i]['points'] = points[users[i].id]
     }
 
+
     // sort by points in descending order
     users.sort(function(a, b){ return b.points-a.points });
 

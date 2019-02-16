@@ -15,7 +15,7 @@ function renderObject (model, user) {
   result.name = model.name
   result.img = model.img || 'https://sinfo.ams3.cdn.digitaloceanspaces.com/static/26-sinfo/hacky/hacky.png'
   result.role = model.role
-  result.points = model.points && typeof model.points === 'number'
+  result.points = model.points !== undefined && typeof model.points === 'number'
     ? model.points : undefined
   result.registered = model.registered
   result.signatures = model.signatures && model.signatures.map(signature => ({
