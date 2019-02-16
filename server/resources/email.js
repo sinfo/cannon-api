@@ -32,7 +32,7 @@ function send (mailOptions, cb) {
     const surveyTemplate = Handlebars.compile(ticketTemplateSource)
     const context = {
       name: mailOptions.name,
-      workshopsUrl: `${config.webapp.url}/myworkshops`,
+      workshopsUrl: `${config.webapp.url}/workshops`,
       body: mailOptions.body
     }
     const surveyHtml = surveyTemplate(context)
