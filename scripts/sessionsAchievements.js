@@ -64,6 +64,7 @@ const achievements = {
 }
 
 const otherAchievements = []
+let pendingJobs = 0
 
 function stands(list_of_functions) {
   request({
@@ -93,6 +94,7 @@ function stands(list_of_functions) {
           name: `Talked to this company`,
           id: 'stand-' + companyId + '-' + day,
           img: img,
+          value: 0,
           kind: 'stand',
           validity: {
             from: from,
@@ -142,7 +144,8 @@ function sessions(list_of_functions) {
         name: `Went to "${session.name}"`,
         id: 'session-' + session.id,
         session: session.id,
-        kind: 'session'
+        kind: 'session',
+        value: 0
       }
 
       achievement['validity'] = !trueValidity ? {
@@ -192,7 +195,7 @@ function cv(list_of_functions) {
   next(list_of_functions)
 }
 
-stands([function () {
+function addAchievements(list_of_functions) {
   let totalStands = 0
   let totalPresentations = 0
   let totalWorkshops = 0
@@ -222,6 +225,7 @@ stands([function () {
       + calculatedPoints.keynote * nKeynotes
 
     console.log(`
+      ====== day ${day} ======
       # stands        ${nStands} (${calculatedPoints.stands})
       # presentations ${nPresentations} (${calculatedPoints.presentations})
       # workshops     ${nWorkshops} (${calculatedPoints.workshops})
@@ -229,14 +233,56 @@ stands([function () {
       Total points this day : ${totalPointsThisDay}
     `)
 
+    Object.keys(achievements[day]).forEach(kind => {
+      achievements[day][kind].forEach((achievement) => {
+        achievement.value += calculatedPoints[kind]
+        addAchievement(achievement, day, kind)
+      })
+    })
+
   })
   
   console.log(`
-    # stands        ${totalStands}
-    # presentations ${totalPresentations}
-    # workshops     ${totalWorkshops}
-    # keynotes      ${totalKeynotes}
+    ===== Total =====
+    + ${totalStands} stands achievements
+    + ${totalPresentations} presentations achievements
+    + ${totalWorkshops} workshops achievements
+    + ${totalKeynotes} keynotes achievements
   `)
 
-  process.exit(0)
-}, sessions, cv])
+  otherAchievements.forEach((achievement) => addAchievement(achievement))
+
+  const next = list_of_functions.pop()
+  next(list_of_functions)  
+}
+
+function waitForJobs() {
+  if (pendingJobs > 0) {
+    console.log(`(${pendingJobs}) Waiting...`)
+    setTimeout(waitForJobs, 500)
+  } else {
+    console.log('Done!')
+    process.exit(0)
+  }
+}
+
+function addAchievement(achievement, day, kind) {
+  pendingJobs += 1
+  API.achievement.create(achievement, (err, result) => {
+    if (err && err.output.statusCode === 409) {
+      console.log(' ', day || '', kind || '', achievement.id)
+      pendingJobs -= 1
+      return
+    }
+
+    if (err) {
+      pendingJobs -= 1
+      return log.warn({err: err, achievement: result}, 'achievement')
+    }
+    
+    console.log('+', day || '', kind || '', result.id, result.value)
+    pendingJobs -= 1
+  })
+}
+
+stands([waitForJobs, addAchievements, sessions, cv])
