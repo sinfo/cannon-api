@@ -348,7 +348,6 @@ function getActiveAchievements (query, cb) {
     'validity.from': { $lte: date },
     'validity.to': { $gte: date }
   }, (err, achievements) => {
-    console.log(achievements, date)
     if (err) {
       log.error({ err: err, date: date }, 'error getting active achievements on a given date')
       return cb(err)

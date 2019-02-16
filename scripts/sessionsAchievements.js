@@ -33,28 +33,28 @@ const achievements = {
     workshops: [],
     keynote: []
   },
-  
+
   '2': {
     stands: [],
     presentations: [],
     workshops: [],
     keynote: []
   },
-  
+
   '3': {
     stands: [],
     presentations: [],
     workshops: [],
     keynote: []
   },
-  
+
   '4': {
     stands: [],
     presentations: [],
     workshops: [],
     keynote: []
   },
-  
+
   '5': {
     stands: [],
     presentations: [],
@@ -72,24 +72,24 @@ function stands(list_of_functions) {
     headers: { 'Authorization': `${DECK_USER} ${DECK_TOKEN}` }
   }, (err, response, body) => {
     const reservations = JSON.parse(body)
-  
+
     reservations.forEach(r => {
       const companyId = r.companyId
-      
+
       if (r.feedback === undefined || r.feedback.status !== 'CONFIRMED')  return
-      
+
       for(let stand of r.stands) {
         const day = stand.day
         const from = new Date(EVENT_START.getTime() + (1000 * 60 * 60 * 24) * (day - 1)) // shift the day
         const to   = new Date(from)
-  
+
         to.setHours(23)
         to.setMinutes(59)
         to.setSeconds(59)
         to.setMilliseconds(999)
-  
+
         const img = `https://sinfo.ams3.cdn.digitaloceanspaces.com/static/${EVENT}/achievements/stands/stands_${companyId}_${day}.png`
-  
+
         achievements[day].stands.push({
           name: `Talked to this company`,
           id: 'stand-' + companyId + '-' + day,
@@ -103,7 +103,7 @@ function stands(list_of_functions) {
         })
       }
     })
-    
+
     const next = list_of_functions.pop()
     next(list_of_functions)
   })
@@ -119,7 +119,7 @@ function sessions(list_of_functions) {
       let found = false
       for (let day = 1; day <= 5; day++) {
         const eventDay = new Date(EVENT_START.getTime() + (1000 * 60 * 60 * 24) * (day - 1))
-        
+
         if (eventDay.getDate() === sessionDate.getDate()) {
           sessionDay = day
           found = true
@@ -211,7 +211,7 @@ function addAchievements(list_of_functions) {
     totalPresentations += nPresentations
     totalWorkshops += nWorkshops
     totalKeynotes += nKeynotes
-    
+
     const calculatedPoints = {
       stands: nStands > 0 ? Math.floor((points.stands * totalPoints) / nStands) : 0,
       presentations: nPresentations > 0 ? Math.floor((points.presentations * totalPoints) / nPresentations) : 0,
@@ -241,7 +241,7 @@ function addAchievements(list_of_functions) {
     })
 
   })
-  
+
   console.log(`
     ===== Total =====
     + ${totalStands} stands achievements
@@ -253,7 +253,7 @@ function addAchievements(list_of_functions) {
   otherAchievements.forEach((achievement) => addAchievement(achievement))
 
   const next = list_of_functions.pop()
-  next(list_of_functions)  
+  next(list_of_functions)
 }
 
 function waitForJobs() {
@@ -279,7 +279,7 @@ function addAchievement(achievement, day, kind) {
       pendingJobs -= 1
       return log.warn({err: err, achievement: result}, 'achievement')
     }
-    
+
     console.log('+', day || '', kind || '', result.id, result.value)
     pendingJobs -= 1
   })
