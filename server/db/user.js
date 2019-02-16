@@ -34,14 +34,6 @@ const schema = new mongoose.Schema({
   fenix: {
     id: String
   },
-  points: {
-    available: Number,
-    total: Number
-  },
-  achievements: [{
-    id: String,
-    date: Date
-  }],
   area: String,
   skills: Array,
   job: {

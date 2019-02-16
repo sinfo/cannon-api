@@ -41,6 +41,18 @@ const userA = {
   mail: 'john@doe.com'
 }
 
+const achievementId = 'WENT-TO-SINFO-XXII'
+const achievementA = {
+  name: 'WENT TO SINFO XXII',
+  event: 'SINFO XXII',
+  session: 'feross', // HACK
+  value: 10,
+  validity: {
+    from: new Date(),
+    to: new Date(new Date().getTime() + (1000 * 60 * 60)) // 1 h
+  }
+}
+
 const changesToA = {
   name: 'John Doe Doe'
 }
@@ -61,6 +73,18 @@ const updatedACompany = {
 }
 
 lab.experiment('User', () => {
+  lab.after('remove achievements', (done) => {
+    const options = {
+      method: 'DELETE',
+      url: '/achievements/' + achievementId,
+      credentials: credentialsA
+    }
+
+    server.inject(options, (response) => {
+      done()
+    })
+  })
+
   lab.test('Create as admin', (done) => {
     const options = {
       method: 'POST',
@@ -93,9 +117,55 @@ lab.experiment('User', () => {
 
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceof(Array)
-      Code.expect(result[0].name).to.be.string
       done()
     })
+})
+
+  lab.test('List all with achievement as admin', (done) => {
+    const opt1 = {
+      method: 'GET',
+      url: '/users',
+      credentials: credentialsA
+    }
+
+    const opt2 = {
+      method: 'POST',
+      url: '/achievements',
+      credentials: credentialsA,
+      payload: achievementA
+    }
+
+    const opt3 = {
+      method: 'POST',
+      url: `/sessions/${achievementA.session}/check-in`,
+      credentials: credentialsA,
+      payload: { users: [userA.id] }
+    }
+
+    server.inject(opt2, (response) => {
+      const result = response.result
+
+      Code.expect(response.statusCode).to.equal(201)
+      Code.expect(result).to.be.instanceof(Object)
+      Code.expect(result.id).to.equal(achievementId)
+      Code.expect(result.name).to.equal(achievementA.name)
+
+      server.inject(opt3, (response) => {
+        const result = response.result
+
+        Code.expect(response.statusCode).to.equal(200)
+
+        server.inject(opt1, (response) => {
+          const result = response.result
+    
+          Code.expect(response.statusCode).to.equal(200)
+          Code.expect(result).to.be.instanceof(Array)
+          Code.expect(result[0].name).to.be.string
+          done()
+        })
+      })
+    })
+
 })
 
   lab.test('Get one as admin', (done) => {

@@ -10,15 +10,16 @@ function renderObject (model) {
   return {
     id: model.id,
     event: model.event,
-    category: model.category,
     session: model.session,
     name: model.name,
     description: model.description,
     instructions: model.instructions,
-    img: model.img || 'http://static.sinfo.org/SINFO_22/achievements/default.png',
+    img: model.img,
     value: model.value,
     users: model.users,
     created: model.created,
-    updated: model.updated
+    updated: model.updated,
+    validity: model.validity,
+    kind: model.kind
   }
 }

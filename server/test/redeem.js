@@ -62,21 +62,33 @@ const achievementA = {
   id: 'WENT-TO-SINFO-XXII',
   name: 'WENT TO SINFO XXII',
   event: 'SINFO XXII',
-  value: 10
+  value: 10,
+  validity: {
+    from: new Date(),
+    to: new Date(new Date().getTime() + (1000 + 60 + 60)) // 1 h
+  }
 }
 
 const achievementB = {
   id: 'WENT-TO-SOME-WORKHOP-AT-SINFO-XXII',
   name: 'WENT TO SOME WORKSHOP AT SINFO XXII',
   event: 'SINFO XXII',
-  value: 5
+  value: 5,
+  validity: {
+    from: new Date(),
+    to: new Date(new Date().getTime() + (1000 + 60 + 60)) // 1 h
+  }
 }
 
 const achievementC = {
   id: 'WENT-TO-SOME-OTHER-WORKHOP-AT-SINFO-XXII',
   name: 'WENT TO SOME OTHER WORKSHOP AT SINFO XXII',
   event: 'SINFO XXII',
-  value: 6
+  value: 6,
+  validity: {
+    from: new Date(),
+    to: new Date(new Date().getTime() + (1000 + 60 + 60)) // 1 h
+  }
 }
 
 const redeemA = {

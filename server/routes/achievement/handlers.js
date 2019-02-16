@@ -19,7 +19,12 @@ exports.create = {
       description: Joi.string().description('Description of the achievement'),
       category: Joi.string().description('Category of the achievement'),
       instructions: Joi.string().description('Instructions on how to get the achievement'),
-      value: Joi.number().description('Amount of points associated to the achievement')
+      value: Joi.number().description('Amount of points associated to the achievement'),
+      validity: Joi.object().keys({
+        from: Joi.date().description('Date when the achievement starts being available for grabs'),
+        to: Joi.date().description('Date when the achievement starts stops being available for grabs')
+      }),
+      kind: Joi.string().description('Kind of achievement (cv, for example)')
     }
   },
   pre: [
@@ -49,7 +54,11 @@ exports.update = {
       description: Joi.string().description('Description of the achievement'),
       instructions: Joi.string().description('Instructions on how to get the achievement'),
       img: Joi.string().description('Image of the achievement'),
-      value: Joi.number().description('Amount of points associated to the achievement')
+      value: Joi.number().description('Amount of points associated to the achievement'),
+      validity: Joi.object().keys({
+        from: Joi.date().description('Date when the achievement starts being available for grabs'),
+        to: Joi.date().description('Date when the achievement starts stops being available for grabs')
+      })
     }
   },
   pre: [
@@ -83,6 +92,58 @@ exports.get = {
     reply(render(request.pre.achievement))
   },
   description: 'Gets an achievement'
+}
+
+exports.getMe = {
+  tags: ['api', 'achievement'],
+  auth: {
+    strategies: ['default'],
+    scope: ['user', 'company', 'team', 'admin']
+  },
+  pre: [
+    { method: 'achievement.getByUser(auth.credentials.user.id)', assign: 'achievements' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.achievements))
+  },
+  description: 'Gets my achievements'
+}
+
+exports.getActive = {
+  tags: ['api', 'achievement'],
+  auth: {
+    strategies: ['default'],
+    scope: ['user', 'company', 'team', 'admin'],
+    mode: 'try'
+  },
+  validate: {
+    query: {
+      date: Joi.date().description('all achievements active on this date')
+    }
+  },
+  pre: [
+    { method: 'achievement.getActiveAchievements(query)', assign: 'activeAchievements' },
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.activeAchievements))
+  },
+  description: 'Gets active achievements'
+}
+
+exports.getMeActive = {
+  tags: ['api', 'achievement'],
+  auth: {
+    strategies: ['default'],
+    scope: ['user', 'company', 'team', 'admin'],
+  },
+  pre: [
+    { method: 'achievement.getActiveAchievements()', assign: 'activeAchievements' },
+    { method: 'achievement.getPointsForUser(pre.activeAchievements, auth.credentials.user.id)', assign: 'result' },
+  ],
+  handler: function (request, reply) {
+    reply(request.pre.result)
+  },
+  description: 'Gets my active achievements and my points'
 }
 
 exports.getUser = {
@@ -152,3 +213,4 @@ exports.remove = {
   },
   description: 'Removes an achievement'
 }
+

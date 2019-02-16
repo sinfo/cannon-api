@@ -30,7 +30,11 @@ const achievementId = 'WENT-TO-SINFO-XXII'
 const achievementA = {
   name: 'WENT TO SINFO XXII',
   event: 'SINFO XXII',
-  value: 10
+  value: 10,
+  validity: {
+    from: new Date(),
+    to: new Date(new Date().getTime() + (1000 * 60 * 60)) // 1 h
+  }
 }
 
 const changesToA = {

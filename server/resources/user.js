@@ -9,7 +9,6 @@ const User = require('../db/user')
 server.method('user.create', create, {})
 server.method('user.update', update, {})
 server.method('user.updateMe', updateMe, {})
-server.method('user.updatePoints', updatePoints, {})
 server.method('user.get', get, {})
 server.method('user.getByToken', getByToken, {})
 server.method('user.list', list, {})
@@ -38,20 +37,6 @@ function create (user, cb) {
 
     cb(null, _user.toObject({ getters: true }))
   })
-}
-
-function updatePoints (filter, points, cb) {
-  const user = {$inc: {'points.available': points}}
-
-  if (typeof points !== 'number') {
-    return cb(Boom.badRequest('points must be of type number'))
-  }
-
-  if (points > 0) {
-    user.$inc['points.total'] = points
-  }
-
-  update(filter, user, cb)
 }
 
 function updateMe (filter, user, opts, cb) {
@@ -166,23 +151,43 @@ function getByToken (token, cb) {
   })
 }
 
-function list (cb) {
+function list (activeAchievements, cb) {
+  const usersToSearch = []
+  const points = {}
 
-  const fields ={ 
+  // list unique users at their points
+  activeAchievements.forEach(achv => {
+    achv.users.forEach(user => {
+      if (usersToSearch.indexOf(user) === -1) {
+        usersToSearch.push(user)
+        points[user] = 0
+      }
+
+      points[user] += achv.value
+    })
+  })
+
+  const fields = {
+    id: 1,
     name: 1,
-    points: 1,
     img: 1
   }
-  const options = {
-    limit: 20,
-    sort: '-points.total'
-  }
-
-  User.find({},fields , options, (err, users) => {
+  
+  User.find({ id: { $in: usersToSearch }}, fields, (err, users) => {
     if (err) {
       log.error({err: err}, 'error getting all users')
       return cb(Boom.internal())
     }
+
+    // fill the points for each user
+    for (var i = 0; i < users.length; i++) {
+      users[i]['points'] = points[users[i].id]
+    }
+
+
+    // sort by points in descending order
+    users.sort(function(a, b){ return b.points-a.points });
+
     cb(null, users)
   })
 }
