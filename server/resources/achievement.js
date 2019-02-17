@@ -129,7 +129,7 @@ function getByUser (filter, cb) {
 }
 
 function removeAllFromUser (userId, cb) {
-  Achievement.update({ users: userId }, { users: { $pull: userId } }, { multi: true }, (err, achievements) => {
+  Achievement.update({ users: userId }, { $pull: { users: userId } }, { multi: true }, (err, achievements) => {
     if (err) {
       log.error({err: err, userId: userId}, 'error removing user from multiple achievements')
       return cb(Boom.internal('error getting achievements'))
