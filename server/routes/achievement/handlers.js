@@ -109,6 +109,21 @@ exports.getMe = {
   description: 'Gets my achievements'
 }
 
+exports.removeMe = {
+  tags: ['api', 'achievement'],
+  auth: {
+    strategies: ['default'],
+    scope: ['team', 'admin']
+  },
+  pre: [
+    { method: 'achievement.removeAllFromUser(auth.credentials.user.id)', assign: 'achievements' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.achievements))
+  },
+  description: 'Removes all my achievements'
+}
+
 exports.getActive = {
   tags: ['api', 'achievement'],
   auth: {

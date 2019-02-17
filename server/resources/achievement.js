@@ -10,6 +10,7 @@ server.method('achievement.update', update, {})
 server.method('achievement.updateMulti', updateMulti, {})
 server.method('achievement.get', get, {})
 server.method('achievement.getByUser', getByUser, {})
+server.method('achievement.removeAllFromUser', removeAllFromUser, {})
 server.method('achievement.list', list, {})
 server.method('achievement.remove', remove, {})
 server.method('achievement.addUser', addUser, {})
@@ -120,6 +121,22 @@ function getByUser (filter, cb) {
     }
     if (!achievements) {
       log.error({err: 'not found', achievement: filter}, 'achievements not found')
+      return cb(Boom.notFound('achievements not found'))
+    }
+
+    cb(null, achievements)
+  })
+}
+
+function removeAllFromUser (userId, cb) {
+  Achievement.update({ users: userId }, { users: { $pull: userId } }, { multi: true }, (err, achievements) => {
+    if (err) {
+      log.error({err: err, userId: userId}, 'error removing user from multiple achievements')
+      return cb(Boom.internal('error getting achievements'))
+    }
+
+    if (!achievements) {
+      log.error({err: 'not found', userId: userId}, 'achievements not found')
       return cb(Boom.notFound('achievements not found'))
     }
 

@@ -26,6 +26,12 @@ server.route({
 })
 
 server.route({
+  method: 'DELETE',
+  path: '/achievements/me',
+  config: handlers.removeMe
+})
+
+server.route({
   method: 'GET',
   path: '/achievements/active',
   config: handlers.getActive
