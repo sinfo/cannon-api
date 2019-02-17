@@ -6,7 +6,6 @@ const uuid = require('uuid')
 
 server.method('redeem.create', create, {})
 server.method('redeem.get', get, {})
-server.method('redeem.getMe', getMe, {})
 server.method('redeem.remove', remove, {})
 server.method('redeem.prepareRedeemCodes', prepareRedeemCodes, {})
 
@@ -32,32 +31,26 @@ function get (id, cb) {
       log.error({err: err, redeem: id}, 'error getting redeem')
       return cb(Boom.internal())
     }
+    
     if (!redeem) {
       log.error({err: 'not found', redeem: id}, 'error getting redeem')
       return cb(Boom.notFound('redeem code not found'))
+    }
+
+    var now = new Date()
+    var expirationDate = new Date(redeem.expires)
+
+    if (now.getTime() > expirationDate.getTime()) {
+      log.error({err: 'expired', redeem: id}, 'tried to redeem an expired code')
+      return cb(Boom.notAcceptable('expired redeem code'))
     }
 
     cb(null, redeem.toObject({ getters: true }))
   })
 }
 
-function getMe (id, cb) {
-  Redeem.find({user: id}, (err, redeemCodes) => {
-    if (err) {
-      log.error({err: err, user: id}, 'error getting my redeem codes')
-      return cb(Boom.internal())
-    }
-    if (!redeemCodes) {
-      log.error({err: 'not found', user: id}, 'error getting my redeem codes')
-      return cb(Boom.notFound('redeem code not found'))
-    }
-
-    cb(null, redeemCodes)
-  })
-}
-
-function remove (id, achievement, user, cb) {
-  cb = cb || user || achievement // achievement and user are optional
+function remove (id, achievement, cb) {
+  cb = cb || achievement // achievement and user are optional
 
   Redeem.findOne({id: id}, (err, redeem) => {
     if (err) {

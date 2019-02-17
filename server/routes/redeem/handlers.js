@@ -8,15 +8,13 @@ exports.create = {
   tags: ['api', 'redeem'],
   auth: {
     strategies: ['default'],
-    scope: ['admin']
+    scope: ['team']
   },
   validate: {
     payload: {
       id: Joi.string().required().description('Redeem Code id.'),
       achievement: Joi.string().required().description('Achievement you want to redeem.'),
-      // entries: Joi.number().required().description('Number of entries this code can be applied to.'),
       expires: Joi.date().description('Date of redeem code expiration.'),
-      user: Joi.string().required().description('User id.')
     }
   },
   pre: [
@@ -32,7 +30,7 @@ exports.get = {
   tags: ['api', 'redeem'],
   auth: {
     strategies: ['default'],
-    scope: ['user', 'company', 'team', 'admin']
+    scope: ['user', 'team', 'admin']
   },
   validate: {
     params: {
@@ -41,11 +39,8 @@ exports.get = {
   },
   pre: [
     { method: 'redeem.get(params.id)', assign: 'redeem' },
-    { method: 'achievement.get(pre.redeem.achievement)', assign: 'achievement' },
-    { method: 'session.get(pre.achievement.session)', assign: 'session', failAction: 'ignore' },
-    { method: 'session.surveyNotNeeded(pre.session)' },
     { method: 'achievement.addUser(pre.redeem.achievement, auth.credentials.user.id)', assign: 'achievement' },
-    { method: 'redeem.remove(params.id, auth.credentials.user.id, pre.achievement)' }
+    { method: 'redeem.remove(params.id)' }
   ],
   handler: function (request, reply) {
     reply({
@@ -53,22 +48,7 @@ exports.get = {
       achievement: renderAchievement(request.pre.achievement)
     })
   },
-  description: 'Gets a redeem code'
-}
-
-exports.getMe = {
-  tags: ['api', 'redeem'],
-  auth: {
-    strategies: ['default'],
-    scope: ['user', 'company', 'team', 'admin']
-  },
-  pre: [
-    { method: 'redeem.getMe(auth.credentials.user.id)', assign: 'redeemCodes' }
-  ],
-  handler: function (request, reply) {
-    reply(render(request.pre.redeemCodes))
-  },
-  description: 'Gets all my redeem codes'
+  description: 'Uses a redeem code to get an achievement'
 }
 
 exports.remove = {

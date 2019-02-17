@@ -1,75 +1,89 @@
 const server = require('../server').hapi
 const API = server.methods
-const log = require('../server/helpers/logger')
-const async = require('async')
-const NodePDF = require('nodepdf')
-const config = require('../config')
-const join = require('path').join
-const EVENT = '23-sinfo-conf'
 
-const options = {
-  'paperSize': {
-    'pageFormat': 'A4',
-    'margin': {
-      'top': '2cm'
-    },
-    'header': {
-      'height': '1cm',
-      'contents': 'HEADER {currentPage} / {pages}' // If you have 2 pages the result looks like this: HEADER 1 / 2
-    },
-    'footer': {
-      'height': '1cm',
-      'contents': 'FOOTER {currentPage} / {pages}'
+// ===================== edit here =====================
+
+const REDEEM_CODES_NUMBER = 7
+const EXPIRATION_DATE = new Date(2019, 02, 01)
+const ACHIEVEMENT_VALUE = 20
+const ACHIEVEMENT_DESCRIPTION = ''
+
+// ===================== end of edit =====================
+
+const ACHIEVEMENT_VALIDITY_FROM = new Date()
+const ACHIEVEMENT_VALIDITY_TO = EXPIRATION_DATE
+const ACHIEVEMENT_IMG = 'https://sinfo.ams3.cdn.digitaloceanspaces.com/static/26-sinfo/achievements/gamification.png'
+const ACHIEVEMENT_KIND = 'other'
+const ACHIEVEMENT_NAME = 'Discovered a secret!'
+
+let pendingJobs = 0
+
+function randomString() {
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (var i = 0; i < 2; i++)
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  return text;
+}
+
+function createAchievement() {
+  let achievement = {
+    name: ACHIEVEMENT_NAME,
+    id: randomString(),
+    kind: ACHIEVEMENT_KIND,
+    value: ACHIEVEMENT_VALUE,
+    img: ACHIEVEMENT_IMG,
+    description: ACHIEVEMENT_DESCRIPTION,
+    validity: {
+      from: ACHIEVEMENT_VALIDITY_FROM,
+      to: ACHIEVEMENT_VALIDITY_TO
     }
   }
+
+  API.achievement.create(achievement, (err, result) => {
+    if (err) {
+      return console.error({err: err}, 'error creating an achievement')
+    }
+
+    console.log('+', 'ACHIEVEMENT', result.id, result.value)
+
+    createRedeemCodes(result)
+  })
 }
 
-const authStr = `${config.auth.internal.username}:${config.auth.internal.password}@`
+function createRedeemCodes(achievement) {
+  for (let i = 0; i < REDEEM_CODES_NUMBER; i++) {
+    pendingJobs += 1
 
-const cannonUrl = `http://${authStr}localhost:8090`
-
-function getUrl (id, quantity) {
-  return `${cannonUrl}/templates/achievements/${id}?quantity=${quantity}`
-}
-
-function renderPDF (session, cb) {
-  let quantity = 0
-  switch (session.kind.toLowerCase()) {
-    case 'presentation':
-      quantity = 70
-      break
-    case 'keynote':
-      quantity = 350
-      break
-    case 'workshop':
-      quantity = 40
-      break
-  }
-
-  const achievementId = `session-${session.id}`
-  const url = getUrl(achievementId, quantity)
-
-  const pdfName = join(__dirname, 'output', achievementId + '.pdf')
-
-  log.debug({url: url, pdfName: pdfName}, 'render')
-
-  NodePDF.render(url, pdfName, options, cb)
-}
-
-API.session.list({event: EVENT}, (err, sessions) => {
-  log.debug({err: err, count: sessions.length}, 'got sessions')
-
-  async.each(sessions, (session, cb) => {
-    renderPDF(session, (err, fileName) => {
+    API.redeem.create({
+      id: randomString(),
+      achievement: achievement.id,
+      expires: EXPIRATION_DATE
+    }, (err, redeem) => {
       if (err) {
-        log.warn({err: err, fileName: fileName}, 'render')
+        pendingJobs -= 1
+        console.error(err, 'Error generating redeem code')
+        return
       }
 
-      cb()
+      pendingJobs -= 1
+      console.log('+', 'REDEEM', redeem.id, redeem.achievement, new Date(redeem.expires).toDateString())
     })
-  }, (err) => {
-    log.info({err: err}, 'redeem codes created')
+  }
 
+  waitForJobs()
+}
+
+function waitForJobs() {
+  if (pendingJobs > 0) {
+    console.log(`(${pendingJobs}) waiting...`)
+    setTimeout(waitForJobs, 1500)
+  } else {
+    console.log('Done!')
     process.exit(0)
-  })
-})
+  }
+}
+
+createAchievement()
