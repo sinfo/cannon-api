@@ -347,7 +347,7 @@ function redeemCard (attendeeId, payload, cb) {
     // this should not be hardcoded
     let signatures = _user.signatures.filter(s => s.day === payload.day && s.edition === payload.editionId)
 
-    if (signatures && signatures.length > 0 && signatures[0].signatures.length < 10) {
+    if (signatures && signatures.length > 0 && signatures[0].signatures.length < 6) {
       return cb(Boom.badData({ user: _user }, 'not enough signatures to validate card'))
     }
 
