@@ -332,17 +332,42 @@ function redeemCard (attendeeId, payload, cb) {
     }
   }
 
-  User.findOneAndUpdate(filter, update, (err, user) => {
-    if (err) {
-      log.error({err: err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId}, 'Error signing user')
+  // this should not be here
+  User.findOne(filter, (_err, _user) => {
+    if (_err) {
+      log.error({err: err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId}, 'Error getting user')
       return cb(Boom.internal())
     }
-    if (!user) {
+    if (!_user) {
       // day,event combination entry did not exist
-      log.error({err: err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId}, 'Error signing user')
+      log.error({err: _err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId}, 'Error getting user')
       return cb(Boom.notFound())
     }
 
-    cb(null, user.toObject({ getters: true }))
+    // this should not be hardcoded
+    let signatures = _user.signatures.filter(s => s.day === payload.day && s.edition === payload.editionId)
+
+    if (signatures && signatures.length > 0 && signatures[0].signatures.length < 10) {
+      return cb(Boom.badData({ user: _user }, 'not enough signatures to validate card'))
+    }
+
+    if (signatures[0].redeemed !== undefined && signatures[0].redeemed) {
+      return cb(Boom.conflict({ user: _user }, 'card already validated'))
+    }
+
+    User.findOneAndUpdate(filter, update, (err, user) => {
+      if (err) {
+        log.error({err: err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId}, 'Error signing user')
+        return cb(Boom.internal())
+      }
+      if (!user) {
+        // day,event combination entry did not exist
+        log.error({err: err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId}, 'Error signing user')
+        return cb(Boom.notFound())
+      }
+  
+      cb(null, user.toObject({ getters: true }))
+    })
   })
+
 }
