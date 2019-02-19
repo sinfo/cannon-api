@@ -363,6 +363,7 @@ function addUserToStandAchievement (companyId, userId, cb) {
   
   Achievement.findOneAndUpdate({
     id: { $regex: companyId },
+    'kind': 'stand',
     'validity.from': { $lte: now },
     'validity.to': { $gte: now }
   }, changes, (err, achievement) => {
