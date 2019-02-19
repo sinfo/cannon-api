@@ -39,8 +39,8 @@ exports.get = {
   },
   pre: [
     { method: 'redeem.get(params.id)', assign: 'redeem' },
-    { method: 'achievement.addUser(pre.redeem.achievement, auth.credentials.user.id)', assign: 'achievement' },
-    { method: 'redeem.remove(params.id)' }
+    { method: 'redeem.use(pre.redeem, auth.credentials.user.id)' },
+    { method: 'achievement.addUser(pre.redeem.achievement, auth.credentials.user.id)', assign: 'achievement' }
   ],
   handler: function (request, reply) {
     reply({
