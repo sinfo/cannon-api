@@ -35,7 +35,7 @@
     "fenixedu": "https://github.com/jgantunes/fenixedu/tarball/master",
     "good": "^2.3.0",
     "google-auth-library": "^1.2.1",
-    "handlebars": "^4.0.0",
+    "handlebars": "^4.4.5",
     "hapi": "~7.5.0",
     "hapi-auth-basic": "^1.1.1",
     "hapi-auth-bearer-token": "^2.2.2",
