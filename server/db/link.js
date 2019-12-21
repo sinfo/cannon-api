@@ -7,7 +7,14 @@ const schema = new mongoose.Schema({
   created: Date,
   updated: Date,
   user: String,
-  note: String
+  contacts: {
+    email: String,
+    phone: String
+  },
+  interestedIn: String,
+  degree: String,
+  availability: String,
+  otherObservations: String
 })
 
 // Makes pair unique

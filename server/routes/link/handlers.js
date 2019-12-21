@@ -17,7 +17,14 @@ exports.create = {
       userId: Joi.string().required().description('Id of the user working for the company'),
       attendeeId: Joi.string().required().description('Id of the attendee'),
       editionId: Joi.string().required().description('Id of the edition'),
-      note: Joi.string().allow('').description('Notes the user wants to keep on the attendee')
+      contacts: Joi.object().keys({
+        email: Joi.string().allow('').description('Email of the attendee'),
+        phone: Joi.string().allow('').description('Phone number of the attendee')
+      }),
+      interestedIn: Joi.string().allow('').description('Interests of the attendee relevant to the company'),
+      degree: Joi.string().allow('').description('Degree of the attendee (e.g. Computer Science batchelor\'s)'),
+      availability: Joi.string().allow('').description('Attendee\'s availability'),
+      otherObservations: Joi.string().allow('').description('Other notes')
     }
   },
   pre: [
@@ -46,7 +53,14 @@ exports.update = {
     },
     payload: {
       userId: Joi.string().description('Id of the user working for the company'),
-      note: Joi.string().trim().allow('').description('Notes the user wants to keep on the attendee')
+      contacts: Joi.object({
+        email: Joi.string().description('Email of the attendee'),
+        phone: Joi.string().description('Phone number of the attendee')
+      }),
+      interestedIn: Joi.string().allow('').description('Interests of the attendee relevant to the company'),
+      degree: Joi.string().allow('').description('Degree of the attendee (e.g. Computer Science batchelor\'s)'),
+      availability: Joi.string().allow('').description('Attendee\'s availability'),
+      otherObservations: Joi.string().allow('').description('Other notes')
     }
   },
   pre: [

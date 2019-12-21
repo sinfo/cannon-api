@@ -13,14 +13,22 @@ server.method('link.remove', remove, {})
 server.method('link.checkCompany', checkCompany, {})
 
 function create (companyId, link, cb) {
+  
   link = {
     company: companyId,
     edition: link.editionId,
     user: link.userId,
     attendee: link.attendeeId,
-    note: link.note,
     updated: Date.now(),
-    created: Date.now()
+    created: Date.now(),
+    contacts: {
+      email: link.contacts !== undefined && link.contacts.email !== undefined ? link.contacts.email : '',
+      phone: link.contacts !== undefined && link.contacts.email !== undefined ? link.contacts.phone : ''
+    },
+    interestedIn: link.interestedIn,
+    degree: link.degree,
+    availability: link.availability,
+    otherObservations: link.otherObservations
   }
 
   Link.create(link, (err, _link) => {
@@ -145,6 +153,7 @@ function checkCompany (userId, companyId, editionId, cb) {
       log.error({err: err, user: userId}, 'error getting user')
       return cb(Boom.internal())
     }
+    
     if (!user) {
       log.error({err: 'not found', user: userId}, 'error getting user')
       return cb(Boom.notFound('user not found'))

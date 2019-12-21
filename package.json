@@ -12,6 +12,10 @@
     "gen-keys": "mkdir -p keys; ssh-keygen -t rsa -b 4096 -f ./keys/token.key -q -N \"\"; openssl rsa -in ./keys/token.key -pubout -outform PEM -out ./keys/token.pub",
     "lint": "standard | snazzy"
   },
+  "engines": {
+    "node": ">=6.12.3",
+    "npm": ">=6.13.4"
+  },
   "pre-commit": [
     "lint",
     "test"
