@@ -59,7 +59,7 @@
   },
   "devDependencies": {
     "code": "~1.2.0",
-    "eslint": "^3.7.1",
+    "eslint": "^4.18.2",
     "lab": "~5.0.1",
     "nodemon": "~1.2.1",
     "pre-commit": "^1.1.3",
