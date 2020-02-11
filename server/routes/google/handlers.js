@@ -1,3 +1,11 @@
+/* 
+    The youtube API restricts the amount of HTTP requests 
+    we are able to do, per day. Therefore, this 
+    implementation respects the API limits and allows us 
+    to periodically check if SINFO is livestreaming.
+*/
+
+
 const google = require('../../helpers/google')
 
 // Time between calls
@@ -12,7 +20,7 @@ const interval = {
 // The stream information
 var liveInfo = {
     up: false,
-    id: ""
+    url: ""
 };
 
 var lastTimer = 0;
@@ -36,7 +44,7 @@ function checkLiveStream() {
         clearTimeout(lastTimer);
         setTimeout(checkLiveStream, (hours + 19) * 60 * 60 * 1000);
         liveInfo.up = false;
-        liveInfo.id = "";
+        liveInfo.url = "";
         return;
     }
 
