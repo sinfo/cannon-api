@@ -38,7 +38,7 @@ lastTimer = setTimeout(checkLiveStream, timeOut);
 
 function checkLiveStream() {
     var currentDate = new Date();
-    var hours = currentDate.getMinutes();
+    var hours = currentDate.getHours();
 
     if (hours < interval.min || hours > interval.max) {
         clearTimeout(lastTimer);
