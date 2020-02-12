@@ -1,7 +1,12 @@
-const { OAuth2Client } = require('google-auth-library')
+const {
+  OAuth2Client
+} = require('google-auth-library')
 const server = require('../').hapi
 const log = require('./logger')
+const render = require('../views/google')
 const googleConfig = require('../../config').google
+const config = require('../../config')
+const request = require('request');
 
 const google = {}
 
@@ -37,19 +42,30 @@ google.verifyToken = (googleUserId, googleUserToken) => {
  */
 google.getUser = gUser => {
   return new Promise((resolve, reject) => {
-    server.methods.user.get({ 'mail': gUser.email }, (err, user) => {
+    server.methods.user.get({
+      'mail': gUser.email
+    }, (err, user) => {
       if (err) {
         // If does not find a user with a given Google email, we create a new user
         if (err.output && err.output.statusCode === 404) {
-          return resolve({ createUser: true, gUser })
+          return resolve({
+            createUser: true,
+            gUser
+          })
         }
 
-        log.error({ err: err, google: gUser }, '[google-login] error getting user by google email')
+        log.error({
+          err: err,
+          google: gUser
+        }, '[google-login] error getting user by google email')
         return reject(err)
       }
 
       // A user exist with a given Google email, we only need to update 'google.id' and 'img' in DB
-      return resolve({ createUser: false, userId: user.id })
+      return resolve({
+        createUser: false,
+        userId: user.id
+      })
     })
   })
 }
@@ -69,14 +85,36 @@ google.createUser = gUser => {
 
     server.methods.user.create(user, (err, result) => {
       if (err) {
-        log.error({ user }, '[google-login] error creating user')
+        log.error({
+          user
+        }, '[google-login] error creating user')
         return reject(err)
       }
 
-      log.debug({ userId: result.id }, '[google-login] new user created')
+      log.debug({
+        userId: result.id
+      }, '[google-login] new user created')
 
       return resolve(result.id)
     })
+  })
+}
+
+google.getLiveStream = function (callback) {
+  var channelId = googleConfig.channelId;
+  var youtubeApiKey = googleConfig.apiKey;
+
+  request({
+    url: `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&type=video&eventType=live&key=${youtubeApiKey}`,
+    headers: {
+      'Referer': config.url
+    }
+  }, (err, _, body) => {
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
+    callback(render(JSON.parse(body)));
   })
 }
 
