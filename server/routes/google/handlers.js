@@ -7,6 +7,7 @@
 
 
 const google = require('../../helpers/google')
+const googleConfig = require('../../config').google
 
 // Time between calls
 const timeOut = 5 * (60 * 1000);
@@ -34,7 +35,8 @@ exports.getLivestream = {
     }
 }
 
-lastTimer = setTimeout(checkLiveStream, timeOut);
+if (googleConfig.apiKey)
+    lastTimer = setTimeout(checkLiveStream, timeOut);
 
 function checkLiveStream() {
     var currentDate = new Date();
