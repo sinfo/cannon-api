@@ -6,6 +6,7 @@
   "scripts": {
     "run": "nodemon server/index.js | bunyan",
     "start": "node server/index.js | bunyan",
+    "production": "NODE_ENV=production node server/index.js | bunyan",
     "mon": "nodemon -e js,hbs server/index.js | bunyan",
     "test": "./node_modules/.bin/lab server/test -l  -m 2000 --verbose",
     "test-cov": "lab server/test -c",

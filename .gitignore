@@ -33,3 +33,4 @@ scripts/output
 package-lock.json
 
 env.sh
+cannon.env

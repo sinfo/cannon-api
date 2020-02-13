@@ -59,8 +59,8 @@ function googleAuth (id, token, cb) {
         img: gUser.picture
       }
       return authenticate(res.userId, changedAttributes, cb)
-    }).catch(err => cb(Boom.unauthorized(err)))
-  }).catch(err => cb(Boom.unauthorized(err)))
+    }).catch(err => { log.error(err); cb(Boom.unauthorized(err)) })
+  }).catch(err => { log.error(err); cb(Boom.unauthorized(err)) })
 }
 
 function fenixAuth (code, cb) {

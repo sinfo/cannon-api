@@ -9,7 +9,7 @@ log.info({ env: process.env.NODE_ENV }, '### Starting Cannon ###')
 const server = module.exports.hapi = new Hapi.Server(config.host, config.port, {
   cors: {
     origin: process.env.NODE_ENV === 'production'
-    ? ['*sinfo.org']
+    ? ['*sinfo.org', '*cannon.sinfo.org']
     : ['http://localhost:*']
   }
 })
