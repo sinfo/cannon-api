@@ -34,7 +34,8 @@ exports.getLivestream = {
     }
 }
 
-lastTimer = setTimeout(checkLiveStream, timeOut);
+if (process.env.NODE_ENV === "production")
+    lastTimer = setTimeout(checkLiveStream, timeOut);
 
 function checkLiveStream() {
     var currentDate = new Date();
