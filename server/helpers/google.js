@@ -104,11 +104,12 @@ google.getLiveStream = function (callback) {
   var channelId = googleConfig.channelId;
   var youtubeApiKey = googleConfig.apiKey;
 
-  if (!youtubeApiKey)
+  if (process.env.NODE_ENV !== "production") {
     return callback({
       up: false,
       url: ""
     });
+  }
 
   request({
     url: `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&type=video&eventType=live&key=${youtubeApiKey}`,

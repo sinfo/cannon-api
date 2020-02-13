@@ -7,7 +7,6 @@
 
 
 const google = require('../../helpers/google')
-const googleConfig = require('../../config').google
 
 // Time between calls
 const timeOut = 5 * (60 * 1000);
@@ -35,7 +34,7 @@ exports.getLivestream = {
     }
 }
 
-if (googleConfig.apiKey)
+if (process.env.NODE_ENV === "production")
     lastTimer = setTimeout(checkLiveStream, timeOut);
 
 function checkLiveStream() {
