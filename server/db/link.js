@@ -7,17 +7,16 @@ const schema = new mongoose.Schema({
   created: Date,
   updated: Date,
   user: String,
-  contacts: {
-    email: String,
-    phone: String
-  },
-  interestedIn: String,
-  degree: String,
-  availability: String,
-  otherObservations: String
+  notes: {
+    contacts: {email: String, phone: String},
+    interestedIn: String,
+    degree: String,
+    availability: String,
+    otherObservations: String
+  }
 })
 
 // Makes pair unique
-schema.index({ 'company': 1, 'edition': 1, 'attendee': 1 }, {'unique': true})
+schema.index({'company': 1, 'edition': 1, 'attendee': 1}, {'unique': true})
 
 module.exports = mongoose.model('Link', schema)

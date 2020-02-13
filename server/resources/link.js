@@ -12,47 +12,54 @@ server.method('link.list', list, {})
 server.method('link.remove', remove, {})
 server.method('link.checkCompany', checkCompany, {})
 
-function create (companyId, link, cb) {
-  
-  link = {
+function create(companyId, link, cb) {
+  _link = {
     company: companyId,
     edition: link.editionId,
     user: link.userId,
     attendee: link.attendeeId,
     updated: Date.now(),
     created: Date.now(),
-    contacts: {
-      email: link.contacts !== undefined && link.contacts.email !== undefined ? link.contacts.email : '',
-      phone: link.contacts !== undefined && link.contacts.email !== undefined ? link.contacts.phone : ''
-    },
-    interestedIn: link.interestedIn,
-    degree: link.degree,
-    availability: link.availability,
-    otherObservations: link.otherObservations
-  }
+    notes: {
+      contacts: {
+        email: link.notes.contacts !== undefined &&
+                link.notes.contacts.email !== undefined ?
+            link.notes.contacts.email :
+            '',
+        phone: link.notes.contacts !== undefined &&
+                link.notes.contacts.email !== undefined ?
+            link.notes.contacts.phone :
+            ''
+      },
+      interestedIn: link.notes.interestedIn,
+      degree: link.notes.degree,
+      availability: link.notes.availability,
+      otherObservations: link.notes.otherObservations
+    }
+  };
 
-  Link.create(link, (err, _link) => {
+  Link.create(_link, (err, newlink) => {
     if (err) {
       if (err.code === 11000) {
-        return cb(Boom.conflict(`Link "${link.id}" is a duplicate`))
+        return cb(Boom.conflict(`Link "${newlink.id}" is a duplicate`))
       }
 
-      log.error({err: err, link: link}, 'error creating link')
+      log.error({err: err, link: newlink}, 'error creating link')
       return cb(Boom.internal())
     }
 
-    cb(null, _link.toObject({ getters: true }))
+    cb(null, newlink.toObject({getters: true}))
   })
 }
 
-function update (filter, editionId, link, cb) {
+function update(filter, editionId, link, cb) {
   log.debug({filter: filter, edition: editionId, link: link}, 'updating link')
 
   filter = {
     company: filter.companyId,
     edition: editionId,
     attendee: filter.attendeeId
-  }
+  };
 
   link.updated = Date.now()
 
@@ -66,18 +73,18 @@ function update (filter, editionId, link, cb) {
       return cb(Boom.notFound())
     }
 
-    cb(null, _link.toObject({ getters: true }))
+    cb(null, _link.toObject({getters: true}))
   })
 }
 
-function get (filter, editionId, cb) {
+function get(filter, editionId, cb) {
   log.debug({filter: filter, edition: editionId}, 'getting link')
 
   filter = {
     company: filter.companyId,
     edition: editionId,
     attendee: filter.attendeeId
-  }
+  };
 
   Link.findOne(filter, (err, link) => {
     if (err) {
@@ -89,14 +96,14 @@ function get (filter, editionId, cb) {
       return cb(Boom.notFound('link not found'))
     }
 
-    cb(null, link.toObject({ getters: true }))
+    cb(null, link.toObject({getters: true}))
   })
 }
 
-function list (filter, query, cb) {
+function list(filter, query, cb) {
   log.debug({filter: filter}, 'list link')
 
-  cb = cb || query // fields is optional
+  cb = cb || query  // fields is optional
 
   if (typeof filter === 'string') {
     filter = { company: filter }
@@ -111,7 +118,7 @@ function list (filter, query, cb) {
     skip: query.skip,
     limit: query.limit,
     sort: fieldsParser(query.sort)
-  }
+  };
 
   Link.find(filter, fields, options, (err, links) => {
     if (err) {
@@ -119,18 +126,18 @@ function list (filter, query, cb) {
       return cb(Boom.internal())
     }
 
-    cb(null, Array.from(links, (l) => { return l.toObject() }))
+    cb(null, Array.from(links, (l) => {return l.toObject()}))
   })
 }
 
-function remove (filter, editionId, cb) {
+function remove(filter, editionId, cb) {
   log.debug({filter: filter, edition: editionId}, 'removing link')
 
   filter = {
     company: filter.companyId,
     edition: editionId,
     attendee: filter.attendeeId
-  }
+  };
 
   Link.findOneAndRemove(filter, (err, link) => {
     if (err) {
@@ -147,13 +154,13 @@ function remove (filter, editionId, cb) {
 }
 
 // Checks if the user is/was part of the company whose link he trying accessing
-function checkCompany (userId, companyId, editionId, cb) {
-  server.methods.user.get({ id: userId }, (err, user) => {
+function checkCompany(userId, companyId, editionId, cb) {
+  server.methods.user.get({id: userId}, (err, user) => {
     if (err) {
       log.error({err: err, user: userId}, 'error getting user')
       return cb(Boom.internal())
     }
-    
+
     if (!user) {
       log.error({err: 'not found', user: userId}, 'error getting user')
       return cb(Boom.notFound('user not found'))
