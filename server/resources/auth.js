@@ -10,7 +10,7 @@ const linkedin = require('../helpers/linkedin')
 server.method('auth.facebook', facebookAuth, {})
 server.method('auth.fenix', fenixAuth, {})
 server.method('auth.google', googleAuth, {})
-server.method('auth.linkedIn', linkedInAuth, {})
+server.method('auth.linkedin', linkedinAuth, {})
 
 function facebookAuth (id, token, cb) {
   // Check with Facebook if token is valid
@@ -72,7 +72,7 @@ function fenixAuth (code, cb) {
       fenix.getUser(fenixUser).then(res => {
         // If user does not exist we create, otherwise we update existing user
         if (res.createUser) {
-          return google.createUser(fenixUser)
+          return fenix.createUser(fenixUser)
             .then(userId => authenticate(userId, null, cb))
             .catch(err => cb(Boom.unauthorized(err)))
         }
@@ -90,12 +90,12 @@ function fenixAuth (code, cb) {
   }).catch(err => cb(Boom.unauthorized(err)))
 }
 
-function linkedInAuth (code, cb) {
-  // Exchange the code given by the user by a token from LinkedIn
+function linkedinAuth (code, cb) {
+  // Exchange the code given by the user by a token from Linkedin
   linkedin.getToken(code).then(token => {
-    // Get user profile information from LinkedIn
+    // Get user profile information from Linkedin
     linkedin.getLinkedinUser(token).then(linkedinUser => {
-      // Get user in cannon by LinkedIn User email
+      // Get user in cannon by Linkedin User email
       linkedin.getUser(linkedinUser).then(res => {
         // If user does not exist we create, otherwise we update existing user
         if (res.createUser) {
@@ -104,7 +104,7 @@ function linkedInAuth (code, cb) {
             .catch(err => cb(Boom.unauthorized(err)))
         }
         const changedAttributes = {
-          linkedIn: {
+          linkedin: {
             id: linkedinUser.id
           },
           name: `${linkedinUser.firstName} ${linkedinUser.lastName}`,

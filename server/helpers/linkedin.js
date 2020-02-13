@@ -1,7 +1,7 @@
 const server = require('../').hapi
 const request = require('request')
 const log = require('./logger')
-const linkedinConfig = require('../../config').linkedIn
+const linkedinConfig = require('../../config').linkedin
 
 const LI_API_URL = 'https://www.linkedin.com/oauth/v2'
 const linkedin = {}
@@ -20,7 +20,7 @@ linkedin.getToken = code => {
           },
           response: response.statusMessage
         })
-        return reject('invalid LinkedIn token')
+        return reject('invalid Linkedin token')
       }
       return resolve(result.access_token)
     })
@@ -29,25 +29,39 @@ linkedin.getToken = code => {
 
 linkedin.getLinkedinUser = linkedinUserToken => {
   return new Promise((resolve, reject) => {
-    const urlProfile = 'https://api.linkedin.com/v1/people/~:(id,email-address,first-name,last-name,picture-url)?format=json'
+    const urlProfile = 'https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))'
 
     request.get(urlProfile, {
       json: true,
       auth: {
         'bearer': linkedinUserToken
       }
-    }, (error, response, linkedinUser) => {
+    }, (error, response, linkedinJsonUser) => {
+
+        console.log(JSON.stringify(linkedinJsonUser))
+
       if (error || response.statusCode !== 200) {
         log.warn({ error, response: response.statusMessage })
-        return reject('error getting linkedIn user profile')
+        return reject('error getting linkedin user profile')
       }
+
+        let linkedinUser = {
+          id: linkedinJsonUser.id,
+          emailAddress: "",
+          firstName: Object.keys(linkedinJsonUser.firstName.localized).map(key => linkedinJsonUser.firstName.localized[key])[0],
+          lastName: Object.keys(linkedinJsonUser.lastName.localized).map(key => linkedinJsonUser.lastName.localized[key])[0],
+          pictureUrl: linkedinJsonUser.profilePicture['displayImage~'].elements[0].identifiers[0].identifier
+        }
+
+        console.log(linkedinUser)
+
       return resolve(linkedinUser)
     })
   })
 }
 
 /**
- * Get user in cannon DB by mail associated with LinkedIn account
+ * Get user in cannon DB by mail associated with Linkedin account
  * @param {object} linkedinUser linkedin User Profile
  * @param {string} linkedinUser.id linkedin User Id
  * @param {string} linkedinUser.emailAddress
@@ -75,7 +89,7 @@ linkedin.getUser = linkedinUser => {
 linkedin.createUser = linkedinUser => {
   return new Promise((resolve, reject) => {
     const user = {
-      linkedIn: {
+      linkedin: {
         id: linkedinUser.id
       },
       name: `${linkedinUser.firstName} ${linkedinUser.lastName}`,
