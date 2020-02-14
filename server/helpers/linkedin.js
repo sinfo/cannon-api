@@ -38,8 +38,6 @@ linkedin.getLinkedinUser = linkedinUserToken => {
       }
     }, (error, response, linkedinJsonUser) => {
 
-        console.log(JSON.stringify(linkedinJsonUser))
-
       if (error || response.statusCode !== 200) {
         log.warn({ error, response: response.statusMessage })
         return reject('error getting linkedin user profile')
@@ -52,8 +50,6 @@ linkedin.getLinkedinUser = linkedinUserToken => {
           lastName: Object.keys(linkedinJsonUser.lastName.localized).map(key => linkedinJsonUser.lastName.localized[key])[0],
           pictureUrl: linkedinJsonUser.profilePicture['displayImage~'].elements[0].identifiers[0].identifier
         }
-
-        console.log(linkedinUser)
 
       return resolve(linkedinUser)
     })
