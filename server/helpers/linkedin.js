@@ -43,18 +43,53 @@ linkedin.getLinkedinUser = linkedinUserToken => {
         return reject('error getting linkedin user profile')
       }
 
-        let linkedinUser = {
-          id: linkedinJsonUser.id,
-          emailAddress: "",
-          firstName: Object.keys(linkedinJsonUser.firstName.localized).map(key => linkedinJsonUser.firstName.localized[key])[0],
-          lastName: Object.keys(linkedinJsonUser.lastName.localized).map(key => linkedinJsonUser.lastName.localized[key])[0],
-          pictureUrl: linkedinJsonUser.profilePicture['displayImage~'].elements[0].identifiers[0].identifier
-        }
 
-      return resolve(linkedinUser)
+      linkedin.getLinkedinUserEmail(linkedinUserToken)
+        .then(linkedinEmail => {
+
+          let linkedinUser = {
+            id: linkedinJsonUser.id,
+            emailAddress: linkedinEmail,
+            firstName: Object.keys(linkedinJsonUser.firstName.localized).map(key => linkedinJsonUser.firstName.localized[key])[0],
+            lastName: Object.keys(linkedinJsonUser.lastName.localized).map(key => linkedinJsonUser.lastName.localized[key])[0],
+            pictureUrl: linkedinJsonUser.profilePicture['displayImage~'].elements[0].identifiers[0].identifier
+          }
+
+        return resolve(linkedinUser)
+      })
+      .catch(err => {
+        console.log(err)
+        reject(err)
+      })
     })
   })
 }
+
+linkedin.getLinkedinUserEmail = linkedinUserToken => {
+  return new Promise((resolve, reject) => {
+    const emailUrl = 'https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))'
+
+    request.get(emailUrl, {
+      json: true,
+      auth: {
+        'bearer': linkedinUserToken
+      }
+    }, (error, response, linkedinEmail) => {
+
+      if (error || response.statusCode !== 200) {
+        log.warn({ error, response: response.statusMessage })
+        return reject('error getting linkedin user email')
+      }
+
+      console.log('email ' + linkedinEmail)
+
+      return resolve(linkedinEmail)
+    })
+  })
+}
+
+
+
 
 /**
  * Get user in cannon DB by mail associated with Linkedin account
