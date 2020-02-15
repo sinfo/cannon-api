@@ -81,8 +81,6 @@ linkedin.getLinkedinUserEmail = linkedinUserToken => {
         return reject('error getting linkedin user email')
       }
 
-      console.log('email ' + linkedinEmail)
-
       return resolve(linkedinEmail)
     })
   })
