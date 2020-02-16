@@ -20,6 +20,6 @@ function renderObject(model) {
           availability: model.notes.availability,
           otherObservations: model.notes.otherObservations
         },
-        created: model.created, updated: model.updated
+        created: model.created, updated: model.updated, cv: model.cv
   }
 }
