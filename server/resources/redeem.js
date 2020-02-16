@@ -62,7 +62,7 @@ function use (redeem, userId, cb) {
     return cb(Boom.notAcceptable())
   }
 
-  if (redeem.available !== undefined && redeem.available <= 0) {
+  if (redeem.available !== undefined && redeem.available !== null &&  redeem.available <= 0) {
     log.info({err: err, user: userId, redeem: redeem.id}, 'redeem code not available anymore')
     return cb(Boom.notAcceptable())
   }
@@ -94,6 +94,9 @@ function use (redeem, userId, cb) {
       log.info({err: err, user: userId, redeem: redeem.id}, 'user already used the redeem code')
       return cb(Boom.notAcceptable())
     }
+
+    // no limit to this redeem code
+    if (redeem.available === null) return cb(null, redeem)
 
     let available = redeem.available - 1
 
