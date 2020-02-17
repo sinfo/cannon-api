@@ -81,9 +81,19 @@ linkedin.getLinkedinUserEmail = linkedinUserToken => {
         return reject('error getting linkedin user email')
       }
 
-      console.log('email ' + linkedinEmail)
+      if (typeof(linkedinEmail) === 'string') {
+        return resolve(linkedinEmail)
+      } 
+      
+      if (!linkedinEmail['elements']
+        || !linkedinEmail['elements'].length
+        || !linkedinEmail['elements'][0]['handle~']
+        || !linkedinEmail['elements'][0]['handle~']['emailAddress']) {
+          return reject(`Couldn\t find email in ${JSON.stringify(linkedinEmail)}`)
+        }
 
-      return resolve(linkedinEmail)
+        return resolve(linkedinEmail['elements'][0]['handle~']['emailAddress'])
+
     })
   })
 }

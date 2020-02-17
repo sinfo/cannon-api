@@ -4,6 +4,7 @@ const log = require('../helpers/logger')
 const fieldsParser = require('../helpers/fieldsParser')
 const Link = require('../db/link')
 const _ = require('underscore')
+const Achievement = require('../db/achievement')
 
 server.method('link.create', create, {})
 server.method('link.update', update, {})
@@ -113,6 +114,8 @@ function list(filter, query, cb) {
     filter.edition = query.editionId
   }
 
+
+
   const fields = fieldsParser(query.fields)
   const options = {
     skip: query.skip,
@@ -126,7 +129,27 @@ function list(filter, query, cb) {
       return cb(Boom.internal())
     }
 
-    cb(null, Array.from(links, (l) => {return l.toObject()}))
+    let achFilter = {
+      'validity.to':
+          {'$gt': new Date('January 1, 2020 00:00:00').toISOString()},
+      'kind': 'cv'
+    };
+
+    log.debug({filter: filter}, 'finding achievements')
+
+    Achievement.findOne(achFilter, (err, achievement) => {
+      if (err) {
+        log.error({err: err}, 'error getting achievements')
+        return cb(Boo, internal())
+      }
+
+      objLinks = Array.from(links, (l) => {return l.toObject()})
+
+      objLinks.forEach(
+          (l) => {l.cv = achievement.toObject().users.includes(l.attendee)})
+
+      cb(null, objLinks)
+    })
   })
 }
 
