@@ -364,8 +364,8 @@ function addUserToStandAchievement (companyId, userId, cb) {
   Achievement.findOneAndUpdate({
     id: { $regex: companyId },
     'kind': 'stand',
-    'validity.from': { $gte: now },
-    'validity.to': { $lte: now }
+    'validity.from': { $lte: now },
+    'validity.to': { $gte: now }
   }, changes, (err, achievement) => {
     if (err) {
       log.error({err: err, companyId: companyId, userId: userId}, 'error adding user to stand achievement')
