@@ -86,9 +86,9 @@ linkedin.getLinkedinUserEmail = linkedinUserToken => {
       } 
       
       if (!linkedinEmail['elements']
-        || !linkedimEmail['elements'].length
-        || !linkedimEmail['elements'][0]['handle~']
-        || !linkedimEmail['elements'][0]['handle~']['emailAddress']) {
+        || !linkedinEmail['elements'].length
+        || !linkedinEmail['elements'][0]['handle~']
+        || !linkedinEmail['elements'][0]['handle~']['emailAddress']) {
           return reject(`Couldn\t find email in ${JSON.stringify(linkedinEmail)}`)
         }
 
