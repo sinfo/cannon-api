@@ -92,7 +92,7 @@ linkedin.getLinkedinUserEmail = linkedinUserToken => {
           return reject(`Couldn\t find email in ${JSON.stringify(linkedinEmail)}`)
         }
 
-        return resolve(linkedimEmail['elements'][0]['handle~']['emailAddress'])
+        return resolve(linkedinEmail['elements'][0]['handle~']['emailAddress'])
 
     })
   })
