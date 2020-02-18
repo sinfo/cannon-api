@@ -108,7 +108,7 @@ google.getLiveStream = function (callback) {
     return callback({
       up: false,
       url: ""
-    });
+    }, null);
   }
 
   request({
@@ -119,9 +119,9 @@ google.getLiveStream = function (callback) {
   }, (err, _, body) => {
     if (err) {
       console.error(err);
-      process.exit(1);
+      callback(null, err);
     }
-    callback(render(JSON.parse(body)));
+    callback(render(JSON.parse(body)), null);
   })
 }
 

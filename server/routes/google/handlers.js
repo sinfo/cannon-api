@@ -7,6 +7,7 @@
 
 
 const google = require('../../helpers/google')
+const render = require('../../views/google')
 
 // Time between calls
 const timeOut = 5 * (60 * 1000);
@@ -30,7 +31,7 @@ exports = module.exports;
 exports.getLivestream = {
     tags: ['api', 'google'],
     handler: function (req, reply) {
-        reply(liveInfo);
+        reply(render(liveInfo));
     }
 }
 
@@ -49,7 +50,8 @@ function checkLiveStream() {
         return;
     }
 
-    google.getLiveStream(result => {
+    google.getLiveStream((result, err) => {
+        if (err) return;
         liveInfo = result;
     });
 
