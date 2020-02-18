@@ -362,7 +362,7 @@ function addUserToStandAchievement (companyId, userId, cb) {
   const now = new Date()
   
   Achievement.findOneAndUpdate({
-    id: { $regex: companyId },
+    id: { $regex: `stand-${companyId}-` },
     'kind': 'stand',
     'validity.from': { $lte: now },
     'validity.to': { $gte: now }
