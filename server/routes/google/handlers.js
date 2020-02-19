@@ -12,19 +12,11 @@ const render = require('../../views/google')
 // Time between calls
 const timeOut = 5 * (60 * 1000);
 
-// When the checkStream function should run
-const interval = {
-    min: 14,
-    max: 19
-};
-
 // The stream information
 var liveInfo = {
     up: false,
     url: ""
 };
-
-var lastTimer = 0;
 
 exports = module.exports;
 
@@ -39,17 +31,6 @@ if (process.env.NODE_ENV === "production")
     lastTimer = setTimeout(checkLiveStream, timeOut);
 
 function checkLiveStream() {
-    var currentDate = new Date();
-    var hours = currentDate.getHours();
-
-    if (hours < interval.min || hours > interval.max) {
-        clearTimeout(lastTimer);
-        setTimeout(checkLiveStream, (hours + 19) * 60 * 60 * 1000);
-        liveInfo.up = false;
-        liveInfo.url = "";
-        return;
-    }
-
     google.getLiveStream((result, err) => {
         if (err) return;
         liveInfo = result;
