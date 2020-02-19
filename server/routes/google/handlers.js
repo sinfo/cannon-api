@@ -23,7 +23,7 @@ exports = module.exports;
 exports.getLivestream = {
     tags: ['api', 'google'],
     handler: function (req, reply) {
-        reply(render(liveInfo));
+        reply(liveInfo);
     }
 }
 

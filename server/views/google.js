@@ -1,6 +1,6 @@
 module.exports = function render(content) {
 
-    if (content || !content["pageInfo"]) {
+    if (!content || !content["pageInfo"]) {
         return {
             up: false,
             url: ""
