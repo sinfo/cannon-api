@@ -31,10 +31,14 @@ if (process.env.NODE_ENV === "production")
     lastTimer = setTimeout(checkLiveStream, timeOut);
 
 function checkLiveStream() {
-    google.getLiveStream((result, err) => {
-        if (err) return;
-        liveInfo = result;
-    });
+    const now = new Date()
+
+    if (now.getHours() >= 14 && now.getHours() <= 19) {
+        google.getLiveStream((result, err) => {
+            if (err) return;
+            liveInfo = result;
+        });
+    }
 
     lastTimer = setTimeout(checkLiveStream, timeOut);
 }
