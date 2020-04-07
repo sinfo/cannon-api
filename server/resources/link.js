@@ -192,7 +192,7 @@ function checkCompany(userId, companyId, editionId, cb) {
     if (_.findWhere(user.company, {company: companyId, edition: editionId})) {
       return cb(null, true)
     }
-
-    return cb(Boom.notFound())
+    log.error("company not found")
+    return cb(Boom.notFound('company not found'))
   })
 }

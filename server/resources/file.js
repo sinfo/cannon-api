@@ -277,7 +277,8 @@ function zipFiles (links, cb) {
     // Generate new zip with links
     const linksIds = links.map((link) => { return link.attendee })
     const filter = {
-      user: {'$in': linksIds }
+      user: {'$in': linksIds },
+      updated :{'$gt': new Date('2019-04-03')}
     }
     const zip = new Zip()
 
@@ -302,7 +303,14 @@ function zipFiles (links, cb) {
 
             zip.addFile(`${user.name}.pdf`, fs.readFileSync(`${config.upload.path}/${file.id}`), `Notes: ${link.notes}`, 0644)
             if (link.notes) {
-              zip.addFile(`${user.name}.txt`, new Buffer(`Your notes, taken on ${new Date(link.created).toUTCString()}: ${link.notes}`), `Notes: ${link.notes}`, 0644)
+              let note = "\nEmail: " + link.notes.contacts.email? link.notes.contacts.email : "-"
+              +"\nPhone: " + link.notes.contacts.phone? link.notes.contacts.phone : "-"
+              +"\nInterests: " + link.notes.interestedIn? link.notes.interestedIn : "-"
+              +"\nDegree: " + link.notes.degree? link.notes.degree : "-"
+              +"\nAvailability: "+ link.notes.availability? link.notes.availability : "-"
+              +"\nOther obserbations: "+ link.notes.otherObservations? link.notes.otherObservations : "-"
+
+              zip.addFile(`${user.name}.txt`, new Buffer(`Your notes, taken on ${new Date(link.created).toUTCString()}: ${note}`), `Notes: ${note}`, 0644)
             }
             return cbAsync()
           })

@@ -142,7 +142,8 @@ function isValid (companyId, editionId, cb) {
       return cb(null, true)
     }
 
-    return cb(Boom.notFound())
+    log.error("isvalid")
+    return cb(Boom.notFound('isValid'))
   })
 }
 
