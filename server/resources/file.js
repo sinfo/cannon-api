@@ -332,32 +332,41 @@ function zipFiles (links, cb) {
         return cb(Boom.internal())
       }
 
-      // Prevents Big Zip from being generated on every request. Acts like a cache
-      if (err && err.code !== 'ENOENT' && Date.now() < new Date(stats.mtime).getTime() + config.upload.cvsZipAge) {
-        return cb()
-      }
-
-      let zip = new Zip()
-      fs.readdir(config.upload.path, (err, files) => {
-        if (err) {
+      fs.stat(config.upload.path, (dir_err, dir_stats) => {
+        if(dir_err && dir_err.code !=='ENOENT'){
+          log.error({err: dir_err}, '[dir] Error reading uploads dir')
           return cb(Boom.internal())
         }
 
-        async.eachSeries(files, (file, cbAsync) => {
-          fs.readFile(`${config.upload.path}/${file}`, (err, fileData) => {
-            zip.addFile(`${file}.pdf`, fileData, '', 0644) // .pdf hardcoded ¯\_(ツ)_/¯
-            return cbAsync()
-          })
-        }, (err) => {
+        // Prevents Big Zip from being generated on every request. Acts like a cache
+        if (!err && !dir_err && new Date(dir_stats.mtime).getTime() < new Date(stats.mtime).getTime()) {
+          return cb()
+        }
+
+
+        let zip = new Zip()
+        log.info("Zipping...")
+        fs.readdir(config.upload.path, (err, files) => {
           if (err) {
             return cb(Boom.internal())
           }
-          zip.toBuffer(buffer => {
-            fs.writeFile(config.upload.cvsZipPath, buffer, (err) => {
-              if (err) {
-                return (Boom.internal())
-              }
-              return cb()
+
+          async.eachSeries(files, (file, cbAsync) => {
+            fs.readFile(`${config.upload.path}/${file}`, (err, fileData) => {
+              zip.addFile(`${file}.pdf`, fileData, '', 0644) // .pdf hardcoded ¯\_(ツ)_/¯
+              return cbAsync()
+            })
+          }, (err) => {
+            if (err) {
+              return cb(Boom.internal())
+            }
+            zip.toBuffer(buffer => {
+              fs.writeFile(config.upload.cvsZipPath, buffer, (err) => {
+                if (err) {
+                  return (Boom.internal())
+                }
+                return cb()
+              })
             })
           })
         })
