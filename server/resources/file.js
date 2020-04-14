@@ -278,7 +278,7 @@ function zipFiles (links, cb) {
     const linksIds = links.map((link) => { return link.attendee })
     const filter = {
       user: {'$in': linksIds },
-      updated :{'$gt': new Date('2019-04-03')}
+      updated :{'$gt': new Date('2020-01-01')}
     }
     const zip = new Zip()
 
