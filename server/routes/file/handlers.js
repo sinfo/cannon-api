@@ -184,15 +184,18 @@ exports.downloadCompany = {
       server.methods.link.list(request.params.companyId, request.query, (err, links) => {
         return server.methods.file.zipFiles(links, handleZip)
       })
+    }else{
+      return server.methods.file.zipFiles(null, handleZip)
     }
-    return server.methods.file.zipFiles(null, handleZip)
 
     function handleZip (err, zip) {
       if (!zip) {
         return reply.file(configUpload.cvsZipPath, { mode: 'attachment', filename: 'CVs.zip' }) // Return generic zip
       }
-      return reply(zip).bytes(zip.length).header('Content-Type', 'application/zip')
+      /*return reply(zip).bytes(zip.length).header('Content-Type', 'application/zip')
       .header('Content-Disposition', 'attachment; filename=linksCVs.zip') // Return Links zip
+      */
+      return reply.file(configUpload.cvsLinkPath, { mode: 'attachment', filename: 'LinksCVs.zip' }) // Return links zip
     }
   },
   description: 'Downloads users files'
