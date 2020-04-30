@@ -289,6 +289,7 @@ function zipFiles (links, cb) {
       }
 
       if (!files) {
+        log.error("No files")
         return cb(Boom.notFound())
       }
 
@@ -300,18 +301,23 @@ function zipFiles (links, cb) {
             if (err) {
               return cbAsync(Boom.internal())
             }
+            fs.readFile(`${config.upload.path}/${file.id}`, (err, fileData) =>{
+              if(!err){
+                zip.addFile(`${user.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "")}.pdf`, fileData, `Notes: ${link.notes}`, 0644)
+                if (link.notes) {
+                  let note = "\nEmail: " + link.notes.contacts.email? link.notes.contacts.email : "-"
+                  +"\nPhone: " + link.notes.contacts.phone? link.notes.contacts.phone : "-"
+                  +"\nInterests: " + link.notes.interestedIn? link.notes.interestedIn : "-"
+                  +"\nDegree: " + link.notes.degree? link.notes.degree : "-"
+                  +"\nAvailability: "+ link.notes.availability? link.notes.availability : "-"
+                  +"\nOther obserbations: "+ link.notes.otherObservations? link.notes.otherObservations : "-"
 
-            zip.addFile(`${user.name}.pdf`, fs.readFileSync(`${config.upload.path}/${file.id}`), `Notes: ${link.notes}`, 0644)
-            if (link.notes) {
-              let note = "\nEmail: " + link.notes.contacts.email? link.notes.contacts.email : "-"
-              +"\nPhone: " + link.notes.contacts.phone? link.notes.contacts.phone : "-"
-              +"\nInterests: " + link.notes.interestedIn? link.notes.interestedIn : "-"
-              +"\nDegree: " + link.notes.degree? link.notes.degree : "-"
-              +"\nAvailability: "+ link.notes.availability? link.notes.availability : "-"
-              +"\nOther obserbations: "+ link.notes.otherObservations? link.notes.otherObservations : "-"
-
-              zip.addFile(`${user.name}.txt`, new Buffer(`Your notes, taken on ${new Date(link.created).toUTCString()}: ${note}`), `Notes: ${note}`, 0644)
-            }
+                  zip.addFile(`${user.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "")}.txt`, new Buffer(`Your notes, taken on ${new Date(link.created).toUTCString()}: ${note}`), `Notes: ${note}`, 0644)
+                }
+              }else{
+                log.error(err)
+              }
+            })
             return cbAsync()
           })
         }, (err) => {
@@ -319,7 +325,12 @@ function zipFiles (links, cb) {
             return cb(Boom.internal())
           }
           zip.toBuffer((buffer) => {
-            return cb(null, buffer)
+            fs.writeFile(config.upload.cvsLinkPath, buffer, (err) => {
+              if (err) {
+                return (Boom.internal())
+              }
+              return cb(null, true)
+            })
           })
         })
       }
