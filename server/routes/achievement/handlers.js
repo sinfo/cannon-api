@@ -228,3 +228,50 @@ exports.remove = {
   },
   description: 'Removes an achievement'
 }
+
+exports.listWithCode = {
+  tags: ['api', 'achievement'],
+  auth: {
+    strategies: ['default'],
+    scope: ['team', 'admin'],
+    mode: 'try'
+  },
+  validate: {
+    query: {
+      fields: Joi.string().description('Fields we want to retrieve'),
+      sort: Joi.string().description('Sort fields we want to retrieve'),
+      skip: Joi.number().description('Number of documents we want to skip'),
+      limit: Joi.number().description('Limit of documents we want to retrieve')
+    }
+  },
+  pre: [
+    {method: 'achievement.list(query)', assign: 'achievements'}
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.achievements, true))
+  },
+  description: 'Lists all achievements, with self sign codes'
+}
+exports.getWithCode = {
+  tags: ['api', 'achievement'],
+  auth: {
+    strategies: ['default'],
+    scope: ['team', 'admin'],
+    mode: 'try'
+  },
+  validate: {
+    query: {
+      fields: Joi.string().description('Fields we want to retrieve')
+    },
+    params: {
+      id: Joi.string().required().description('Id of the achievement we want to retrieve')
+    }
+  },
+  pre: [
+    { method: 'achievement.get(params.id)', assign: 'achievement' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.achievement, true))
+  },
+  description: 'Gets an achievement, with self sign codes'
+}

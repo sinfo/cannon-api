@@ -45,6 +45,8 @@ const credentialsD = {
   scope: 'user'
 }
 
+let code = ''
+
 const userA = {
   id: 'john.doe',
   name: 'John Doe',
@@ -195,7 +197,7 @@ lab.experiment('User', () => {
       Code.expect(new Date(result.code.expiration).toISOString()).to.equal(expires.toISOString())
       Code.expect(result.code.code.length).to.equal(12)
 
-      let code = result.code.code
+      code = result.code.code
 
       const opt2 = {
         method: 'POST',
@@ -234,10 +236,6 @@ lab.experiment('User', () => {
       Code.expect(result).to.be.instanceof(Object)
       Code.expect(result.id).to.equal(achievementId)
       Code.expect(result.name).to.equal(achievementA.name)
-      Code.expect(result.code).to.be.instanceof(Object)
-      Code.expect(result.code.code.length).to.equal(12)
-
-      let code = result.code.code
 
       const opt2 = {
         method: 'POST',
@@ -264,6 +262,98 @@ lab.experiment('User', () => {
 
         server.inject(opt3, (response) => {
           Code.expect(response.statusCode).to.equal(400)
+          done()
+        })
+      })
+    })
+  })
+
+  lab.test('Get one with codes', (done) => {
+    const opt1 = {
+      method: 'GET',
+      url: `/achievements/${achievementId}/code`,
+      credentials: credentialsA
+    }
+
+    const opt2 = {
+      method: 'GET',
+      url: `/achievements/${achievementId}/code`,
+      credentials: credentialsB
+    }
+
+    const opt3 = {
+      method: 'GET',
+      url: `/achievements/${achievementId}/code`,
+      credentials: credentialsC
+    }
+
+    server.inject(opt1, (response) => { // Admin
+      const result = response.result
+
+      Code.expect(response.statusCode).to.equal(200)
+      Code.expect(result).to.be.instanceof(Object)
+      Code.expect(result.id).to.equal(achievementId)
+      Code.expect(result.name).to.equal(achievementA.name)
+      Code.expect(result.code).to.be.instanceof(Object)
+      Code.expect(result.code.code).to.equal(code)
+
+      server.inject(opt3, (response) => { // Team
+        Code.expect(response.statusCode).to.equal(200)
+        Code.expect(result).to.be.instanceof(Object)
+        Code.expect(result.id).to.equal(achievementId)
+        Code.expect(result.name).to.equal(achievementA.name)
+        Code.expect(result.code).to.be.instanceof(Object)
+        Code.expect(result.code.code).to.equal(code)
+
+        server.inject(opt2, (response) => { // User
+          Code.expect(response.statusCode).to.equal(403)
+          done()
+        })
+      })
+    })
+  })
+
+  lab.test('List with codes', (done) => {
+    const opt1 = {
+      method: 'GET',
+      url: `/achievements/code`,
+      credentials: credentialsA
+    }
+
+    const opt2 = {
+      method: 'GET',
+      url: `/achievements/code`,
+      credentials: credentialsB
+    }
+
+    const opt3 = {
+      method: 'GET',
+      url: `/achievements/code`,
+      credentials: credentialsC
+    }
+
+    server.inject(opt1, (response) => { // Admin
+      const result = response.result
+
+      Code.expect(response.statusCode).to.equal(200)
+      Code.expect(result).to.be.instanceof(Array)
+      Code.expect(result.length).to.equal(1)
+      Code.expect(result[0].id).to.equal(achievementId)
+      Code.expect(result[0].name).to.equal(achievementA.name)
+      Code.expect(result[0].code).to.be.instanceof(Object)
+      Code.expect(result[0].code.code).to.equal(code)
+
+      server.inject(opt3, (response) => { // Team
+        Code.expect(response.statusCode).to.equal(200)
+        Code.expect(result).to.be.instanceof(Array)
+        Code.expect(result.length).to.equal(1)
+        Code.expect(result[0].id).to.equal(achievementId)
+        Code.expect(result[0].name).to.equal(achievementA.name)
+        Code.expect(result[0].code).to.be.instanceof(Object)
+        Code.expect(result[0].code.code).to.equal(code)
+
+        server.inject(opt2, (response) => { // User
+          Code.expect(response.statusCode).to.equal(403)
           done()
         })
       })

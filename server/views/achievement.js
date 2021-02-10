@@ -1,12 +1,12 @@
-module.exports = function render (content) {
+module.exports = function render (content, wCode = false) {
   if (content instanceof Array) {
-    return content.map(renderObject)
+    return content.map(a => renderObject(a, wCode))
   }
 
-  return renderObject(content)
+  return renderObject(content, wCode)
 }
 
-function renderObject (model) {
+function renderObject (model, wCode) {
   return {
     id: model.id,
     event: model.event,
@@ -21,6 +21,6 @@ function renderObject (model) {
     updated: model.updated,
     validity: model.validity,
     kind: model.kind,
-    code: model.code
+    code: wCode ? model.code : undefined
   }
 }
