@@ -37,13 +37,13 @@ function processSession (session, cb) {
   cb()
 }
 
-API.session.list({event: EVENT}, (err, sessions) => {
-  log.debug({err: err, count: sessions.length}, 'got sessions')
+API.session.list({ event: EVENT }, (err, sessions) => {
+  log.debug({ err: err, count: sessions.length }, 'got sessions')
 
   async.eachLimit(sessions, 2, (session, cb) => {
     processSession(session, (err) => {
       if (err) {
-        log.warn({err: err, session: session}, 'render')
+        log.warn({ err: err, session: session }, 'render')
       }
 
       // log.debug({session: session}, 'rendered');

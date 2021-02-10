@@ -137,7 +137,7 @@ exports.getActive = {
     }
   },
   pre: [
-    { method: 'achievement.getActiveAchievements(query)', assign: 'activeAchievements' },
+    { method: 'achievement.getActiveAchievements(query)', assign: 'activeAchievements' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.activeAchievements))
@@ -149,11 +149,11 @@ exports.getMeActive = {
   tags: ['api', 'achievement'],
   auth: {
     strategies: ['default'],
-    scope: ['user', 'company', 'team', 'admin'],
+    scope: ['user', 'company', 'team', 'admin']
   },
   pre: [
     { method: 'achievement.getActiveAchievements()', assign: 'activeAchievements' },
-    { method: 'achievement.getPointsForUser(pre.activeAchievements, auth.credentials.user.id)', assign: 'result' },
+    { method: 'achievement.getPointsForUser(pre.activeAchievements, auth.credentials.user.id)', assign: 'result' }
   ],
   handler: function (request, reply) {
     reply(request.pre.result)
@@ -228,4 +228,3 @@ exports.remove = {
   },
   description: 'Removes an achievement'
 }
-

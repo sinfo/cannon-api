@@ -1,7 +1,6 @@
 const server = require('../server').hapi
 const API = server.methods
 const log = require('../server/helpers/logger')
-const async = require('async')
 const request = require('request')
 
 const DECK = 'http://localhost:8080'
@@ -17,7 +16,7 @@ let EVENT_START
 // fill the true values of validity, or just make them all valid now
 const trueValidity = true
 
-const cvTo = new Date(2019, 02, 31, 23, 59, 59, 999)
+const cvTo = new Date(2019, 2, 31, 23, 59, 59, 999)
 
 // points distribution (%)
 const points = {
@@ -69,7 +68,7 @@ const achievements = {
 const otherAchievements = []
 let pendingJobs = 0
 
-function getEvent (list_of_functions) {
+function getEvent (listOfFunctions) {
   request({
     url: DECK_EVENT_URL,
     headers: { 'Authorization': `${DECK_USER} ${DECK_TOKEN}` }
@@ -82,7 +81,7 @@ function getEvent (list_of_functions) {
     let events = JSON.parse(body)
 
     let found = false
-    for(let event of events) {
+    for (let event of events) {
       if (event.id === EVENT) {
         EVENT_START = new Date(event.date)
         found = true
@@ -95,12 +94,12 @@ function getEvent (list_of_functions) {
       process.exit(1)
     }
 
-    const next = list_of_functions.pop()
-    next(list_of_functions)
+    const next = listOfFunctions.pop()
+    next(listOfFunctions)
   })
 }
 
-function stands(list_of_functions) {
+function stands (listOfFunctions) {
   request({
     url: CORLIEF,
     headers: { 'Authorization': `${DECK_USER} ${DECK_TOKEN}` }
@@ -115,12 +114,12 @@ function stands(list_of_functions) {
     reservations.forEach(r => {
       const companyId = r.companyId
 
-      if (r.feedback === undefined || r.feedback.status !== 'CONFIRMED')  return
+      if (r.feedback === undefined || r.feedback.status !== 'CONFIRMED') return
 
-      for(let stand of r.stands) {
+      for (let stand of r.stands) {
         const day = stand.day
         const from = new Date(EVENT_START.getTime() + (1000 * 60 * 60 * 24) * (day - 1)) // shift the day
-        const to   = new Date(from)
+        const to = new Date(from)
 
         to.setHours(23)
         to.setMinutes(59)
@@ -143,15 +142,19 @@ function stands(list_of_functions) {
       }
     })
 
-    const next = list_of_functions.pop()
-    next(list_of_functions)
+    const next = listOfFunctions.pop()
+    next(listOfFunctions)
   })
 }
 
-function sessions(list_of_functions) {
+function sessions (listOfFunctions) {
   API.session.list({ event: EVENT }, (err, sessions) => {
+    if (err) {
+      return
+    }
     sessions.forEach(session => {
       let kind = ''
+      let sessionKind = ''
       let sessionDay = 0
       const sessionDate = new Date(session.date)
 
@@ -172,7 +175,7 @@ function sessions(list_of_functions) {
       }
 
       const from = new Date(EVENT_START.getTime() + (1000 * 60 * 60 * 24) * (sessionDay - 1)) // shift the day
-      const to   = new Date(from)
+      const to = new Date(from)
 
       to.setHours(23)
       to.setMinutes(59)
@@ -188,12 +191,12 @@ function sessions(list_of_functions) {
       }
 
       achievement['validity'] = !trueValidity ? {
-          from: new Date(),
-          to: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7) // 1 week
-        } : {
-          from: from,
-          to: to
-        }
+        from: new Date(),
+        to: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7) // 1 week
+      } : {
+        from: from,
+        to: to
+      }
 
       switch (session.kind) {
         case 'Keynote':
@@ -215,12 +218,12 @@ function sessions(list_of_functions) {
       achievements[sessionDay][kind].push(achievement)
     })
 
-    const next = list_of_functions.pop()
-    next(list_of_functions)
+    const next = listOfFunctions.pop()
+    next(listOfFunctions)
   })
 }
 
-function cv(list_of_functions) {
+function cv (listOfFunctions) {
   otherAchievements.push({
     name: `Submitted CV`,
     id: 'submitted-cv-' + EVENT,
@@ -233,11 +236,11 @@ function cv(list_of_functions) {
     }
   })
 
-  const next = list_of_functions.pop()
-  next(list_of_functions)
+  const next = listOfFunctions.pop()
+  next(listOfFunctions)
 }
 
-function addAchievements(list_of_functions) {
+function addAchievements (listOfFunctions) {
   let totalStands = 0
   let totalPresentations = 0
   let totalWorkshops = 0
@@ -261,10 +264,10 @@ function addAchievements(list_of_functions) {
       keynote: nKeynotes > 0 ? Math.floor((points.keynote * totalPoints) / nKeynotes) : 0
     }
 
-    const totalPointsThisDay = calculatedPoints.stands * nStands
-      + calculatedPoints.presentations * nPresentations
-      + calculatedPoints.workshops * nWorkshops
-      + calculatedPoints.keynote * nKeynotes
+    const totalPointsThisDay = calculatedPoints.stands * nStands +
+    calculatedPoints.presentations * nPresentations +
+    calculatedPoints.workshops * nWorkshops +
+    calculatedPoints.keynote * nKeynotes
 
     console.log(`
       ====== day ${day} ======
@@ -281,7 +284,6 @@ function addAchievements(list_of_functions) {
         addAchievement(achievement, day, kind)
       })
     })
-
   })
 
   console.log(`
@@ -294,11 +296,11 @@ function addAchievements(list_of_functions) {
 
   otherAchievements.forEach((achievement) => addAchievement(achievement))
 
-  const next = list_of_functions.pop()
-  next(list_of_functions)
+  const next = listOfFunctions.pop()
+  next(listOfFunctions)
 }
 
-function waitForJobs() {
+function waitForJobs () {
   if (pendingJobs > 0) {
     console.log(`(${pendingJobs}) waiting...`)
     setTimeout(waitForJobs, 1500)
@@ -308,7 +310,7 @@ function waitForJobs() {
   }
 }
 
-function addAchievement(achievement, day, kind) {
+function addAchievement (achievement, day, kind) {
   pendingJobs += 1
   API.achievement.create(achievement, (err, result) => {
     if (err && err.output.statusCode === 409) {

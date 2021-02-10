@@ -6,4 +6,3 @@ server.route({
   path: '/promo-code',
   config: handlers.find
 })
-

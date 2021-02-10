@@ -45,7 +45,7 @@ exports.checkIn = {
     }
   },
   pre: [
-    { method: 'achievement.addMultiUsersBySession(params.sessionId, payload.users)', assign: 'achievement' },
+    { method: 'achievement.addMultiUsersBySession(params.sessionId, payload.users)', assign: 'achievement' }
   ],
   handler: function (request, reply) {
     reply(request.pre.achievement)

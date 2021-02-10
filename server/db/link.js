@@ -8,7 +8,7 @@ const schema = new mongoose.Schema({
   updated: Date,
   user: String,
   notes: {
-    contacts: {email: String, phone: String},
+    contacts: { email: String, phone: String },
     interestedIn: String,
     degree: String,
     availability: String,
@@ -17,6 +17,6 @@ const schema = new mongoose.Schema({
 })
 
 // Makes pair unique
-schema.index({'company': 1, 'edition': 1, 'attendee': 1}, {'unique': true})
+schema.index({ 'company': 1, 'edition': 1, 'attendee': 1 }, { 'unique': true })
 
 module.exports = mongoose.model('Link', schema)

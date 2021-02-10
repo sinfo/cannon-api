@@ -119,7 +119,7 @@ lab.experiment('User', () => {
       Code.expect(result).to.be.instanceof(Array)
       done()
     })
-})
+  })
 
   lab.test('List all with achievement as admin', (done) => {
     const opt1 = {
@@ -151,13 +151,11 @@ lab.experiment('User', () => {
       Code.expect(result.name).to.equal(achievementA.name)
 
       server.inject(opt3, (response) => {
-        const result = response.result
-
         Code.expect(response.statusCode).to.equal(200)
 
         server.inject(opt1, (response) => {
           const result = response.result
-    
+
           Code.expect(response.statusCode).to.equal(200)
           Code.expect(result).to.be.instanceof(Array)
           Code.expect(result[0].name).to.be.string
@@ -165,8 +163,7 @@ lab.experiment('User', () => {
         })
       })
     })
-
-})
+  })
 
   lab.test('Get one as admin', (done) => {
     const options = {
@@ -368,7 +365,7 @@ lab.experiment('User', () => {
       method: 'PUT',
       url: '/users/me',
       credentials: credentialsC,
-      payload: {role: 'user'}
+      payload: { role: 'user' }
     }
 
     server.inject(options, (response) => {
@@ -387,12 +384,10 @@ lab.experiment('User', () => {
       method: 'PUT',
       url: '/users/me',
       credentials: credentialsB,
-      payload: {role: 'team'}
+      payload: { role: 'team' }
     }
 
     server.inject(options, (response) => {
-      const result = response.result
-
       Code.expect(response.statusCode).to.equal(401)
       done()
     })
@@ -427,7 +422,7 @@ lab.experiment('User', () => {
       Code.expect(result[0].name).to.be.string
       done()
     })
-})
+  })
 
   lab.test('Update as user', (done) => {
     const options = {
