@@ -20,6 +20,7 @@ function renderObject (model) {
     created: model.created,
     updated: model.updated,
     validity: model.validity,
-    kind: model.kind
+    kind: model.kind,
+    code: model.code
   }
 }

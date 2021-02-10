@@ -21,6 +21,7 @@ server.method('achievement.addCV', addCV, {})
 server.method('achievement.getPointsForUser', getPointsForUser, {})
 server.method('achievement.removeCV', removeCV, {})
 server.method('achievement.getActiveAchievements', getActiveAchievements, {})
+server.method('achievement.generateCodeSession', generateCodeSession, {})
 
 function create (achievement, cb) {
   achievement.id = achievement.id || slug(achievement.name)
@@ -314,7 +315,7 @@ function addMultiUsers (achievementId, usersId, cb) {
   })
 }
 
-function addMultiUsersBySession (sessionId, usersId, cb) {
+function addMultiUsersBySession (sessionId, usersId, credentials, code, cb) {
   if (!usersId) {
     log.error('tried to add multiple users to achievement but no users where given')
     return cb()
@@ -328,23 +329,51 @@ function addMultiUsersBySession (sessionId, usersId, cb) {
 
   const now = new Date()
 
-  Achievement.findOneAndUpdate({
-    session: sessionId,
-    'validity.from': { $lte: now },
-    'validity.to': { $gte: now }
-  }, changes, (err, achievement) => {
-    if (err) {
-      log.error({ err: err, sessionId: sessionId }, 'error adding user to achievement')
-      return cb(Boom.internal())
-    }
+  if (credentials.scope !== 'user') {
+    Achievement.findOneAndUpdate({
+      session: sessionId,
+      'validity.from': { $lte: now },
+      'validity.to': { $gte: now }
+    }, changes, (err, achievement) => {
+      if (err) {
+        log.error({ err: err, sessionId: sessionId }, 'error adding user to achievement')
+        return cb(Boom.internal())
+      }
 
-    if (achievement === null) {
-      log.error({ sessionId: sessionId }, 'error trying to add multiple users to not valid achievement in session')
-      return cb(new Error('error trying to add multiple users to not valid achievement in session'), null)
-    }
+      if (achievement === null) {
+        log.error({ sessionId: sessionId }, 'error trying to add multiple users to not valid achievement in session')
+        return cb(new Error('error trying to add multiple users to not valid achievement in session'), null)
+      }
 
-    cb(null, achievement.toObject({ getters: true }))
-  })
+      cb(null, achievement.toObject({ getters: true }))
+    })
+  } else {
+    if (usersId.length === 1 && usersId[0] === credentials.user.id) {
+      Achievement.findOneAndUpdate({
+        session: sessionId,
+        'validity.from': { $lte: now },
+        'validity.to': { $gte: now },
+        'code.created': {$lte: now},
+        'code.expiration': {$gte: now},
+        'code.code': code
+      }, changes, (err, achievement) => {
+        if (err) {
+          log.error({ err: err, sessionId: sessionId }, 'error adding user to achievement')
+          return cb(Boom.internal())
+        }
+
+        if (achievement === null) {
+          log.error({ sessionId: sessionId }, 'error trying to add user to not valid achievement in session')
+          return cb(Boom.notFound('error trying to add user to not valid achievement in session'), null)
+        }
+
+        cb(null, achievement.toObject({ getters: true }))
+      })
+    } else {
+      log.error('here')
+      return cb(Boom.badRequest('invalid payload for user self sign'), null)
+    }
+  }
 }
 
 function addUserToStandAchievement (companyId, userId, cb) {
@@ -407,4 +436,59 @@ function getActiveAchievements (query, cb) {
 
     cb(null, achievements)
   })
+}
+
+function generateCodeSession (sessionId, expiration, cb) {
+  if (!expiration) {
+    log.error('No duration was given')
+    return cb(new Error('No duration was given'))
+  }
+
+  let created = new Date()
+  let expires = new Date(expiration)
+  if (created >= expires) {
+    log.error({expires: expires}, 'expiration date is in the past')
+    return cb(new Error('expiration date is in the past'))
+  }
+
+  let code = randomString(12)
+
+  const changes = {
+    $set: {
+      code: {
+        created: created,
+        expiration: expires,
+        code: code
+      }
+    }
+  }
+
+  Achievement.findOneAndUpdate({
+    session: sessionId,
+    'validity.from': { $lte: created },
+    'validity.to': { $gte: created }
+  }, changes, (err, achievement) => {
+    if (err) {
+      log.error({ err: err, sessionId: sessionId }, 'error adding code to achievement')
+      return cb(Boom.internal())
+    }
+
+    if (achievement === null) {
+      log.error({ sessionId: sessionId }, 'error trying to code to not valid achievement in session')
+      return cb(new Error('error trying to add code to not valid achievement in session'), null)
+    }
+
+    cb(null, achievement.toObject({ getters: true }))
+  })
+}
+
+function randomString (size) {
+  var text = ''
+  var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+
+  for (var i = 0; i < size; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length))
+  }
+
+  return text
 }

@@ -7,6 +7,7 @@ const lab = exports.lab = Lab.script()
 const token = require('../auth/token')
 
 const aux = token.createJwt('john.doe')
+const auxB = token.createJwt('jane.doe')
 
 const credentialsA = {
   user: {
@@ -35,6 +36,15 @@ const credentialsC = {
   scope: 'team'
 }
 
+const credentialsD = {
+  user: {
+    id: 'jane.doe',
+    name: 'Jane Doe'
+  },
+  bearer: auxB.token,
+  scope: 'user'
+}
+
 const userA = {
   id: 'john.doe',
   name: 'John Doe',
@@ -45,7 +55,7 @@ const achievementId = 'WENT-TO-SINFO-XXII'
 const achievementA = {
   name: 'WENT TO SINFO XXII',
   event: 'SINFO XXII',
-  session: 'feross', // HACK
+  session: 'not', // HACK
   value: 10,
   validity: {
     from: new Date(),
@@ -159,6 +169,101 @@ lab.experiment('User', () => {
           Code.expect(response.statusCode).to.equal(200)
           Code.expect(result).to.be.instanceof(Array)
           Code.expect(result[0].name).to.be.string
+          done()
+        })
+      })
+    })
+  })
+
+  lab.test('Post code as admin and sign as user', (done) => {
+    const expires = new Date(new Date().getTime() + (1000 * 60 * 60))
+
+    const opt1 = {
+      method: 'POST',
+      url: `/sessions/${achievementA.session}/generate`,
+      credentials: credentialsA,
+      payload: {expiration: expires}
+    }
+
+    server.inject(opt1, (response) => {
+      const result = response.result
+
+      Code.expect(response.statusCode).to.equal(200)
+      Code.expect(result).to.be.instanceof(Object)
+      Code.expect(result.id).to.equal(achievementId)
+      Code.expect(result.name).to.equal(achievementA.name)
+      Code.expect(new Date(result.code.expiration).toISOString()).to.equal(expires.toISOString())
+      Code.expect(result.code.code.length).to.equal(12)
+
+      let code = result.code.code
+
+      const opt2 = {
+        method: 'POST',
+        url: `/sessions/${achievementA.session}/check-in`,
+        credentials: credentialsD,
+        payload: {
+          users: [credentialsD.user.id],
+          code: code
+        }
+      }
+
+      server.inject(opt2, (response) => {
+        const result = response.result
+
+        Code.expect(response.statusCode).to.equal(200)
+        Code.expect(result).to.be.instanceof(Object)
+        Code.expect(result.id).to.equal(achievementId)
+        Code.expect(result.name).to.equal(achievementA.name)
+        Code.expect(result.users).to.contain(credentialsD.user.id)
+        done()
+      })
+    })
+  })
+
+  lab.test('Self sign fail', (done) => {
+    const opt1 = {
+      method: 'GET',
+      url: `/achievements/${achievementId}`,
+      credentials: credentialsA
+    }
+
+    server.inject(opt1, (response) => {
+      const result = response.result
+
+      Code.expect(response.statusCode).to.equal(200)
+      Code.expect(result).to.be.instanceof(Object)
+      Code.expect(result.id).to.equal(achievementId)
+      Code.expect(result.name).to.equal(achievementA.name)
+      Code.expect(result.code).to.be.instanceof(Object)
+      Code.expect(result.code.code.length).to.equal(12)
+
+      let code = result.code.code
+
+      const opt2 = {
+        method: 'POST',
+        url: `/sessions/${achievementA.session}/check-in`,
+        credentials: credentialsD,
+        payload: {
+          users: [credentialsD.user.id],
+          code: 'bad'
+        }
+      }
+
+      server.inject(opt2, (response) => {
+        Code.expect(response.statusCode).to.equal(404)
+
+        const opt3 = {
+          method: 'POST',
+          url: `/sessions/${achievementA.session}/check-in`,
+          credentials: credentialsD,
+          payload: {
+            users: [credentialsA.user.id],
+            code: code
+          }
+        }
+
+        server.inject(opt3, (response) => {
+          Code.expect(response.statusCode).to.equal(400)
           done()
         })
       })

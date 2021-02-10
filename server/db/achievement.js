@@ -7,6 +7,11 @@ const schema = new mongoose.Schema({
   description: String,
   instructions: String,
   img: String,
+  code: {
+    created: Date,
+    expiration: Date,
+    code: String
+  },
   value: Number,
   users: {
     type: [String],
