@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "6.12.0"
+  - "6.12.3"
 env:
   - MONGODB=2.6.12
 install:
