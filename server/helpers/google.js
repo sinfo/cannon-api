@@ -6,7 +6,7 @@ const log = require('./logger')
 const render = require('../views/google')
 const googleConfig = require('../../config').google
 const config = require('../../config')
-const request = require('request');
+const request = require('request')
 
 const google = {}
 
@@ -101,14 +101,14 @@ google.createUser = gUser => {
 }
 
 google.getLiveStream = function (callback) {
-  var channelId = googleConfig.channelId;
-  var youtubeApiKey = googleConfig.apiKey;
+  var channelId = googleConfig.channelId
+  var youtubeApiKey = googleConfig.apiKey
 
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== 'production') {
     return callback({
       up: false,
-      url: ""
-    }, null);
+      url: ''
+    }, null)
   }
 
   request({
@@ -118,10 +118,10 @@ google.getLiveStream = function (callback) {
     }
   }, (err, _, body) => {
     if (err) {
-      console.error(err);
-      callback(null, err);
+      console.error(err)
+      callback(null, err)
     }
-    callback(render(JSON.parse(body)), null);
+    callback(render(JSON.parse(body)), null)
   })
 }
 

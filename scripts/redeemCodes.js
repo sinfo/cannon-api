@@ -4,7 +4,7 @@ const API = server.methods
 // ===================== edit here =====================
 
 const REDEEM_CODES_NUMBER = 2
-const EXPIRATION_DATE = new Date(2019, 02, 01)
+const EXPIRATION_DATE = new Date(2019, 2, 1)
 const ACHIEVEMENT_VALUE = 20
 const ACHIEVEMENT_NAME = 'Discovered a secret!'
 
@@ -15,19 +15,20 @@ const ACHIEVEMENT_VALIDITY_TO = EXPIRATION_DATE
 const ACHIEVEMENT_IMG = 'https://sinfo.ams3.cdn.digitaloceanspaces.com/static/26-sinfo/achievements/gamification.png'
 const ACHIEVEMENT_KIND = 'other'
 
-let pendingJobs = 0
+// let pendingJobs = 0
 
-function randomString() {
-  var text = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+function randomString () {
+  var text = ''
+  var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 
-  for (var i = 0; i < 2; i++)
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  for (var i = 0; i < 2; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length))
+  }
 
-  return text;
+  return text
 }
 
-function createAchievement() {
+function createAchievement () {
   let achievement = {
     name: ACHIEVEMENT_NAME,
     id: randomString(),
@@ -42,7 +43,7 @@ function createAchievement() {
 
   API.achievement.create(achievement, (err, result) => {
     if (err) {
-      return console.error({err: err}, 'error creating an achievement')
+      return console.error({ err: err }, 'error creating an achievement')
     }
 
     console.log('+', 'ACHIEVEMENT', result.id, result.value)
@@ -51,7 +52,7 @@ function createAchievement() {
   })
 }
 
-function createRedeemCodes(achievement) {
+function createRedeemCodes (achievement) {
   API.redeem.create({
     id: randomString(),
     achievement: achievement.id,
@@ -69,14 +70,14 @@ function createRedeemCodes(achievement) {
   })
 }
 
-function waitForJobs() {
-  if (pendingJobs > 0) {
-    console.log(`(${pendingJobs}) waiting...`)
-    setTimeout(waitForJobs, 1500)
-  } else {
-    console.log('Done!')
-    process.exit(0)
-  }
-}
+// function waitForJobs() {
+//   if (pendingJobs > 0) {
+//     console.log(`(${pendingJobs}) waiting...`)
+//     setTimeout(waitForJobs, 1500)
+//   } else {
+//     console.log('Done!')
+//     process.exit(0)
+//   }
+// }
 
 createAchievement()

@@ -21,7 +21,7 @@ module.exports = {
     }
   },
   upload: [
-    {kind: 'cv', mimes: ['application/pdf']}
+    { kind: 'cv', mimes: ['application/pdf'] }
   ],
   cv: {
     expiration: 60 // days

@@ -5,29 +5,29 @@ exports = module.exports
 
 exports.create = {
   tags: ['api', 'link'],
-  auth: {strategies: ['default'], scope: ['company', 'team', 'admin']},
+  auth: { strategies: ['default'], scope: ['company', 'team', 'admin'] },
   validate: {
     params: {
       companyId: Joi.string().required().description(
-          'Id of the company we are linking from')
+        'Id of the company we are linking from')
     },
     payload: {
       userId: Joi.string().required().description(
-          'Id of the user working for the company'),
+        'Id of the user working for the company'),
       attendeeId: Joi.string().required().description('Id of the attendee'),
       editionId: Joi.string().required().description('Id of the edition'),
       notes: Joi.object().keys({
         contacts: Joi.object().keys({
           email: Joi.string().allow('').description('Email of the attendee'),
           phone:
-              Joi.string().allow('').description('Phone number of the attendee')
+            Joi.string().allow('').description('Phone number of the attendee')
         }),
         interestedIn: Joi.string().allow('').description(
-            'Interests of the attendee relevant to the company'),
+          'Interests of the attendee relevant to the company'),
         degree: Joi.string().allow('').description(
-            'Degree of the attendee (e.g. Computer Science batchelor\'s)'),
+          'Degree of the attendee (e.g. Computer Science batchelor\'s)'),
         availability:
-            Joi.string().allow('').description('Attendee\'s availability'),
+          Joi.string().allow('').description('Attendee\'s availability'),
         otherObservations: Joi.string().allow('').description('Other notes')
       })
     }
@@ -35,90 +35,89 @@ exports.create = {
   pre: [
     {
       method:
-          'link.checkCompany(auth.credentials.user.id, params.companyId, payload.editionId)',
+        'link.checkCompany(auth.credentials.user.id, params.companyId, payload.editionId)',
       assign: 'verification'
     },
-    {method: 'link.create(params.companyId, payload)', assign: 'link'}
+    { method: 'link.create(params.companyId, payload)', assign: 'link' }
   ],
-  handler: function(request, reply) {
+  handler: function (request, reply) {
     reply(render(request.pre.link))
-        .created(`/company/${request.params.companyId}/link/${
-            request.pre.link.attendeeId}`)
+      .created(`/company/${request.params.companyId}/link/${request.pre.link.attendeeId}`)
   },
   description: 'Creates a new link'
-};
+}
 
 exports.update = {
   tags: ['api', 'link'],
-  auth: {strategies: ['default'], scope: ['company', 'team', 'admin']},
+  auth: { strategies: ['default'], scope: ['company', 'team', 'admin'] },
   validate: {
     params: {
       companyId: Joi.string().required().description(
-          'Id of the company we are linking from'),
+        'Id of the company we are linking from'),
       attendeeId: Joi.string().required().description('Id of the attendee')
     },
     query:
-        {editionId: Joi.string().required().description('Id of the edition')},
+      { editionId: Joi.string().required().description('Id of the edition') },
     payload: {
       userId:
-          Joi.string().description('Id of the user working for the company'),
+        Joi.string().description('Id of the user working for the company'),
       notes: Joi.object().keys({
         contacts: Joi.object().keys({
           email: Joi.string().description('Email of the attendee'),
           phone: Joi.string().description('Phone number of the attendee')
         }),
         interestedIn: Joi.string().allow('').description(
-            'Interests of the attendee relevant to the company'),
+          'Interests of the attendee relevant to the company'),
         degree: Joi.string().allow('').description(
-            'Degree of the attendee (e.g. Computer Science batchelor\'s)'),
+          'Degree of the attendee (e.g. Computer Science batchelor\'s)'),
         availability:
-            Joi.string().allow('').description('Attendee\'s availability'),
+          Joi.string().allow('').description('Attendee\'s availability'),
         otherObservations: Joi.string().allow('').description('Other notes')
-      })
+      }).allow(null)
     }
   },
   pre: [
     {
       method:
-          'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)',
+        'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)',
       assign: 'verification'
     },
-    {method: 'link.update(params, query.editionId, payload)', assign: 'link'}
+    { method: 'link.update(params, query.editionId, payload)', assign: 'link' }
   ],
-  handler: function(request, reply) {
+  handler: function (request, reply) {
     reply(render(request.pre.link))
   },
   description: 'Updates a link'
-};
+}
 
 exports.get = {
   tags: ['api', 'link'],
-  auth: {strategies: ['default'], scope: ['company', 'team', 'admin']},
+  auth: { strategies: ['default'], scope: ['company', 'team', 'admin'] },
   validate: {
     params: {
       companyId: Joi.string().required().description(
-          'Id of the company we are linking from'),
+        'Id of the company we are linking from'),
       attendeeId: Joi.string().required().description('Id of the attendee')
     },
-    query: {editionId: Joi.string().required().description('Id of the edition')}
+    query: { editionId: Joi.string().required().description('Id of the edition') }
   },
   pre: [
     {
       method:
-          'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)',
+        'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)',
       assign: 'verification'
     },
-    {method: 'link.get(params, query.editionId)', assign: 'link'}
+    { method: 'link.get(params, query.editionId)', assign: 'link' }
   ],
-  handler: function(request, reply) {
+  handler: function (request, reply) {
     reply(render(request.pre.link))
   },
   description: 'Gets a link'
-};
+}
 
 exports.list = {
   tags: ['api', 'link'],
-  auth: {strategies: ['default'], scope: ['company', 'team', 'admin']},
+  auth: { strategies: ['default'], scope: ['company', 'team', 'admin'] },
   validate: {
     query: {
       editionId: Joi.string().required().description('Id of the edition'),
@@ -129,43 +128,43 @@ exports.list = {
     },
     params: {
       companyId: Joi.string().required().description(
-          'Id of the company we are removing the link from')
+        'Id of the company we are removing the link from')
     }
   },
   pre: [
     {
       method:
-          'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)',
+        'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)',
       assign: 'verification'
     },
-    {method: 'link.list(params.companyId, query)', assign: 'links'}
+    { method: 'link.list(params.companyId, query)', assign: 'links' }
   ],
-  handler: function(request, reply) {
+  handler: function (request, reply) {
     reply(render(request.pre.links))
   },
   description: 'Gets all the links of the company'
-};
+}
 
 exports.remove = {
   tags: ['api', 'link'],
-  auth: {strategies: ['default'], scope: ['company', 'team', 'admin']},
+  auth: { strategies: ['default'], scope: ['company', 'team', 'admin'] },
   validate: {
     params: {
       companyId: Joi.string().required().description(
-          'Id of the company we are removing the link from'),
+        'Id of the company we are removing the link from'),
       attendeeId: Joi.string().required().description('Id of the attendee')
     },
-    query: {editionId: Joi.string().required().description('Id of the edition')}
+    query: { editionId: Joi.string().required().description('Id of the edition') }
   },
   pre: [
     {
       method:
-          'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)',
+        'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)',
       assign: 'verification'
     },
-    {method: 'link.remove(params, query.editionId)', assign: 'link'}
+    { method: 'link.remove(params, query.editionId)', assign: 'link' }
   ],
-  handler: function(request, reply) {
+  handler: function (request, reply) {
     reply(render(request.pre.link))
   },
   description: 'Removes a link'

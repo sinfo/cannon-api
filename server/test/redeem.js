@@ -33,22 +33,6 @@ const userA = {
   }
 }
 
-const userB = {
-  id: 'john.doe.the.second',
-  name: 'John Doe The Second',
-  mail: 'john_the_second@doe.com',
-  facebook: {
-    token: 'kjasgfasgfhjasgijki8'
-  },
-  google: {
-    token: '13751fdsgsd7'
-  },
-  fenix: {
-    token: '1agasgre',
-    refreshToken: '2fherhbhd'
-  }
-}
-
 const credentialsB = {
   user: {
     id: 'john.doe',
@@ -94,26 +78,26 @@ const achievementC = {
 const redeemA = {
   id: 'RANDOM-STRING',
   achievement: achievementA.id,
-  user: userA.id
+  expires: new Date(new Date().getTime() + (1000 * 60 * 60)) // 1 h
   // entries: 5,
 }
 
 const redeemB = {
   id: 'REDEEM-B',
   achievement: achievementB.id,
-  user: userA.id
+  expires: new Date(new Date().getTime() + (1000 * 60 * 60)) // 1 h
 }
 
 const redeemC = {
   id: 'REDEEM-C',
   achievement: achievementC.id,
-  user: userA.id
+  expires: new Date(new Date().getTime() + (1000 * 60 * 60)) // 1 h
 }
 
 const redeemD = {
   id: 'REDEEM-D',
   achievement: achievementB.id,
-  user: userB.id
+  expires: new Date(new Date().getTime() + (1000 * 60 * 60)) // 1 h
 }
 
 lab.experiment('Redeem', () => {
@@ -241,13 +225,7 @@ lab.experiment('Redeem', () => {
     }
 
     server.inject(options, (response) => {
-      const result = response.result
-
-      Code.expect(response.statusCode).to.equal(201)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.id).to.equal(redeemA.id)
-      Code.expect(result.name).to.equal(redeemA.name)
-      Code.expect(result.user).to.equal(redeemA.user)
+      Code.expect(response.statusCode).to.equal(409)
 
       server.inject(optionsB, (responseB) => {
         const resultB = responseB.result
@@ -280,36 +258,6 @@ lab.experiment('Redeem', () => {
           })
         })
       })
-    })
-  })
-
-  lab.test('Get all redeem codes of user as user', (done) => {
-    const options = {
-      method: 'GET',
-      url: '/redeem/me',
-      credentials: credentialsB
-    }
-
-    server.inject(options, (response) => {
-      const result = response.result
-
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Array)
-
-      Code.expect(result.length).to.equal(3)
-
-      Code.expect(result[0].id).to.equal(redeemA.id)
-      Code.expect(result[0].name).to.equal(redeemA.name)
-      Code.expect(result[0].user).to.equal(userA.id)
-
-      Code.expect(result[1].id).to.equal(redeemB.id)
-      Code.expect(result[1].name).to.equal(redeemB.name)
-      Code.expect(result[1].user).to.equal(userA.id)
-
-      Code.expect(result[2].id).to.equal(redeemC.id)
-      Code.expect(result[2].name).to.equal(redeemC.name)
-      Code.expect(result[2].user).to.equal(userA.id)
-      done()
     })
   })
 
@@ -349,22 +297,22 @@ lab.experiment('Redeem', () => {
         const resultB = responseB.result
 
         Code.expect(response.statusCode).to.equal(200)
-        Code.expect(result).to.be.a.number()
-        Code.expect(result).to.equal(1)
+        Code.expect(resultB).to.be.a.number()
+        Code.expect(resultB).to.equal(1)
 
         server.inject(optionsC, (responseC) => {
           const resultC = responseC.result
 
           Code.expect(responseC.statusCode).to.equal(200)
-          Code.expect(result).to.be.a.number()
-          Code.expect(result).to.equal(1)
+          Code.expect(resultC).to.be.a.number()
+          Code.expect(resultC).to.equal(1)
 
           server.inject(optionsD, (responseD) => {
             const resultD = responseD.result
 
             Code.expect(responseD.statusCode).to.equal(200)
-            Code.expect(result).to.be.a.number()
-            Code.expect(result).to.equal(1)
+            Code.expect(resultD).to.be.a.number()
+            Code.expect(resultD).to.equal(1)
 
             done()
           })

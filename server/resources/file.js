@@ -6,7 +6,6 @@ const server = require('../').hapi
 const log = require('../helpers/logger')
 const async = require('async')
 const fs = require('fs')
-const util = require('util')
 const urlencode = require('urlencode')
 const fieldsParser = require('../helpers/fieldsParser')
 const File = require('../db/file')
@@ -277,8 +276,8 @@ function zipFiles (links, cb) {
     // Generate new zip with links
     const linksIds = links.map((link) => { return link.attendee })
     const filter = {
-      user: {'$in': linksIds },
-      updated :{'$gt': new Date('2020-01-01')}
+      user: { '$in': linksIds },
+      updated: {'$gt': new Date('2020-01-01')}
     }
     const zip = new Zip()
 
@@ -289,7 +288,7 @@ function zipFiles (links, cb) {
       }
 
       if (!files) {
-        log.error("No files")
+        log.error('No files')
         return cb(Boom.notFound())
       }
 
@@ -301,20 +300,20 @@ function zipFiles (links, cb) {
             if (err) {
               return cbAsync(Boom.internal())
             }
-            fs.readFile(`${config.upload.path}/${file.id}`, (err, fileData) =>{
-              if(!err){
-                zip.addFile(`${user.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "")}.pdf`, fileData, `Notes: ${link.notes}`, 0644)
+            fs.readFile(`${config.upload.path}/${file.id}`, (err, fileData) => {
+              if (!err) {
+                zip.addFile(`${user.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}.pdf`, fileData, `Notes: ${link.notes}`, 644)
                 if (link.notes) {
-                  let note = "\nEmail: " + link.notes.contacts.email? link.notes.contacts.email : "-"
-                  +"\nPhone: " + link.notes.contacts.phone? link.notes.contacts.phone : "-"
-                  +"\nInterests: " + link.notes.interestedIn? link.notes.interestedIn : "-"
-                  +"\nDegree: " + link.notes.degree? link.notes.degree : "-"
-                  +"\nAvailability: "+ link.notes.availability? link.notes.availability : "-"
-                  +"\nOther obserbations: "+ link.notes.otherObservations? link.notes.otherObservations : "-"
+                  let note = '\nEmail: ' + link.notes.contacts.email ? link.notes.contacts.email : '-' +
+                  '\nPhone: ' + link.notes.contacts.phone ? link.notes.contacts.phone : '-' +
+                  '\nInterests: ' + link.notes.interestedIn ? link.notes.interestedIn : '-' +
+                  '\nDegree: ' + link.notes.degree ? link.notes.degree : '-' +
+                  '\nAvailability: ' + link.notes.availability ? link.notes.availability : '-' +
+                  '\nOther obserbations: ' + link.notes.otherObservations ? link.notes.otherObservations : '-'
 
-                  zip.addFile(`${user.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "")}.txt`, new Buffer(`Your notes, taken on ${new Date(link.created).toUTCString()}: ${note}`), `Notes: ${note}`, 0644)
+                  zip.addFile(`${user.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}.txt`, new Buffer(`Your notes, taken on ${new Date(link.created).toUTCString()}: ${note}`), `Notes: ${note}`, 644)
                 }
-              }else{
+              } else {
                 log.error(err)
               }
             })
@@ -343,20 +342,19 @@ function zipFiles (links, cb) {
         return cb(Boom.internal())
       }
 
-      fs.stat(config.upload.path, (dir_err, dir_stats) => {
-        if(dir_err && dir_err.code !=='ENOENT'){
-          log.error({err: dir_err}, '[dir] Error reading uploads dir')
+      fs.stat(config.upload.path, (dirErr, dirStats) => {
+        if (dirErr && dirErr.code !== 'ENOENT') {
+          log.error({err: dirErr}, '[dir] Error reading uploads dir')
           return cb(Boom.internal())
         }
 
         // Prevents Big Zip from being generated on every request. Acts like a cache
-        if (!err && !dir_err && new Date(dir_stats.mtime).getTime() < new Date(stats.mtime).getTime()) {
+        if (!err && !dirErr && new Date(dirStats.mtime).getTime() < new Date(stats.mtime).getTime()) {
           return cb()
         }
 
-
         let zip = new Zip()
-        log.info("Zipping...")
+        log.info('Zipping...')
         fs.readdir(config.upload.path, (err, files) => {
           if (err) {
             return cb(Boom.internal())
@@ -364,7 +362,10 @@ function zipFiles (links, cb) {
 
           async.eachSeries(files, (file, cbAsync) => {
             fs.readFile(`${config.upload.path}/${file}`, (err, fileData) => {
-              zip.addFile(`${file}.pdf`, fileData, '', 0644) // .pdf hardcoded ¯\_(ツ)_/¯
+              if (err) {
+                return
+              }
+              zip.addFile(`${file}.pdf`, fileData, '', 644) // .pdf hardcoded ¯\_(ツ)_/¯
               return cbAsync()
             })
           }, (err) => {

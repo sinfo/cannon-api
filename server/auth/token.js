@@ -20,7 +20,7 @@ function verify (token, cb) {
 
   jwt.verify(token, tokenConfig.publicKey, { issuer: tokenConfig.issuer }, (err, decoded) => {
     if (err) {
-      log.warn({err, tokenDecoded: decoded}, '[Auth] invalid token')
+      log.warn({ err, tokenDecoded: decoded }, '[Auth] invalid token')
       return cb(Boom.unauthorized(), isValid)
     }
 

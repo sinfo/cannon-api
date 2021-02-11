@@ -60,3 +60,15 @@ server.route({
   path: '/achievements/{id}',
   config: handlers.remove
 })
+
+server.route({
+  method: 'GET',
+  path: '/achievements/code',
+  config: handlers.listWithCode
+})
+
+server.route({
+  method: 'GET',
+  path: '/achievements/{id}/code',
+  config: handlers.getWithCode
+})

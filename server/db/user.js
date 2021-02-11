@@ -1,21 +1,21 @@
 const mongoose = require('mongoose')
 
 const schema = new mongoose.Schema({
-  id: {type: String, unique: true},
+  id: { type: String, unique: true },
   name: String,
   img: String,
-  role: {type: String, default: 'user'},
-  mail: {type: String, unique: true, sparse: true},
+  role: { type: String, default: 'user' },
+  mail: { type: String, unique: true, sparse: true },
   bearer: [{
-    token: {type: String, unique: true, sparse: true},
-    refreshToken: {type: String, unique: true, sparse: true},
+    token: { type: String, unique: true, sparse: true },
+    refreshToken: { type: String, unique: true, sparse: true },
     ttl: Number,
     date: Date
   }],
   signatures: [{
     day: String,
     edition: String,
-    redeemed: {type: Boolean, default: false},
+    redeemed: { type: Boolean, default: false },
     signatures: [String]
   }],
   company: [{

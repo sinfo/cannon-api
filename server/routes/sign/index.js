@@ -12,3 +12,9 @@ server.route({
   path: '/sessions/{sessionId}/check-in',
   config: handlers.checkIn
 })
+
+server.route({
+  method: 'POST',
+  path: '/sessions/{sessionId}/generate',
+  config: handlers.generate
+})

@@ -27,11 +27,11 @@ function create (user, cb) {
   User.create(user, (err, _user) => {
     if (err) {
       if (err.code === 11000) {
-        log.warn({err: err, requestedUser: user.id}, 'user is a duplicate')
+        log.warn({ err: err, requestedUser: user.id }, 'user is a duplicate')
         return cb(Boom.conflict(dupKeyParser(err.err) + ' is a duplicate'))
       }
 
-      log.error({err: err, user: user.id}, 'error creating user')
+      log.error({ err: err, user: user.id }, 'error creating user')
       return cb(Boom.internal())
     }
 
@@ -74,10 +74,10 @@ function update (filter, user, opts, cb) {
 
     removeCompany(pushCompany)
 
-    function removeCompany (done) {
+    function removeCompany (done) {// eslint-disable-line
       User.findOneAndUpdate(filter, user, opts, function (err, _user) {
         if (err && err.code !== 16837) {
-          log.error({err: err, requestedUser: filter}, 'error pulling user.company')
+          log.error({ err: err, requestedUser: filter }, 'error pulling user.company')
           return cb(Boom.internal())
         }
 
@@ -85,12 +85,12 @@ function update (filter, user, opts, cb) {
       })
     }
 
-    function pushCompany () {
+    function pushCompany () { // eslint-disable-line
       opts.new = true
 
       User.findOneAndUpdate(filter, user2, opts, function (err, user) {
         if (err) {
-          log.error({err: err, requestedUser: filter}, 'error pushing user.company')
+          log.error({ err: err, requestedUser: filter }, 'error pushing user.company')
           return cb(Boom.internal())
         }
 
@@ -100,11 +100,11 @@ function update (filter, user, opts, cb) {
   } else {
     User.findOneAndUpdate(filter, user, opts, (err, _user) => {
       if (err) {
-        log.error({err: err, requestedUser: filter}, 'error updating user')
+        log.error({ err: err, requestedUser: filter }, 'error updating user')
         return cb(Boom.internal())
       }
       if (!_user) {
-        log.error({err: err, requestedUser: filter}, 'user not found')
+        log.error({ err: err, requestedUser: filter }, 'user not found')
         return cb(Boom.notFound())
       }
 
@@ -124,11 +124,11 @@ function get (filter, query, cb) {
 
   User.findOne(filter, fields, (err, user) => {
     if (err) {
-      log.error({err: err, requestedUser: filter}, 'error getting user')
+      log.error({ err: err, requestedUser: filter }, 'error getting user')
       return cb(Boom.internal())
     }
     if (!user) {
-      log.warn({err: err, requestedUser: filter}, 'could not find user')
+      log.warn({ err: err, requestedUser: filter }, 'could not find user')
       return cb(Boom.notFound())
     }
 
@@ -137,13 +137,13 @@ function get (filter, query, cb) {
 }
 
 function getByToken (token, cb) {
-  User.findOne({'bearer.token': token}, (err, user) => {
+  User.findOne({ 'bearer.token': token }, (err, user) => {
     if (err) {
-      log.error({err: err, requestedUser: user}, 'error getting user')
+      log.error({ err: err, requestedUser: user }, 'error getting user')
       return cb(Boom.internal())
     }
     if (!user) {
-      log.error({err: err, requestedUser: user}, 'error getting user')
+      log.error({ err: err, requestedUser: user }, 'error getting user')
       return cb(Boom.notFound())
     }
 
@@ -172,10 +172,10 @@ function list (activeAchievements, cb) {
     name: 1,
     img: 1
   }
-  
-  User.find({ id: { $in: usersToSearch }}, fields, (err, users) => {
+
+  User.find({ id: { $in: usersToSearch } }, fields, (err, users) => {
     if (err) {
-      log.error({err: err}, 'error getting all users')
+      log.error({ err: err }, 'error getting all users')
       return cb(Boom.internal())
     }
 
@@ -184,9 +184,8 @@ function list (activeAchievements, cb) {
       users[i]['points'] = points[users[i].id]
     }
 
-
     // sort by points in descending order
-    users.sort(function(a, b){ return b.points-a.points });
+    users.sort(function (a, b) { return b.points - a.points })
 
     cb(null, users)
   })
@@ -205,7 +204,7 @@ function getMulti (ids, query, cb) {
 
   User.find(filter, fields, options, (err, users) => {
     if (err) {
-      log.error({err: err, ids: ids}, 'error getting multiple users')
+      log.error({ err: err, ids: ids }, 'error getting multiple users')
       return cb(Boom.internal())
     }
 
@@ -226,11 +225,11 @@ function removeCompany (filter, editionId, cb) {
 
   User.findOneAndUpdate(filter, update, (err, user) => {
     if (err) {
-      log.error({err: err, requestedUser: filter, edition: editionId}, 'error deleting user.company')
+      log.error({ err: err, requestedUser: filter, edition: editionId }, 'error deleting user.company')
       return cb(Boom.internal())
     }
     if (!user) {
-      log.error({err: err, requestedUser: filter, edition: editionId}, 'error deleting user.company')
+      log.error({ err: err, requestedUser: filter, edition: editionId }, 'error deleting user.company')
       return cb(Boom.notFound())
     }
 
@@ -245,11 +244,11 @@ function remove (filter, cb) {
 
   User.findOneAndRemove(filter, (err, user) => {
     if (err) {
-      log.error({err: err, requestedUser: filter}, 'error deleting user')
+      log.error({ err: err, requestedUser: filter }, 'error deleting user')
       return cb(Boom.internal())
     }
     if (!user) {
-      log.error({err: err, requestedUser: filter}, 'error deleting user')
+      log.error({ err: err, requestedUser: filter }, 'error deleting user')
       return cb(Boom.notFound())
     }
 
@@ -277,13 +276,13 @@ function sign (attendeeId, companyId, payload, cb) {
 
   User.findOneAndUpdate(filter, update, (err, user) => {
     if (err) {
-      log.error({err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId}, 'Error signing user')
+      log.error({ err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
       return cb(Boom.internal())
     }
     if (!user) {
       // day,event combination entry did not exist
       return addNewDayEntry(
-        {id: filter.id},
+        { id: filter.id },
         {
           $push: {
             signatures: {
@@ -301,11 +300,11 @@ function sign (attendeeId, companyId, payload, cb) {
   function addNewDayEntry (filter, update, cb) {
     User.findOneAndUpdate(filter, update, (err, user) => {
       if (err) {
-        log.error({err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId}, 'Error signing user')
+        log.error({ err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
         return cb(Boom.internal())
       }
       if (!user) {
-        log.error({err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId}, 'Error signing user')
+        log.error({ err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
         return cb(Boom.notFound())
       }
 
@@ -335,12 +334,12 @@ function redeemCard (attendeeId, payload, cb) {
   // this should not be here
   User.findOne(filter, (_err, _user) => {
     if (_err) {
-      log.error({err: err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId}, 'Error getting user')
+      log.error({ err: _err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId }, 'Error getting user')
       return cb(Boom.internal())
     }
     if (!_user) {
       // day,event combination entry did not exist
-      log.error({err: _err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId}, 'Error getting user')
+      log.error({ err: _err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId }, 'Error getting user')
       return cb(Boom.notFound())
     }
 
@@ -348,6 +347,7 @@ function redeemCard (attendeeId, payload, cb) {
     let signatures = _user.signatures.filter(s => s.day === payload.day && s.edition === payload.editionId)
 
     if (signatures && signatures.length > 0 && signatures[0].signatures.length < 6) {
+      log.error({ user: _user }, 'not enough signatures to validate card')
       return cb(Boom.badData({ user: _user }, 'not enough signatures to validate card'))
     }
 
@@ -357,17 +357,16 @@ function redeemCard (attendeeId, payload, cb) {
 
     User.findOneAndUpdate(filter, update, (err, user) => {
       if (err) {
-        log.error({err: err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId}, 'Error signing user')
+        log.error({ err: err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
         return cb(Boom.internal())
       }
       if (!user) {
         // day,event combination entry did not exist
-        log.error({err: err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId}, 'Error signing user')
+        log.error({ err: err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
         return cb(Boom.notFound())
       }
-  
+
       cb(null, user.toObject({ getters: true }))
     })
   })
-
 }

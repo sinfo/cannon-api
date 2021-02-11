@@ -37,16 +37,13 @@ linkedin.getLinkedinUser = linkedinUserToken => {
         'bearer': linkedinUserToken
       }
     }, (error, response, linkedinJsonUser) => {
-
       if (error || response.statusCode !== 200) {
         log.warn({ error, response: response.statusMessage })
         return reject('error getting linkedin user profile')
       }
 
-
       linkedin.getLinkedinUserEmail(linkedinUserToken)
         .then(linkedinEmail => {
-
           let linkedinUser = {
             id: linkedinJsonUser.id,
             emailAddress: linkedinEmail,
@@ -55,12 +52,12 @@ linkedin.getLinkedinUser = linkedinUserToken => {
             pictureUrl: linkedinJsonUser.profilePicture['displayImage~'].elements[0].identifiers[0].identifier
           }
 
-        return resolve(linkedinUser)
-      })
-      .catch(err => {
-        console.log(err)
-        reject(err)
-      })
+          return resolve(linkedinUser)
+        })
+        .catch(err => {
+          console.log(err)
+          reject(err)
+        })
     })
   })
 }
@@ -75,31 +72,26 @@ linkedin.getLinkedinUserEmail = linkedinUserToken => {
         'bearer': linkedinUserToken
       }
     }, (error, response, linkedinEmail) => {
-
       if (error || response.statusCode !== 200) {
         log.warn({ error, response: response.statusMessage })
         return reject('error getting linkedin user email')
       }
 
-      if (typeof(linkedinEmail) === 'string') {
+      if (typeof (linkedinEmail) === 'string') {
         return resolve(linkedinEmail)
-      } 
-      
-      if (!linkedinEmail['elements']
-        || !linkedinEmail['elements'].length
-        || !linkedinEmail['elements'][0]['handle~']
-        || !linkedinEmail['elements'][0]['handle~']['emailAddress']) {
-          return reject(`Couldn\t find email in ${JSON.stringify(linkedinEmail)}`)
-        }
+      }
 
-        return resolve(linkedinEmail['elements'][0]['handle~']['emailAddress'])
+      if (!linkedinEmail['elements'] ||
+        !linkedinEmail['elements'].length ||
+        !linkedinEmail['elements'][0]['handle~'] ||
+        !linkedinEmail['elements'][0]['handle~']['emailAddress']) {
+        return reject(`Couldn\t find email in ${JSON.stringify(linkedinEmail)}`)
+      }
 
+      return resolve(linkedinEmail['elements'][0]['handle~']['emailAddress'])
     })
   })
 }
-
-
-
 
 /**
  * Get user in cannon DB by mail associated with Linkedin account

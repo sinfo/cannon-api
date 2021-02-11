@@ -47,8 +47,8 @@ function googleAuth (id, token, cb) {
       // If user does not exist we create, otherwise we update existing user
       if (res.createUser) {
         return google.createUser(gUser)
-        .then(userId => authenticate(userId, null, cb))
-        .catch(err => cb(Boom.unauthorized(err)))
+          .then(userId => authenticate(userId, null, cb))
+          .catch(err => cb(Boom.unauthorized(err)))
       }
 
       const changedAttributes = {
@@ -119,11 +119,11 @@ function linkedinAuth (code, cb) {
 
 function authenticate (userId, changedAttributes, cb) {
   const newToken = token.createJwt(userId)
-  changedAttributes = {$set: changedAttributes} || {}
+  changedAttributes = { $set: changedAttributes } || {}
 
   server.methods.user.update({ id: userId }, changedAttributes, (err, result) => {
     if (err) {
-      log.error({user: userId, changedAttributes: changedAttributes}, '[login] error updating user')
+      log.error({ user: userId, changedAttributes: changedAttributes }, '[login] error updating user')
       return cb(err)
     }
     log.info({ userId }, '[login] user logged in')

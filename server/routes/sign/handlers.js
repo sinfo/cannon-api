@@ -34,21 +34,45 @@ exports.checkIn = {
   tags: ['api', 'survey'],
   auth: {
     strategies: ['default'],
-    scope: ['team', 'admin']
+    scope: ['team', 'admin', 'user']
   },
   validate: {
     params: {
       sessionId: Joi.string().required().description('id of the session which is being performed check-in of the attendees')
     },
     payload: {
-      users: Joi.array().required().description('An array of users IDs')
+      users: Joi.array().required().description('An array of users IDs'),
+      code: Joi.string().description('Validation code for self signing')
     }
   },
   pre: [
-    { method: 'achievement.addMultiUsersBySession(params.sessionId, payload.users)', assign: 'achievement' },
+    { method: 'achievement.addMultiUsersBySession(params.sessionId, payload.users, auth.credentials, payload.code)', assign: 'achievement' }
   ],
   handler: function (request, reply) {
     reply(request.pre.achievement)
   },
   description: 'Perform check-in in a session for an array of users, giving its achievement to each of them'
+}
+
+exports.generate = {
+  tags: ['api', 'survey'],
+  auth: {
+    strategies: ['default'],
+    scope: ['team', 'admin']
+  },
+  validate: {
+    params: {
+      sessionId: Joi.string().required().description('id of the session which code is being generated')
+    },
+    payload: {
+      expiration: Joi.date().required().description('Until when the code will be active')
+    }
+  },
+  pre: [
+    { method: 'achievement.generateCodeSession(params.sessionId, payload.expiration)', assign: 'achievement' }
+  ],
+  handler: function (request, reply) {
+    reply(request.pre.achievement)
+  },
+  description: 'Generate a temporary code for user-side check in'
 }

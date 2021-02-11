@@ -12,6 +12,6 @@ const schema = new mongoose.Schema({
   updated: Date
 })
 
-schema.index({ 'company': 1, 'edition': 1 }, {'unique': true})
+schema.index({ 'company': 1, 'edition': 1 }, { 'unique': true })
 
 module.exports = mongoose.model('Endpoint', schema)
