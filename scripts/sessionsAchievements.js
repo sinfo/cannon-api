@@ -4,12 +4,12 @@ const log = require('../server/helpers/logger')
 const request = require('request')
 
 const DECK = 'http://localhost:8080'
-const EVENT = '26-sinfo'
+const EVENT = '28-sinfo'
 
 const CORLIEF = 'https://api.corlief.sinfo.org/reservation/latest'
 const DECK_EVENT_URL = DECK + '/api/events'
-const DECK_USER = 'francisco.pereira'
-const DECK_TOKEN = 'XMO7vIyMdp0Xffd1eh5ZjoLEdX9vVZ09MRyDcgkZXSaxUJPXzB9lKAiRRqpW4fyYHdV2yXPMzOFr29MQtmAZjVXHFeyqsFOfZfoK'
+const DECK_USER = 'diogo.pacheco'
+const DECK_TOKEN = '0MMRWfZWQuxqe2gJooRI2rvrEOBnn8Dq8wYSKLoSzxLGQNnUuErMBR4si3fNbBFajHpLdKSVAScqJNT3Il5UmGP8g8hcLI0l3bsu'
 
 let EVENT_START
 
@@ -130,7 +130,7 @@ function stands (listOfFunctions) {
 
         achievements[day].stands.push({
           name: `Talked to this company`,
-          id: 'stand-' + companyId + '-' + day,
+          id: 'stand-' + companyId + '-' + day + '-' + EVENT,
           img: img,
           value: 0,
           kind: 'stand',
@@ -184,7 +184,7 @@ function sessions (listOfFunctions) {
 
       let achievement = {
         name: `Went to "${session.name}"`,
-        id: 'session-' + session.id,
+        id: 'session-' + session.id + '-' + EVENT,
         session: session.id,
         kind: '',
         value: 0

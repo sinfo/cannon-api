@@ -465,7 +465,6 @@ function generateCodeSession (sessionId, expiration, cb) {
 
   Achievement.findOneAndUpdate({
     session: sessionId,
-    'validity.from': { $lte: created },
     'validity.to': { $gte: created }
   }, changes, (err, achievement) => {
     if (err) {
