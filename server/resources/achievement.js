@@ -22,6 +22,7 @@ server.method('achievement.getPointsForUser', getPointsForUser, {})
 server.method('achievement.removeCV', removeCV, {})
 server.method('achievement.getActiveAchievements', getActiveAchievements, {})
 server.method('achievement.generateCodeSession', generateCodeSession, {})
+server.method('achievement.getActiveAchievementsCode', getActiveAchievementsCode, {})
 
 function create (achievement, cb) {
   achievement.id = achievement.id || slug(achievement.name)
@@ -431,6 +432,46 @@ function getActiveAchievements (query, cb) {
   }, (err, achievements) => {
     if (err) {
       log.error({ err: err, date: date }, 'error getting active achievements on a given date')
+      return cb(err)
+    }
+
+    cb(null, achievements)
+  })
+}
+
+function getActiveAchievementsCode (query, cb) {
+  var start, end
+  cb = cb || query
+
+  if (query.start === undefined) {
+    start = new Date() // now
+  } else {
+    start = new Date(query.start)
+    if (isNaN(start.getTime())) {
+      log.error({ query: query.start }, 'invalid start date given on query to get active achievements')
+      return cb(Boom.notAcceptable('invalid start date given in query'))
+    }
+  }
+  if (query.end === undefined) {
+    end = new Date() // now
+  } else {
+    end = new Date(query.end)
+    if (isNaN(end.getTime())) {
+      log.error({ query: query.end }, 'invalid end date given on query to get active achievements')
+      return cb(Boom.notAcceptable('invalid end date given in query'))
+    }
+  }
+
+  if (end < start) {
+    log.error({start: start, end: end}, 'end date is before start date')
+  }
+
+  Achievement.find({
+    'validity.from': { $gte: start },
+    'validity.to': { $lte: end }
+  }, (err, achievements) => {
+    if (err) {
+      log.error({ err: err, start: start, end: end }, 'error getting active achievements on a given date')
       return cb(err)
     }
 

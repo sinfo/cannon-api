@@ -238,14 +238,12 @@ exports.listWithCode = {
   },
   validate: {
     query: {
-      fields: Joi.string().description('Fields we want to retrieve'),
-      sort: Joi.string().description('Sort fields we want to retrieve'),
-      skip: Joi.number().description('Number of documents we want to skip'),
-      limit: Joi.number().description('Limit of documents we want to retrieve')
+      start: Joi.date().description('Start of validity period'),
+      end: Joi.date().description('End of validity period')
     }
   },
   pre: [
-    {method: 'achievement.list(query)', assign: 'achievements'}
+    {method: 'achievement.getActiveAchievementsCode(query)', assign: 'achievements'}
   ],
   handler: function (request, reply) {
     reply(render(request.pre.achievements, true))
