@@ -314,21 +314,24 @@ lab.experiment('User', () => {
   })
 
   lab.test('List with codes', (done) => {
+    const start = new Date(achievementA.validity.from.getTime() - (1000 * 60 * 60))
+    const end = new Date(achievementA.validity.to.getTime() + (1000 * 60 * 60))
+    const query = `?start=${start}&end=${end}`
     const opt1 = {
       method: 'GET',
-      url: `/achievements/code`,
+      url: `/achievements/code${query}`,
       credentials: credentialsA
     }
 
     const opt2 = {
       method: 'GET',
-      url: `/achievements/code`,
+      url: `/achievements/code${query}`,
       credentials: credentialsB
     }
 
     const opt3 = {
       method: 'GET',
-      url: `/achievements/code`,
+      url: `/achievements/code${query}`,
       credentials: credentialsC
     }
 
