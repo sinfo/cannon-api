@@ -30,6 +30,31 @@ exports.create = {
   description: 'Creates a new signature'
 }
 
+exports.speed = {
+  tags: ['api', 'sign'],
+  auth: {
+    strategies: ['default'],
+    scope: ['company']
+  },
+  validate: {
+    params: {
+      companyId: Joi.string().required().description('Id of the company '),
+      attendeeId: Joi.string().required().description('Id of the attendee')
+    },
+    payload: {
+      editionId: Joi.string().required().description('Id of the edition')
+    }
+  },
+  pre: [
+    { method: 'link.checkCompany(auth.credentials.user.id, params.companyId, payload.editionId)', assign: 'verification' },
+    { method: 'achievement.addUserToSpeedDateAchievement(params.companyId, params.attendeeId)', assign: 'achievement' }
+  ],
+  handler: function (request, reply) {
+    reply(request.pre.achievement)
+  },
+  description: 'Creates a new signature for speed dates'
+}
+
 exports.checkIn = {
   tags: ['api', 'survey'],
   auth: {

@@ -9,6 +9,12 @@ server.route({
 
 server.route({
   method: 'POST',
+  path: '/company/{companyId}/speed/{attendeeId}',
+  config: handlers.speed
+})
+
+server.route({
+  method: 'POST',
   path: '/sessions/{sessionId}/check-in',
   config: handlers.checkIn
 })

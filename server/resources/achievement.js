@@ -23,9 +23,13 @@ server.method('achievement.removeCV', removeCV, {})
 server.method('achievement.getActiveAchievements', getActiveAchievements, {})
 server.method('achievement.generateCodeSession', generateCodeSession, {})
 server.method('achievement.getActiveAchievementsCode', getActiveAchievementsCode, {})
+server.method('achievement.getSpeedDatePointsForUser', getSpeedDatePointsForUser, {})
+server.method('achievement.addUserToSpeedDateAchievement', addUserToSpeedDateAchievement, {})
 
 function create (achievement, cb) {
   achievement.id = achievement.id || slug(achievement.name)
+
+  log.error({id: achievement.id}, 'id')
 
   achievement.updated = achievement.created = Date.now()
 
@@ -277,15 +281,65 @@ function getPointsForUser (activeAchievements, userId, cb) {
 
   // list unique users at their points
   result.achievements = activeAchievements.filter((achievement) => {
-    return achievement.users.indexOf(userId) !== -1
+    return achievement.users.indexOf(userId) !== -1 && achievement.kind !== 'speedDate'
   })
 
   // fill the points
   result.achievements.forEach(achv => {
-    result.points += achv.value
+    if (achv.kind !== 'speedDate') {
+      result.points += achv.value
+    } else {
+      result.points += getSpeedDatePoints(achv, userId)
+    }
   })
 
   cb(null, result)
+}
+
+function getSpeedDatePointsForUser (userId, cb) {
+  const result = { achievements: [], points: 0 }
+  const filter = {
+    kind: 'speedDate'
+  }
+
+  Achievement.find(filter, (err, achievements) => {
+    if (err) {
+      log.error({err: err}, 'Error finding achievements')
+    }
+
+    achievements.forEach(ach => {
+      result.points += getSpeedDatePoints(ach, userId)
+      result.achievements.push({
+        achievement: ach,
+        frequence: userFrequence(ach, userId)
+      })
+    })
+
+    return cb(null, result)
+  })
+}
+
+function userFrequence (achievement, userId) {
+  let count = 0
+  achievement.users.forEach(u => {
+    if (u === userId) {
+      count++
+    }
+  })
+
+  return count > 3 ? 3 : count
+}
+
+function getSpeedDatePoints (achievement, userId) {
+  let count = 0
+  let points = 0
+  achievement.users.forEach(u => {
+    if (u === userId) {
+      points += count >= 3 ? 0 : achievement.value / Math.pow(2, count++)
+    }
+  })
+
+  return points
 }
 
 function addMultiUsers (achievementId, usersId, cb) {
@@ -371,7 +425,6 @@ function addMultiUsersBySession (sessionId, usersId, credentials, code, cb) {
         cb(null, achievement.toObject({ getters: true }))
       })
     } else {
-      log.error('here')
       return cb(Boom.badRequest('invalid payload for user self sign'), null)
     }
   }
@@ -404,6 +457,40 @@ function addUserToStandAchievement (companyId, userId, cb) {
 
     if (achievement === null) {
       log.error({ companyId: companyId, userId: userId }, 'error trying to add user to not valid stand achievement')
+      return cb(new Error('error trying to add user to not valid stand achievement'), null)
+    }
+
+    cb(null, achievement.toObject({ getters: true }))
+  })
+}
+
+function addUserToSpeedDateAchievement (companyId, userId, cb) {
+  if (!userId) {
+    log.error('tried to user to company achievement but no user was given')
+    return cb()
+  }
+
+  const changes = {
+    $push: {
+      users: userId
+    }
+  }
+
+  const now = new Date()
+
+  Achievement.findOneAndUpdate({
+    id: { $regex: `speedDate-${companyId}-` },
+    'kind': 'speedDate',
+    'validity.from': { $lte: now },
+    'validity.to': { $gte: now }
+  }, changes, (err, achievement) => {
+    if (err) {
+      log.error({ err: err, companyId: companyId, userId: userId }, 'error adding user to speed date achievement')
+      return cb(Boom.internal())
+    }
+
+    if (achievement === null) {
+      log.error({ companyId: companyId, userId: userId }, 'error trying to add user to not valid speed date achievement')
       return cb(new Error('error trying to add user to not valid stand achievement'), null)
     }
 
