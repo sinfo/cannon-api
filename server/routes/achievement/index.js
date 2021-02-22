@@ -45,6 +45,12 @@ server.route({
 
 server.route({
   method: 'GET',
+  path: '/achievements/speed/me',
+  config: handlers.getMeSpeed
+})
+
+server.route({
+  method: 'GET',
   path: '/users/{id}/achievements',
   config: handlers.getUser
 })

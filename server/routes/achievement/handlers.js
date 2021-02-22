@@ -161,6 +161,21 @@ exports.getMeActive = {
   description: 'Gets my active achievements and my points'
 }
 
+exports.getMeSpeed = {
+  tags: ['api', 'achievement'],
+  auth: {
+    strategies: ['default'],
+    scope: ['user', 'company', 'team', 'admin']
+  },
+  pre: [
+    {method: 'achievement.getSpeedDatePointsForUser(auth.credentials.user.id)', assign: 'result'}
+  ],
+  handler: function (request, reply) {
+    reply(request.pre.result)
+  },
+  description: 'Gets my speed dating achievements'
+}
+
 exports.getUser = {
   tags: ['api', 'achievement'],
   auth: {
