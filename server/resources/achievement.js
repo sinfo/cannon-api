@@ -464,7 +464,7 @@ function addUserToStandAchievement (companyId, userId, cb) {
   })
 }
 
-function addUserToSpeedDateAchievement (companyId, userId, cb) {
+function addUserToSpeedDateAchievement (companyId, userId, hhs, cb) {
   if (!userId) {
     log.error('tried to user to company achievement but no user was given')
     return cb()
@@ -472,7 +472,7 @@ function addUserToSpeedDateAchievement (companyId, userId, cb) {
 
   const changes = {
     $push: {
-      users: userId
+      users: hhs.length > 0 ? { $each: Array(3).fill(userId) } : userId
     }
   }
 
