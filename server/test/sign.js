@@ -6,6 +6,7 @@ const server = require('../').hapi
 
 const lab = exports.lab = Lab.script()
 const token = require('../auth/token')
+const happyHour = require('../db/happy-hour')
 
 const adminId = 'john.doe'
 const companyId = 'john.smith'
@@ -191,6 +192,13 @@ lab.experiment('Sign', () => {
         server.inject(optionsAchievementB, (response) => {
           return cb()
         })
+      },
+      (cb) => {
+        happyHour.findOneAndRemove({}, (err, hh) => {
+          if (!err) {
+            return cb()
+          }
+        })
       }
     ], (_, results) => {
       done()
@@ -338,6 +346,10 @@ lab.experiment('Sign', () => {
   })
 
   lab.test('Get total speed dating points', (done) => {
+    const optionsHH = {
+      from: new Date(new Date().getTime() - (1000 * 60 * 60)), // -1 h
+      to: new Date(new Date().getTime() + (1000 * 60 * 60)) // +1 h
+    }
     const optionsA = {
       method: 'POST',
       url: '/achievements',
@@ -363,32 +375,35 @@ lab.experiment('Sign', () => {
       credentials: credentialsUser
     }
 
-    server.inject(optionsA, (response) => {
-      const result = response.result
+    happyHour.create(optionsHH, (err, hh) => {
+      Code.expect(err).to.be.null
+      server.inject(optionsA, (response) => {
+        const result = response.result
 
-      Code.expect(response.statusCode).to.equal(201)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.id).to.equal(speedDate2.id)
+        Code.expect(response.statusCode).to.equal(201)
+        Code.expect(result).to.be.instanceof(Object)
+        Code.expect(result.id).to.equal(speedDate2.id)
 
-      server.inject(optionsB, (response) => {
-        Code.expect(response.statusCode).to.equal(200)
-
-        server.inject(optionsC, (response) => {
-          const result = response.result
-
+        server.inject(optionsB, (response) => {
           Code.expect(response.statusCode).to.equal(200)
-          Code.expect(result).to.be.instanceof(Object)
-          Code.expect(result.id).to.equal(speedDate2.id)
-          Code.expect(result.users).to.contain(attendee.id)
 
-          server.inject(optionsD, (response) => {
+          server.inject(optionsC, (response) => {
             const result = response.result
 
             Code.expect(response.statusCode).to.equal(200)
-            Code.expect(result.achievements.length).to.equal(2)
-            Code.expect(result.points).to.equal(speedDate1.value + speedDate1.value / 2 + speedDate1.value / 4 + speedDate2.value)
+            Code.expect(result).to.be.instanceof(Object)
+            Code.expect(result.id).to.equal(speedDate2.id)
+            Code.expect(result.users).to.contain(attendee.id)
 
-            done()
+            server.inject(optionsD, (response) => {
+              const result = response.result
+
+              Code.expect(response.statusCode).to.equal(200)
+              Code.expect(result.achievements.length).to.equal(2)
+              Code.expect(result.points).to.equal(speedDate1.value + speedDate1.value / 2 + speedDate1.value / 4 + speedDate2.value + speedDate2.value / 2 + speedDate2.value / 4)
+
+              done()
+            })
           })
         })
       })

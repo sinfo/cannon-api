@@ -47,7 +47,8 @@ exports.speed = {
   },
   pre: [
     { method: 'link.checkCompany(auth.credentials.user.id, params.companyId, payload.editionId)', assign: 'verification' },
-    { method: 'achievement.addUserToSpeedDateAchievement(params.companyId, params.attendeeId)', assign: 'achievement' }
+    { method: 'happyHour.get()', assign: 'happyHours' },
+    { method: 'achievement.addUserToSpeedDateAchievement(params.companyId, params.attendeeId, pre.happyHours)', assign: 'achievement' }
   ],
   handler: function (request, reply) {
     reply(request.pre.achievement)
