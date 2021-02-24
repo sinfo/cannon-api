@@ -201,7 +201,7 @@ function checkCompany (userId, companyId, editionId, cb) {
     if (_.findWhere(user.company, { company: companyId, edition: editionId })) {
       return cb(null, true)
     }
-    log.error('company not found')
+    log.error({company: companyId, user: userId, edition: editionId, userCompany: user.company}, 'company not found')
     return cb(Boom.notFound('company not found'))
   })
 }
