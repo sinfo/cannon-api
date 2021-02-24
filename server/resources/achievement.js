@@ -4,6 +4,7 @@ const server = require('../').hapi
 const log = require('../helpers/logger')
 const fieldsParser = require('../helpers/fieldsParser')
 const Achievement = require('../db/achievement')
+const AchievementKind = require('../db/achievementKind')
 
 server.method('achievement.create', create, {})
 server.method('achievement.update', update, {})
@@ -25,6 +26,7 @@ server.method('achievement.generateCodeSession', generateCodeSession, {})
 server.method('achievement.getActiveAchievementsCode', getActiveAchievementsCode, {})
 server.method('achievement.getSpeedDatePointsForUser', getSpeedDatePointsForUser, {})
 server.method('achievement.addUserToSpeedDateAchievement', addUserToSpeedDateAchievement, {})
+server.method('achievement.checkUserStandDay', checkUserStandDay, {})
 
 function create (achievement, cb) {
   achievement.id = achievement.id || slug(achievement.name)
@@ -428,6 +430,90 @@ function addMultiUsersBySession (sessionId, usersId, credentials, code, cb) {
       return cb(Boom.badRequest('invalid payload for user self sign'), null)
     }
   }
+}
+
+function checkUserStandDay (userId, cb) {
+  if (!userId) {
+    log.error('tried to user to company achievement but no user was given')
+    return cb()
+  }
+  const now = new Date()
+
+  const filterA = {
+    'kind': AchievementKind.STANDDAY,
+
+    'validity.from': { $lte: now },
+    'validity.to': { $gte: now }
+  }
+
+  const filterB = {
+    'kind': AchievementKind.STAND,
+
+    'validity.from': { $lte: now },
+    'validity.to': { $gte: now }
+  }
+
+  Achievement.findOne(filterA, (err, achievement) => {
+    if (err) {
+      log.error({ err: err, userId: userId }, 'error checking user for stand day achievement')
+      return cb(Boom.internal())
+    }
+
+    if (achievement === null) {
+      // No achievement of this kind
+      return cb()
+    }
+
+    if (achievement.users && achievement.users.includes(userId)) { // User already has achievement
+      return cb()
+    }
+
+    Achievement.find(filterB, (err, achievements) => { // Else, we check if condition is true
+      if (err) {
+        log.error({ err: err, userId: userId }, 'error checking user for stand day achievement')
+        return cb(Boom.internal())
+      }
+
+      if (achievements === null) {
+        log.error({ userId: userId }, 'error checking user for stand day achievement')
+        return cb(new Error('error checking user for stand day achievement'), null)
+      }
+
+      if (achievements.length === 0) {
+        return cb()
+      }
+
+      let done = true
+      achievements.forEach(ach => {
+        if (!ach.users.includes(userId)) {
+          done = false
+        }
+      })
+
+      if (done) {
+        const update = {
+          $addToSet: {
+            users: userId
+          }
+        }
+        Achievement.findOneAndUpdate(filterA, update, (err, achievement) => {
+          if (err) {
+            log.error({ err: err, userId: userId }, 'error adding user to stand day achievement')
+            return cb(Boom.internal())
+          }
+
+          if (achievement === null) {
+            log.error({ userId: userId }, 'error trying to add user to not valid stand day achievement')
+            return cb(new Error('error trying to add user to not valid stand day achievement'), null)
+          }
+
+          cb(null, achievement.toObject({ getters: true }))
+        })
+      } else {
+        return cb()
+      }
+    })
+  })
 }
 
 function addUserToStandAchievement (companyId, userId, cb) {
