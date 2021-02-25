@@ -16,7 +16,10 @@ const schema = new mongoose.Schema({
     day: String,
     edition: String,
     redeemed: { type: Boolean, default: false },
-    signatures: [String]
+    signatures: [{
+      companyId: String,
+      date: Date
+    }]
   }],
   company: [{
     edition: String,

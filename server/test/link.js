@@ -401,7 +401,7 @@ lab.experiment('Link', () => {
       Code.expect(result).to.be.instanceof(Object)
       Code.expect(result.signatures[0].edition).to.equal(sign.editionId)
       Code.expect(result.signatures[0].day).to.equal(sign.day)
-      Code.expect(result.signatures[0].signatures).to.include(userA.company[0].company)
+      Code.expect(result.signatures[0].signatures.filter(s => s.companyId === userA.company[0].company).length).to.equal(1)
 
       done()
     })
@@ -427,7 +427,7 @@ lab.experiment('Link', () => {
       Code.expect(result).to.be.instanceof(Object)
       Code.expect(result.signatures[0].edition).to.equal(sign.editionId)
       Code.expect(result.signatures[0].day).to.equal(sign.day)
-      Code.expect(result.signatures[0].signatures).to.include(userA.company[0].company)
+      Code.expect(result.signatures[0].signatures.filter(s => s.companyId === userA.company[0].company).length).to.equal(1)
 
       done()
     })
@@ -453,7 +453,7 @@ lab.experiment('Link', () => {
       Code.expect(result).to.be.instanceof(Object)
       Code.expect(result.signatures[1].edition).to.equal(sign.editionId)
       Code.expect(result.signatures[1].day).to.equal(sign.day)
-      Code.expect(result.signatures[1].signatures).to.include(userA.company[0].company)
+      Code.expect(result.signatures[1].signatures.filter(s => s.companyId === userA.company[0].company).length).to.equal(1)
 
       done()
     })

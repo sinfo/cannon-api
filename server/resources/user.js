@@ -268,9 +268,11 @@ function sign (attendeeId, companyId, payload, cb) {
     }
   }
 
+  const sig = {companyId: companyId, date: new Date()}
+
   const update = {
     $addToSet: {
-      'signatures.$.signatures': companyId
+      'signatures.$.signatures': sig
     }
   }
 
@@ -288,7 +290,7 @@ function sign (attendeeId, companyId, payload, cb) {
             signatures: {
               day: payload.day,
               edition: payload.editionId,
-              signatures: [companyId]
+              signatures: [sig]
             }
           }
         }, cb)
