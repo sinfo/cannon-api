@@ -6,6 +6,7 @@ const AchievementKind = {
   KEYNOTE: 'keynote',
   CV: 'cv',
   SPEEDDATE: 'speedDate',
+  TALK: 'lunchTalk',
   OTHER: 'other'
 }
 
