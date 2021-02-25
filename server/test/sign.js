@@ -481,7 +481,7 @@ lab.experiment('Sign', () => {
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceof(Object)
       Code.expect(result.signatures[0].edition).to.equal(event)
-      Code.expect(result.signatures[0].signatures).to.include(promoteToCompanyA.company.company)
+      Code.expect(result.signatures[0].signatures.filter(s => s.companyId === promoteToCompanyA.company.company).length).to.equal(1)
 
       server.inject(optionsB, (response) => {
         const result = response.result
@@ -526,8 +526,7 @@ lab.experiment('Sign', () => {
         Code.expect(response.statusCode).to.equal(200)
         Code.expect(result).to.be.instanceof(Object)
         Code.expect(result.signatures[0].edition).to.equal(event)
-        Code.expect(result.signatures[0].signatures).to.include(promoteToCompanyB.company.company)
-
+        Code.expect(result.signatures[0].signatures.filter(s => s.companyId === promoteToCompanyB.company.company).length).to.equal(1)
         server.inject(optionsC, (response) => {
           const result = response.result
 
