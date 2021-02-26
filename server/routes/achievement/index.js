@@ -78,3 +78,9 @@ server.route({
   path: '/achievements/{id}/code',
   config: handlers.getWithCode
 })
+
+server.route({
+  method: 'POST',
+  path: '/achievements/secret',
+  config: handlers.createSecret
+})
