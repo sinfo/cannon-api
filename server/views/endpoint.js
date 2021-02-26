@@ -11,9 +11,9 @@ function renderObject (model) {
     company: model.company,
     edition: model.edition,
     visited: model.visited,
-    validaty: {
-      from: model.validaty.from,
-      to: model.validaty.to
+    validity: {
+      from: model.validity.from,
+      to: model.validity.to
     },
     created: model.created,
     updated: model.updated
