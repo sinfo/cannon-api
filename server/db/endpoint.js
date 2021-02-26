@@ -4,7 +4,7 @@ const schema = new mongoose.Schema({
   company: String,
   edition: String,
   visited: Number,
-  validaty: {
+  validity: {
     from: Date,
     to: Date
   },
