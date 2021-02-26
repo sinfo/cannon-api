@@ -254,7 +254,8 @@ exports.listWithCode = {
   validate: {
     query: {
       start: Joi.date().description('Start of validity period'),
-      end: Joi.date().description('End of validity period')
+      end: Joi.date().description('End of validity period'),
+      kind: Joi.string().description('Kind of achievements we want')
     }
   },
   pre: [
@@ -287,4 +288,25 @@ exports.getWithCode = {
     reply(render(request.pre.achievement, true))
   },
   description: 'Gets an achievement, with self sign codes'
+}
+
+exports.createSecret = {
+  tags: ['api', 'achievement'],
+  auth: {
+    strategies: ['default'],
+    scope: ['team', 'admin']
+  },
+  validate: {
+    payload: {
+      validity: Joi.date().description('Date when the achievement starts stops being available for grabs'),
+      event: Joi.string().description('Event the achievement is associated to')
+    }
+  },
+  pre: [
+    { method: 'achievement.createSecret(payload)', assign: 'achievement' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.achievement, true)).created('/achievement/' + request.pre.achievement.id)
+  },
+  description: 'Creates a new secret achievement'
 }
