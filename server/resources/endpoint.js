@@ -20,9 +20,9 @@ function create (endpoint, cb) {
       company: company,
       edition: endpoint.edition,
       visited: 0,
-      validaty: {
-        from: endpoint.validaty.from,
-        to: endpoint.validaty.to
+      validity: {
+        from: endpoint.validity.from,
+        to: endpoint.validity.to
       },
       created: new Date(),
       updated: new Date()
@@ -138,7 +138,7 @@ function isValid (companyId, editionId, cb) {
     }
 
     let now = new Date()
-    if (now > new Date(endpoint.validaty.from) && now < new Date(endpoint.validaty.to)) {
+    if (now > new Date(endpoint.validity.from) && now < new Date(endpoint.validity.to)) {
       return cb(null, true)
     }
 

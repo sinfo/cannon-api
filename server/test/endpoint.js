@@ -190,7 +190,7 @@ lab.experiment('Endpoint', () => {
       payload: {
         companies: ['sinfo-consulting', 'chavaile-consulting'],
         edition: '25-SINFO',
-        validaty: {
+        validity: {
           from,
           to // will be open for 2 weeks
         }
@@ -210,7 +210,7 @@ lab.experiment('Endpoint', () => {
       options.payload = {
         companies: ['late-consulting'],
         edition: '25-SINFO',
-        validaty: {
+        validity: {
           from: yesterday,
           to: yesterday
         }
@@ -233,7 +233,7 @@ lab.experiment('Endpoint', () => {
       payload: {
         companies: ['sinfo-consulting', 'chavaile-consulting'],
         edition: '25-SINFO',
-        validaty: {
+        validity: {
           from,
           to // will be open for 2 weeks
         }
@@ -291,8 +291,8 @@ lab.experiment('Endpoint', () => {
       Code.expect(result).to.be.instanceof(Object)
       Code.expect(result.company).to.equal('sinfo-consulting')
       Code.expect(result.edition).to.equal('25-SINFO')
-      Code.expect(result.validaty.from).to.be.date()
-      Code.expect(result.validaty.to).to.be.date()
+      Code.expect(result.validity.from).to.be.date()
+      Code.expect(result.validity.to).to.be.date()
 
       done()
     })
@@ -318,7 +318,7 @@ lab.experiment('Endpoint', () => {
       url: '/company-endpoint/sinfo-consulting?edition=25-SINFO',
       credentials: credentialsAdmin,
       payload: {
-        validaty: {
+        validity: {
           to
         }
       }
@@ -330,7 +330,7 @@ lab.experiment('Endpoint', () => {
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result.company).to.equal('sinfo-consulting')
       Code.expect(result.edition).to.equal('25-SINFO')
-      Code.expect(new Date(result.validaty.to).toString()).to.equal(to.toString())
+      Code.expect(new Date(result.validity.to).toString()).to.equal(to.toString())
 
       done()
     })
@@ -343,7 +343,7 @@ lab.experiment('Endpoint', () => {
       url: '/company-endpoint/sinfo-consulting?edition=25-SINFO',
       credentials: credentialsUser,
       payload: {
-        validaty: {
+        validity: {
           to
         }
       }
