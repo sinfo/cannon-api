@@ -7,6 +7,7 @@ const AchievementKind = {
   CV: 'cv',
   SPEEDDATE: 'speedDate',
   TALK: 'lunchTalk',
+  SECRET: 'secret',
   OTHER: 'other'
 }
 

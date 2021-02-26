@@ -27,6 +27,7 @@ server.method('achievement.getActiveAchievementsCode', getActiveAchievementsCode
 server.method('achievement.getSpeedDatePointsForUser', getSpeedDatePointsForUser, {})
 server.method('achievement.addUserToSpeedDateAchievement', addUserToSpeedDateAchievement, {})
 server.method('achievement.checkUserStandDay', checkUserStandDay, {})
+server.method('achievement.createSecret', createSecret, {})
 
 function create (achievement, cb) {
   achievement.id = achievement.id || slug(achievement.name)
@@ -639,10 +640,16 @@ function getActiveAchievementsCode (query, cb) {
     log.error({start: start, end: end}, 'end date is before start date')
   }
 
-  Achievement.find({
+  const filter = {
     'validity.from': { $gte: start },
     'validity.to': { $lte: end }
-  }, (err, achievements) => {
+  }
+
+  if (query.kind) {
+    filter.kind = query.kind
+  }
+
+  Achievement.find(filter, (err, achievements) => {
     if (err) {
       log.error({ err: err, start: start, end: end }, 'error getting active achievements on a given date')
       return cb(err)
@@ -687,7 +694,7 @@ function generateCodeSession (sessionId, expiration, cb) {
     }
 
     if (achievement === null) {
-      log.error({ sessionId: sessionId }, 'error trying to code to not valid achievement in session')
+      log.error({ sessionId: sessionId }, 'error trying to add code to not valid achievement in session')
       return cb(new Error('error trying to add code to not valid achievement in session'), null)
     }
 
@@ -704,4 +711,79 @@ function randomString (size) {
   }
 
   return text
+}
+
+function createSecret (payload, cb) {
+  const options = {
+    kind: AchievementKind.SECRET,
+    id: new RegExp(payload.event)
+  }
+
+  Achievement.find(options, (err, achs) => {
+    if (err) {
+      log.error({error: err})
+      return cb(Boom.internal())
+    }
+
+    if (achs === null) {
+      log.error('error trying to create secret achievement')
+      return cb(new Error('error trying to create secret achievement'), null)
+    }
+
+    const n = achs.length
+
+    const from = new Date()
+    const to = new Date(from)
+    from.setHours(0)
+    from.setMinutes(0)
+    from.setSeconds(0)
+    from.setMilliseconds(0)
+
+    to.setHours(23)
+    to.setMinutes(59)
+    to.setSeconds(59)
+    to.setMilliseconds(999)
+
+    const code = randomString(12)
+
+    const achievement = {
+      name: 'Secret Achievement!',
+      id: `${payload.event}_secret_achievement_${n}`,
+      description: 'Secret achievement valid for a limited time!',
+      instructions: 'Redeem the code that appears in the chat at random times!',
+      img: `https://sinfo.ams3.cdn.digitaloceanspaces.com/static/${payload.event}/achievements/secret_code.webp`,
+      value: 10,
+      users: [],
+      validity: {
+        from: from,
+        to: to
+      },
+      code: {
+        code: code
+      },
+      kind: AchievementKind.SECRET
+    }
+
+    achievement.updated = achievement.created = achievement.code.created = Date.now()
+    const expiration = new Date(payload.validity)
+    if (expiration <= achievement.code.created) {
+      log.error({expires: expiration}, 'expiration date is in the past')
+      return cb(Boom.badRequest())
+    }
+    achievement.code.expiration = expiration
+
+    Achievement.create(achievement, (err, _achievement) => {
+      if (err) {
+        if (err.code === 11000) {
+          log.error({achievement: achievement}, 'duplicate')
+          return cb(Boom.conflict(`achievement "${achievement.id}" is a duplicate`))
+        }
+
+        log.error({ err: err, achievement: achievement.id }, 'error creating achievement')
+        return cb(Boom.internal())
+      }
+
+      cb(null, _achievement.toObject({ getters: true }))
+    })
+  })
 }
