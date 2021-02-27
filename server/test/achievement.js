@@ -252,9 +252,11 @@ lab.experiment('Achievement', () => {
   })
 
   lab.test('Create secret achievement', (done) => {
+    const value = 50
     const payload = {
       validity: new Date(new Date().getTime() + (1000 * 60 * 60)),
-      event: 'SINFO XXII'
+      event: 'SINFO XXII',
+      points: value
     }
 
     const options = {
@@ -269,6 +271,7 @@ lab.experiment('Achievement', () => {
 
       Code.expect(response.statusCode).to.equal(201)
       Code.expect(result.id).to.equal(`${event}_${secretId}0`)
+      Code.expect(result.value).to.equal(value)
       codeA = result.code.code
 
       server.inject(options, (response) => {
@@ -276,6 +279,7 @@ lab.experiment('Achievement', () => {
 
         Code.expect(response.statusCode).to.equal(201)
         Code.expect(result.id).to.equal(`${event}_${secretId}1`)
+        Code.expect(result.value).to.equal(value)
         codeB = result.code.code
 
         done()
