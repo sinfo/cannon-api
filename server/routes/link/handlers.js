@@ -63,8 +63,8 @@ exports.update = {
         Joi.string().description('Id of the user working for the company'),
       notes: Joi.object().keys({
         contacts: Joi.object().keys({
-          email: Joi.string().description('Email of the attendee'),
-          phone: Joi.string().description('Phone number of the attendee')
+          email: Joi.string().description('Email of the attendee').allow(''),
+          phone: Joi.string().description('Phone number of the attendee').allow('')
         }),
         interestedIn: Joi.string().allow('').description(
           'Interests of the attendee relevant to the company'),
