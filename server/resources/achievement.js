@@ -752,7 +752,7 @@ function createSecret (payload, cb) {
       description: 'Secret achievement valid for a limited time!',
       instructions: 'Redeem the code that appears in the chat at random times!',
       img: `https://sinfo.ams3.cdn.digitaloceanspaces.com/static/${payload.event}/achievements/secret_code.webp`,
-      value: 10,
+      value: payload.points > 0 ? payload.points : 10,
       users: [],
       validity: {
         from: from,

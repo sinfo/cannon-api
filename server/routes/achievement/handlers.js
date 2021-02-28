@@ -298,8 +298,9 @@ exports.createSecret = {
   },
   validate: {
     payload: {
-      validity: Joi.date().description('Date when the achievement starts stops being available for grabs'),
-      event: Joi.string().description('Event the achievement is associated to')
+      validity: Joi.date().description('Date when the achievement starts stops being available for grabs').required(),
+      event: Joi.string().description('Event the achievement is associated to').required(),
+      points: Joi.number().description('Value of the achievement').required()
     }
   },
   pre: [
