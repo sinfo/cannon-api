@@ -28,6 +28,7 @@ server.method('achievement.getSpeedDatePointsForUser', getSpeedDatePointsForUser
 server.method('achievement.addUserToSpeedDateAchievement', addUserToSpeedDateAchievement, {})
 server.method('achievement.checkUserStandDay', checkUserStandDay, {})
 server.method('achievement.createSecret', createSecret, {})
+server.method('achievement.addUserToSecret', addUserToSecret, {})
 
 function create (achievement, cb) {
   achievement.id = achievement.id || slug(achievement.name)
@@ -880,5 +881,43 @@ function createSecret (payload, cb) {
 
       cb(null, _achievement.toObject({ getters: true }))
     })
+  })
+}
+
+function addUserToSecret (id, code, cb) {
+  if (!id) {
+    log.error('tried to redeem secret but no user was given')
+    return cb()
+  }
+
+  const now = new Date()
+
+  const changes = {
+    $addToSet: {
+      users: id
+    }
+  }
+
+  const query = {
+    kind: AchievementKind.SECRET,
+    'validity.from': { $lte: now },
+    'validity.to': { $gte: now },
+    'code.created': { $lte: now },
+    'code.expiration': { $gte: now },
+    'code.code': code
+  }
+
+  Achievement.findOneAndUpdate(query, changes, (err, achievement) => {
+    if (err) {
+      log.error({ err: err }, 'error adding user to secret achievement')
+      return cb(Boom.internal())
+    }
+
+    if (achievement === null) {
+      log.error({ code: code }, 'no valid secret achievements with that code')
+      return cb(Boom.notFound('no valid secret achievements with that code'))
+    }
+
+    cb(null, achievement.toObject({ getters: true }))
   })
 }

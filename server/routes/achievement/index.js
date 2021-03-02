@@ -84,3 +84,9 @@ server.route({
   path: '/achievements/secret',
   config: handlers.createSecret
 })
+
+server.route({
+  method: 'POST',
+  path: '/achievements/redeem/secret',
+  config: handlers.signSecret
+})

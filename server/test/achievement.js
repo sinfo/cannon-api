@@ -314,4 +314,40 @@ lab.experiment('Achievement', () => {
       done()
     })
   })
+
+  lab.test('Sign in to secret with code', (done) => {
+    const options = {
+      method: 'POST',
+      url: `/achievements/redeem/secret`,
+      credentials: credentialsB,
+      payload: {code: codeA}
+    }
+
+    server.inject(options, (response) => {
+      const result = response.result
+
+      Code.expect(response.statusCode).to.equal(200)
+      Code.expect(result).to.be.instanceof(Object)
+      Code.expect(result.code.code).to.equal(codeA)
+      Code.expect(result.users.length).to.equal(1)
+      Code.expect(result.users[0]).to.equal(credentialsB.user.id)
+
+      done()
+    })
+  })
+
+  lab.test('Sign in to secret with code fail', (done) => {
+    const options = {
+      method: 'POST',
+      url: `/achievements/redeem/secret`,
+      credentials: credentialsB,
+      payload: {code: 'wrongcode123'}
+    }
+
+    server.inject(options, (response) => {
+      Code.expect(response.statusCode).to.equal(404)
+
+      done()
+    })
+  })
 })
