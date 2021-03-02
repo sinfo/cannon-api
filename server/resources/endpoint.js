@@ -134,7 +134,7 @@ function isValid (companyId, editionId, cb) {
     }
     if (!endpoint) {
       log.error({ err: 'not found', company: companyId, edition: editionId }, 'error validating endpoint')
-      return cb(Boom.notFound('endpoint not found'))
+      return cb(Boom.notFound('Endpoint not created yet.'))
     }
 
     let now = new Date()
