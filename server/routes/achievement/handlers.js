@@ -311,3 +311,25 @@ exports.createSecret = {
   },
   description: 'Creates a new secret achievement'
 }
+
+exports.signSecret = {
+  tags: ['api', 'achievement'],
+  auth: {
+    strategies: ['default'],
+    scope: ['team', 'admin', 'user'],
+    mode: 'try'
+  },
+  validate: {
+    payload: {
+      code: Joi.string().description('Validation code for self signing')
+    }
+  },
+  pre: [
+    { method: 'achievement.addUserToSecret(auth.credentials.user.id, payload.code)', assign: 'achievement' }
+  ],
+  handler: function (request, reply) {
+    reply(request.pre.achievement)
+  },
+  description: 'Perform check-in in a session for an array of users, giving its achievement to each of them'
+}
+
