@@ -32,7 +32,7 @@ server.method('achievement.createSecret', createSecret, {})
 function create (achievement, cb) {
   achievement.id = achievement.id || slug(achievement.name)
 
-  log.error({id: achievement.id}, 'id')
+  log.error({ach: achievement}, 'id')
 
   achievement.updated = achievement.created = Date.now()
 
@@ -405,16 +405,16 @@ function addMultiUsersBySession (sessionId, usersId, credentials, code, cb) {
 
       cb(null, achievement.toObject({ getters: true }))
     })
-  } else {
+  } else { // Self check in
     if (usersId.length === 1 && usersId[0] === credentials.user.id) {
-      Achievement.findOneAndUpdate({
+      Achievement.findOne({
         session: sessionId,
         'validity.from': { $lte: now },
         'validity.to': { $gte: now },
         'code.created': {$lte: now},
         'code.expiration': {$gte: now},
         'code.code': code
-      }, changes, (err, achievement) => {
+      }, (err, achievement) => {
         if (err) {
           log.error({ err: err, sessionId: sessionId }, 'error adding user to achievement')
           return cb(Boom.internal())
@@ -425,7 +425,102 @@ function addMultiUsersBySession (sessionId, usersId, credentials, code, cb) {
           return cb(Boom.notFound('error trying to add user to not valid achievement in session'), null)
         }
 
-        cb(null, achievement.toObject({ getters: true }))
+        /** |===========================================================================================================|
+         *  |  UGLY FIX: DO NOT KEEP THIS FOR LONGER THAN NECESSARY.                                                    |
+         *  |  Currently, 2 workshops are concurrent iff their codes are concurrent                                     |
+         *  |  This solution requires human coordination and is ill advised.                                            |
+         *  |                                                                                                           |
+         *  |  A good solution (at time of writing is it too late to implement this solution as an event is ongoing)    |
+         *  |  is storing more session information on session-related achievements.                                     |
+         *  |                                                                                                           |
+         *  |  Information that is accessed together should be kept together - Lauren Schaefer 2021                     |
+         *  |===========================================================================================================| */
+        if (achievement.kind === AchievementKind.WORKSHOP) {
+          const query = {
+            $or: [
+              {
+                $and: [
+                  {'code.created': {$gte: new Date(achievement.code.created)}},
+                  {'code.created': {$lte: new Date(achievement.code.expiration)}}
+                ]
+              },
+              {
+                $and: [
+                  {'code.expiration': {$gte: new Date(achievement.code.created)}},
+                  {'code.expiration': {$lte: new Date(achievement.code.expiration)}}
+                ]
+              }
+            ],
+            users: usersId[0]
+          }
+
+          Achievement.count(query, (err, ct) => {
+            if (err) {
+              log.error({ err: err, sessionId: sessionId }, 'error adding user to achievement')
+              return cb(Boom.internal())
+            }
+
+            if (ct > 0) {
+              const changes = {
+                $pull: {users: usersId[0]}
+              }
+
+              log.warn({ user: usersId[0] }, 'User breaking the rules')
+
+              Achievement.update(query, changes, (err, ach) => {
+                if (err) {
+                  log.error({ err: err, sessionId: sessionId }, 'error adding user to achievement')
+                  return cb(Boom.internal())
+                }
+
+                log.error({id: usersId[0]}, 'user tried to check in to concurrent workshops')
+                return cb(Boom.forbidden('user tried to check in to concurrent workshops'))
+              })
+            } else {
+              Achievement.findOneAndUpdate({
+                session: sessionId,
+                'validity.from': { $lte: now },
+                'validity.to': { $gte: now },
+                'code.created': {$lte: now},
+                'code.expiration': {$gte: now},
+                'code.code': code
+              }, changes, (err, achievement) => {
+                if (err) {
+                  log.error({ err: err, sessionId: sessionId }, 'error adding user to achievement')
+                  return cb(Boom.internal())
+                }
+
+                if (achievement === null) {
+                  log.error({ sessionId: sessionId }, 'error trying to add user to not valid achievement in session')
+                  return cb(Boom.notFound('error trying to add user to not valid achievement in session'), null)
+                }
+
+                return cb(null, achievement.toObject({ getters: true }))
+              })
+            }
+          })
+        } else {
+          Achievement.findOneAndUpdate({
+            session: sessionId,
+            'validity.from': { $lte: now },
+            'validity.to': { $gte: now },
+            'code.created': {$lte: now},
+            'code.expiration': {$gte: now},
+            'code.code': code
+          }, changes, (err, achievement) => {
+            if (err) {
+              log.error({ err: err, sessionId: sessionId }, 'error adding user to achievement')
+              return cb(Boom.internal())
+            }
+
+            if (achievement === null) {
+              log.error({ sessionId: sessionId }, 'error trying to add user to not valid achievement in session')
+              return cb(Boom.notFound('error trying to add user to not valid achievement in session'), null)
+            }
+
+            cb(null, achievement.toObject({ getters: true }))
+          })
+        }
       })
     } else {
       return cb(Boom.badRequest('invalid payload for user self sign'), null)
