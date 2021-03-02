@@ -426,16 +426,16 @@ function addMultiUsersBySession (sessionId, usersId, credentials, code, cb) {
           return cb(Boom.notFound('error trying to add user to not valid achievement in session'), null)
         }
 
-        /** |===========================================================================================================|
-         *  |  UGLY FIX: DO NOT KEEP THIS FOR LONGER THAN NECESSARY.                                                    |
-         *  |  Currently, 2 workshops are concurrent iff their codes are concurrent                                     |
-         *  |  This solution requires human coordination and is ill advised.                                            |
-         *  |                                                                                                           |
-         *  |  A good solution (at time of writing is it too late to implement this solution as an event is ongoing)    |
-         *  |  is storing more session information on session-related achievements.                                     |
-         *  |                                                                                                           |
-         *  |  Information that is accessed together should be kept together - Lauren Schaefer 2021                     |
-         *  |===========================================================================================================| */
+/** |===========================================================================================================|
+ *  |  UGLY FIX: DO NOT KEEP THIS FOR LONGER THAN NECESSARY.                                                    |
+ *  |  Currently, 2 workshops are concurrent iff their codes are concurrent                                     |
+ *  |  This solution requires human coordination and is ill advised.                                            |
+ *  |                                                                                                           |
+ *  |  A good solution (at time of writing is it too late to implement this solution as an event is ongoing)    |
+ *  |  is storing more session information on session-related achievements.                                     |
+ *  |                                                                                                           |
+ *  |  Information that is accessed together should be kept together - Lauren Schaefer 2021                     |
+ *  |===========================================================================================================| */
         if (achievement.kind === AchievementKind.WORKSHOP) {
           const query = {
             $or: [
@@ -452,7 +452,8 @@ function addMultiUsersBySession (sessionId, usersId, credentials, code, cb) {
                 ]
               }
             ],
-            users: usersId[0]
+            users: usersId[0],
+            id: {$ne: achievement.id}
           }
 
           Achievement.count(query, (err, ct) => {

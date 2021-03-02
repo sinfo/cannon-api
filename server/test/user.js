@@ -294,6 +294,53 @@ lab.experiment('User', () => {
     })
   })
 
+  lab.test('Double sign in same workshop should not deduce points', (done) => {
+    const optionsA = {
+      method: 'POST',
+      url: `/sessions/${sessionA}/check-in`,
+      credentials: credentialsD,
+      payload: {
+        users: [credentialsD.user.id],
+        code: codewsA
+      }
+    }
+
+    const optionsB = {
+      method: 'GET',
+      url: '/achievements/active/me',
+      credentials: credentialsD
+    }
+
+    server.inject(optionsA, (response) => {
+      const result = response.result
+
+      Code.expect(response.statusCode).to.equal(200)
+      Code.expect(result).to.be.instanceof(Object)
+      Code.expect(result.id).to.equal(wsIdA)
+      Code.expect(result.name).to.equal(wsA.name)
+      Code.expect(result.users).to.contain(credentialsD.user.id)
+
+      server.inject(optionsA, (response) => {
+        const result = response.result
+
+        Code.expect(response.statusCode).to.equal(200)
+        Code.expect(result).to.be.instanceof(Object)
+        Code.expect(result.id).to.equal(wsIdA)
+        Code.expect(result.name).to.equal(wsA.name)
+        Code.expect(result.users).to.contain(credentialsD.user.id)
+
+        server.inject(optionsB, (response) => {
+          const result = response.result
+
+          Code.expect(response.statusCode).to.equal(200)
+          Code.expect(result.points).to.equal(wsA.value)
+          Code.expect(result.achievements.length).to.equal(1)
+          done()
+        })
+      })
+    })
+  })
+
   lab.test('List all as admin', (done) => {
     const options = {
       method: 'GET',
