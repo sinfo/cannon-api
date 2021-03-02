@@ -5,9 +5,11 @@ const server = require('../').hapi
 
 const lab = exports.lab = Lab.script()
 const token = require('../auth/token')
+const AchievementKind = require('../db/achievementKind')
 
 const aux = token.createJwt('john.doe')
 const auxB = token.createJwt('jane.doe')
+const async = require('async')
 
 const credentialsA = {
   user: {
@@ -84,15 +86,139 @@ const updatedACompany = {
   }
 }
 
+const sessionA = 'sessionA'
+const sessionB = 'sessionB'
+const wsIdA = 'ws1'
+const wsIdB = 'ws2'
+
+const wsA = {
+  name: 'WS A',
+  event: 'SINFO 28',
+  id: wsIdA,
+  value: 10,
+  session: sessionA,
+  validity: {
+    from: new Date(),
+    to: new Date(new Date().getTime() + (1000 * 60 * 60))
+  },
+  kind: AchievementKind.WORKSHOP
+}
+
+const wsB = {
+  name: 'WS B',
+  event: 'SINFO 28',
+  id: wsIdB,
+  value: 10,
+  session: sessionB,
+  validity: {
+    from: new Date(),
+    to: new Date(new Date().getTime() + (1000 * 60 * 60))
+  },
+  kind: AchievementKind.WORKSHOP
+}
+
+let codewsA = ''
+let codewsB = ''
+
 lab.experiment('User', () => {
+  lab.before('create ws', (done) => {
+    const expires = new Date(new Date().getTime() + (1000 * 60 * 60))
+
+    const optionsA = {
+      method: 'POST',
+      url: '/achievements',
+      credentials: credentialsA,
+      payload: wsA
+    }
+
+    const optionsB = {
+      method: 'POST',
+      url: '/achievements',
+      credentials: credentialsA,
+      payload: wsB
+    }
+
+    const optionsC = {
+      method: 'POST',
+      url: `/sessions/${sessionA}/generate`,
+      credentials: credentialsA,
+      payload: {expiration: expires}
+    }
+
+    const optionsD = {
+      method: 'POST',
+      url: `/sessions/${sessionB}/generate`,
+      credentials: credentialsA,
+      payload: {expiration: expires}
+    }
+
+    async.parallel([
+      (cb) => {
+        server.inject(optionsA, (response) => {
+          return cb()
+        })
+      },
+      (cb) => {
+        server.inject(optionsB, (response) => {
+          return cb()
+        })
+      }
+    ], (_, results) => {
+      async.parallel([
+        (cb) => {
+          server.inject(optionsC, (response) => {
+            codewsA = response.result.code.code
+            return cb()
+          })
+        },
+        (cb) => {
+          server.inject(optionsD, (response) => {
+            codewsB = response.result.code.code
+            return cb()
+          })
+        }
+      ], (_, results) => {
+        done()
+      })
+    })
+  })
+
   lab.after('remove achievements', (done) => {
-    const options = {
+    const optionsA = {
       method: 'DELETE',
       url: '/achievements/' + achievementId,
       credentials: credentialsA
     }
 
-    server.inject(options, (response) => {
+    const optionsB = {
+      method: 'DELETE',
+      url: '/achievements/' + wsIdA,
+      credentials: credentialsA
+    }
+
+    const optionsC = {
+      method: 'DELETE',
+      url: '/achievements/' + wsIdB,
+      credentials: credentialsA
+    }
+
+    async.parallel([
+      (cb) => {
+        server.inject(optionsA, (response) => {
+          return cb()
+        })
+      },
+      (cb) => {
+        server.inject(optionsB, (response) => {
+          return cb()
+        })
+      },
+      (cb) => {
+        server.inject(optionsC, (response) => {
+          return cb()
+        })
+      }
+    ], (_, results) => {
       done()
     })
   })
@@ -114,6 +240,57 @@ lab.experiment('User', () => {
       Code.expect(result.name).to.equal(userA.name)
 
       done()
+    })
+  })
+
+  lab.test('Block double concurrent workshop', (done) => {
+    const optionsA = {
+      method: 'POST',
+      url: `/sessions/${sessionA}/check-in`,
+      credentials: credentialsD,
+      payload: {
+        users: [credentialsD.user.id],
+        code: codewsA
+      }
+    }
+
+    const optionsB = {
+      method: 'POST',
+      url: `/sessions/${sessionB}/check-in`,
+      credentials: credentialsD,
+      payload: {
+        users: [credentialsD.user.id],
+        code: codewsB
+      }
+    }
+
+    const optionsC = {
+      method: 'GET',
+      url: '/achievements/active/me',
+      credentials: credentialsD
+    }
+
+    server.inject(optionsA, (response) => {
+      const result = response.result
+
+      Code.expect(response.statusCode).to.equal(200)
+      Code.expect(result).to.be.instanceof(Object)
+      Code.expect(result.id).to.equal(wsIdA)
+      Code.expect(result.name).to.equal(wsA.name)
+      Code.expect(result.users).to.contain(credentialsD.user.id)
+
+      server.inject(optionsB, (response) => {
+        Code.expect(response.statusCode).to.equal(403)
+
+        server.inject(optionsC, (response) => {
+          const result = response.result
+
+          Code.expect(response.statusCode).to.equal(200)
+          Code.expect(result.points).to.equal(0)
+          Code.expect(result.achievements.length).to.equal(0)
+          done()
+        })
+      })
     })
   })
 
@@ -338,22 +515,28 @@ lab.experiment('User', () => {
     server.inject(opt1, (response) => { // Admin
       const result = response.result
 
+      const sorted = result.filter(elem => elem.id === achievementId)
+
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceof(Array)
-      Code.expect(result.length).to.equal(1)
-      Code.expect(result[0].id).to.equal(achievementId)
-      Code.expect(result[0].name).to.equal(achievementA.name)
-      Code.expect(result[0].code).to.be.instanceof(Object)
-      Code.expect(result[0].code.code).to.equal(code)
+      Code.expect(sorted.length).to.equal(1)
+      Code.expect(sorted[0].id).to.equal(achievementId)
+      Code.expect(sorted[0].name).to.equal(achievementA.name)
+      Code.expect(sorted[0].code).to.be.instanceof(Object)
+      Code.expect(sorted[0].code.code).to.equal(code)
 
       server.inject(opt3, (response) => { // Team
+        const result = response.result
+
+        const sorted = result.filter(elem => elem.id === achievementId)
+
         Code.expect(response.statusCode).to.equal(200)
         Code.expect(result).to.be.instanceof(Array)
-        Code.expect(result.length).to.equal(1)
-        Code.expect(result[0].id).to.equal(achievementId)
-        Code.expect(result[0].name).to.equal(achievementA.name)
-        Code.expect(result[0].code).to.be.instanceof(Object)
-        Code.expect(result[0].code.code).to.equal(code)
+        Code.expect(sorted.length).to.equal(1)
+        Code.expect(sorted[0].id).to.equal(achievementId)
+        Code.expect(sorted[0].name).to.equal(achievementA.name)
+        Code.expect(sorted[0].code).to.be.instanceof(Object)
+        Code.expect(sorted[0].code.code).to.equal(code)
 
         server.inject(opt2, (response) => { // User
           Code.expect(response.statusCode).to.equal(403)
