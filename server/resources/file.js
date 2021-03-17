@@ -230,6 +230,7 @@ function saveFile (kind, data, cb) {
   }
   const file = data
   const path = config.upload.path + '/' + fileInfo.id
+
   const fileStream = fs.createWriteStream(path)
 
   fileStream.on('error', (err) => {
@@ -349,29 +350,38 @@ function zipFiles (links, cb) {
         }
 
         // Prevents Big Zip from being generated on every request. Acts like a cache
-        if (!err && !dirErr && new Date(dirStats.mtime).getTime() < new Date(stats.mtime).getTime()) {
-          return cb()
+        // if (!err && !dirErr && new Date(dirStats.mtime).getTime() < new Date(stats.mtime).getTime()) {
+        //   return cb()
+        // }
+
+        const filter = {
+          updated: {'$gt': new Date('2021-02-25')}
         }
 
         let zip = new Zip()
         log.info('Zipping...')
-        fs.readdir(config.upload.path, (err, files) => {
+        File.find(filter, (err, files) => {
           if (err) {
             return cb(Boom.internal())
           }
 
+          log.info(`Found ${files.length} files to zip`)
+
           async.eachSeries(files, (file, cbAsync) => {
-            fs.readFile(`${config.upload.path}/${file}`, (err, fileData) => {
+            fs.readFile(`${config.upload.path}/${file.id}`, (err, fileData) => {
               if (err) {
-                return
+                log.error(`File ${file.id} not found`)
+                return cbAsync()
               }
-              zip.addFile(`${file}.pdf`, fileData, '', 644) // .pdf hardcoded ¯\_(ツ)_/¯
+              zip.addFile(`${file.id}.pdf`, fileData, '', 644) // .pdf hardcoded ¯\_(ツ)_/¯
               return cbAsync()
             })
           }, (err) => {
             if (err) {
               return cb(Boom.internal())
             }
+
+            log.info('writing zip')
             zip.toBuffer(buffer => {
               fs.writeFile(config.upload.cvsZipPath, buffer, (err) => {
                 if (err) {
