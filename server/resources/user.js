@@ -163,6 +163,9 @@ function list (activeAchievements, cb) {
         points[user] = 0
       }
 
+      /**
+       * ADAPT TO SPEED DATES !!!!
+       */
       points[user] += achv.value
     })
   })
