@@ -12,6 +12,6 @@ function renderObject (model) {
     edition: model.edition,
     expire: model.expire,
     description: model.description,
-    code: model.code,
+    code: model.code
   }
 }

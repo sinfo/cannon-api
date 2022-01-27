@@ -45,6 +45,12 @@ server.route({
 
 server.route({
   method: 'GET',
+  path: '/achievements/speed/me',
+  config: handlers.getMeSpeed
+})
+
+server.route({
+  method: 'GET',
   path: '/users/{id}/achievements',
   config: handlers.getUser
 })
@@ -59,4 +65,28 @@ server.route({
   method: 'DELETE',
   path: '/achievements/{id}',
   config: handlers.remove
+})
+
+server.route({
+  method: 'GET',
+  path: '/achievements/code',
+  config: handlers.listWithCode
+})
+
+server.route({
+  method: 'GET',
+  path: '/achievements/{id}/code',
+  config: handlers.getWithCode
+})
+
+server.route({
+  method: 'POST',
+  path: '/achievements/secret',
+  config: handlers.createSecret
+})
+
+server.route({
+  method: 'POST',
+  path: '/achievements/redeem/secret',
+  config: handlers.signSecret
 })

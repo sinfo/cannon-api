@@ -56,7 +56,7 @@ handlers.grid = {
 
             request.server.methods.redeem.create(redeemCode, function (err, redeemCode) {
               if (err) {
-                log.error({err: err}, 'error creating redeem code')
+                log.error({ err: err }, 'error creating redeem code')
                 return cb(Boom.internal('error creating redeem code'))
               }
 

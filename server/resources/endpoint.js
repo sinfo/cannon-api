@@ -20,9 +20,9 @@ function create (endpoint, cb) {
       company: company,
       edition: endpoint.edition,
       visited: 0,
-      validaty: {
-        from: endpoint.validaty.from,
-        to: endpoint.validaty.to
+      validity: {
+        from: endpoint.validity.from,
+        to: endpoint.validity.to
       },
       created: new Date(),
       updated: new Date()
@@ -35,7 +35,7 @@ function create (endpoint, cb) {
         return cb(Boom.conflict(`endpoint <${endpoint.company}, ${endpoint.edition}> is a duplicate`))
       }
 
-      log.error({err: err, endpoint: endpoint}, 'error creating endpoint')
+      log.error({ err: err, endpoint: endpoint }, 'error creating endpoint')
       return cb(Boom.internal())
     }
 
@@ -53,11 +53,11 @@ function update (companyId, editionId, endpoint, cb) {
 
   Endpoint.findOneAndUpdate(filter, endpoint, (err, _endpoint) => {
     if (err) {
-      log.error({err: err, company: companyId, edition: editionId }, 'error updating endpoint')
+      log.error({ err: err, company: companyId, edition: editionId }, 'error updating endpoint')
       return cb(Boom.internal())
     }
     if (!_endpoint) {
-      log.error({err: 'Not Found', company: companyId, edition: editionId }, 'error updating endpoint')
+      log.error({ err: 'Not Found', company: companyId, edition: editionId }, 'error updating endpoint')
       return cb(Boom.notFound())
     }
 
@@ -73,11 +73,11 @@ function get (companyId, editionId, cb) {
 
   Endpoint.findOne(filter, (err, endpoint) => {
     if (err) {
-      log.error({err: err, company: companyId, edition: editionId }, 'error getting endpoint')
+      log.error({ err: err, company: companyId, edition: editionId }, 'error getting endpoint')
       return cb(Boom.internal('error getting endpoint'))
     }
     if (!endpoint) {
-      log.error({err: 'not found', company: companyId, edition: editionId }, 'error getting endpoint')
+      log.error({ err: 'not found', company: companyId, edition: editionId }, 'error getting endpoint')
       return cb(Boom.notFound('endpoint not found'))
     }
 
@@ -98,7 +98,7 @@ function list (query, cb) {
 
   Endpoint.find(filter, fields, options, (err, endpoints) => {
     if (err) {
-      log.error({err: err, edition: query.edition }, 'error getting all endpoints')
+      log.error({ err: err, edition: query.edition }, 'error getting all endpoints')
       return cb(Boom.internal())
     }
 
@@ -107,13 +107,13 @@ function list (query, cb) {
 }
 
 function remove (companyId, editionId, cb) {
-  Endpoint.findOneAndRemove({company: companyId, edition: editionId}, (err, endpoint) => {
+  Endpoint.findOneAndRemove({ company: companyId, edition: editionId }, (err, endpoint) => {
     if (err) {
-      log.error({err: err, company: companyId, edition: editionId }, 'error deleting endpoint')
+      log.error({ err: err, company: companyId, edition: editionId }, 'error deleting endpoint')
       return cb(Boom.internal())
     }
     if (!endpoint) {
-      log.error({err: 'not found', company: companyId, edition: editionId }, 'error deleting endpoint')
+      log.error({ err: 'not found', company: companyId, edition: editionId }, 'error deleting endpoint')
       return cb(Boom.notFound('Endpoint not found'))
     }
 
@@ -129,20 +129,21 @@ function isValid (companyId, editionId, cb) {
 
   Endpoint.findOne(filter, (err, endpoint) => {
     if (err) {
-      log.error({err: err, company: companyId, edition: editionId }, 'error validating endpoint')
+      log.error({ err: err, company: companyId, edition: editionId }, 'error validating endpoint')
       return cb(Boom.internal('error getting endpoint'))
     }
     if (!endpoint) {
-      log.error({err: 'not found', company: companyId, edition: editionId }, 'error validating endpoint')
-      return cb(Boom.notFound('endpoint not found'))
+      log.error({ err: 'not found', company: companyId, edition: editionId }, 'error validating endpoint')
+      return cb(Boom.notFound('Endpoint not created yet.'))
     }
 
     let now = new Date()
-    if (now > new Date(endpoint.validaty.from) && now < new Date(endpoint.validaty.to)) {
+    if (now > new Date(endpoint.validity.from) && now < new Date(endpoint.validity.to)) {
       return cb(null, true)
     }
 
-    return cb(Boom.notFound())
+    log.error('isvalid')
+    return cb(Boom.notFound('isValid'))
   })
 }
 
@@ -158,11 +159,11 @@ function incrementVisited (companyId, editionId, cb) {
 
   Endpoint.findOneAndUpdate(filter, update, (err, endpoint) => {
     if (err) {
-      log.error({err: err, company: companyId, edition: editionId }, 'error incrementing endpoint visited')
+      log.error({ err: err, company: companyId, edition: editionId }, 'error incrementing endpoint visited')
       return cb(Boom.internal('error getting endpoint'))
     }
     if (!endpoint) {
-      log.error({err: 'not found', company: companyId, edition: editionId }, 'error incrementing endpoint visited')
+      log.error({ err: 'not found', company: companyId, edition: editionId }, 'error incrementing endpoint visited')
       return cb(Boom.notFound('endpoint not found'))
     }
 

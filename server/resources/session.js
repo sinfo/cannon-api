@@ -23,12 +23,12 @@ function get (id, query, cb) {
 
   Resquest.get(url, (err, response, body) => {
     if (err) {
-      log.error({err: err, id: id}, 'error getting session')
+      log.error({ err: err, id: id }, 'error getting session')
       return cb(Boom.internal())
     }
 
     if (!body) {
-      log.warn({err: err, id: id}, 'could not find session')
+      log.warn({ err: err, id: id }, 'could not find session')
       return cb(Boom.notFound('session not found'))
     }
 
@@ -48,12 +48,12 @@ function list (query, cb) {
 
   Resquest.get(url, (err, response, body) => {
     if (err) {
-      log.error({err: err}, 'error getting sessions')
+      log.error({ err: err }, 'error getting sessions')
       return cb(Boom.internal())
     }
 
     if (!body) {
-      log.warn({err: err}, 'could not find sessions')
+      log.warn({ err: err }, 'could not find sessions')
       return cb(Boom.notFound('sessions not found'))
     }
 

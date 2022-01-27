@@ -137,7 +137,7 @@ exports.getActive = {
     }
   },
   pre: [
-    { method: 'achievement.getActiveAchievements(query)', assign: 'activeAchievements' },
+    { method: 'achievement.getActiveAchievements(query)', assign: 'activeAchievements' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.activeAchievements))
@@ -149,16 +149,31 @@ exports.getMeActive = {
   tags: ['api', 'achievement'],
   auth: {
     strategies: ['default'],
-    scope: ['user', 'company', 'team', 'admin'],
+    scope: ['user', 'company', 'team', 'admin']
   },
   pre: [
     { method: 'achievement.getActiveAchievements()', assign: 'activeAchievements' },
-    { method: 'achievement.getPointsForUser(pre.activeAchievements, auth.credentials.user.id)', assign: 'result' },
+    { method: 'achievement.getPointsForUser(pre.activeAchievements, auth.credentials.user.id)', assign: 'result' }
   ],
   handler: function (request, reply) {
     reply(request.pre.result)
   },
   description: 'Gets my active achievements and my points'
+}
+
+exports.getMeSpeed = {
+  tags: ['api', 'achievement'],
+  auth: {
+    strategies: ['default'],
+    scope: ['user', 'company', 'team', 'admin']
+  },
+  pre: [
+    {method: 'achievement.getSpeedDatePointsForUser(auth.credentials.user.id)', assign: 'result'}
+  ],
+  handler: function (request, reply) {
+    reply(request.pre.result)
+  },
+  description: 'Gets my speed dating achievements'
 }
 
 exports.getUser = {
@@ -227,5 +242,94 @@ exports.remove = {
     reply(render(request.pre.achievement))
   },
   description: 'Removes an achievement'
+}
+
+exports.listWithCode = {
+  tags: ['api', 'achievement'],
+  auth: {
+    strategies: ['default'],
+    scope: ['team', 'admin'],
+    mode: 'try'
+  },
+  validate: {
+    query: {
+      start: Joi.date().description('Start of validity period'),
+      end: Joi.date().description('End of validity period'),
+      kind: Joi.string().description('Kind of achievements we want')
+    }
+  },
+  pre: [
+    {method: 'achievement.getActiveAchievementsCode(query)', assign: 'achievements'}
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.achievements, true))
+  },
+  description: 'Lists all achievements, with self sign codes'
+}
+exports.getWithCode = {
+  tags: ['api', 'achievement'],
+  auth: {
+    strategies: ['default'],
+    scope: ['team', 'admin'],
+    mode: 'try'
+  },
+  validate: {
+    query: {
+      fields: Joi.string().description('Fields we want to retrieve')
+    },
+    params: {
+      id: Joi.string().required().description('Id of the achievement we want to retrieve')
+    }
+  },
+  pre: [
+    { method: 'achievement.get(params.id)', assign: 'achievement' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.achievement, true))
+  },
+  description: 'Gets an achievement, with self sign codes'
+}
+
+exports.createSecret = {
+  tags: ['api', 'achievement'],
+  auth: {
+    strategies: ['default'],
+    scope: ['team', 'admin']
+  },
+  validate: {
+    payload: {
+      validity: Joi.date().description('Date when the achievement starts stops being available for grabs').required(),
+      event: Joi.string().description('Event the achievement is associated to').required(),
+      points: Joi.number().description('Value of the achievement').required()
+    }
+  },
+  pre: [
+    { method: 'achievement.createSecret(payload)', assign: 'achievement' }
+  ],
+  handler: function (request, reply) {
+    reply(render(request.pre.achievement, true)).created('/achievement/' + request.pre.achievement.id)
+  },
+  description: 'Creates a new secret achievement'
+}
+
+exports.signSecret = {
+  tags: ['api', 'achievement'],
+  auth: {
+    strategies: ['default'],
+    scope: ['team', 'admin', 'user'],
+    mode: 'try'
+  },
+  validate: {
+    payload: {
+      code: Joi.string().description('Validation code for self signing')
+    }
+  },
+  pre: [
+    { method: 'achievement.addUserToSecret(auth.credentials.user.id, payload.code)', assign: 'achievement' }
+  ],
+  handler: function (request, reply) {
+    reply(request.pre.achievement)
+  },
+  description: 'Perform check-in in a session for an array of users, giving its achievement to each of them'
 }
 

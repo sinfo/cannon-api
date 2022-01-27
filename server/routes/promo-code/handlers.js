@@ -1,4 +1,3 @@
-const Joi = require('joi')
 const render = require('../../views/promo-code')
 
 exports = module.exports

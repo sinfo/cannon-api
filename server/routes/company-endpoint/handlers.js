@@ -13,9 +13,9 @@ exports.create = {
     payload: {
       companies: Joi.array().required().items(Joi.string()).description('Id of the companies'),
       edition: Joi.string().required().description('Event the endpoint is associated to'),
-      validaty: {
-        from: Joi.date().description('Date of endpoint validaty period start.'),
-        to: Joi.date().description('Date of endpoint validaty period end.')
+      validity: {
+        from: Joi.date().description('Date of endpoint validity period start.'),
+        to: Joi.date().description('Date of endpoint validity period end.')
       }
     }
   },
@@ -42,9 +42,9 @@ exports.update = {
       edition: Joi.string().required().description('Event the endpoint is associated to')
     },
     payload: {
-      validaty: {
-        from: Joi.date().description('Date of endpoint validaty period start.'),
-        to: Joi.date().description('Date of endpoint validaty period end.')
+      validity: {
+        from: Joi.date().description('Date of endpoint validity period start.'),
+        to: Joi.date().description('Date of endpoint validity period end.')
       }
     }
   },

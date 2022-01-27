@@ -30,8 +30,8 @@ function renderObject (model, user) {
     result.facebook = model.facebook && {
       id: model.facebook && model.facebook.id
     }
-    result.linkedIn = model.linkedIn && {
-      id: model.linkedIn && model.linkedIn.id
+    result.linkedin = model.linkedin && {
+      id: model.linkedin && model.linkedin.id
     }
     result.google = model.google && {
       id: model.google && model.google.id

@@ -21,7 +21,7 @@ module.exports = function parseBody (body, cb) {
       const jsonString = body.substring(startPos + 1, endPos + 1)
       parsedBody = JSON.parse(jsonString)
     } catch (e) {
-      return cb({exception: e, body: body}, body)
+      return cb({ exception: e, body: body }, body)
     }
     return cb(null, parsedBody)
   }

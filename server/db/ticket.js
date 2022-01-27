@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const schema = new mongoose.Schema({
-  session: {type: String, unique: true},
+  session: { type: String, unique: true },
   users: Array,
   confirmed: Array,
   present: Array

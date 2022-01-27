@@ -148,7 +148,7 @@ exports.downloadZip = {
     }
   },
   handler: function (request, reply) {
-    server.methods.file.zipFiles(null, (err, zip) => {
+    server.methods.file.zipFiles(null, (_, zip) => {
       return reply.file(configUpload.cvsZipPath, { mode: 'attachment', filename: 'CVs.zip' }) // Return generic zip
     })
   },
@@ -172,27 +172,30 @@ exports.downloadCompany = {
   pre: [
     [
       // Verify the user has access to the company
-      { method: 'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)'},
+      { method: 'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)' },
       // Make sure enpoint is still open
-      { method: 'endpoint.isValid(params.companyId, query.editionId)'}
+      { method: 'endpoint.isValid(params.companyId, query.editionId)' }
     ],
-    { method: 'endpoint.incrementVisited(params.companyId, query.editionId)'}
+    { method: 'endpoint.incrementVisited(params.companyId, query.editionId)' }
   ],
   handler: function (request, reply) {
     // Concat links CVs if asked. Select generic CVs zip if not
     if (request.query.links) {
-      server.methods.link.list(request.params.companyId, request.query, (err, links) => {
+      server.methods.link.list(request.params.companyId, request.query, (_, links) => {
         return server.methods.file.zipFiles(links, handleZip)
       })
+    } else {
+      return server.methods.file.zipFiles(null, handleZip)
     }
-    return server.methods.file.zipFiles(null, handleZip)
 
-    function handleZip (err, zip) {
+    function handleZip (err, zip) {// eslint-disable-line
       if (!zip) {
         return reply.file(configUpload.cvsZipPath, { mode: 'attachment', filename: 'CVs.zip' }) // Return generic zip
       }
-      return reply(zip).bytes(zip.length).header('Content-Type', 'application/zip')
+      /* return reply(zip).bytes(zip.length).header('Content-Type', 'application/zip')
       .header('Content-Disposition', 'attachment; filename=linksCVs.zip') // Return Links zip
+      */
+      return reply.file(configUpload.cvsLinkPath, { mode: 'attachment', filename: 'LinksCVs.zip' }) // Return links zip
     }
   },
   description: 'Downloads users files'
@@ -251,7 +254,7 @@ exports.removeMe = {
   },
   pre: [
     { method: 'file.removeFromUser(auth.credentials.user.id)', assign: 'file' },
-    {method: 'achievement.removeCV(auth.credentials.user.id)', assign: 'achievement', failAction: 'log'},
+    { method: 'achievement.removeCV(auth.credentials.user.id)', assign: 'achievement', failAction: 'log' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.file))
@@ -336,13 +339,13 @@ exports.uploadMe = {
     ).required().length(1)
   },
   pre: [
-    {method: 'file.uploadCV(payload)', assign: 'file'},
-    {method: 'file.get(auth.credentials.user.id)', assign: 'oldFile', failAction: 'log'},
+    { method: 'file.uploadCV(payload)', assign: 'file' },
+    { method: 'file.get(auth.credentials.user.id)', assign: 'oldFile', failAction: 'log' },
     [
-      {method: 'file.delete(pre.oldFile.id)', assign: 'deleteFile', failAction: 'log'},
-      {method: 'file.update(pre.oldFile.id, pre.file, auth.credentials.user.id, query)', assign: 'fileInfo'}
+      { method: 'file.delete(pre.oldFile.id)', assign: 'deleteFile', failAction: 'log' },
+      { method: 'file.update(pre.oldFile.id, pre.file, auth.credentials.user.id, query)', assign: 'fileInfo' }
     ],
-    {method: 'achievement.addCV(auth.credentials.user.id)', assign: 'achievement', failAction: 'log'},
+    { method: 'achievement.addCV(auth.credentials.user.id)', assign: 'achievement', failAction: 'log' }
   ],
   handler: function (request, reply) {
     reply(render(request.pre.fileInfo)).created('/api/file/' + request.pre.fileInfo.id)
