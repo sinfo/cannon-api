@@ -333,3 +333,22 @@ exports.signSecret = {
   description: 'Perform check-in in a session for an array of users, giving its achievement to each of them'
 }
 
+exports.getAchievementBySession = {
+  tags: ['api', 'achievement', 'session'],
+  auth: {
+    strategies: ['default'],
+    scope: ['team', 'admin']
+  },
+  validate: {
+    params: {
+      id: Joi.string().description('ID of the session associated with the achievement')
+    }
+  },
+  pre: [
+    { method: 'achievement.getAchievementBySession(params.id)', assign: 'achievement' }
+  ],
+  handler: function (request, reply) {
+    reply(request.pre.achievement)
+  },
+  description: 'Gets an achievement by session ID'
+}

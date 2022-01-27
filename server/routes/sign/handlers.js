@@ -69,11 +69,12 @@ exports.checkIn = {
     },
     payload: {
       users: Joi.array().required().description('An array of users IDs'),
-      code: Joi.string().description('Validation code for self signing')
+      code: Joi.string().description('Validation code for self signing'),
+      unregisteredUsers: Joi.number().description('Number of unregistered users')
     }
   },
   pre: [
-    { method: 'achievement.addMultiUsersBySession(params.sessionId, payload.users, auth.credentials, payload.code)', assign: 'achievement' }
+    { method: 'achievement.addMultiUsersBySession(params.sessionId, payload.users, auth.credentials, payload.code, payload.unregisteredUsers)', assign: 'achievement' }
   ],
   handler: function (request, reply) {
     reply(request.pre.achievement)

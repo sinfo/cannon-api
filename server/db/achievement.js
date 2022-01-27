@@ -12,6 +12,10 @@ const schema = new mongoose.Schema({
     expiration: Date,
     code: String
   },
+  unregisteredUsers: {
+    type: Number,
+    default: 0
+  },
   value: Number,
   users: {
     type: [String],

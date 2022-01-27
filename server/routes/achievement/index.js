@@ -90,3 +90,9 @@ server.route({
   path: '/achievements/redeem/secret',
   config: handlers.signSecret
 })
+
+server.route({
+  method: 'GET',
+  path: '/achievements/session/{id}',
+  config: handlers.getAchievementBySession
+})
