@@ -1,12 +1,17 @@
 const mongoose = require('mongoose')
 
 const schema = new mongoose.Schema({
-  id: {type: String, unique: true},
+  id: { type: String, unique: true },
   session: String,
   name: String,
   description: String,
   instructions: String,
   img: String,
+  code: {
+    created: Date,
+    expiration: Date,
+    code: String
+  },
   value: Number,
   users: {
     type: [String],

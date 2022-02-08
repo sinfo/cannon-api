@@ -25,6 +25,17 @@ const userA = {
   }]
 }
 
+const achievementA = {
+  id: 'stand-' + userA.company[0].company + '-',
+  name: 'Went to stand',
+  kind: 'stand',
+  value: 10,
+  validity: {
+    from: new Date(),
+    to: new Date(new Date().getTime() + (1000 * 60 * 60)) // 1 h
+  }
+}
+
 const userB = {
   id: 'jane.doe',
   name: 'Jane Doe',
@@ -52,6 +63,18 @@ const userD = {
     edition: '25-SINFO',
     company: 'Chavaile.Inc'
   }]
+}
+
+const achievementD = {
+  id: 'stand-' + userD.company[0].company + '-',
+  name: 'Went to stand',
+  event: '25-SINFO',
+  kind: 'stand',
+  value: 10,
+  validity: {
+    from: new Date(),
+    to: new Date(new Date().getTime() + (1000 * 60 * 60)) // 1 h
+  }
 }
 
 const userTeam = {
@@ -104,7 +127,9 @@ const linkA = {
   userId: credentialsA.user.id,
   attendeeId: credentialsB.user.id,
   editionId: userA.company[0].edition,
-  note: 'Jane had a great sence of humor'
+  notes: {
+    otherObservations: 'Jane had a great sence of humor'
+  }
 }
 
 const linkB = {
@@ -117,10 +142,10 @@ const linkC = {
   userId: credentialsA.user.id,
   attendeeId: credentialsC.user.id,
   editionId: userA.company[0].edition,
-  note: ''
+  notes: { otherObservations: '' }
 }
 const changesToA = {
-  note: 'Jane had a great sence of humor and great Perl skils'
+  notes: { otherObservations: 'Jane had a great sence of humor and great Perl skils' }
 }
 
 lab.experiment('Link', () => {
@@ -155,6 +180,18 @@ lab.experiment('Link', () => {
       credentials: credentialsAdmin,
       payload: userTeam
     }
+    const optionsAchievementA = {
+      method: 'POST',
+      url: '/achievements',
+      credentials: credentialsAdmin,
+      payload: achievementA
+    }
+    const optionsAchievementD = {
+      method: 'POST',
+      url: '/achievements',
+      credentials: credentialsAdmin,
+      payload: achievementD
+    }
 
     async.parallel([
       (cb) => {
@@ -181,8 +218,18 @@ lab.experiment('Link', () => {
         server.inject(optionsTeam, (response) => {
           return cb()
         })
+      },
+      (cb) => {
+        server.inject(optionsAchievementA, (response) => {
+          return cb()
+        })
+      },
+      (cb) => {
+        server.inject(optionsAchievementD, (response) => {
+          return cb()
+        })
       }
-    ], (err, results) => {
+    ], (_, results) => {
       done()
     })
   })
@@ -213,6 +260,16 @@ lab.experiment('Link', () => {
       url: '/users/' + userTeam.id,
       credentials: credentialsAdmin
     }
+    const optionsAchievementA = {
+      method: 'DELETE',
+      url: '/achievements/' + achievementA.id,
+      credentials: credentialsAdmin
+    }
+    const optionsAchievementD = {
+      method: 'DELETE',
+      url: '/achievements/' + achievementD.id,
+      credentials: credentialsAdmin
+    }
 
     async.parallel([
       (cb) => {
@@ -239,8 +296,18 @@ lab.experiment('Link', () => {
         server.inject(optionsTeam, (response) => {
           return cb()
         })
+      },
+      (cb) => {
+        server.inject(optionsAchievementA, (response) => {
+          return cb()
+        })
+      },
+      (cb) => {
+        server.inject(optionsAchievementD, (response) => {
+          return cb()
+        })
       }
-    ], (err, results) => {
+    ], (_, results) => {
       done()
     })
   })
@@ -262,7 +329,7 @@ lab.experiment('Link', () => {
       Code.expect(result.company).to.equal(userA.company[0].company)
       Code.expect(result.edition).to.equal(linkA.editionId)
       Code.expect(result.attendee).to.equal(linkA.attendeeId)
-      Code.expect(result.note).to.equal(linkA.note)
+      Code.expect(result.notes.otherObservations).to.equal(linkA.notes.otherObservations)
 
       done()
     })
@@ -285,7 +352,7 @@ lab.experiment('Link', () => {
       Code.expect(result.company).to.equal(userA.company[0].company)
       Code.expect(result.edition).to.equal(linkC.editionId)
       Code.expect(result.attendee).to.equal(linkC.attendeeId)
-      Code.expect(result.note).to.be.empty()
+      Code.expect(result.notes.otherObservations).to.be.empty()
 
       done()
     })
@@ -308,7 +375,7 @@ lab.experiment('Link', () => {
       Code.expect(result.company).to.equal(userA.company[0].company)
       Code.expect(result.edition).to.equal(linkB.editionId)
       Code.expect(result.attendee).to.equal(linkB.attendeeId)
-      Code.expect(result.note).to.be.undefined()
+      Code.expect(result.notes).to.be.instanceof(Object)
 
       done()
     })
@@ -334,7 +401,7 @@ lab.experiment('Link', () => {
       Code.expect(result).to.be.instanceof(Object)
       Code.expect(result.signatures[0].edition).to.equal(sign.editionId)
       Code.expect(result.signatures[0].day).to.equal(sign.day)
-      Code.expect(result.signatures[0].signatures).to.include(userA.company[0].company)
+      Code.expect(result.signatures[0].signatures.filter(s => s.companyId === userA.company[0].company).length).to.equal(1)
 
       done()
     })
@@ -360,7 +427,7 @@ lab.experiment('Link', () => {
       Code.expect(result).to.be.instanceof(Object)
       Code.expect(result.signatures[0].edition).to.equal(sign.editionId)
       Code.expect(result.signatures[0].day).to.equal(sign.day)
-      Code.expect(result.signatures[0].signatures).to.include(userA.company[0].company)
+      Code.expect(result.signatures[0].signatures.filter(s => s.companyId === userA.company[0].company).length).to.equal(1)
 
       done()
     })
@@ -386,7 +453,7 @@ lab.experiment('Link', () => {
       Code.expect(result).to.be.instanceof(Object)
       Code.expect(result.signatures[1].edition).to.equal(sign.editionId)
       Code.expect(result.signatures[1].day).to.equal(sign.day)
-      Code.expect(result.signatures[1].signatures).to.include(userA.company[0].company)
+      Code.expect(result.signatures[1].signatures.filter(s => s.companyId === userA.company[0].company).length).to.equal(1)
 
       done()
     })
@@ -404,12 +471,7 @@ lab.experiment('Link', () => {
     }
 
     server.inject(options, (response) => {
-      const result = response.result
-
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.signatures.find(sign => { return sign.day === 'Thursday' }).redeemed).to.be.true()
-
+      Code.expect(response.statusCode).to.equal(422)
       done()
     })
   })
@@ -429,7 +491,7 @@ lab.experiment('Link', () => {
       Code.expect(result.company).to.equal(userA.company[0].company)
       Code.expect(result.edition).to.equal(linkA.editionId)
       Code.expect(result.attendee).to.equal(linkA.attendeeId)
-      Code.expect(result.note).to.equal(linkA.note)
+      Code.expect(result.notes.otherObservations).to.equal(linkA.notes.otherObservations)
 
       done()
     })
@@ -453,7 +515,7 @@ lab.experiment('Link', () => {
       method: 'PUT',
       url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
       credentials: credentialsA,
-      payload: {note: ''}
+      payload: { notes: null }
     }
 
     server.inject(options, (response) => {
@@ -465,7 +527,7 @@ lab.experiment('Link', () => {
       Code.expect(result.company).to.equal(userA.company[0].company)
       Code.expect(result.edition).to.equal(linkA.editionId)
       Code.expect(result.attendee).to.equal(linkA.attendeeId)
-      Code.expect(result.note).to.equal('')
+      Code.expect(result.notes.otherObservations).to.equal('')
 
       done()
     })
@@ -488,7 +550,7 @@ lab.experiment('Link', () => {
       Code.expect(result.company).to.equal(userA.company[0].company)
       Code.expect(result.edition).to.equal(linkA.editionId)
       Code.expect(result.attendee).to.equal(linkA.attendeeId)
-      Code.expect(result.note).to.equal(changesToA.note)
+      Code.expect(result.notes.otherObservations).to.equal(changesToA.notes.otherObservations)
 
       done()
     })
@@ -518,7 +580,7 @@ lab.experiment('Link', () => {
 
     server.inject(options, (response) => {
       const result = response.result
-      result.sort()
+      // result.sort()
 
       Code.expect(response.statusCode).to.equal(200)
       Code.expect(result).to.be.instanceof(Array)
@@ -573,7 +635,7 @@ lab.experiment('Link', () => {
       Code.expect(result.company).to.equal(userA.company[0].company)
       Code.expect(result.edition).to.equal(linkA.editionId)
       Code.expect(result.attendee).to.equal(linkA.attendeeId)
-      Code.expect(result.note).to.equal(changesToA.note)
+      Code.expect(result.notes.otherObservations).to.equal(changesToA.notes.otherObservations)
 
       done()
     })

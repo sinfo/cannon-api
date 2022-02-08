@@ -9,8 +9,8 @@ log.info({ env: process.env.NODE_ENV }, '### Starting Cannon ###')
 const server = module.exports.hapi = new Hapi.Server(config.host, config.port, {
   cors: {
     origin: process.env.NODE_ENV === 'production'
-    ? ['*sinfo.org', '*cannon.sinfo.org']
-    : ['http://localhost:*']
+      ? ['*sinfo.org', '*cannon.sinfo.org']
+      : ['http://localhost:*']
   }
 })
 
@@ -24,7 +24,7 @@ server.pack.register(
   ],
   (err) => {
     if (err) {
-      log.error({err: err}, '[hapi-plugins] problem registering hapi plugins')
+      log.error({ err: err }, '[hapi-plugins] problem registering hapi plugins')
       return
     }
 
@@ -36,7 +36,7 @@ server.pack.register(
 
     // Register secondary plugins
     server.pack.register([
-      { plugin: require('./plugins/templates'), options: config.templates },
+      { plugin: require('./plugins/templates'), options: config.templates }
     ], (err) => {
       if (err) throw err
       if (!module.parent) {

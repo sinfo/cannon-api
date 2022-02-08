@@ -8,9 +8,9 @@ server.method('promoCode.get', get, {})
 function get (cb) {
   let now = new Date()
 
-  PromoCode.find({ expire: { "$gt": now.toISOString() } }, {}, {}, (err, codes) => {
+  PromoCode.find({ expire: { '$gt': now.toISOString() } }, {}, {}, (err, codes) => {
     if (err) {
-      log.error({err: err}, 'error getting promo code')
+      log.error({ err: err }, 'error getting promo code')
       return cb(Boom.internal())
     }
 

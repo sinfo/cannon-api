@@ -32,4 +32,7 @@ cannon_uploads
 scripts/output
 package-lock.json
 
+scripts/
+
 env.sh
+cannon.env

@@ -233,7 +233,6 @@ exports.getMe = {
   description: 'Gets the user'
 }
 
-
 exports.removeCompany = {
   tags: ['api', 'user'],
   auth: {

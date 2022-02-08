@@ -3,6 +3,6 @@ const handlers = require('./handlers')
 
 server.route({
   method: 'GET',
-  path: '/promo-code',
-  config: handlers.find
+  path: '/google/livestream',
+  config: handlers.getLivestream
 })

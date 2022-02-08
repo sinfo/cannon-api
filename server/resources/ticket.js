@@ -24,17 +24,17 @@ server.method('ticket.registrationAcceptedEmail', registrationAcceptedEmail, {})
 server.method('ticket.getUserSessions', getUserSessions, {})
 
 function userConfirmed (sessionId, userId, cb) {
-  Ticket.findOne({session: sessionId}, (err, _ticket) => {
+  Ticket.findOne({ session: sessionId }, (err, _ticket) => {
     if (err) {
-      log.error({err: err, session: sessionId}, 'error getting ticket')
+      log.error({ err: err, session: sessionId }, 'error getting ticket')
       return cb(Boom.internal())
     }
     if (!_ticket) {
-      log.warn({err: err, session: sessionId}, 'ticket not found')
+      log.warn({ err: err, session: sessionId }, 'ticket not found')
       return cb(null, false)
     }
     if (_ticket.confirmed.indexOf(userId) >= 0) {
-      log.error({err: err, session: sessionId, user: userId}, 'user alreaday confirmed')
+      log.error({ err: err, session: sessionId, user: userId }, 'user alreaday confirmed')
       return cb(Boom.conflict('user alreaday confirmed'))
     }
     cb(null, true)
@@ -42,17 +42,17 @@ function userConfirmed (sessionId, userId, cb) {
 }
 
 function userRegistered (sessionId, userId, cb) {
-  Ticket.findOne({session: sessionId}, (err, _ticket) => {
+  Ticket.findOne({ session: sessionId }, (err, _ticket) => {
     if (err) {
-      log.error({err: err, session: sessionId}, 'error getting ticket')
+      log.error({ err: err, session: sessionId }, 'error getting ticket')
       return cb(Boom.internal())
     }
     if (!_ticket) {
-      log.warn({err: err, session: sessionId}, 'ticket not found')
+      log.warn({ err: err, session: sessionId }, 'ticket not found')
       return cb(null, false)
     }
     if (_ticket.users.indexOf(userId) >= 0) {
-      log.error({err: err, session: sessionId, user: userId}, 'user alreaday registered')
+      log.error({ err: err, session: sessionId, user: userId }, 'user alreaday registered')
       return cb(Boom.conflict('user alreaday registered'))
     }
     cb(null, true)
@@ -72,9 +72,9 @@ function addUser (sessionId, userId, session, cb) {
     }
   }
 
-  Ticket.findOneAndUpdate({ session: sessionId }, changes, {upsert: true}, (err, _ticket) => {
+  Ticket.findOneAndUpdate({ session: sessionId }, changes, { upsert: true }, (err, _ticket) => {
     if (err) {
-      log.error({err: err, session: sessionId}, 'error registering ticket')
+      log.error({ err: err, session: sessionId }, 'error registering ticket')
       return cb(Boom.internal())
     }
 
@@ -93,7 +93,7 @@ function removeUser (sessionId, userId, session, cb) {
 
   Ticket.findOneAndUpdate({ session: sessionId }, changes, (err, _ticket) => {
     if (err) {
-      log.error({err: err, session: sessionId}, 'error voiding ticket')
+      log.error({ err: err, session: sessionId }, 'error voiding ticket')
       return cb(Boom.internal())
     }
 
@@ -114,7 +114,7 @@ function confirmUser (sessionId, userId, session, cb) {
 
   Ticket.findOneAndUpdate({ session: sessionId, users: { $in: [userId] } }, changes, (err, _ticket) => {
     if (err) {
-      log.error({err: err, session: sessionId}, 'error confirming ticket')
+      log.error({ err: err, session: sessionId }, 'error confirming ticket')
       return cb(Boom.internal())
     }
 
@@ -135,7 +135,7 @@ function registerUserPresence (sessionId, userId, session, cb) {
 
   Ticket.findOneAndUpdate({ session: sessionId }, changes, (err, _ticket) => {
     if (err) {
-      log.error({err: err, session: sessionId}, 'error confirming ticket')
+      log.error({ err: err, session: sessionId }, 'error confirming ticket')
       return cb(Boom.internal())
     }
 
@@ -158,11 +158,11 @@ function get (filter, query, cb) {
 
   Ticket.findOne(filter, fields, (err, ticket) => {
     if (err) {
-      log.error({err: err, requestedTicket: filter}, 'error getting ticket')
+      log.error({ err: err, requestedTicket: filter }, 'error getting ticket')
       return cb(Boom.internal())
     }
     if (!ticket) {
-      log.warn({err: err, requestedTicket: filter}, 'could not find ticket')
+      log.warn({ err: err, requestedTicket: filter }, 'could not find ticket')
       return cb(Boom.notFound())
     }
 
@@ -175,13 +175,13 @@ function updateMulti (filter, ticket, cb) {
     filter = { id: filter }
   }
 
-  Ticket.update(filter, ticket, {multi: true}, (err, tickets) => {
+  Ticket.update(filter, ticket, { multi: true }, (err, tickets) => {
     if (err) {
-      log.error({err: err, requestedTicket: filter}, 'error updating ticket')
+      log.error({ err: err, requestedTicket: filter }, 'error updating ticket')
       return cb(Boom.internal())
     }
     if (!ticket) {
-      log.warn({err: err, requestedTicket: filter}, 'could not find ticket')
+      log.warn({ err: err, requestedTicket: filter }, 'could not find ticket')
       return cb(Boom.notFound())
     }
 
@@ -202,7 +202,7 @@ function list (query, cb) {
 
   Ticket.find(filter, fields, options, (err, tickets) => {
     if (err) {
-      log.error({err: err}, 'error getting all tickets')
+      log.error({ err: err }, 'error getting all tickets')
       return cb(Boom.internal())
     }
 
@@ -215,7 +215,7 @@ function getUserSessions (id, cb) {
     users: id
   }, (err, tickets) => {
     if (err) {
-      log.error({err: err}, 'error getting tickets')
+      log.error({ err: err }, 'error getting tickets')
       return cb(Boom.internal())
     }
 
@@ -232,13 +232,13 @@ function getRegisteredUsers (sessionId, session, cb) {
 
   const filter = { session: sessionId }
 
-  Ticket.findOne(filter, {users: 1}, (err, ticket) => {
+  Ticket.findOne(filter, { users: 1 }, (err, ticket) => {
     if (err) {
-      log.error({err: err, requestedTicket: filter}, 'error getting ticket')
+      log.error({ err: err, requestedTicket: filter }, 'error getting ticket')
       return cb(Boom.internal())
     }
     if (!ticket) {
-      log.warn({err: err, requestedTicket: filter}, 'could not find ticket')
+      log.warn({ err: err, requestedTicket: filter }, 'could not find ticket')
       return cb(Boom.notFound())
     }
 
@@ -256,13 +256,13 @@ function getWaitingUsers (sessionId, session, cb) {
 
   const filter = { session: sessionId }
 
-  Ticket.findOne(filter, {users: 1}, (err, ticket) => {
+  Ticket.findOne(filter, { users: 1 }, (err, ticket) => {
     if (err) {
-      log.error({err: err, requestedTicket: filter}, 'error getting ticket')
+      log.error({ err: err, requestedTicket: filter }, 'error getting ticket')
       return cb(Boom.internal())
     }
     if (!ticket) {
-      log.warn({err: err, requestedTicket: filter}, 'could not find ticket')
+      log.warn({ err: err, requestedTicket: filter }, 'could not find ticket')
       return cb(Boom.notFound())
     }
 
@@ -284,13 +284,13 @@ function getConfirmedUsers (sessionId, session, cb) {
 
   const filter = { session: sessionId }
 
-  Ticket.findOne(filter, {users: 1}, (err, ticket) => {
+  Ticket.findOne(filter, { users: 1 }, (err, ticket) => {
     if (err) {
-      log.error({err: err, requestedTicket: filter}, 'error getting ticket')
+      log.error({ err: err, requestedTicket: filter }, 'error getting ticket')
       return cb(Boom.internal())
     }
     if (!ticket) {
-      log.warn({err: err, requestedTicket: filter}, 'could not find ticket')
+      log.warn({ err: err, requestedTicket: filter }, 'could not find ticket')
       return cb(Boom.notFound())
     }
 
@@ -304,12 +304,12 @@ function getConfirmedUsers (sessionId, session, cb) {
 
 function getAcceptedUser (ticket, session, user, cb) {
   if (!session.tickets || !session.tickets.max || ticket.users.length <= session.tickets.max) {
-    log.debug({ticket: ticket}, 'ticket does not have waiting list')
+    log.debug({ ticket: ticket }, 'ticket does not have waiting list')
     return cb(Boom.notFound('user list does not have waiting list'))
   }
 
   if (ticket.users.indexOf(user.id) >= session.tickets.max) {
-    log.debug({ticket: ticket, user: user.id}, 'user was in the waiting list')
+    log.debug({ ticket: ticket, user: user.id }, 'user was in the waiting list')
     return cb(Boom.preconditionFailed('voided ticket in waiting list'))
   }
 
@@ -318,12 +318,12 @@ function getAcceptedUser (ticket, session, user, cb) {
 
 function registrationAcceptedEmail (ticket, session, user, cb) {
   if (!user || !user.mail) {
-    log.error({user: user, ticket: ticket}, 'user does not have a valid email address')
+    log.error({ user: user, ticket: ticket }, 'user does not have a valid email address')
     return cb(Boom.preconditionFailed('user does not have a valid email address'))
   }
 
   if (ticket.users.indexOf(user.id) < 0) {
-    log.error({ticket: ticket, user: user}, 'error sending mail, user not in ticket')
+    log.error({ ticket: ticket, user: user }, 'error sending mail, user not in ticket')
     return cb(Boom.notFound())
   }
 
@@ -332,12 +332,12 @@ function registrationAcceptedEmail (ticket, session, user, cb) {
 
 function confirmationEmail (ticket, session, user, cb) {
   if (!user || !user.mail) {
-    log.error({user: user, ticket: ticket}, 'user does not have a valid email address')
+    log.error({ user: user, ticket: ticket }, 'user does not have a valid email address')
     return cb(Boom.preconditionFailed('user does not have a valid email address'))
   }
 
   if (ticket.confirmed.indexOf(user.id) < 0) {
-    log.error({ticket: ticket, user: user}, 'error sending mail, user not in the confirmed list of the ticket')
+    log.error({ ticket: ticket, user: user }, 'error sending mail, user not in the confirmed list of the ticket')
     return cb(Boom.notFound())
   }
 
@@ -348,12 +348,12 @@ function registrationEmail (ticket, session, user, cb) {
   const index = ticket.users.indexOf(user.id)
 
   if (!user || !user.mail) {
-    log.error({user: user, ticket: ticket}, 'user does not have a valid email address')
+    log.error({ user: user, ticket: ticket }, 'user does not have a valid email address')
     return cb(Boom.preconditionFailed('user does not have a valid email address'))
   }
 
   if (index < 0) {
-    log.error({ticket: ticket, user: user}, 'error sending mail, user not in ticket')
+    log.error({ ticket: ticket, user: user }, 'error sending mail, user not in ticket')
     return cb(Boom.notFound())
   }
 

@@ -8,13 +8,13 @@ exports.create = {
   tags: ['api', 'redeem'],
   auth: {
     strategies: ['default'],
-    scope: ['team']
+    scope: ['team', 'admin']
   },
   validate: {
     payload: {
       id: Joi.string().required().description('Redeem Code id.'),
       achievement: Joi.string().required().description('Achievement you want to redeem.'),
-      expires: Joi.date().description('Date of redeem code expiration.'),
+      expires: Joi.date().description('Date of redeem code expiration.')
     }
   },
   pre: [
