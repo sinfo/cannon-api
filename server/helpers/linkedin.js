@@ -18,7 +18,8 @@ linkedin.getToken = code => {
             clientId: linkedinConfig.clientId,
             redirectUri: linkedinConfig.redirectUri
           },
-          response: response.statusMessage
+          response: response? response.body.error_description : '',
+          where: 'getToken'
         })
         return reject('invalid Linkedin token')
       }
@@ -30,7 +31,6 @@ linkedin.getToken = code => {
 linkedin.getLinkedinUser = linkedinUserToken => {
   return new Promise((resolve, reject) => {
     const urlProfile = 'https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))'
-
     request.get(urlProfile, {
       json: true,
       auth: {
@@ -38,7 +38,7 @@ linkedin.getLinkedinUser = linkedinUserToken => {
       }
     }, (error, response, linkedinJsonUser) => {
       if (error || response.statusCode !== 200) {
-        log.warn({ error, response: response.statusMessage })
+        log.warn({ error, response: response? response.body.error_description : '' , where: 'getLinkedinUser'})
         return reject('error getting linkedin user profile')
       }
 
@@ -73,7 +73,7 @@ linkedin.getLinkedinUserEmail = linkedinUserToken => {
       }
     }, (error, response, linkedinEmail) => {
       if (error || response.statusCode !== 200) {
-        log.warn({ error, response: response.statusMessage })
+        log.warn({ error, response: response? response.body.error_description : '' , where: 'getLinkedinUserEmail'})
         return reject('error getting linkedin user email')
       }
 
