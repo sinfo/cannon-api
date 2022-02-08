@@ -29,6 +29,7 @@ server.method('achievement.addUserToSpeedDateAchievement', addUserToSpeedDateAch
 server.method('achievement.checkUserStandDay', checkUserStandDay, {})
 server.method('achievement.createSecret', createSecret, {})
 server.method('achievement.addUserToSecret', addUserToSecret, {})
+server.method('achievement.getAchievementBySession', getAchievementBySession, {})
 
 function create (achievement, cb) {
   achievement.id = achievement.id || slug(achievement.name)
@@ -374,7 +375,7 @@ function addMultiUsers (achievementId, usersId, cb) {
   })
 }
 
-function addMultiUsersBySession (sessionId, usersId, credentials, code, cb) {
+function addMultiUsersBySession (sessionId, usersId, credentials, code, unregisteredUsersNumber, cb) {
   if (!usersId) {
     log.error('tried to add multiple users to achievement but no users where given')
     return cb()
@@ -383,6 +384,9 @@ function addMultiUsersBySession (sessionId, usersId, credentials, code, cb) {
   const changes = {
     $addToSet: {
       users: { $each: usersId }
+    },
+    $inc: {
+      unregisteredUsers: unregisteredUsersNumber
     }
   }
 
@@ -917,6 +921,23 @@ function addUserToSecret (id, code, cb) {
     if (achievement === null) {
       log.error({ code: code }, 'no valid secret achievements with that code')
       return cb(Boom.notFound('no valid secret achievements with that code'))
+    }
+
+    cb(null, achievement.toObject({ getters: true }))
+  })
+}
+
+function getAchievementBySession (id, cb) {
+  let filter = { session: id }
+
+  Achievement.findOne(filter, (err, achievement) => {
+    if (err) {
+      log.error({ err: err, achievement: filter }, 'error getting achievement')
+      return cb(Boom.internal('error getting achievement'))
+    }
+    if (!achievement) {
+      log.error({ err: 'not found', achievement: filter }, 'achievement not found')
+      return cb(Boom.notFound('achievement not found'))
     }
 
     cb(null, achievement.toObject({ getters: true }))

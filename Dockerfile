@@ -10,4 +10,4 @@ RUN openssl rsa -in keys/token.key -pubout -out keys/token.pub
 RUN npm install -g eslint --loglevel=error
 RUN npm install --loglevel=error
 
-ENTRYPOINT [ "npm", "run", "production" ]
+ENTRYPOINT [ "npm", "start" ]
