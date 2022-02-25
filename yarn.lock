@@ -2266,13 +2266,17 @@ qs@2.3.3:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/qs/-/qs-2.3.3.tgz#e9e85adbe75da0bbe4c8e0476a086290f863b404"
 
-qs@2.x.x, qs@^2.3.3:
+qs@2.x.x:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/qs/-/qs-2.4.2.tgz#f7ce788e5777df0b5010da7f7c4e73ba32470f5a"
 
 qs@4.x.x:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-4.0.0.tgz#c31d9b74ec27df75e543a86c78728ed8d4623607"
+
+qs@^6.0.4:
+  version "6.0.4"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.0.4.tgz#51019d84720c939b82737e84556a782338ecea7b"
 
 qs@~6.5.1:
   version "6.5.1"
