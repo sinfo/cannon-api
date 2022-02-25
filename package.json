@@ -58,7 +58,7 @@
     "qs": "^6.0.4",
     "request": "^2.44.0",
     "slug": "~0.7.1",
-    "underscore": "^1.8.1",
+    "underscore": "^1.12.1",
     "urlencode": "^0.2.0",
     "uuid": "^2.0.1"
   },
