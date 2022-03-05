@@ -127,12 +127,11 @@ exports.remove = {
         edition: Joi.string().required().description('Event the endpoint is associated to')
       })
     },
-    pre: [
-      { method: 'endpoint.remove(params.companyId, query.edition)', assign: 'endpoint' }
-    ],
     description: 'Removes a company endpoint'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.endpoint))
+  handler: function (request, h) {
+    let endpoint = request.server.methods.endpoint.remove(request.params.companyId, request.query.edition) 
+      // reply(render(request.pre.endpoint))
+    return h.response(render(endpoint))
   },
 }

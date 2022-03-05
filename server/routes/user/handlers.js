@@ -281,7 +281,7 @@ exports.getMe = {
     description: 'Gets the user'
   },
   handler: async (request, h) => {
-    reply(render(request.auth.credentials && request.auth.credentials.user, request.auth.credentials && request.auth.credentials.user))
+    return h.response(render(request.auth.credentials && request.auth.credentials.user, request.auth.credentials && request.auth.credentials.user))
   },
 }
 
@@ -300,13 +300,15 @@ exports.removeCompany = {
         editionId: Joi.string().required().description('Id of the edition of the participation you want to remove')
       })
     },
-    pre: [
-      { method: 'user.removeCompany(params.id, query.editionId)', assign: 'user' }
-    ],
-    description: 'Removes company from a user'
   },
   handler: async (request, h) => {
-    reply(render(request.pre.user, request.auth.credentials.user))
+    try {
+      let user = await user.removeCompany(request.params.id, request.query.editionId)
+      return h.response(render(user, request.auth.credentials.user))
+    } catch(err){
+      log.error({ err: err, requestedUser: filter, edition: editionId }, 'error deleting user.company')
+      return cb(Boom.internal())
+    }
   },
 }
 
@@ -328,7 +330,7 @@ exports.remove = {
     description: 'Removes an user'
   },
   handler: async (request, h) => {
-    reply(render(request.pre.user, request.auth.credentials.user))
+    return h.response(render(request.pre.user, request.auth.credentials.user))
   },
 }
 

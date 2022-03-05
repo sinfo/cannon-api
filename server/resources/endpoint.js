@@ -28,19 +28,19 @@ function create (endpoint, cb) {
       updated: new Date()
     }
   })
-
-  Endpoint.collection.insert(endpoints, (err, list) => {
-    if (err) {
-      if (err.code === 11000) {
-        return cb(Boom.conflict(`endpoint <${endpoint.company}, ${endpoint.edition}> is a duplicate`))
-      }
-
-      log.error({ err: err, endpoint: endpoint }, 'error creating endpoint')
-      return cb(Boom.internal())
+  try  {
+    let list = await Endpoint.collection.insert(endpoints)
+    return list
+  }
+  catch (err) {
+    if (err.code === 11000) {
+      return Boom.conflict(`endpoint <${endpoint.company}, ${endpoint.edition}> is a duplicate`)
     }
 
-    cb(null, list)
-  })
+    log.error({ err: err, endpoint: endpoint }, 'error creating endpoint')
+    return Boom.internal()
+  }
+
 }
 
 function update (companyId, editionId, endpoint, cb) {
