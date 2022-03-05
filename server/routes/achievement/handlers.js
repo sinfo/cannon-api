@@ -303,7 +303,7 @@ exports.list = {
   },
   description: 'Gets all the achievements'
 },
-  handler: function (request, h) {
+  handler: async function (request, h) {
     try{
       let achievements = await request.server.methods.achievement.list(request.query)
       return h.response(render(request.pre.achievements))
@@ -388,7 +388,7 @@ exports.getWithCode = {
   },
   description: 'Gets an achievement, with self sign codes'
 },
-  handler: function (request, h) {
+  handler: async function (request, h) {
     try{
       let ach = await request.server.methods.achievement.get(request.params.id)
       if(!ach){
@@ -510,19 +510,19 @@ exports.signSecret = {
 
 exports.getAchievementBySession = {
   options:{
-  tags: ['api', 'achievement', 'session'],
-  auth: {
-    strategies: ['default'],
-    scope: ['team', 'admin']
+    tags: ['api', 'achievement', 'session'],
+    auth: {
+      strategies: ['default'],
+      scope: ['team', 'admin']
+    },
+    validate: {
+      params: Joi.object({
+        id: Joi.string().description('ID of the session associated with the achievement')
+      })
+    },
+    description: 'Gets an achievement by session ID'
   },
-  validate: {
-    params: Joi.object({
-      id: Joi.string().description('ID of the session associated with the achievement')
-    })
-  },
-  description: 'Gets an achievement by session ID'
-},
-  handler: function (request, h) {
+  handler: async function (request, h) {
     try{
       let ach = await request.server.methods.achievement.getAchievementBySession(request.params.id)
       if (!ach) {
