@@ -39,7 +39,7 @@ exports.create = {
     } catch (err) {
       if (err.code === 11000) {
         log.error({ msg: "achievement is a duplicate" })
-        return Boom.conflict(`achievement "${achievement.id}" is a duplicate`)
+        return Boom.conflict(`achievement "${ach.id}" is a duplicate`)
       }
 
       log.error({ err: err, msg: 'error creating achievement' }, 'error creating achievement')
