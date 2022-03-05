@@ -13,7 +13,7 @@ server.method('link.list', list, {})
 server.method('link.remove', remove, {})
 server.method('link.checkCompany', checkCompany, {})
 
-function create (companyId, link, cb) {
+async function create (companyId, link) {
   let _link = {
     company: companyId,
     edition: link.editionId,
@@ -49,19 +49,21 @@ function create (companyId, link, cb) {
       }
   }
 
-  Link.create(_link, (err, newlink) => {
-    if (err) {
-      if (err.code === 11000) {
-        log.error({ link: _link }, `Link is a duplicate`)
-        return cb(Boom.conflict(`Link is a duplicate`))
-      }
+  try {
 
-      log.error({ err: err, link: newlink }, 'error creating link')
-      return cb(Boom.internal())
+    let newlink = await Link.create(_link)
+      if (err) {
+     }
+
+    return newLink
+  } catch(err){
+    if (err.code === 11000) {
+      log.error({ link: _link }, `Link is a duplicate`)
+      return Boom.conflict(`Link is a duplicate`)
     }
-
-    cb(null, newlink.toObject({ getters: true }))
-  })
+    log.error({ err: err, link: _link }, 'error creating link')
+    return Boom.internal()
+  }
 }
 
 async function update (filter, editionId, link) {
@@ -75,11 +77,21 @@ async function update (filter, editionId, link) {
 
   link.updated = Date.now()
 
-  return Link.findOneAndUpdate(filter, link)
-
+  try {
+    let _link = await Link.findOneAndUpdate(filter, link)
+    if (!_link) {
+      log.error({ err: err, link: filter }, 'error updating link')
+      return Boom.notFound()
+    }
+    return _link
+  }
+  catch (err) {
+    log.error({ err: err, link: filter }, 'error updating link')
+    return Boom.internal()
+  }
 }
 
-function get (filter, editionId, cb) {
+async function get (filter, editionId) {
   log.debug({ filter: filter, edition: editionId }, 'getting link')
 
   filter = {
@@ -88,18 +100,18 @@ function get (filter, editionId, cb) {
     attendee: filter.attendeeId
   }
 
-  Link.findOne(filter, (err, link) => {
-    if (err) {
-      log.error({ err: err, link: filter }, 'error getting link')
-      return cb(Boom.internal('error getting link'))
-    }
+  try{
+    let link = await Link.findOne(filter)
     if (!link) {
       log.error({ err: 'not found', link: filter }, 'link not found')
-      return cb(Boom.notFound('link not found'))
+      return Boom.notFound('link not found')
     }
+    return link
+  } catch (err) {
+    log.error({ err: err, link: filter }, 'error getting link')
+    return Boom.internal('error getting link')
+  }
 
-    cb(null, link.toObject({ getters: true }))
-  })
 }
 
 async function list (filter, query) {
@@ -137,7 +149,7 @@ async function list (filter, query) {
   return objLinks
 }
 
-async function remove (filter, editionId, cb) {
+async function remove (filter, editionId) {
   log.debug({ filter: filter, edition: editionId }, 'removing link')
 
   filter = {

@@ -1,580 +1,355 @@
 const Lab = require('@hapi/lab')
 const Code = require('@hapi/code')
-const async = require('async')
-const AchievementKind = require('./server/db/achievementKind')
+const slug = require('slug')
 
-const server = require('./server/').hapi
+const server = require('./server').hapi
 
 const lab = exports.lab = Lab.script()
 const token = require('./server/auth/token')
-const happyHour = require('./server/db/happy-hour')
 
-const adminId = 'john.doe'
-const companyId = 'john.smith'
-const attendeeId = 'jane.doe'
+const aux = token.createJwt('john.doe')
 
-const tokenA = token.createJwt(adminId)
-const tokenB = token.createJwt(companyId)
-const tokenC = token.createJwt(attendeeId)
+const secretId = 'secret_achievement_'
 
-const event = 'sinfoX'
+const session = 'session-code-id'
 
-const credentialsAdmin = {
+const credentialsA = {
   user: {
-    id: adminId,
+    id: 'john.doe',
     name: 'John Doe'
   },
-  bearer: tokenA.token,
+  bearer: aux.token,
   scope: 'admin'
 }
 
-const credentialsCompany = {
+const credentialsB = {
   user: {
-    id: companyId,
-    name: 'John Smith'
+    id: 'john.doe',
+    name: 'John Doe'
   },
-  bearer: tokenB.token,
-  scope: 'company'
-}
-
-const credentialsUser = {
-  user: {
-    id: attendeeId,
-    name: 'Jane Doe'
-  },
-  bearer: tokenC.token,
+  bearer: aux.token,
   scope: 'user'
 }
 
-const userCompany = {
-  id: companyId,
-  name: 'John Smith',
-  mail: 'john@smith.com'
-}
-
-const attendee = {
-  id: attendeeId,
-  name: 'Jane Doe',
-  mail: 'jane@doe.com'
-}
-
-const promoteToCompanyA = {
-  role: 'company',
-  company: {
-    edition: event,
-    company: 'sinfo-consulting'
-  }
-}
-
-const promoteToCompanyB = {
-  role: 'company',
-  company: {
-    edition: event,
-    company: 'sinfo-engineering'
-  }
-}
-
-const speedDate1 = {
-  id: 'speedDate-sinfo-consulting-1',
-  name: 'SPEED DATE 1',
-  event: event,
-  value: 20,
-  validity: {
-    from: new Date(),
-    to: new Date(new Date().getTime() + (1000 * 60 * 60)) // 1 h
-  },
-  kind: 'speedDate'
-}
-
-const speedDate2 = {
-  id: 'speedDate-sinfo-engineering-1',
-  name: 'SPEED DATE 2',
-  event: event,
-  value: 20,
-  validity: {
-    from: new Date(),
-    to: new Date(new Date().getTime() + (1000 * 60 * 60)) // 1 h
-  },
-  kind: 'speedDate'
-}
-
-const achievementStand1 = {
-  name: 'Stand 1',
-  id: 'stand-sinfo-consulting-1',
+const achievementA = {
+  name: 'WENT TO SINFO XXII',
+  session: session,
+  event: 'SINFO XXII',
   value: 10,
   validity: {
     from: new Date(),
     to: new Date(new Date().getTime() + (1000 * 60 * 60)) // 1 h
-  },
-  kind: AchievementKind.STAND
+  }
+}
+const achievementId = slug(achievementA.name)
+
+const changesToA = {
+  name: 'WENT TO SINFO XXIII'
 }
 
-const achievementStand2 = {
-  name: 'Stand 1',
-  id: 'stand-sinfo-engineering-1',
-  value: 10,
-  validity: {
-    from: new Date(),
-    to: new Date(new Date().getTime() + (1000 * 60 * 60)) // 1 h
-  },
-  kind: AchievementKind.STAND
-}
+const event = 'SINFO XXII'
 
-const achievementDay = {
-  name: 'TOTAL DAY',
-  id: 'totalday',
-  value: 500,
-  validity: {
-    from: new Date(),
-    to: new Date(new Date().getTime() + (1000 * 60 * 60)) // 1 h
-  },
-  kind: AchievementKind.STANDDAY
-}
+let codeA = ''
+let codeB = ''
 
-lab.experiment('Sign', () => {
-  lab.before( async () => {
-    const optionsA = {
-      method: 'POST',
-      url: '/users',
-      auth:{
-        credentials: credentialsAdmin,
-        strategy: 'default'
-      },
-      payload: userCompany
-    }
-    const optionsB = {
-      method: 'POST',
-      url: '/users',
-      auth:{
-        credentials: credentialsAdmin,
-        strategy: 'default'
-      },
-      payload: attendee
-    }
-    const optionsC = {
-      method: 'POST',
-      url: '/achievements',
-      auth:{
-        credentials: credentialsAdmin,
-        strategy: 'default'
-      },
-      payload: speedDate1
-    }
-    const optionsD = {
-      method: 'POST',
-      url: '/achievements',
-      auth:{
-        credentials: credentialsAdmin,
-        strategy: 'default'
-      },
-      payload: speedDate2
-    }
-    const optionsE = {
-      method: 'POST',
-      url: '/achievements',
-      auth:{
-        credentials: credentialsAdmin,
-        strategy: 'default'
-      },
-      payload: achievementDay
-    }
-    const optionsF = {
-      method: 'POST',
-      url: '/achievements',
-      auth:{
-        credentials: credentialsAdmin,
-        strategy: 'default'
-      },
-      payload: achievementStand1
-    }
-    const optionsG = {
-      method: 'POST',
-      url: '/achievements',
-      auth:{
-        credentials: credentialsAdmin,
-        strategy: 'default'
-      },
-      payload: achievementStand2
-    }
-    const optionsH = {
-      method: 'PUT',
-      url: '/users/' + userCompany.id,
-      auth:{
-        credentials: credentialsAdmin,
-        strategy: 'default'
-      },
-      payload: promoteToCompanyA
-    }
-
-    
-    await server.inject(optionsA)
-    await server.inject(optionsB)
-    await server.inject(optionsC)
-    await server.inject(optionsD)
-    await server.inject(optionsE)
-    await server.inject(optionsF)
-    await server.inject(optionsG)
-    await server.inject(optionsH)
-  })
-
-  lab.after( async () => {
+lab.experiment('Achievement', () => {
+  lab.after(async () => {
     const optionsA = {
       method: 'DELETE',
-      url: '/users/' + userCompany.id,
+      url: `/achievements/${event}_${secretId}0`,
       auth:{
-        credentials: credentialsAdmin,
+        credentials: credentialsA,
         strategy: 'default'
-      },
+      }
     }
+
     const optionsB = {
       method: 'DELETE',
-      url: '/users/' + attendee.id,
-      auth:{
-        credentials: credentialsAdmin,
-        strategy: 'default'
-      },
-    }
-    const optionsAchievementA = {
-      method: 'DELETE',
-      url: '/achievements/' + speedDate1.id,
-      auth:{
-        credentials: credentialsAdmin,
-        strategy: 'default'
-      },
-    }
-    const optionsAchievementB = {
-      method: 'DELETE',
-      url: '/achievements/' + speedDate2.id,
-      auth:{
-        credentials: credentialsAdmin,
-        strategy: 'default'
-      },
-    }
-    const optionsAchievementC = {
-      method: 'DELETE',
-      url: '/achievements/' + achievementStand1.id,
-      auth:{
-        credentials: credentialsAdmin,
-        strategy: 'default'
-      },
-    }
-    const optionsAchievementD = {
-      method: 'DELETE',
-      url: '/achievements/' + achievementStand2.id,
-      auth:{
-        credentials: credentialsAdmin,
-        strategy: 'default'
-      },
-    }
-    const optionsAchievementE = {
-      method: 'DELETE',
-      url: '/achievements/' + achievementDay.id,
-      auth:{
-        credentials: credentialsAdmin,
-        strategy: 'default'
-      },
+      url: `/achievements/${event}_${secretId}1`,
+      auth:{credentials: credentialsA,
+        strategy: 'default'}
     }
     await server.inject(optionsA)
     await server.inject(optionsB)
-    await server.inject(optionsAchievementA)
-    await server.inject(optionsAchievementB)
-    await server.inject(optionsAchievementC)
-    await server.inject(optionsAchievementD)
-    await server.inject(optionsAchievementE)
-    await happyHour.findOneAndRemove({})
   })
 
-  lab.test('Sign into speed date once',  async () => {
-    const optionsA = {
+  lab.test('Create as an admin',  async () => {
+    const options = {
       method: 'POST',
-      url: `/company/${promoteToCompanyA.company.company}/speed/${attendee.id}`,
-      auth:{
-        credentials: credentialsCompany,
-        strategy: 'default'
-      },
-      payload: {editionId: event}
+      url: '/achievements',
+      auth:{credentials: credentialsA,
+        strategy: 'default'},
+      payload: achievementA
     }
 
-    const optionsB = {
-      method: 'GET',
-      url: '/achievements/speed/me',
-      auth:{
-        credentials: credentialsUser,
-        strategy: 'default'
-      },
-    }
+    let response = await server.inject(options)
+    const result = response.result
 
-    let response= await server.inject(optionsA)
-    let result = response.result
+    Code.expect(response.statusCode).to.equal(201)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.id).to.equal(achievementId)
+    Code.expect(result.name).to.equal(achievementA.name)
 
-    Code.expect(response.statusCode).to.equal(200)
-    Code.expect(result.id).to.equal(speedDate1.id)
-    Code.expect(result.users).to.contain(attendee.id)
-
-    response= await server.inject(optionsB)
-    result = response.result
-
-    const filtered = result.achievements.filter(achievement => achievement.achievement.id === speedDate1.id)
-
-    Code.expect(response.statusCode).to.equal(200)
-    Code.expect(result.achievements.length).to.equal(2)
-    Code.expect(filtered.length).to.equal(1)
-    Code.expect(filtered[0].frequence).to.equal(1)
-    Code.expect(result.points).to.equal(speedDate1.value)
   })
 
-  lab.test('Sign into speed date twice',  async () => {
-    const optionsA = {
-      method: 'POST',
-      url: `/company/${promoteToCompanyA.company.company}/speed/${attendee.id}`,
-      auth:{
-        credentials: credentialsCompany,
-        strategy: 'default'
-      },
-      payload: {editionId: event}
-    }
-
-    const optionsB = {
+  lab.test('List all as an admin',  async () => {
+    const options = {
       method: 'GET',
-      url: '/achievements/speed/me',
-      auth:{
-        credentials: credentialsUser,
-        strategy: 'default'
-      },
+      url: '/achievements',
+      auth:{credentials: credentialsA,
+        strategy: 'default'}
     }
 
-    let response = await server.inject(optionsA)
+    let response = await server.inject(options)
     const result = response.result
 
     Code.expect(response.statusCode).to.equal(200)
-    Code.expect(result.id).to.equal(speedDate1.id)
-    Code.expect(result.users).to.contain(attendee.id)
-
-    response = await server.inject(optionsB)
-    result = response.result
-
-    const filtered = result.achievements.filter(achievement => achievement.achievement.id === speedDate1.id)
-
-    Code.expect(response.statusCode).to.equal(200)
-    Code.expect(result.achievements.length).to.equal(2)
-    Code.expect(filtered.length).to.equal(1)
-    Code.expect(filtered[0].frequence).to.equal(2)
-    Code.expect(result.points).to.equal(speedDate1.value + speedDate1.value / 2)
+    Code.expect(result).to.be.instanceof(Array)
+    Code.expect(result[0].name).to.be.string
+       
   })
 
-  lab.test('Sign into speed date thrice',  async () => {
-    const optionsA = {
-      method: 'POST',
-      url: `/company/${promoteToCompanyA.company.company}/speed/${attendee.id}`,
-      auth:{
-        credentials: credentialsCompany,
-        strategy: 'default'
-      },
-      payload: {editionId: event}
-    }
-
-    const optionsB = {
+  lab.test('Get one as an admin',  async () => {
+    const options = {
       method: 'GET',
-      url: '/achievements/speed/me',
-      auth:{
-        credentials: credentialsUser,
-        strategy: 'default'
-      },
+      url: '/achievements/' + achievementId,
+      auth:{credentials: credentialsA,
+        strategy: 'default'}
     }
 
-    let response = await server.inject(optionsA)
-    let result = response.result
-
-    Code.expect(response.statusCode).to.equal(200)
-    Code.expect(result.id).to.equal(speedDate1.id)
-    Code.expect(result.users).to.contain(attendee.id)
-
-    response = await server.inject(optionsB)
-    result = response.result
-
-    const filtered = result.achievements.filter(achievement => achievement.achievement.id === speedDate1.id)
-
-    Code.expect(response.statusCode).to.equal(200)
-    Code.expect(result.achievements.length).to.equal(2)
-    Code.expect(filtered.length).to.equal(1)
-    Code.expect(filtered[0].frequence).to.equal(3)
-    Code.expect(result.points).to.equal(speedDate1.value + speedDate1.value / 2 + speedDate1.value / 4)
-  })
-
-  lab.test('Sign into speed date 4 times',  async () => {
-    const optionsA = {
-      method: 'POST',
-      url: `/company/${promoteToCompanyA.company.company}/speed/${attendee.id}`,
-      auth:{
-        credentials: credentialsCompany,
-        strategy: 'default'
-      },
-      payload: {editionId: event}
-    }
-
-    const optionsB = {
-      method: 'GET',
-      url: '/achievements/speed/me',
-      auth:{
-        credentials: credentialsUser,
-        strategy: 'default'
-      },
-    }
-
-    let response = await server.inject(optionsA)
-    let result = response.result
-
-    Code.expect(response.statusCode).to.equal(200)
-    Code.expect(result.id).to.equal(speedDate1.id)
-    Code.expect(result.users).to.contain(attendee.id)
-
-    response = await server.inject(optionsB)
-    result = response.result
-
-    const filtered = result.achievements.filter(achievement => achievement.achievement.id === speedDate1.id)
-
-    Code.expect(response.statusCode).to.equal(200)
-    Code.expect(result.achievements.length).to.equal(2)
-    Code.expect(filtered.length).to.equal(1)
-    Code.expect(filtered[0].frequence).to.equal(3)
-    Code.expect(result.points).to.equal(speedDate1.value + speedDate1.value / 2 + speedDate1.value / 4)
-  })
-
-  lab.test('Sign into stand 1',  async () => {
-    const optionsA = {
-      method: 'POST',
-      url: `/company/${promoteToCompanyA.company.company}/sign/${attendee.id}`,
-      auth:{
-        credentials: credentialsCompany,
-        strategy: 'default'
-      },
-      payload: {editionId: event, day: 'Monday'}
-    }
-
-    const optionsB = {
-      method: 'GET',
-      url: '/achievements/active/me',
-      auth:{
-        credentials: credentialsUser,
-        strategy: 'default'
-      },
-    }
-
-    let response = await server.inject(optionsA)
-    let result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
     Code.expect(response.statusCode).to.equal(200)
     Code.expect(result).to.be.instanceof(Object)
-    Code.expect(result.signatures[0].edition).to.equal(event)
-    Code.expect(result.signatures[0].signatures.filter(s => s.companyId === promoteToCompanyA.company.company).length).to.equal(1)
+    Code.expect(result.id).to.equal(achievementId)
+    Code.expect(result.name).to.equal(achievementA.name)
+    Code.expect(result.session).to.equal(achievementA.session)
+  })
 
-    response = await server.inject(optionsB)
-    result = response.result
+  lab.test('List all as an user',  async () => {
+    const options = {
+      method: 'GET',
+      url: '/achievements',
+      auth:{credentials: credentialsB,
+        strategy: 'default'}
+    }
 
-    const filtered = result.achievements.filter(a => a.id === achievementStand1.id)
+    let response = await server.inject(options)
+    const result = response.result
 
     Code.expect(response.statusCode).to.equal(200)
-    Code.expect(filtered.length).to.equal(1)
-    Code.expect(result.points).to.equal(achievementStand1.value)
+    Code.expect(result).to.be.instanceof(Array)
+    Code.expect(result[0].name).to.be.string
+  })
+
+  lab.test('Get one  as an user',  async () => {
+    const options = {
+      method: 'GET',
+      url: '/achievements/' + achievementId,
+      auth:{credentials: credentialsB,
+        strategy: 'default'}
+    }
+
+    let response = await server.inject(options)
+    const result = response.result
+
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.id).to.equal(achievementId)
+    Code.expect(result.name).to.equal(achievementA.name)
 
   })
 
-  lab.test('Sign into all stands',  async () => {
-    const optionsA = {
+  lab.test('Get one by session',  async () => {
+    const options = {
+      method: 'GET',
+      url: '/achievements/session/' + session,
+      auth:{credentials: credentialsA,
+        strategy: 'default'}
+    }
+
+    let response = await server.inject(options)
+    const result = response.result
+
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.id).to.equal(achievementId)
+    Code.expect(result.name).to.equal(achievementA.name)
+    Code.expect(result.session).to.equal(session)
+
+       
+  })
+
+  lab.test('Update as an admin',  async () => {
+    const options = {
       method: 'PUT',
-      url: '/users/' + userCompany.id,
-      auth:{
-        credentials: credentialsAdmin,
-        strategy: 'default'
-      },
-      payload: promoteToCompanyB
-    }
-    const optionsB = {
-      method: 'POST',
-      url: `/company/${promoteToCompanyB.company.company}/sign/${attendee.id}`,
-      auth:{
-        credentials: credentialsCompany,
-        strategy: 'default'
-      },
-      payload: {editionId: event, day: 'Monday'}
+      url: '/achievements/' + achievementId,
+      auth:{credentials: credentialsA,
+        strategy: 'default'},
+      payload: changesToA
     }
 
-    const optionsC = {
-      method: 'GET',
-      url: '/achievements/active/me',
-      auth:{
-        credentials: credentialsUser,
-        strategy: 'default'
-      },
-    }
-
-    let response = await server.inject(optionsA)
-    Code.expect(response.statusCode).to.equal(200)
-
-    response = await server.inject(optionsB)
-    let result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
     Code.expect(response.statusCode).to.equal(200)
     Code.expect(result).to.be.instanceof(Object)
-    Code.expect(result.signatures[0].edition).to.equal(event)
-    Code.expect(result.signatures[0].signatures.filter(s => s.companyId === promoteToCompanyB.company.company).length).to.equal(1)
-    
-    response = await server.inject(optionsC)
-    result = response.result
-
-    const filtered = result.achievements.filter(a => a.id === achievementStand1.id)
-
-    Code.expect(response.statusCode).to.equal(200)
-    Code.expect(filtered.length).to.equal(1)
-    Code.expect(result.points).to.equal(achievementStand1.value + achievementStand2.value + achievementDay.value)
+    Code.expect(result.id).to.equal(achievementId)
+    Code.expect(result.name).to.equal(changesToA.name)
 
   })
 
-  lab.test('Get total speed dating points',  async () => {
-    const optionsA = {
-      from: new Date(new Date().getTime() - (1000 * 60 * 60)), // -1 h
-      to: new Date(new Date().getTime() + (1000 * 60 * 60)) // +1 h
+  lab.test('Update as a user',  async () => {
+    const options = {
+      method: 'PUT',
+      url: '/achievements/' + achievementId,
+      auth:{credentials: credentialsB,
+        strategy: 'default'},
+      payload: changesToA
     }
 
-    const optionsB = {
-      method: 'POST',
-      url: `/company/${promoteToCompanyB.company.company}/speed/${attendee.id}`,
-      auth:{
-        credentials: credentialsCompany,
-        strategy: 'default'
-      },
-      payload: {editionId: event}
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(403)
+  })
+
+  lab.test('Delete as an admin',  async () => {
+    const options = {
+      method: 'DELETE',
+      url: '/achievements/' + achievementId,
+      auth:{credentials: credentialsA,
+        strategy: 'default'}
     }
 
-    const optionsC = {
-      method: 'GET',
-      url: '/achievements/speed/me',
-      auth:{
-        credentials: credentialsUser,
-        strategy: 'default'
-      },
-    }
-
-    await happyHour.create(optionsA).catch( (err) =>{
-        Code.expect(err).to.be.null
-      }
-    )
-
-    let response = await server.inject(optionsB)
-    let result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
     Code.expect(response.statusCode).to.equal(200)
     Code.expect(result).to.be.instanceof(Object)
-    Code.expect(result.id).to.equal(speedDate2.id)
-    Code.expect(result.users).to.contain(attendee.id)
+    Code.expect(result.id).to.equal(achievementId)
+    Code.expect(result.name).to.equal(changesToA.name)
+      
+  
+  })
 
-    response = await server.inject(optionsC)
-    result = response.result
+  lab.test('Create as a user',  async () => {
+    const options = {
+      method: 'POST',
+      url: '/achievements',
+      auth:{credentials: credentialsB,
+        strategy: 'default'},
+      payload: achievementA
+    }
+
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(403)
+  })
+
+  lab.test('Delete as a user',  async () => {
+    const options = {
+      method: 'DELETE',
+      url: '/achievements/' + achievementId,
+      auth:{credentials: credentialsB,
+        strategy: 'default'}
+    }
+
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(403)
+  })
+
+  lab.test('Create secret achievement',  async () => {
+    const value = 50
+    const payload = {
+      validity: new Date(new Date().getTime() + (1000 * 60 * 60)),
+      event: 'SINFO XXII',
+      points: value
+    }
+
+    const options = {
+      method: 'POST',
+      url: '/achievements/secret',
+      auth:{credentials: credentialsA,
+        strategy: 'default'},
+      payload: payload
+    }
+
+    let response = await server.inject(options)
+    const result = response.result
+
+    Code.expect(response.statusCode).to.equal(201)
+    Code.expect(result.id).to.equal(`${event}_${secretId}0`)
+    Code.expect(result.value).to.equal(value)
+    codeA = result.code.code
+
+    let response2 = await server.inject(options)
+    const result2 = response2.result
+
+    Code.expect(response2.statusCode).to.equal(201)
+    Code.expect(result2.id).to.equal(`${event}_${secretId}1`)
+    Code.expect(result2.value).to.equal(value)
+    codeB = result2.code.code
+  })
+
+  lab.test('List secret with codes',  async () => {
+    const start = new Date(new Date().getTime() - (24 * 1000 * 60 * 60))
+    const end = new Date(new Date().getTime() + (24 * 1000 * 60 * 60))
+    const query = `?start=${start}&end=${end}&kind=secret
+    `
+    const options = {
+      method: 'GET',
+      url: `/achievements/code${query}`,
+      auth:{credentials: credentialsA,
+        strategy: 'default'}
+    }
+
+    let response = await server.inject(options) // Admin
+    const result = response.result
+
+    result.sort((a, b) => { return a < b ? 1 : -1 })
 
     Code.expect(response.statusCode).to.equal(200)
-    Code.expect(result.achievements.length).to.equal(2)
-    Code.expect(result.points).to.equal(speedDate1.value + speedDate1.value / 2 + speedDate1.value / 4 + speedDate2.value + speedDate2.value / 2 + speedDate2.value / 4)
-          
+    Code.expect(result).to.be.instanceof(Array)
+    Code.expect(result.length).to.equal(2)
+    Code.expect(result[0].code).to.be.instanceof(Object)
+    Code.expect([codeA, codeB]).to.once.include(result[0].code.code)
+    Code.expect(result[1].code).to.be.instanceof(Object)
+    Code.expect([codeA, codeB]).to.once.include(result[1].code.code)
+
+      
+  
+  })
+
+  lab.test('Sign in to secret with code',  async () => {
+    const options = {
+      method: 'POST',
+      url: `/achievements/redeem/secret`,
+      auth:{credentials: credentialsB,
+        strategy: 'default'},
+      payload: {code: codeA}
+    }
+
+    let response = await server.inject(options)
+    const result = response.result
+
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.code).to.be.instanceof(Object)
+    Code.expect(result.code.code).to.equal(codeA)
+    Code.expect(result.users.length).to.equal(1)
+    Code.expect(result.users[0]).to.equal(credentialsB.user.id)
+
+  })
+
+  lab.test('Sign in to secret with code fail',  async () => {
+    const options = {
+      method: 'POST',
+      url: `/achievements/redeem/secret`,
+      auth:{credentials: credentialsB,
+        strategy: 'default'},
+      payload: {code: 'wrongcode123'}
+    }
+
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(404)
   })
 })
-

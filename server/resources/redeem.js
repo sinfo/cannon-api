@@ -1,159 +1,186 @@
-const Boom = require('boom')
-const server = require('../').hapi
-const log = require('../helpers/logger')
-const Redeem = require('../db/redeem')
-const Achievement = require('../db/achievement')
-const uuid = require('uuid')
+const Boom = require("boom");
+const server = require("../").hapi;
+const log = require("../helpers/logger");
+const Redeem = require("../db/redeem");
+const Achievement = require("../db/achievement");
+const uuid = require("uuid");
 
-server.method('redeem.create', create, {})
-server.method('redeem.get', get, {})
-server.method('redeem.remove', remove, {})
-server.method('redeem.prepareRedeemCodes', prepareRedeemCodes, {})
-server.method('redeem.use', use, {})
+server.method("redeem.create", create, {});
+server.method("redeem.get", get, {});
+server.method("redeem.remove", remove, {});
+server.method("redeem.prepareRedeemCodes", prepareRedeemCodes, {});
+server.method("redeem.use", use, {});
 
-function create (redeem, cb) {
-  redeem.created = Date.now()
+async function create(redeem) {
+  redeem.created = Date.now();
 
-  Redeem.create(redeem, (err, _redeem) => {
-    if (err) {
-      if (err.code === 11000) {
-        return cb(Boom.conflict('redeem is a duplicate'))
-      }
-
-      log.error({ err: err, redeem: redeem.id }, 'error redeeming')
-      return cb(Boom.internal())
-    }
-    cb(null, _redeem.toObject({ getters: true }))
-  })
+  try {
+    let _redeem = await Redeem.create(redeem)
+    return _redeem.toObject({ getters: true })
+  } catch (err) {
+    return Boom.internal("Error creating redeem in database");
+  }
 }
 
-function get (id, cb) {
-  Redeem.findOne({ id: id }, (err, redeem) => {
-    if (err) {
-      log.error({ err: err, redeem: id }, 'error getting redeem')
-      return cb(Boom.internal())
-    }
+async function get(id) {
+  let filter = { id: id };
 
-    if (!redeem) {
-      log.error({ err: 'not found', redeem: id }, 'error getting redeem')
-      return cb(Boom.notFound('redeem code not found'))
-    }
+  let redeem = await Redeem.findOne(filter);
 
-    var now = new Date()
-    var expirationDate = new Date(redeem.expires)
+  if (!redeem) {
+    log.error({ err: "not found", redeem: id }, "error getting redeem");
+    return Boom.notFound("redeem code not found");
+  }
 
-    if (now.getTime() > expirationDate.getTime()) {
-      log.error({ err: 'expired', redeem: id }, 'tried to redeem an expired code')
-      return cb(Boom.notAcceptable('expired redeem code'))
-    }
+  var now = new Date();
+  var expirationDate = new Date(redeem.expires);
 
-    cb(null, redeem.toObject({ getters: true }))
-  })
+  if (now.getTime() > expirationDate.getTime()) {
+    log.error(
+      { err: "expired", redeem: id },
+      "tried to redeem an expired code"
+    );
+    return Boom.notAcceptable("expired redeem code");
+  }
+
+  return redeem.toObject({ getters: true });
 }
 
-function use (redeem, userId, cb) {
+async function use(redeem, userId) {
   if (redeem === null) {
-    log.error({ redeem: redeem.id }, 'redeem code not found')
-    return cb(Boom.notAcceptable())
+    log.error({ redeem: redeem.id }, "redeem code not found");
+    return Boom.notAcceptable();
   }
 
   if (redeem.achievement === null) {
-    log.error({ achievement: redeem.achievement }, 'achievement of redeem not found')
-    return cb(Boom.notAcceptable())
+    log.error(
+      { achievement: redeem.achievement },
+      "achievement of redeem not found"
+    );
+    return Boom.notAcceptable();
   }
 
-  if (redeem.available !== undefined && redeem.available !== null && redeem.available <= 0) {
-    log.info({ user: userId, redeem: redeem.id }, 'redeem code not available anymore')
-    return cb(Boom.notAcceptable())
+  if (
+    redeem.available !== undefined &&
+    redeem.available !== null &&
+    redeem.available <= 0
+  ) {
+    log.info(
+      { user: userId, redeem: redeem.id },
+      "redeem code not available anymore"
+    );
+    return Boom.notAcceptable();
   }
 
-  Achievement.findOne({ id: redeem.achievement }, (err, achievement) => {
-    if (err) {
-      log.error({ err: err, achievement: achievement.id }, 'achievement of redeem not found')
-      return cb(Boom.notAcceptable())
-    }
+  let filter = { id: redeem.achievement };
 
-    let now = new Date().getTime()
+  let achievement = await Achievement.findOne(filter);
 
-    if (achievement.validity !== undefined &&
-      (achievement.validity.from.getTime() > now || achievement.validity.to.getTime() < now)) {
-      log.info({ err: err, user: userId, redeem: redeem.id }, 'achievement expired')
-      return cb(Boom.notAcceptable())
-    }
+  if (!achievement) {
+    log.error(
+      { err: err, achievement: achievement.id },
+      "achievement of redeem not found"
+    );
+    return Boom.notFound();
+  }
 
-    let users = achievement.users
+  let now = new Date().getTime();
 
-    if (users === undefined || users.length === undefined) {
-      log.error({ err: err, user: userId }, 'user not given')
-      return cb(Boom.notAcceptable())
-    }
+  if (
+    achievement.validity !== undefined &&
+    (achievement.validity.from.getTime() > now ||
+      achievement.validity.to.getTime() < now)
+  ) {
+    log.info(
+      { err: err, user: userId, redeem: redeem.id },
+      "achievement expired"
+    );
+    return Boom.notAcceptable();
+  }
 
-    let alreadyRedeemed = users.filter(u => u === userId).length > 0
+  let users = achievement.users;
 
-    if (alreadyRedeemed) {
-      log.info({ err: err, user: userId, redeem: redeem.id }, 'user already used the redeem code')
-      return cb(Boom.notAcceptable())
-    }
+  if (users === undefined || users.length === undefined) {
+    log.error({ err: err, user: userId }, "user not given");
+    return Boom.notAcceptable();
+  }
 
-    // no limit to this redeem code
-    if (redeem.available === null) return cb(null, redeem)
+  let alreadyRedeemed = users.filter((u) => u === userId).length > 0;
 
-    let available = redeem.available - 1
+  if (alreadyRedeemed) {
+    log.info(
+      { err: err, user: userId, redeem: redeem.id },
+      "user already used the redeem code"
+    );
+    return Boom.notAcceptable();
+  }
 
-    Redeem.findOneAndUpdate({ id: redeem.id }, { $set: { available: available } }, (err, redeem) => {
-      if (err) {
-        log.error({ err: err, redeem: redeem.id }, 'error using redeem code')
-        return cb(Boom.internal())
-      }
+  // no limit to this redeem code
+  if (redeem.available === null) return redeem;
 
-      if (!redeem) {
-        log.error({ err: 'not found', redeem: redeem.id }, 'error using redeem')
-        return cb(Boom.notFound())
-      }
+  let available = redeem.available - 1;
 
-      log.info({ id: redeem.id, achievement: achievement.id, user: userId }, 'redeem code redeemed')
+  let filterRedeem = { id: redeem.id };
+  let changes = { $set: { available: available } };
 
-      return cb(null, redeem)
-    })
-  })
+  let _redeem = await Redeem.findOneAndUpdate(filterRedeem, changes);
+
+  if (!_redeem) {
+    log.error({ err: "not found", redeem: redeem.id }, "error using redeem");
+    return Boom.notFound();
+  }
+
+  log.info(
+    { id: redeem.id, achievement: achievement.id, user: userId },
+    "redeem code redeemed"
+  );
+
+  return redeem;
 }
 
-function remove (id, achievement, cb) {
-  cb = cb || achievement // achievement and user are optional
+async function remove(id, achievement) {
+  //cb = cb || achievement // achievement and user are optional
 
-  Redeem.findOne({ id: id }, (err, redeem) => {
-    if (err) {
-      log.error({ err: err, redeem: id }, 'error deleting redeem')
-      return cb(Boom.internal())
-    }
-    if (!redeem) {
-      log.error({ err: 'not found', redeem: id }, 'error deleting redeem')
-      return cb(Boom.notFound())
-    }
+  let filter = { id: id };
 
-    let user = redeem.user
-    let achievement = redeem.achievement
-    let filter = { id: id }
+  let redeem = await Reddem.findOne(filter);
 
-    if (achievement && user) {
-      filter = { user: user, achievement: achievement }
-    }
+  if (!redeem) {
+    log.error({ err: "not found", redeem: id }, "error deleting redeem");
+    return Boom.notFound();
+  }
 
-    Redeem.remove(filter, (_, redeems) => {
-      return cb(null, redeems)
-    })
-  })
+  let user = redeem.user;
+  let _achievement = redeem.achievement;
+
+  if (_achievement && user) {
+    filter = { user: user, achievement: _achievement };
+  }
+
+  let res = await Redeem.remove(filter);
+
+  log.debug("Ok? ", res.ok, ". Deleted ", res.deletedCount, " documents");
+
+  if (!res.ok) {
+    log.error(
+      { err: "error deleting redeem", redeem: id },
+      "error deleting redeem"
+    );
+    return Boom.internal();
+  }
 }
 
-function prepareRedeemCodes (sessionId, users, cb) {
-  let redeemCodes = []
+function prepareRedeemCodes(sessionId, users) {
+  let redeemCodes = [];
   for (let i = 0; i < users.length; i++) {
     redeemCodes.push({
       id: uuid.v4(),
       user: users[i].id,
-      achievement: 'session-' + sessionId
-    })
+      achievement: "session-" + sessionId
+    });
   }
-  log.info(`${redeemCodes.length} redeem codes created for ${users.length} users`)
-  cb(null, redeemCodes)
+  log.info(
+    `${redeemCodes.length} redeem codes created for ${users.length} users`
+  );
+  return redeemCodes;
 }
