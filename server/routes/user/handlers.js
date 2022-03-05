@@ -1,5 +1,9 @@
 const Joi = require('joi')
 const render = require('../../views/user')
+const log = require('../../helpers/logger')
+const Boom = require('@hapi/boom')
+const dupKeyParser = require('../../helpers/dupKeyParser')
+
 
 exports = module.exports
 
@@ -62,15 +66,16 @@ exports.create = {
   handler: async (request, h) =>{
     try {
       let user = await request.server.methods.user.create(request.payload)
-      h.response(render(user, request.auth.credentials && request.auth.credentials.user)).created('/user/' + request.pre.user.id)
+  
+      return h.response(render(user, request.auth.credentials && request.auth.credentials.user)).created('/user/' + user.id)
     } catch (err) {
       if (err.code === 11000) {
-        log.warn({ err: err, requestedUser: user.id }, 'user is a duplicate')
-        return Boom.conflict(dupKeyParser(err.err) + ' is a duplicate')
+        log.warn({ err: err }, 'user is a duplicate')
+        return Boom.conflict('user is a duplicate')
       }
 
-      log.error({ err: err, user: user.id }, 'error creating user')
-      return Boom.internal()
+      log.error({ err: err }, 'error creating user')
+      return Boom.boomify(err)
     }
   }
 }
@@ -109,8 +114,8 @@ exports.updateMe = {
       }
     } catch (err) {
       if (err) {
-        log.error({ err: err, requestedUser: filter }, 'error updating user')
-        return Boom.internal()
+        log.error({ err: err }, 'error updating user')
+        return Boom.boomify(err)
       }
     }
   },
@@ -133,12 +138,12 @@ exports.find = {
   },
   handler: async (request, h) => {
     try {
-      let activeAchievements = await request.server.methods.achievement.getActiveAchievements(query)
-      let users = request.server.methods.user.list(activeAchievements)
+      let activeAchievements = await request.server.methods.achievement.getActiveAchievements(request.query)
+      let users = await request.server.methods.user.list(activeAchievements)
       return h.response(render(users, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {
       log.error({ err: err }, 'error getting all users')
-      return Boom.internal()
+      return Boom.boomify(err)
     }
   },
 }
@@ -208,10 +213,8 @@ exports.update = {
       }
       h.response(render(user, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {
-      if (err) {
-        log.error({ err: err, requestedUser: filter }, 'error updating user')
-        return Boom.internal()
-      }
+        log.error({ err: err}, 'error updating user')
+        return Boom.boomify(err)
     }
   },
 }
@@ -240,7 +243,8 @@ exports.get = {
       }
       h.response(render(user, request.auth.credentials && request.auth.credentials.user))
     } catch {
-
+      log.error({ err: err}, 'error updating user')
+      return Boom.boomify(err)
     }
   },
 }
@@ -265,8 +269,8 @@ exports.getMulti = {
       let users = user.getMulti(request.payload.users)
       return h.response(render(users, request.auth.credentials && request.auth.credentials.user))
     } catch (err)  {
-      log.error({ err: err, ids: ids }, 'error getting multiple users')
-      return Boom.internal()
+      log.error({ err: err }, 'error getting multiple users')
+      return Boom.boomify(err)
     }
   },
 }
@@ -306,8 +310,8 @@ exports.removeCompany = {
       let user = await user.removeCompany(request.params.id, request.query.editionId)
       return h.response(render(user, request.auth.credentials.user))
     } catch(err){
-      log.error({ err: err, requestedUser: filter, edition: editionId }, 'error deleting user.company')
-      return cb(Boom.internal())
+      log.error({ err: err}, 'error deleting user.company')
+      return Boom.boomify(err)
     }
   },
 }

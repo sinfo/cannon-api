@@ -1,5 +1,5 @@
 const server = require('../').hapi
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 const log = require('../helpers/logger')
 const token = require('../auth/token')
 const facebook = require('../helpers/facebook')

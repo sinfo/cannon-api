@@ -1,4 +1,4 @@
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 const Mime = require('mime')
 const config = require('../../config')
 const options = require('../options')

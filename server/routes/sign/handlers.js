@@ -1,5 +1,7 @@
 const Joi = require('joi')
 const render = require('../../views/user')
+const log = require('../../helpers/logger')
+const Boom = require('@hapi/boom')
 
 exports = module.exports
 
@@ -88,7 +90,7 @@ exports.checkIn = {
   },
   handler: async function (request, h) {
     try {
-      let achievement = request.server.methods.achievement.addMultiUsersBySession(request.params.sessionId, request.payload.users, request.auth.credentials, request.payload.code, request.payload.unregisteredUsers)
+      let achievement = await request.server.methods.achievement.addMultiUsersBySession(request.params.sessionId, request.payload.users, request.auth.credentials, request.payload.code, request.payload.unregisteredUsers)
       return h.response(achievement)
     } catch (err) {
       log.error({ err: err, msg: 'error checking in session for users' }, 'error checking in session for users')

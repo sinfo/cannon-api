@@ -1,7 +1,7 @@
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 const server = require('../').hapi
 const log = require('../helpers/logger')
-const dupKeyParser = require('../helpers/dupKeyParser')
+
 const fieldsParser = require('../helpers/fieldsParser')
 const config = require('../../config')
 const User = require('../db/user')

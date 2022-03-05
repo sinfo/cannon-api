@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 const log = require('../helpers/logger')
 const User = require('../db/user')
 const tokenConfig = require('../../config').auth.token

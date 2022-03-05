@@ -1,4 +1,4 @@
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 const server = require('../').hapi
 const log = require('../helpers/logger')
 const axios = require('axios')

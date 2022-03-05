@@ -1,4 +1,4 @@
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 const server = require('../').hapi
 const log = require('../helpers/logger')
 const fieldsParser = require('../helpers/fieldsParser')
@@ -55,7 +55,7 @@ async function create (companyId, link) {
       if (err) {
      }
 
-    return newLink
+    return newlink
   } catch(err){
     if (err.code === 11000) {
       log.error({ link: _link }, `Link is a duplicate`)

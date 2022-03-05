@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const render = require('../../views/achievement')
 const log = require('../../helpers/logger')
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 
 exports = module.exports
 
@@ -222,12 +222,11 @@ exports.getMeActive = {
   handler: async function (request, h) {
     try {
       let active = await request.server.methods.achievement.getActiveAchievements()
-
       let result = request.server.methods.achievement.getPointsForUser(active, request.auth.credentials.user.id)
 
       return h.response(result)
     } catch (err) {
-      log.error({ err: err, date: date }, 'error getting active achievements on a given date')
+      log.error({ err: err }, 'error getting active achievements on a given date')
       return Boom.boomify(err)
     }
   },

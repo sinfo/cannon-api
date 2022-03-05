@@ -1,5 +1,5 @@
 var Joi = require('joi')
-var Boom = require('boom')
+var Boom = require('@hapi/boom')
 var log = require('../../helpers/logger')
 var config = require('../../../config')
 var async = require('async')
