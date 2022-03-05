@@ -149,7 +149,7 @@ const changesToA = {
 }
 
 lab.experiment('Link', () => {
-  lab.before((done) => {
+  lab.before( async () => {
     const optionsA = {
       method: 'POST',
       url: '/users',
@@ -214,48 +214,17 @@ lab.experiment('Link', () => {
       payload: achievementD
     }
 
-    async.parallel([
-      (cb) => {
-        server.inject(optionsA, (response) => {
-          return cb()
-        })
-      },
-      (cb) => {
-        server.inject(optionsB, (response) => {
-          return cb()
-        })
-      },
-      (cb) => {
-        server.inject(optionsC, (response) => {
-          return cb()
-        })
-      },
-      (cb) => {
-        server.inject(optionsD, (response) => {
-          return cb()
-        })
-      },
-      (cb) => {
-        server.inject(optionsTeam, (response) => {
-          return cb()
-        })
-      },
-      (cb) => {
-        server.inject(optionsAchievementA, (response) => {
-          return cb()
-        })
-      },
-      (cb) => {
-        server.inject(optionsAchievementD, (response) => {
-          return cb()
-        })
-      }
-    ], (_, results) => {
-      done()
-    })
+    
+    await server.inject(optionsA)
+    await server.inject(optionsB)
+    await server.inject(optionsC)
+    await server.inject(optionsD)
+    await server.inject(optionsTeam)
+    await server.inject(optionsAchievementA)
+    await server.inject(optionsAchievementD)
   })
 
-  lab.after((done) => {
+  lab.after( async () => {
     const optionsA = {
       method: 'DELETE',
       url: '/users/' + userA.id,
@@ -313,48 +282,17 @@ lab.experiment('Link', () => {
       },
     }
 
-    async.parallel([
-      (cb) => {
-        server.inject(optionsA, (response) => {
-          return cb()
-        })
-      },
-      (cb) => {
-        server.inject(optionsB, (response) => {
-          return cb()
-        })
-      },
-      (cb) => {
-        server.inject(optionsC, (response) => {
-          return cb()
-        })
-      },
-      (cb) => {
-        server.inject(optionsD, (response) => {
-          return cb()
-        })
-      },
-      (cb) => {
-        server.inject(optionsTeam, (response) => {
-          return cb()
-        })
-      },
-      (cb) => {
-        server.inject(optionsAchievementA, (response) => {
-          return cb()
-        })
-      },
-      (cb) => {
-        server.inject(optionsAchievementD, (response) => {
-          return cb()
-        })
-      }
-    ], (_, results) => {
-      done()
-    })
+    
+    await server.inject(optionsA)
+    await server.inject(optionsB)
+    await server.inject(optionsC)
+    await server.inject(optionsD)
+    await server.inject(optionsTeam)
+    await server.inject(optionsAchievementA)
+    await server.inject(optionsAchievementD)
   })
 
-  lab.test('Create link ok as company', (done) => {
+  lab.test('Create link ok as company',  async () => {
     const options = {
       method: 'POST',
       url: `/company/${userA.company[0].company}/link`,
@@ -365,22 +303,20 @@ lab.experiment('Link', () => {
       payload: linkA
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(201)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.user).to.equal(linkA.userId)
-      Code.expect(result.company).to.equal(userA.company[0].company)
-      Code.expect(result.edition).to.equal(linkA.editionId)
-      Code.expect(result.attendee).to.equal(linkA.attendeeId)
-      Code.expect(result.notes.otherObservations).to.equal(linkA.notes.otherObservations)
+    Code.expect(response.statusCode).to.equal(201)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.user).to.equal(linkA.userId)
+    Code.expect(result.company).to.equal(userA.company[0].company)
+    Code.expect(result.edition).to.equal(linkA.editionId)
+    Code.expect(result.attendee).to.equal(linkA.attendeeId)
+    Code.expect(result.notes.otherObservations).to.equal(linkA.notes.otherObservations)
 
-      done()
-    })
   })
 
-  lab.test('Create Link empty string as company', (done) => {
+  lab.test('Create Link empty string as company',  async () => {
     const options = {
       method: 'POST',
       url: `/company/${userA.company[0].company}/link`,
@@ -391,22 +327,19 @@ lab.experiment('Link', () => {
       payload: linkC
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(201)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.user).to.equal(linkC.userId)
-      Code.expect(result.company).to.equal(userA.company[0].company)
-      Code.expect(result.edition).to.equal(linkC.editionId)
-      Code.expect(result.attendee).to.equal(linkC.attendeeId)
-      Code.expect(result.notes.otherObservations).to.be.empty()
-
-      done()
-    })
+    Code.expect(response.statusCode).to.equal(201)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.user).to.equal(linkC.userId)
+    Code.expect(result.company).to.equal(userA.company[0].company)
+    Code.expect(result.edition).to.equal(linkC.editionId)
+    Code.expect(result.attendee).to.equal(linkC.attendeeId)
+    Code.expect(result.notes.otherObservations).to.be.empty()
   })
 
-  lab.test('Create Link null note as company', (done) => {
+  lab.test('Create Link null note as company',  async () => {
     const options = {
       method: 'POST',
       url: `/company/${userA.company[0].company}/link`,
@@ -417,22 +350,20 @@ lab.experiment('Link', () => {
       payload: linkB
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(201)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.user).to.equal(linkB.userId)
-      Code.expect(result.company).to.equal(userA.company[0].company)
-      Code.expect(result.edition).to.equal(linkB.editionId)
-      Code.expect(result.attendee).to.equal(linkB.attendeeId)
-      Code.expect(result.notes).to.be.instanceof(Object)
+    Code.expect(response.statusCode).to.equal(201)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.user).to.equal(linkB.userId)
+    Code.expect(result.company).to.equal(userA.company[0].company)
+    Code.expect(result.edition).to.equal(linkB.editionId)
+    Code.expect(result.attendee).to.equal(linkB.attendeeId)
+    Code.expect(result.notes).to.be.instanceof(Object)
 
-      done()
-    })
   })
 
-  lab.test('Sign B as company I day I', (done) => {
+  lab.test('Sign B as company I day I',  async () => {
     const sign = {
       editionId: '25-SINFO',
       day: 'Monday'
@@ -448,20 +379,19 @@ lab.experiment('Link', () => {
       payload: sign
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.signatures[0].edition).to.equal(sign.editionId)
-      Code.expect(result.signatures[0].day).to.equal(sign.day)
-      Code.expect(result.signatures[0].signatures.filter(s => s.companyId === userA.company[0].company).length).to.equal(1)
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.signatures[0].edition).to.equal(sign.editionId)
+    Code.expect(result.signatures[0].day).to.equal(sign.day)
+    Code.expect(result.signatures[0].signatures.filter(s => s.companyId === userA.company[0].company).length).to.equal(1)
 
-      done()
-    })
+      
   })
 
-  lab.test('Sign B as company II day I', (done) => {
+  lab.test('Sign B as company II day I',  async () => {
     const sign = {
       editionId: '25-SINFO',
       day: 'Monday'
@@ -477,20 +407,17 @@ lab.experiment('Link', () => {
       payload: sign
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.signatures[0].edition).to.equal(sign.editionId)
-      Code.expect(result.signatures[0].day).to.equal(sign.day)
-      Code.expect(result.signatures[0].signatures.filter(s => s.companyId === userA.company[0].company).length).to.equal(1)
-
-      done()
-    })
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.signatures[0].edition).to.equal(sign.editionId)
+    Code.expect(result.signatures[0].day).to.equal(sign.day)
+    Code.expect(result.signatures[0].signatures.filter(s => s.companyId === userA.company[0].company).length).to.equal(1)      
   })
 
-  lab.test('Sign B as company I day II', (done) => {
+  lab.test('Sign B as company I day II',  async () => {
     const sign = {
       editionId: '25-SINFO',
       day: 'Thursday'
@@ -506,20 +433,18 @@ lab.experiment('Link', () => {
       payload: sign
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.signatures[1].edition).to.equal(sign.editionId)
-      Code.expect(result.signatures[1].day).to.equal(sign.day)
-      Code.expect(result.signatures[1].signatures.filter(s => s.companyId === userA.company[0].company).length).to.equal(1)
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.signatures[1].edition).to.equal(sign.editionId)
+    Code.expect(result.signatures[1].day).to.equal(sign.day)
+    Code.expect(result.signatures[1].signatures.filter(s => s.companyId === userA.company[0].company).length).to.equal(1)
 
-      done()
-    })
   })
 
-  lab.test('Redeem Card day II as User', (done) => {
+  lab.test('Redeem Card day II as User',  async () => {
     const options = {
       method: 'POST',
       url: `/users/${userB.id}/redeem-card`,
@@ -533,13 +458,11 @@ lab.experiment('Link', () => {
       }
     }
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(422)
-      done()
-    })
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(422)
   })
 
-  lab.test('Get as company', (done) => {
+  lab.test('Get as company',  async () => {
     const options = {
       method: 'Get',
       url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
@@ -549,21 +472,19 @@ lab.experiment('Link', () => {
       },
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result.user).to.equal(linkA.userId)
-      Code.expect(result.company).to.equal(userA.company[0].company)
-      Code.expect(result.edition).to.equal(linkA.editionId)
-      Code.expect(result.attendee).to.equal(linkA.attendeeId)
-      Code.expect(result.notes.otherObservations).to.equal(linkA.notes.otherObservations)
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result.user).to.equal(linkA.userId)
+    Code.expect(result.company).to.equal(userA.company[0].company)
+    Code.expect(result.edition).to.equal(linkA.editionId)
+    Code.expect(result.attendee).to.equal(linkA.attendeeId)
+    Code.expect(result.notes.otherObservations).to.equal(linkA.notes.otherObservations)
 
-      done()
-    })
   })
 
-  lab.test('Get other company as company', (done) => {
+  lab.test('Get other company as company',  async () => {
     const options = {
       method: 'Get',
       url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
@@ -573,13 +494,12 @@ lab.experiment('Link', () => {
       },
     }
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(404)
-      done()
-    })
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(404)
+      
   })
 
-  lab.test('Update remove note as company', (done) => {
+  lab.test('Update remove note as company',  async () => {
     const options = {
       method: 'PUT',
       url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
@@ -590,22 +510,20 @@ lab.experiment('Link', () => {
       payload: { notes: null }
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.user).to.equal(linkA.userId)
-      Code.expect(result.company).to.equal(userA.company[0].company)
-      Code.expect(result.edition).to.equal(linkA.editionId)
-      Code.expect(result.attendee).to.equal(linkA.attendeeId)
-      Code.expect(result.notes.otherObservations).to.equal('')
-
-      done()
-    })
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.user).to.equal(linkA.userId)
+    Code.expect(result.company).to.equal(userA.company[0].company)
+    Code.expect(result.edition).to.equal(linkA.editionId)
+    Code.expect(result.attendee).to.equal(linkA.attendeeId)
+    Code.expect(result.notes.otherObservations).to.equal('')
+  
   })
 
-  lab.test('Update as company', (done) => {
+  lab.test('Update as company',  async () => {
     const options = {
       method: 'PUT',
       url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
@@ -616,22 +534,19 @@ lab.experiment('Link', () => {
       payload: changesToA
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.user).to.equal(linkA.userId)
-      Code.expect(result.company).to.equal(userA.company[0].company)
-      Code.expect(result.edition).to.equal(linkA.editionId)
-      Code.expect(result.attendee).to.equal(linkA.attendeeId)
-      Code.expect(result.notes.otherObservations).to.equal(changesToA.notes.otherObservations)
-
-      done()
-    })
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.user).to.equal(linkA.userId)
+    Code.expect(result.company).to.equal(userA.company[0].company)
+    Code.expect(result.edition).to.equal(linkA.editionId)
+    Code.expect(result.attendee).to.equal(linkA.attendeeId)
+    Code.expect(result.notes.otherObservations).to.equal(changesToA.notes.otherObservations)
   })
 
-  lab.test('Update Non Existing as company', (done) => {
+  lab.test('Update Non Existing as company',  async () => {
     const options = {
       method: 'PUT',
       url: `/company/NullConsulting/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
@@ -642,14 +557,12 @@ lab.experiment('Link', () => {
       payload: changesToA
     }
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(404)
-
-      done()
-    })
+    server.inject(options)
+    Code.expect(response.statusCode).to.equal(404)
+  
   })
 
-  lab.test('List as company', (done) => {
+  lab.test('List as company',  async () => {
     const options = {
       method: 'Get',
       url: `/company/${userA.company[0].company}/link?editionId=${linkA.editionId}`,
@@ -659,20 +572,17 @@ lab.experiment('Link', () => {
       },
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
-      // result.sort()
+    server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Array)
-      Code.expect(result[0].user).to.equal(linkA.userId)
-      Code.expect(result[0].company).to.equal(userA.company[0].company)
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Array)
+    Code.expect(result[0].user).to.equal(linkA.userId)
+    Code.expect(result[0].company).to.equal(userA.company[0].company)
 
-      done()
-    })
   })
 
-  lab.test('List Non Existing as company', (done) => {
+  lab.test('List Non Existing as company',  async () => {
     const options = {
       method: 'Get',
       url: `/company/NullConsulting/link?editionId=${linkA.editionId}`,
@@ -682,13 +592,12 @@ lab.experiment('Link', () => {
       },
     }
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(404)
-      done()
-    })
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(404)
+      
   })
 
-  lab.test('Create same as company', (done) => {
+  lab.test('Create same as company',  async () => {
     const options = {
       method: 'POST',
       url: `/company/${userA.company[0].company}/link`,
@@ -699,14 +608,11 @@ lab.experiment('Link', () => {
       payload: linkA
     }
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(409)
-
-      done()
-    })
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(409)
   })
 
-  lab.test('Delete A as company', (done) => {
+  lab.test('Delete A as company',  async () => {
     const options = {
       method: 'DELETE',
       url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
@@ -716,21 +622,19 @@ lab.experiment('Link', () => {
       },
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.user).to.equal(linkA.userId)
-      Code.expect(result.company).to.equal(userA.company[0].company)
-      Code.expect(result.edition).to.equal(linkA.editionId)
-      Code.expect(result.attendee).to.equal(linkA.attendeeId)
-      Code.expect(result.notes.otherObservations).to.equal(changesToA.notes.otherObservations)
-
-      done()
-    })
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.user).to.equal(linkA.userId)
+    Code.expect(result.company).to.equal(userA.company[0].company)
+    Code.expect(result.edition).to.equal(linkA.editionId)
+    Code.expect(result.attendee).to.equal(linkA.attendeeId)
+    Code.expect(result.notes.otherObservations).to.equal(changesToA.notes.otherObservations)
   })
-  lab.test('Delete B as company', (done) => {
+
+  lab.test('Delete B as company',  async () => {
     const options = {
       method: 'DELETE',
       url: `/company/${userA.company[0].company}/link/${linkB.attendeeId}?editionId=${linkB.editionId}`,
@@ -740,12 +644,12 @@ lab.experiment('Link', () => {
       },
     }
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(200)
-      done()
-    })
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(200)
+      
   })
-  lab.test('Delete C as company', (done) => {
+
+  lab.test('Delete C as company',  async () => {
     const options = {
       method: 'DELETE',
       url: `/company/${userA.company[0].company}/link/${linkC.attendeeId}?editionId=${linkC.editionId}`,
@@ -755,13 +659,12 @@ lab.experiment('Link', () => {
       },
     }
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(200)
-      done()
-    })
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(200)
+      
   })
 
-  lab.test('Create as user', (done) => {
+  lab.test('Create as user',  async () => {
     const options = {
       method: 'POST',
       url: `/company/${userA.company[0].company}/link`,
@@ -772,14 +675,12 @@ lab.experiment('Link', () => {
       payload: linkA
     }
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(403)
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(403)
 
-      done()
-    })
   })
 
-  lab.test('Get as user', (done) => {
+  lab.test('Get as user',  async () => {
     const options = {
       method: 'GET',
       url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
@@ -789,14 +690,11 @@ lab.experiment('Link', () => {
       },
     }
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(403)
-
-      done()
-    })
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(403)
   })
 
-  lab.test('List as user', (done) => {
+  lab.test('List as user',  async () => {
     const options = {
       method: 'GET',
       url: `/company/${userA.company[0].company}/link?editionId=${linkA.editionId}`,
@@ -806,14 +704,11 @@ lab.experiment('Link', () => {
       },
     }
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(403)
-
-      done()
-    })
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(403)
   })
 
-  lab.test('Delete as user', (done) => {
+  lab.test('Delete as user',  async () => {
     const options = {
       method: 'GET',
       url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
@@ -823,10 +718,8 @@ lab.experiment('Link', () => {
       },
     }
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(403)
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(403)
 
-      done()
-    })
   })
 })

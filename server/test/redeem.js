@@ -101,7 +101,7 @@ const redeemD = {
 }
 
 lab.experiment('Redeem', () => {
-  lab.before((done) => {
+  lab.before( async () => {
     const options = {
       method: 'POST',
       url: '/achievements',
@@ -112,8 +112,7 @@ lab.experiment('Redeem', () => {
       payload: achievementA
     }
 
-    server.inject(options, (response) => {
-    })
+    server.inject(options)
 
     const optionsB = {
       method: 'POST',
@@ -138,8 +137,7 @@ lab.experiment('Redeem', () => {
       payload: achievementC
     }
 
-    server.inject(optionsC, (response) => {
-    })
+    await server.inject(optionsC)
 
     const userOptions = {
       method: 'POST',
@@ -151,12 +149,10 @@ lab.experiment('Redeem', () => {
       payload: userA
     }
 
-    server.inject(userOptions, (response) => {
-      done()
-    })
+    await server.inject(userOptions)
   })
 
-  lab.after((done) => {
+  lab.after( async () => {
     const userOptions = {
       method: 'DELETE',
       url: '/users/' + userA.id,
@@ -166,12 +162,10 @@ lab.experiment('Redeem', () => {
       },
     }
 
-    server.inject(userOptions, (response) => {
-      done()
-    })
+    await server.inject(userOptions)
   })
 
-  lab.test('Create as an admin', (done) => {
+  lab.test('Create as an admin',  async () => {
     const options = {
       method: 'POST',
       url: '/redeem',
@@ -182,20 +176,18 @@ lab.experiment('Redeem', () => {
       payload: redeemA
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(201)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.id).to.equal(redeemA.id)
-      Code.expect(result.name).to.equal(redeemA.name)
-      Code.expect(result.user).to.equal(redeemA.user)
-
-      done()
-    })
+    Code.expect(response.statusCode).to.equal(201)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.id).to.equal(redeemA.id)
+    Code.expect(result.name).to.equal(redeemA.name)
+    Code.expect(result.user).to.equal(redeemA.user)
+  
   })
 
-  lab.test('Get one as an user', (done) => {
+  lab.test('Get one as an user',  async () => {
     const options = {
       method: 'GET',
       url: '/redeem/' + redeemA.id,
@@ -205,18 +197,17 @@ lab.experiment('Redeem', () => {
       },
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.success).to.equal(true)
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.success).to.equal(true)
 
-      done()
-    })
+      
   })
 
-  lab.test('Create again as an admin', (done) => {
+  lab.test('Create again as an admin',  async () => {
     const options = {
       method: 'POST',
       url: '/redeem',
@@ -257,44 +248,39 @@ lab.experiment('Redeem', () => {
       payload: redeemD
     }
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(409)
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(409)
 
-      server.inject(optionsB, (responseB) => {
-        const resultB = responseB.result
+    let responseB = await server.inject(optionsB)
+    const resultB = responseB.result
+  
+    Code.expect(responseB.statusCode).to.equal(201)
+    Code.expect(resultB).to.be.instanceof(Object)
+    Code.expect(resultB.id).to.equal(redeemB.id)
+    Code.expect(resultB.name).to.equal(redeemB.name)
+    Code.expect(resultB.user).to.equal(redeemB.user)
+  
+    let responseC = await server.inject(optionsC)
+    const resultC = responseC.result
+  
+    Code.expect(responseC.statusCode).to.equal(201)
+    Code.expect(resultC).to.be.instanceof(Object)
+    Code.expect(resultC.id).to.equal(redeemC.id)
+    Code.expect(resultC.name).to.equal(redeemC.name)
+    Code.expect(resultC.user).to.equal(redeemC.user)
+  
+    let responseD = await server.inject(optionsD)
+    const resultD = responseD.result
+  
+    Code.expect(responseD.statusCode).to.equal(201)
+    Code.expect(resultD).to.be.instanceof(Object)
+    Code.expect(resultD.id).to.equal(redeemD.id)
+    Code.expect(resultD.name).to.equal(redeemD.name)
+    Code.expect(resultD.user).to.equal(redeemD.user)
 
-        Code.expect(responseB.statusCode).to.equal(201)
-        Code.expect(resultB).to.be.instanceof(Object)
-        Code.expect(resultB.id).to.equal(redeemB.id)
-        Code.expect(resultB.name).to.equal(redeemB.name)
-        Code.expect(resultB.user).to.equal(redeemB.user)
-
-        server.inject(optionsC, (responseC) => {
-          const resultC = responseC.result
-
-          Code.expect(responseC.statusCode).to.equal(201)
-          Code.expect(resultC).to.be.instanceof(Object)
-          Code.expect(resultC.id).to.equal(redeemC.id)
-          Code.expect(resultC.name).to.equal(redeemC.name)
-          Code.expect(resultC.user).to.equal(redeemC.user)
-
-          server.inject(optionsD, (responseD) => {
-            const resultD = responseD.result
-
-            Code.expect(responseD.statusCode).to.equal(201)
-            Code.expect(resultD).to.be.instanceof(Object)
-            Code.expect(resultD.id).to.equal(redeemD.id)
-            Code.expect(resultD.name).to.equal(redeemD.name)
-            Code.expect(resultD.user).to.equal(redeemD.user)
-
-            done()
-          })
-        })
-      })
-    })
   })
 
-  lab.test('Delete as an admin', (done) => {
+  lab.test('Delete as an admin',  async () => {
     const options = {
       method: 'DELETE',
       url: '/redeem/' + redeemA.id,
@@ -331,42 +317,35 @@ lab.experiment('Redeem', () => {
       },
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.a.number()
-      // Code.expect(result).to.equal(1)
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.a.number()
 
-      server.inject(optionsB, (responseB) => {
-        const resultB = responseB.result
+    let responseB = await server.inject(optionsB)
+    const resultB = responseB.result
 
-        Code.expect(response.statusCode).to.equal(200)
-        Code.expect(resultB).to.be.a.number()
-        Code.expect(resultB).to.equal(1)
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(resultB).to.be.a.number()
+    Code.expect(resultB).to.equal(1)
 
-        server.inject(optionsC, (responseC) => {
-          const resultC = responseC.result
+    let responseC = await server.inject(optionsC)
+    const resultC = responseC.result
 
-          Code.expect(responseC.statusCode).to.equal(200)
-          Code.expect(resultC).to.be.a.number()
-          Code.expect(resultC).to.equal(1)
+    Code.expect(responseC.statusCode).to.equal(200)
+    Code.expect(resultC).to.be.a.number()
+    Code.expect(resultC).to.equal(1)
 
-          server.inject(optionsD, (responseD) => {
-            const resultD = responseD.result
+    let responseD = await server.inject(optionsD)
+    const resultD = responseD.result
 
-            Code.expect(responseD.statusCode).to.equal(200)
-            Code.expect(resultD).to.be.a.number()
-            Code.expect(resultD).to.equal(1)
-
-            done()
-          })
-        })
-      })
-    })
+    Code.expect(responseD.statusCode).to.equal(200)
+    Code.expect(resultD).to.be.a.number()
+    Code.expect(resultD).to.equal(1)
   })
 
-  lab.test('Create as an user', (done) => {
+  lab.test('Create as an user',  async () => {
     const options = {
       method: 'POST',
       url: '/redeem',
@@ -377,13 +356,15 @@ lab.experiment('Redeem', () => {
       payload: redeemA
     }
 
-    server.inject(options, (response) => {
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(403)  
       Code.expect(response.statusCode).to.equal(403)
-      done()
-    })
+    Code.expect(response.statusCode).to.equal(403)  
+      Code.expect(response.statusCode).to.equal(403)
+    Code.expect(response.statusCode).to.equal(403)  
   })
 
-  lab.test('Delete as an user', (done) => {
+  lab.test('Delete as an user',  async () => {
     const options = {
       method: 'DELETE',
       url: '/redeem/' + redeemA.id,
@@ -393,13 +374,11 @@ lab.experiment('Redeem', () => {
       },
     }
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(403)
-      done()
-    })
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(403)
   })
 
-  lab.after((done) => {
+  lab.after( async () => {
     const options = {
       method: 'DELETE',
       url: '/achievements/' + achievementA.id,
@@ -426,12 +405,8 @@ lab.experiment('Redeem', () => {
       },
     }
 
-    server.inject(options, (response) => {
-      server.inject(optionsB, (response) => {
-        server.inject(optionsC, (response) => {
-          done()
-        })
-      })
-    })
+    await server.inject(options)
+    await server.inject(optionsB)
+    await server.inject(optionsC)
   })
 })
