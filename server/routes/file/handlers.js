@@ -2,6 +2,8 @@ const Joi = require('joi')
 const render = require('../../views/file')
 const configUpload = require('../../../config').upload
 const server = require('../../').hapi
+const log = require('../../helpers/logger')
+const Boom = require('boom')
 
 exports = module.exports
 
@@ -21,13 +23,20 @@ exports.create = {
         extension: Joi.string().required().description('File type')
       })
     },
-    pre: [
-      { method: 'file.create(payload)', assign: 'file' }
-    ],
     description: 'Creates a new file model'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.file)).created('/file/' + request.pre.file.id)
+  handler: async (request, h) => {
+    try{
+      let file = await request.server.methods.file.create(request.payload)
+      return h.response(render(file)).created('/files/' + ach.id)
+    }catch (err) {
+      if (err.code === 11000) {
+        log.error({msg: "file is a duplicate" })
+        return Boom.conflict(`file "${file.id}" is a duplicate`)
+      }
+      log.error({ err: err, msg:'error creating file'}, 'error creating file')
+      return Boom.internal()
+    }
   },
 }
 
@@ -50,13 +59,20 @@ exports.update = {
         extension: Joi.string().description('File type')
       })
     },
-    pre: [
-      { method: 'file.update(params.id, payload)', assign: 'file' }
-    ],
     description: 'Updates a file model'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.file))
+  handler: async (request, h) => {
+    try{
+      let file = await request.server.methods.file.update(request.params.id, request.payload)
+      if (!file) {
+        log.error({ err: err, file: filter }, 'error updating file')
+        return Boom.notFound()
+      }
+      return h.response(render(file))
+    }catch (err) {
+      log.error({ err: err, file: filter }, 'error updating file')
+      return Boom.internal()
+    }
   },
 }
 
@@ -77,8 +93,18 @@ exports.get = {
     ],
     description: 'Gets the model of the file'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.file))
+  handler: async (request, h) => {
+    try{
+      let file = await request.server.methods.file.get(request.params.id)
+      if (!file) {
+        log.error({ err: err, file: filter }, 'error getting file')
+        return Boom.notFound()
+      }
+      return h.response(render(file))
+    }catch (err) {
+      log.error({ err: err, file: filter }, 'error getting file')
+      return Boom.internal()
+    }
   },
 }
 
@@ -89,13 +115,20 @@ exports.getMe = {
       strategies: ['default'],
       scope: ['user', 'company', 'team', 'admin']
     },
-    pre: [
-      { method: 'file.get(auth.credentials.user.id, query)', assign: 'file' }
-    ],
     description: 'Gets the file model of the user'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.file))
+  handler: async (request, h) => {
+    try{
+      let file = await request.server.methods.file.getByUser(request.auth.credentials.user.id)
+      if (!file) {
+        log.error({ err: err, file: filter }, 'error getting file')
+        return Boom.notFound()
+      }
+      return h.response(render(file))
+    }catch (err) {
+      log.error({ err: err, file: filter }, 'error getting file')
+      return Boom.internal()
+    }
   },
 }
 
@@ -111,18 +144,17 @@ exports.download = {
         id: Joi.string().required().description('Id or user of the file we want to retrieve')
       })
     },
-    pre: [
-      { method: 'file.get(params.id, query)', assign: 'file' }
-    ],
     description: 'Downloads the file'
   },
-  handler: function (request, reply) {
-    const path = configUpload.path + '/' + request.pre.file.id
+  handler: async (request, h) => {
+    let file = await request.server.methods.file.get(request.params.id, request.query)
+    
+    const path = configUpload.path + '/' + file.id
     const options = {
-      filename: request.pre.file.name,
+      filename: file.name,
       mode: 'attachment'
     }
-    reply.file(path, options)
+    return h.response.file(path, options)
   },
 }
 
@@ -133,18 +165,16 @@ exports.downloadMe = {
       strategies: ['default'],
       scope: ['user', 'company', 'team', 'admin']
     },
-    pre: [
-      { method: 'file.get(auth.credentials.user.id, query)', assign: 'file' }
-    ],
     description: 'Downloads the file of the user'
   },
-  handler: function (request, reply) {
-    const path = configUpload.path + '/' + request.pre.file.id
+  handler: async (request, reply) => {
+    let file = await request.server.methods.file.get(request.auth.credentials.user.id, request.query)
+    const path = configUpload.path + '/' + file.id
     const options = {
-      filename: request.pre.file.name,
+      filename: file.name,
       mode: 'attachment'
     }
-    reply.file(path, options).type('application/pdf')
+    return h.response.file(path, options).type('application/pdf')
   },
 }
 
