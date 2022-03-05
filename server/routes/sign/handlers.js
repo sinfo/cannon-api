@@ -20,16 +20,19 @@ exports.create = {
         day: Joi.string().required().description('Day the company is signing the users card')
       })
     },
-    pre: [
-      { method: 'link.checkCompany(auth.credentials.user.id, params.companyId, payload.editionId)', assign: 'verification' },
-      { method: 'achievement.addUserToStandAchievement(params.companyId, params.attendeeId)', assign: 'achievement' },
-      { method: 'user.sign(params.attendeeId, params.companyId, payload)', assign: 'user' },
-      { method: 'achievement.checkUserStandDay(params.attendeeId)' }
-    ],
     description: 'Creates a new signature'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.user, request.auth.credentials && request.auth.credentials.user))
+  handler: async function (request, h) {
+    try {
+      let verification = request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.payload.editionId)
+      let achievement = request.server.methods.achievement.addUserToStandAchievement(request.params.companyId, request.params.attendeeId)
+      let user = request.server.methods.user.sign(request.params.attendeeId, request.params.companyId, request.payload)
+      request.server.methods.achievement.checkUserStandDay(request.params.attendeeId)
+      return h.response(render(user, request.auth.credentials && request.auth.credentials.user))
+    } catch (err) {
+      log.error({ err: err, msg: 'error creating signature' }, 'error creating signature')
+      return Boom.boomify(err)
+    }
   },
 }
 
@@ -49,15 +52,18 @@ exports.speed = {
         editionId: Joi.string().required().description('Id of the edition')
       })
     },
-    pre: [
-      { method: 'link.checkCompany(auth.credentials.user.id, params.companyId, payload.editionId)', assign: 'verification' },
-      { method: 'happyHour.get()', assign: 'happyHours' },
-      { method: 'achievement.addUserToSpeedDateAchievement(params.companyId, params.attendeeId, pre.happyHours)', assign: 'achievement' }
-    ],
     description: 'Creates a new signature for speed dates'
   },
-  handler: function (request, reply) {
-    reply(request.pre.achievement)
+  handler: async function (request, h) {
+    try {
+      let verification = request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.payload.editionId)
+      let happyHours = request.server.methods.happyHour.get()
+      let achievement = request.server.methods.achievement.addUserToSpeedDateAchievement(request.params.companyId, request.params.attendeeId, happyHours)
+      return h.response(achievement)
+    } catch (err) {
+      log.error({ err: err, msg: 'error creating signature for speed dating' }, 'error creating signature for speed dating')
+      return Boom.boomify(err)
+    }
   },
 }
 
@@ -78,13 +84,16 @@ exports.checkIn = {
         unregisteredUsers: Joi.number().description('Number of unregistered users')
       })
     },
-    pre: [
-      { method: 'achievement.addMultiUsersBySession(params.sessionId, payload.users, auth.credentials, payload.code, payload.unregisteredUsers)', assign: 'achievement' }
-    ],
     description: 'Perform check-in in a session for an array of users, giving its achievement to each of them'
   },
-  handler: function (request, reply) {
-    reply(request.pre.achievement)
+  handler: async function (request, h) {
+    try {
+      let achievement = request.server.methods.achievement.addMultiUsersBySession(request.params.sessionId, request.payload.users, request.auth.credentials, request.payload.code, request.payload.unregisteredUsers)
+      return h.response(achievement)
+    } catch (err) {
+      log.error({ err: err, msg: 'error checking in session for users' }, 'error checking in session for users')
+      return Boom.boomify(err)
+    }
   },
 }
 
@@ -103,12 +112,15 @@ exports.generate = {
         expiration: Joi.date().required().description('Until when the code will be active')
       })
     },
-    pre: [
-      { method: 'achievement.generateCodeSession(params.sessionId, payload.expiration)', assign: 'achievement' }
-    ],
     description: 'Generate a temporary code for user-side check in'
   },
-  handler: function (request, reply) {
-    reply(request.pre.achievement)
+  handler: async function (request, h) {
+    try {
+      let achievement = request.server.methods.achievement.generateCodeSession(request.params.sessionId, request.payload.expiration)
+      return h.response(achievement)
+    } catch (err) {
+      log.error({ err: err, msg: 'error checking in session for users' }, 'error checking in session for users')
+      return Boom.boomify(err)
+    }
   },
 }
