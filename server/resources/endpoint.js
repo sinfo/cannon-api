@@ -12,7 +12,7 @@ server.method('endpoint.remove', remove, {})
 server.method('endpoint.isValid', isValid, {})
 server.method('endpoint.incrementVisited', incrementVisited, {})
 
-function create (endpoint, cb) {
+async function create(endpoint, cb) {
   // generates an enpoint item for every company in endpoin.companies
   // `endpoint` is passed as `this` to the map function
   const endpoints = Array.from(endpoint.companies, (company) => {
@@ -28,7 +28,7 @@ function create (endpoint, cb) {
       updated: new Date()
     }
   })
-  try  {
+  try {
     let list = await Endpoint.collection.insert(endpoints)
     return list
   }
@@ -43,7 +43,7 @@ function create (endpoint, cb) {
 
 }
 
-function update (companyId, editionId, endpoint, cb) {
+function update(companyId, editionId, endpoint, cb) {
   const filter = {
     company: companyId,
     edition: editionId
@@ -65,7 +65,7 @@ function update (companyId, editionId, endpoint, cb) {
   })
 }
 
-function get (companyId, editionId, cb) {
+function get(companyId, editionId, cb) {
   const filter = {
     company: companyId,
     edition: editionId
@@ -85,7 +85,7 @@ function get (companyId, editionId, cb) {
   })
 }
 
-function list (query, cb) {
+function list(query, cb) {
   cb = cb || query // fields is optional
 
   const filter = { edition: query.edition }
@@ -106,7 +106,7 @@ function list (query, cb) {
   })
 }
 
-function remove (companyId, editionId, cb) {
+function remove(companyId, editionId, cb) {
   Endpoint.findOneAndRemove({ company: companyId, edition: editionId }, (err, endpoint) => {
     if (err) {
       log.error({ err: err, company: companyId, edition: editionId }, 'error deleting endpoint')
@@ -121,7 +121,7 @@ function remove (companyId, editionId, cb) {
   })
 }
 
-function isValid (companyId, editionId, cb) {
+function isValid(companyId, editionId, cb) {
   const filter = {
     company: companyId,
     edition: editionId
@@ -147,7 +147,7 @@ function isValid (companyId, editionId, cb) {
   })
 }
 
-function incrementVisited (companyId, editionId, cb) {
+function incrementVisited(companyId, editionId, cb) {
   const filter = {
     company: companyId,
     edition: editionId

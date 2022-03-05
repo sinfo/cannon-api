@@ -7,12 +7,7 @@ const google = require('../helpers/google')
 const fenix = require('../helpers/fenix')
 const linkedin = require('../helpers/linkedin')
 
-server.method('auth.facebook', facebookAuth, {})
-server.method('auth.fenix', fenixAuth, {})
-server.method('auth.google', googleAuth, {})
-server.method('auth.linkedin', linkedinAuth, {})
-
-function facebookAuth (id, token, cb) {
+function facebookAuth(id, token, cb) {
   // Check with Facebook if token is valid
   facebook.verifyToken(id, token).then(() => {
     // Get user profile information from Facebook
@@ -39,7 +34,7 @@ function facebookAuth (id, token, cb) {
   }).catch(err => cb(Boom.unauthorized(err)))
 }
 
-function googleAuth (id, token, cb) {
+function googleAuth(id, token, cb) {
   // Check with Google if token is valid
   google.verifyToken(id, token).then(gUser => {
     // Get user in cannon by Google User email
@@ -63,7 +58,7 @@ function googleAuth (id, token, cb) {
   }).catch(err => { log.error(err); cb(Boom.unauthorized(err)) })
 }
 
-function fenixAuth (code, cb) {
+function fenixAuth(code, cb) {
   // Exchange the code given by the user by a token from Fenix
   fenix.getToken(code).then(token => {
     // Get user profile information from Fenix
@@ -90,7 +85,7 @@ function fenixAuth (code, cb) {
   }).catch(err => cb(Boom.unauthorized(err)))
 }
 
-function linkedinAuth (code, cb) {
+function linkedinAuth(code, cb) {
   // Exchange the code given by the user by a token from Linkedin
   linkedin.getToken(code).then(token => {
     // Get user profile information from Linkedin
@@ -117,7 +112,7 @@ function linkedinAuth (code, cb) {
   }).catch(err => cb(Boom.unauthorized(err)))
 }
 
-function authenticate (userId, changedAttributes, cb) {
+function authenticate(userId, changedAttributes, cb) {
   const newToken = token.createJwt(userId)
   changedAttributes = { $set: changedAttributes } || {}
 
