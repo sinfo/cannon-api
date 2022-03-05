@@ -18,13 +18,15 @@ server.route({
 server.route({
   method: 'GET',
   path: '/company/{companyId}/link',
-  config: handlers.list
+  options: handlers.list.options,
+  handler: handlers.list.handler
 })
 
 server.route({
   method: 'GET',
   path: '/company/{companyId}/link/{attendeeId}',
-  config: handlers.get
+  options: handlers.get.options,
+  handler: handlers.get.handler
 })
 
 server.route({
