@@ -30,7 +30,7 @@ async function create (hh) {
   }
 
   try {
-    let happyHour = HappyHour.create(hh)
+    let happyHour = await HappyHour.create(hh)
     return happyHour.toObject({ getters: true })
   } catch (err) {
     return Boom.internal('Error creating Happy Hour in database')

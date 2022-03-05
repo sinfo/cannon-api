@@ -4,7 +4,7 @@ const render = require('../../views/endpoint')
 exports = module.exports
 
 exports.create = {
-  options:{
+  options: {
     tags: ['api', 'company-endpoint'],
     auth: {
       strategies: ['default'],
@@ -20,18 +20,26 @@ exports.create = {
         }
       })
     },
-    pre: [
-      { method: 'endpoint.create(payload)', assign: 'endpoints' }
-    ],
     description: 'Creates a new company endpoint'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.endpoints)).created('/company-endpoint') // will reply all, not just the created
+  handler: async (request, h) => {
+    try {
+      let comp = await request.server.methods.endpoint.create(request.payload)
+      return h.response(render(comp)).created('/company-endpoint/' + comp.id)
+    } catch (err) {
+      if (err.code === 11000) {
+        log.error({ msg: "company is a duplicate" })
+        return Boom.conflict(`company "${comp.id}" is a duplicate`)
+      }
+
+      log.error({ err: err, msg: 'error creating company' }, 'error creating company')
+      return Boom.internal()
+    }
   },
 }
 
 exports.update = {
-  options:{
+  options: {
     tags: ['api', 'company-endpoint'],
     auth: {
       strategies: ['default'],
@@ -51,18 +59,26 @@ exports.update = {
         })
       })
     },
-    pre: [
-      { method: 'endpoint.update(params.companyId, query.edition, payload)', assign: 'endpoint' }
-    ],
     description: 'Updates a company endpoint'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.endpoint))
+  handler: async (request, h) => {
+    try {
+      let comp = await request.server.methods.endpoint.update(request.params.id, request.payload)
+      if (!comp) {
+        log.error({ err: err, company: filter }, 'error updating company')
+        return Boom.notFound()
+      }
+      return h.response(render(comp))
+    } catch (err) {
+      log.error({ err: err, company: filter }, 'error updating company')
+      return Boom.internal()
+    }
+
   },
 }
 
 exports.get = {
-  options:{
+  options: {
     tags: ['api', 'company-endpoint'],
     auth: {
       strategies: ['default'],
@@ -76,18 +92,25 @@ exports.get = {
         edition: Joi.string().required().description('Event the endpoint is associated to')
       })
     },
-    pre: [
-      { method: 'endpoint.get(params.companyId, query.edition)', assign: 'endpoint' }
-    ],
     description: 'Gets a company endpoint'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.endpoint))
+  handler: async (request, h) => {
+    try {
+      let comp = await request.server.methods.endpoint.get(request.params.id)
+      if (!comp) {
+        log.error({ err: err, company: filter }, 'error getting company')
+        return Boom.notFound()
+      }
+      return h.response(render(comp))
+    } catch (err) {
+      log.error({ err: err, company: filter }, 'error getting company')
+      return Boom.internal()
+    }
   },
 }
 
 exports.list = {
-  options:{
+  options: {
     tags: ['api', 'company-endpoint'],
     auth: {
       strategies: ['default'],
@@ -107,13 +130,19 @@ exports.list = {
     ],
     description: 'Gets all company endpoints'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.endpoints))
+  handler: async (request, h) => {
+    try {
+      let comp = await request.server.methods.endpoint.list(request.query)
+      return h.response(render(request.pre.endpoint))
+    } catch (err) {
+      log.error({ err: err }, 'Error finding endpoints')
+      return Boom.boomify(err)
+    }
   },
 }
 
 exports.remove = {
-  options:{
+  options: {
     tags: ['api', 'company-endpoint'],
     auth: {
       strategies: ['default'],
@@ -129,9 +158,17 @@ exports.remove = {
     },
     description: 'Removes a company endpoint'
   },
-  handler: function (request, h) {
-    let endpoint = request.server.methods.endpoint.remove(request.params.companyId, request.query.edition) 
-      // reply(render(request.pre.endpoint))
-    return h.response(render(endpoint))
+  handler: async (request, h) => {
+    try {
+      let comp = await request.server.methods.endpoint.remove(request.params.id)
+      if (!comp) {
+        log.error({ id: request.params.id, error: err })
+        return Boom.notFound('company not found')
+      }
+      return render(comp)
+    } catch (err) {
+      log.error({ info: request.info, error: err })
+      return Boom.boomify(err)
+    }
   },
 }

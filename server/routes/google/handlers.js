@@ -20,8 +20,8 @@ exports = module.exports
 
 exports.getLivestream = {
   options: {tags: ['api', 'google']},
-  handler: function (req, reply) {
-    reply(liveInfo)
+  handler: async (req, h) => {
+    h.response(liveInfo)
   }
 }
 

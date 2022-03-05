@@ -7,127 +7,125 @@ const google = require('../helpers/google')
 const fenix = require('../helpers/fenix')
 const linkedin = require('../helpers/linkedin')
 
-server.method('auth.facebook', facebookAuth, {})
-server.method('auth.fenix', fenixAuth, {})
-server.method('auth.google', googleAuth, {})
-server.method('auth.linkedin', linkedinAuth, {})
-
-function facebookAuth (id, token, cb) {
-  // Check with Facebook if token is valid
-  facebook.verifyToken(id, token).then(() => {
+async function facebookAuth(id, token) {
+  try {
+    // Check with Facebook if token is valid
+    await facebook.verifyToken(id, token)
     // Get user profile information from Facebook
-    facebook.getFacebookUser(token).then(fbUser => {
-      // Get user in cannon by Facebook User email
-      facebook.getUser(fbUser).then(res => {
-        // If user does not exist we create, otherwise we update existing user
-        if (res.createUser) {
-          return facebook.createUser(fbUser)
-            .then(userId => authenticate(userId, null, cb))
-            .catch(err => cb(Boom.unauthorized(err)))
-        }
-
-        const changedAttributes = {
-          facebook: {
-            id: fbUser.id
-          },
-          name: fbUser.name,
-          img: fbUser.picture
-        }
-        return authenticate(res.userId, changedAttributes, cb)
-      }).catch(err => cb(Boom.unauthorized(err)))
-    }).catch(err => cb(Boom.unauthorized(err)))
-  }).catch(err => cb(Boom.unauthorized(err)))
+    let fbUser = await facebook.getFacebookUser(token)
+    // Get user in cannon by Facebook User email
+    let res = await facebook.getUser(fbUser)
+    // If user does not exist we create, otherwise we update existing user
+    if (res.createUser) {
+      let userId = await facebook.createUser(fbUser)
+      await authenticate(userId, null)
+    }
+    const changedAttributes = {
+      facebook: {
+        id: fbUser.id
+      },
+      name: fbUser.name,
+      img: fbUser.picture
+    }
+    return await authenticate(res.userId, changedAttributes)
+  }
+  catch (err) {
+    Boom.unauthorized(err)
+  }
 }
 
-function googleAuth (id, token, cb) {
-  // Check with Google if token is valid
-  google.verifyToken(id, token).then(gUser => {
+async function googleAuth(id, token) {
+  try {
+    // Check with Google if token is valid
+    let gUser = await google.verifyToken(id, token)
     // Get user in cannon by Google User email
-    google.getUser(gUser).then(res => {
-      // If user does not exist we create, otherwise we update existing user
-      if (res.createUser) {
-        return google.createUser(gUser)
-          .then(userId => authenticate(userId, null, cb))
-          .catch(err => cb(Boom.unauthorized(err)))
-      }
+    let res = await google.getUser(gUser)
+    // If user does not exist we create, otherwise we update existing user
+    if (res.createUser) {
+      let userId = await google.createUser(gUser)
+      return await authenticate(userId, null)
+    }
 
-      const changedAttributes = {
-        google: {
-          id: gUser.sub
-        },
-        name: gUser.name,
-        img: gUser.picture
-      }
-      return authenticate(res.userId, changedAttributes, cb)
-    }).catch(err => { log.error(err); cb(Boom.unauthorized(err)) })
-  }).catch(err => { log.error(err); cb(Boom.unauthorized(err)) })
+    const changedAttributes = {
+      google: {
+        id: gUser.sub
+      },
+      name: gUser.name,
+      img: gUser.picture
+    }
+    return await authenticate(res.userId, changedAttributes)
+  }
+  catch (err) {
+    Boom.unauthorized(err)
+  }
 }
 
-function fenixAuth (code, cb) {
-  // Exchange the code given by the user by a token from Fenix
-  fenix.getToken(code).then(token => {
+async function fenixAuth(code) {
+  try {
+    // Exchange the code given by the user by a token from Fenix
+    let token = await fenix.getToken(code)
     // Get user profile information from Fenix
-    fenix.getFenixUser(token).then(fenixUser => {
-      // Get user in cannon by Fenix User email
-      fenix.getUser(fenixUser).then(res => {
-        // If user does not exist we create, otherwise we update existing user
-        if (res.createUser) {
-          return fenix.createUser(fenixUser)
-            .then(userId => authenticate(userId, null, cb))
-            .catch(err => cb(Boom.unauthorized(err)))
-        }
+    let fenixUser = await fenix.getFenixUser(token)
+    // Get user in cannon by Fenix User email
+    let res = await fenix.getUser(fenixUser)
+    // If user does not exist we create, otherwise we update existing user
+    if (res.createUser) {
+      let userId = fenix.createUser(fenixUser)
+      authenticate(userId, null)
+    }
 
-        const changedAttributes = {
-          fenix: {
-            id: fenixUser.username
-          },
-          name: fenixUser.name,
-          img: `https://fenix.tecnico.ulisboa.pt/user/photo/${fenixUser.username}`
-        }
-        return authenticate(res.userId, changedAttributes, cb)
-      }).catch(err => cb(Boom.unauthorized(err)))
-    }).catch(err => cb(Boom.unauthorized(err)))
-  }).catch(err => cb(Boom.unauthorized(err)))
+    const changedAttributes = {
+      fenix: {
+        id: fenixUser.username
+      },
+      name: fenixUser.name,
+      img: `https://fenix.tecnico.ulisboa.pt/user/photo/${fenixUser.username}`
+    }
+    return await authenticate(res.userId, changedAttributes)
+  } catch (err) {
+    Boom.unauthorized(err)
+  }
 }
 
-function linkedinAuth (code, cb) {
-  // Exchange the code given by the user by a token from Linkedin
-  linkedin.getToken(code).then(token => {
+async function linkedinAuth(code) {
+  try {
+    // Exchange the code given by the user by a token from Linkedin
+    let token = await linkedin.getToken(code)
     // Get user profile information from Linkedin
-    linkedin.getLinkedinUser(token).then(linkedinUser => {
-      // Get user in cannon by Linkedin User email
-      linkedin.getUser(linkedinUser).then(res => {
-        // If user does not exist we create, otherwise we update existing user
-        if (res.createUser) {
-          return linkedin.createUser(linkedinUser)
-            .then(userId => authenticate(userId, null, cb))
-            .catch(err => cb(Boom.unauthorized(err)))
-        }
-        const changedAttributes = {
-          linkedin: {
-            id: linkedinUser.id
-          },
-          name: `${linkedinUser.firstName} ${linkedinUser.lastName}`,
-          mail: linkedinUser.emailAddress,
-          img: linkedinUser.pictureUrl
-        }
-        return authenticate(res.userId, changedAttributes, cb)
-      }).catch(err => cb(Boom.unauthorized(err)))
-    }).catch(err => cb(Boom.unauthorized(err)))
-  }).catch(err => cb(Boom.unauthorized(err)))
+    let linkedinUser = await linkedin.getLinkedinUser(token)
+    // Get user in cannon by Linkedin User email
+    let res = await linkedin.getUser(linkedinUser)
+    // If user does not exist we create, otherwise we update existing user
+    if (res.createUser) {
+      let userId = await linkedin.createUser(linkedinUser)
+      return await authenticate(userId, null)
+    }
+    const changedAttributes = {
+      linkedin: {
+        id: linkedinUser.id
+      },
+      name: `${linkedinUser.firstName} ${linkedinUser.lastName}`,
+      mail: linkedinUser.emailAddress,
+      img: linkedinUser.pictureUrl
+    }
+    return authenticate(res.userId, changedAttributes)
+  } catch (err) {
+    Boom.unauthorized(err)
+  }
 }
 
-function authenticate (userId, changedAttributes, cb) {
+async function authenticate(userId, changedAttributes) {
   const newToken = token.createJwt(userId)
   changedAttributes = { $set: changedAttributes } || {}
 
-  server.methods.user.update({ id: userId }, changedAttributes, (err, result) => {
-    if (err) {
-      log.error({ user: userId, changedAttributes: changedAttributes }, '[login] error updating user')
-      return cb(err)
-    }
+  try {
+    await server.methods.user.update({ id: userId }, changedAttributes)
     log.info({ userId }, '[login] user logged in')
     // Finally resolves a new JWT token from Cannon that authenticates the user on the following requests
-    return cb(null, newToken)
-  })
+    return newToken
+  }
+  catch (err) {
+    log.error({ user: userId, changedAttributes: changedAttributes }, '[login] error updating user')
+    return Boom.internal(err)
+  }
 }
