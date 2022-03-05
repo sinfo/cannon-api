@@ -11,7 +11,8 @@ server.route({
 server.route({
   method: ['PUT', 'PATCH'],
   path: '/company/{companyId}/link/{attendeeId}',
-  config: handlers.update
+  options: handlers.update.options,
+  handler: handlers.update.handler
 })
 
 server.route({

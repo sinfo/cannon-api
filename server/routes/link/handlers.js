@@ -48,6 +48,7 @@ exports.create = {
 }
 
 exports.update = {
+  options: {
   tags: ['api', 'link'],
   auth: { strategies: ['default'], scope: ['company', 'team', 'admin'] },
   validate: {
@@ -85,10 +86,22 @@ exports.update = {
     },
     { method: 'link.update(params, query.editionId, payload)', assign: 'link' }
   ],
-  handler: function (request, reply) {
-    reply(render(request.pre.link))
-  },
   description: 'Updates a link'
+},
+  handler: async function (request, h) {
+    try{
+      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.query.editionId)
+      let link = await request.server.methods.link.update(request.params, request.query.editionId, request.payload)
+      if (!_link) {
+        log.error({ err: err }, 'error updating link')
+        return Boom.notFound()
+      }
+      return h.response(render(link))
+    }catch(err){
+      log.error({ err: err }, 'error updating link')
+      return Boom.internal()
+    }
+  },
 }
 
 exports.get = {

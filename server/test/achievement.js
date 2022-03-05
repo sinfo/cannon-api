@@ -53,7 +53,7 @@ let codeA = ''
 let codeB = ''
 
 lab.experiment('Achievement', () => {
-  lab.after(( ) => {
+  lab.after(async () => {
     const optionsA = {
       method: 'DELETE',
       url: `/achievements/${event}_${secretId}0`,
@@ -69,24 +69,11 @@ lab.experiment('Achievement', () => {
       auth:{credentials: credentialsA,
         strategy: 'default'}
     }
-
-    async.parallel([
-      (cb) => {
-        server.inject(optionsA, (response) => {
-          return cb()
-        })
-      },
-      (cb) => {
-        server.inject(optionsB, (response) => {
-          return cb()
-        })
-      }
-    ], (_, results) => {
-       
-    })
+    await server.inject(optionsA)
+    await server.inject(optionsB)
   })
 
-  lab.test('Create as an admin', ( ) => {
+  lab.test('Create as an admin',  async () => {
     const options = {
       method: 'POST',
       url: '/achievements',
@@ -95,19 +82,17 @@ lab.experiment('Achievement', () => {
       payload: achievementA
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(201)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.id).to.equal(achievementId)
-      Code.expect(result.name).to.equal(achievementA.name)
+    Code.expect(response.statusCode).to.equal(201)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.id).to.equal(achievementId)
+    Code.expect(result.name).to.equal(achievementA.name)
 
-       
-    })
   })
 
-  lab.test('List all as an admin', ( ) => {
+  lab.test('List all as an admin',  async () => {
     const options = {
       method: 'GET',
       url: '/achievements',
@@ -115,17 +100,16 @@ lab.experiment('Achievement', () => {
         strategy: 'default'}
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Array)
-      Code.expect(result[0].name).to.be.string
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Array)
+    Code.expect(result[0].name).to.be.string
        
-    })
   })
 
-  lab.test('Get one as an admin', ( ) => {
+  lab.test('Get one as an admin',  async () => {
     const options = {
       method: 'GET',
       url: '/achievements/' + achievementId,
@@ -133,20 +117,17 @@ lab.experiment('Achievement', () => {
         strategy: 'default'}
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.id).to.equal(achievementId)
-      Code.expect(result.name).to.equal(achievementA.name)
-      Code.expect(result.session).to.equal(achievementA.session)
-
-       
-    })
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.id).to.equal(achievementId)
+    Code.expect(result.name).to.equal(achievementA.name)
+    Code.expect(result.session).to.equal(achievementA.session)
   })
 
-  lab.test('List all as an user', ( ) => {
+  lab.test('List all as an user',  async () => {
     const options = {
       method: 'GET',
       url: '/achievements',
@@ -154,17 +135,15 @@ lab.experiment('Achievement', () => {
         strategy: 'default'}
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Array)
-      Code.expect(result[0].name).to.be.string
-       
-    })
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Array)
+    Code.expect(result[0].name).to.be.string
   })
 
-  lab.test('Get one  as an user', ( ) => {
+  lab.test('Get one  as an user',  async () => {
     const options = {
       method: 'GET',
       url: '/achievements/' + achievementId,
@@ -172,19 +151,17 @@ lab.experiment('Achievement', () => {
         strategy: 'default'}
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.id).to.equal(achievementId)
-      Code.expect(result.name).to.equal(achievementA.name)
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.id).to.equal(achievementId)
+    Code.expect(result.name).to.equal(achievementA.name)
 
-       
-    })
   })
 
-  lab.test('Get one by session', ( ) => {
+  lab.test('Get one by session',  async () => {
     const options = {
       method: 'GET',
       url: '/achievements/session/' + session,
@@ -192,20 +169,19 @@ lab.experiment('Achievement', () => {
         strategy: 'default'}
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.id).to.equal(achievementId)
-      Code.expect(result.name).to.equal(achievementA.name)
-      Code.expect(result.session).to.equal(session)
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.id).to.equal(achievementId)
+    Code.expect(result.name).to.equal(achievementA.name)
+    Code.expect(result.session).to.equal(session)
 
        
-    })
   })
 
-  lab.test('Update as an admin', ( ) => {
+  lab.test('Update as an admin',  async () => {
     const options = {
       method: 'PUT',
       url: '/achievements/' + achievementId,
@@ -214,19 +190,17 @@ lab.experiment('Achievement', () => {
       payload: changesToA
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.id).to.equal(achievementId)
-      Code.expect(result.name).to.equal(changesToA.name)
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.id).to.equal(achievementId)
+    Code.expect(result.name).to.equal(changesToA.name)
 
-       
-    })
   })
 
-  lab.test('Update as a user', ( ) => {
+  lab.test('Update as a user',  async () => {
     const options = {
       method: 'PUT',
       url: '/achievements/' + achievementId,
@@ -235,14 +209,11 @@ lab.experiment('Achievement', () => {
       payload: changesToA
     }
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(403)
-
-       
-    })
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(403)
   })
 
-  lab.test('Delete as an admin', ( ) => {
+  lab.test('Delete as an admin',  async () => {
     const options = {
       method: 'DELETE',
       url: '/achievements/' + achievementId,
@@ -250,18 +221,18 @@ lab.experiment('Achievement', () => {
         strategy: 'default'}
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.id).to.equal(achievementId)
-      Code.expect(result.name).to.equal(changesToA.name)
-       
-    })
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.id).to.equal(achievementId)
+    Code.expect(result.name).to.equal(changesToA.name)
+      
+  
   })
 
-  lab.test('Create as a user', ( ) => {
+  lab.test('Create as a user',  async () => {
     const options = {
       method: 'POST',
       url: '/achievements',
@@ -270,14 +241,11 @@ lab.experiment('Achievement', () => {
       payload: achievementA
     }
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(403)
-
-       
-    })
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(403)
   })
 
-  lab.test('Delete as a user', ( ) => {
+  lab.test('Delete as a user',  async () => {
     const options = {
       method: 'DELETE',
       url: '/achievements/' + achievementId,
@@ -285,13 +253,11 @@ lab.experiment('Achievement', () => {
         strategy: 'default'}
     }
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(403)
-       
-    })
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(403)
   })
 
-  lab.test('Create secret achievement', ( ) => {
+  lab.test('Create secret achievement',  async () => {
     const value = 50
     const payload = {
       validity: new Date(new Date().getTime() + (1000 * 60 * 60)),
@@ -307,28 +273,24 @@ lab.experiment('Achievement', () => {
       payload: payload
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(201)
-      Code.expect(result.id).to.equal(`${event}_${secretId}0`)
-      Code.expect(result.value).to.equal(value)
-      codeA = result.code.code
+    Code.expect(response.statusCode).to.equal(201)
+    Code.expect(result.id).to.equal(`${event}_${secretId}0`)
+    Code.expect(result.value).to.equal(value)
+    codeA = result.code.code
 
-      server.inject(options, (response) => {
-        const result = response.result
+    let response2 = await server.inject(options)
+    const result2 = response2.result
 
-        Code.expect(response.statusCode).to.equal(201)
-        Code.expect(result.id).to.equal(`${event}_${secretId}1`)
-        Code.expect(result.value).to.equal(value)
-        codeB = result.code.code
-
-         
-      })
-    })
+    Code.expect(response2.statusCode).to.equal(201)
+    Code.expect(result2.id).to.equal(`${event}_${secretId}1`)
+    Code.expect(result2.value).to.equal(value)
+    codeB = result2.code.code
   })
 
-  lab.test('List secret with codes', ( ) => {
+  lab.test('List secret with codes',  async () => {
     const start = new Date(new Date().getTime() - (24 * 1000 * 60 * 60))
     const end = new Date(new Date().getTime() + (24 * 1000 * 60 * 60))
     const query = `?start=${start}&end=${end}&kind=secret
@@ -340,24 +302,24 @@ lab.experiment('Achievement', () => {
         strategy: 'default'}
     }
 
-    server.inject(options, (response) => { // Admin
-      const result = response.result
+    let response = await server.inject(options) // Admin
+    const result = response.result
 
-      result.sort((a, b) => { return a < b ? 1 : -1 })
+    result.sort((a, b) => { return a < b ? 1 : -1 })
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Array)
-      Code.expect(result.length).to.equal(2)
-      Code.expect(result[0].code).to.be.instanceof(Object)
-      Code.expect(result[0].code.code).to.equal(codeA)
-      Code.expect(result[1].code).to.be.instanceof(Object)
-      Code.expect(result[1].code.code).to.equal(codeB)
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Array)
+    Code.expect(result.length).to.equal(2)
+    Code.expect(result[0].code).to.be.instanceof(Object)
+    Code.expect(result[0].code.code).to.equal(codeA)
+    Code.expect(result[1].code).to.be.instanceof(Object)
+    Code.expect(result[1].code.code).to.equal(codeB)
 
-       
-    })
+      
+  
   })
 
-  lab.test('Sign in to secret with code', ( ) => {
+  lab.test('Sign in to secret with code',  async () => {
     const options = {
       method: 'POST',
       url: `/achievements/redeem/secret`,
@@ -366,20 +328,18 @@ lab.experiment('Achievement', () => {
       payload: {code: codeA}
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.code.code).to.equal(codeA)
-      Code.expect(result.users.length).to.equal(1)
-      Code.expect(result.users[0]).to.equal(credentialsB.user.id)
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.code.code).to.equal(codeA)
+    Code.expect(result.users.length).to.equal(1)
+    Code.expect(result.users[0]).to.equal(credentialsB.user.id)
 
-       
-    })
   })
 
-  lab.test('Sign in to secret with code fail', ( ) => {
+  lab.test('Sign in to secret with code fail',  async () => {
     const options = {
       method: 'POST',
       url: `/achievements/redeem/secret`,
@@ -388,10 +348,7 @@ lab.experiment('Achievement', () => {
       payload: {code: 'wrongcode123'}
     }
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(404)
-
-       
-    })
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(404)
   })
 })

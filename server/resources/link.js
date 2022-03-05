@@ -64,8 +64,8 @@ function create (companyId, link, cb) {
   })
 }
 
-function update (filter, editionId, link, cb) {
-  log.debug({ filter: filter, edition: editionId, link: link }, 'updating link')
+async function update (filter, editionId, link) {
+  // log.debug({ filter: filter, edition: editionId, link: link }, 'updating link')
 
   filter = {
     company: filter.companyId,
@@ -75,18 +75,8 @@ function update (filter, editionId, link, cb) {
 
   link.updated = Date.now()
 
-  Link.findOneAndUpdate(filter, link, (err, _link) => {
-    if (err) {
-      log.error({ err: err, link: filter }, 'error updating link')
-      return cb(Boom.internal())
-    }
-    if (!_link) {
-      log.error({ err: err, link: filter }, 'error updating link')
-      return cb(Boom.notFound())
-    }
+  return Link.findOneAndUpdate(filter, link)
 
-    cb(null, _link.toObject({ getters: true }))
-  })
 }
 
 function get (filter, editionId, cb) {
