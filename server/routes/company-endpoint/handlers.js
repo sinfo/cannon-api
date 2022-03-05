@@ -158,6 +158,7 @@ exports.remove = {
     },
     description: 'Removes a company endpoint'
   },
+<<<<<<< HEAD
   handler: async (request, h) => {
     reply(render(request.pre.endpoint))
     try{
@@ -171,5 +172,11 @@ exports.remove = {
       log.error({ info: request.info, error: err })
       return Boom.boomify(err)
     }
+=======
+  handler: function (request, h) {
+    let endpoint = request.server.methods.endpoint.remove(request.params.companyId, request.query.edition) 
+      // reply(render(request.pre.endpoint))
+    return h.response(render(endpoint))
+>>>>>>> 4b4f5b6e424451c73893a9d9031ec5165c348ceb
   },
 }
