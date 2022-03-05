@@ -15,10 +15,9 @@ exports.generate = {
     },
     description: 'Generate a QRCode'
   },
-  handler: function (request, reply) {
+  handler: (request, h) =>{
     const image = qr.image(config.url + '/r/' + request.params.id, { type: 'png' })
-
-    reply(image)
+    return h.response(image)
   },
 }
 

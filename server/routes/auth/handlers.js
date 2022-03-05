@@ -4,7 +4,7 @@ const render = require('../../views/auth')
 exports = module.exports
 
 exports.facebook = {
-  options:{
+  options: {
     tags: ['api', 'auth'],
     auth: {
       strategies: ['default'],
@@ -16,18 +16,26 @@ exports.facebook = {
         token: Joi.string().required().description('facebook token of the member')
       })
     },
-    pre: [
-      { method: 'auth.facebook(payload.id, payload.token)', assign: 'member' }
-    ],
     description: 'Facebook login'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.member))
-  },
+  handler: async function (request, h) {
+    try {
+      let member = await request.server.methods.auth.facebookAuth(request.payload.id, request.payload.token);
+      return h.response(render(member))
+    } catch (err) {
+      if (err.code === 11000) {
+        log.error({ msg: "Could not login user with facebook." })
+        return Boom.unauthorized(`User "${request.payload.id}" could not login with facebook.`)
+      }
+
+      log.error({ err: err, msg: 'Error with facebook login.' }, 'Error with facebook login.')
+      return Boom.internal()
+    }
+  }
 }
 
 exports.google = {
-  options:{
+  options: {
     tags: ['api', 'auth'],
     auth: {
       strategies: ['default'],
@@ -39,18 +47,26 @@ exports.google = {
         token: Joi.string().required().description('google token of the member')
       })
     },
-    pre: [
-      { method: 'auth.google(payload.id, payload.token)', assign: 'member' }
-    ],
     description: 'Google login'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.member))
-  },
+  handler: async function (request, h) {
+    try {
+      let member = await request.server.methods.auth.googleAuth(request.payload.id, request.payload.token);
+      return h.response(render(member))
+    } catch (err) {
+      if (err.code === 11000) {
+        log.error({ msg: "Could not login user with google." })
+        return Boom.unauthorized(`User "${request.payload.id}" could not login with google.`)
+      }
+
+      log.error({ err: err, msg: 'Error with google login.' }, 'Error with google login.')
+      return Boom.internal()
+    }
+  }
 }
 
 exports.fenix = {
-  options:{
+  options: {
     tags: ['api', 'auth'],
     auth: {
       strategies: ['default'],
@@ -66,13 +82,24 @@ exports.fenix = {
     ],
     description: 'Fenix login'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.member))
+  handler: async function (request, h) {
+    try {
+      let member = await request.server.methods.auth.fenixAuth(request.payload.id, request.payload.token);
+      return h.response(render(member))
+    } catch (err) {
+      if (err.code === 11000) {
+        log.error({ msg: "Could not login user with fenix." })
+        return Boom.unauthorized(`User "${request.payload.id}" could not login with fenix.`)
+      }
+
+      log.error({ err: err, msg: 'Error with fenix login.' }, 'Error with fenix login.')
+      return Boom.internal()
+    }
   },
 }
 
 exports.linkedin = {
-  options:{
+  options: {
     tags: ['api', 'auth'],
     auth: {
       strategies: ['default'],
@@ -83,12 +110,20 @@ exports.linkedin = {
         code: Joi.string().required().description('Linkedin code of the member')
       })
     },
-    pre: [
-      { method: 'auth.linkedin(payload.code)', assign: 'member' }
-    ],
     description: 'Linkedin login'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.member))
-  },
+  handler: async function (request, h) {
+    try {
+      let member = await request.server.methods.auth.linkedinAuth(request.payload.id, request.payload.token);
+      return h.response(render(member))
+    } catch (err) {
+      if (err.code === 11000) {
+        log.error({ msg: "Could not login user with linkedin." })
+        return Boom.unauthorized(`User "${request.payload.id}" could not login with linkedin.`)
+      }
+
+      log.error({ err: err, msg: 'Error with linkedin login.' }, 'Error with linkedin login.')
+      return Boom.internal()
+    }
+  }
 }
