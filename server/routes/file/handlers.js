@@ -4,6 +4,7 @@ const configUpload = require('../../../config').upload
 const server = require('../../').hapi
 const log = require('../../helpers/logger')
 const Boom = require('boom')
+const { FileSystem } = require('adm-zip/util')
 
 exports = module.exports
 
@@ -263,14 +264,18 @@ exports.list = {
         limit: Joi.number().description('Limit of documents we want to retrieve')
       })
     },
-    pre: [
-      { method: 'file.list(query)', assign: 'files' }
-    ],
     description: 'Gets all the file models'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.files))
-  },
+  handler: async function (request, h) {
+    try {
+      let files = request.servers.methods.file.list(request.query)
+      return h.response(render(files))
+    }
+    catch (err) {
+      log.error({ err: err, msg: 'error getting file models' }, 'error getting file models')
+      return Boom.boomify(err)
+    }
+  }  
 }
 
 exports.remove = {
@@ -286,14 +291,18 @@ exports.remove = {
         id: Joi.string().required().description('Id of the file we want to remove')
       })
     },
-    pre: [
-      { method: 'file.remove(params.id)', assign: 'file' }
-    ],
     description: 'Removes a file'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.file))
-  },
+  handler: async function (request, h) {
+    try {
+      let file = request.server.methods.file.remove(request.params.id)
+      return h.response(render(file))
+    }
+    catch (err) {
+      log.error({ err: err, msg: 'error removing a file' }, 'error removing a file')
+      return Boom.boomify(err)
+    }
+  }
 }
 
 exports.removeMe = {
@@ -304,15 +313,19 @@ exports.removeMe = {
       scope: ['user', 'company', 'team', 'admin']
 
     },
-    pre: [
-      { method: 'file.removeFromUser(auth.credentials.user.id)', assign: 'file' },
-      { method: 'achievement.removeCV(auth.credentials.user.id)', assign: 'achievement', failAction: 'log' }
-    ],
     description: 'Removes user file'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.file))
-  },
+  handler: async function (request, h) {
+    try {
+      let file = request.server.methods.file.removeFromUser(request.auth.credentials.user.id)
+      let achievement = request.server.methods.achievement.removeCV(request.auth.credentials.user.id)
+      return h.response(render(file))
+    }
+    catch (err) {
+      log.error({ err: err, msg: 'error removing users file' }, 'error removing users file')
+      return Boom.boomify(err)
+    }
+  }
 }
 
 exports.upload = {
@@ -348,20 +361,21 @@ exports.upload = {
         }).unknown()
       ).required().length(1)
     },
-    pre: [
-      { method: 'user.get(params.id)', assign: 'user' },
-      { method: 'file.uploadCV(payload)', assign: 'file' },
-      { method: 'file.get(auth.credentials.user.id)', assign: 'oldFile', failAction: 'log' },
-      [
-        { method: 'file.delete(pre.oldFile.id)', assign: 'deleteFile', failAction: 'log' },
-        { method: 'file.update(pre.oldFile.id, pre.file, auth.credentials.user.id, query)', assign: 'fileInfo' }
-      ]
-    ],
     description: 'Uploads a file'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.fileInfo)).created('/api/file/' + request.pre.fileInfo.id)
-  },
+  handler: async function (request, h) {
+    try {
+      let user = request.server.methods.user.get(request.params.id)
+      let file = request.server.methods.file.uploadCV(request.payload)
+      let oldFile = request.server.methods.file.get(request.auth.credentials.user.id)
+      let deleteFile = request.server.methods.file.delete(oldFile.id)
+      let fileInfo = request.server.methods.file.update(oldFile.id)
+      return h.response(render(fileInfo)).created('/api/file/' + fileInfo.id)
+    } catch (err) {
+      log.error({ err: err, msg: 'error uploading file' }, 'error uploading file')
+      return Boom.boomify(err)
+    }
+  }
 }
 
 exports.uploadMe = {
@@ -394,18 +408,20 @@ exports.uploadMe = {
         }).unknown()
       ).required().length(1)
     },
-    pre: [
-      { method: 'file.uploadCV(payload)', assign: 'file' },
-      { method: 'file.get(auth.credentials.user.id)', assign: 'oldFile', failAction: 'log' },
-      [
-        { method: 'file.delete(pre.oldFile.id)', assign: 'deleteFile', failAction: 'log' },
-        { method: 'file.update(pre.oldFile.id, pre.file, auth.credentials.user.id, query)', assign: 'fileInfo' }
-      ],
-      { method: 'achievement.addCV(auth.credentials.user.id)', assign: 'achievement', failAction: 'log' }
-    ],
     description: 'Uploads a file of the user'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.fileInfo)).created('/api/file/' + request.pre.fileInfo.id)
-  },
+
+  handler: async function (request, h) {
+    try {
+      let file = request.server.methods.file.uploadCV(request.payload)
+      let oldFile = request.server.methods.file.get(request.auth.credentials.user.id)
+      let deleteFile = request.server.methods.file.delete(oldFile.id)
+      let fileInfo = request.server.methods.file.update(oldFile.id, file, request.auth.credentials.user.id, request.query)
+      let achievement = request.server.methods.achievement.addCV(request.auth.credentials.user.id)
+      return h.response(render(fileInfo)).created('/api/file/' + fileInfo.id)
+    } catch (err) {
+      log.error({ err: err, msg: 'error uploading file' }, 'error uploading file')
+      return Boom.boomify(err)
+    }
+  }  
 }
