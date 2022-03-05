@@ -1,5 +1,5 @@
-const Lab = require('lab')
-const Code = require('code')
+const Lab = require('@hapi/lab')
+const Code = require('@hapi/code')
 
 const server = require('../').hapi
 
@@ -121,34 +121,46 @@ let codewsA = ''
 let codewsB = ''
 
 lab.experiment('User', () => {
-  lab.before('create ws', (done) => {
+  lab.before((done) => {
     const expires = new Date(new Date().getTime() + (1000 * 60 * 60))
 
     const optionsA = {
       method: 'POST',
       url: '/achievements',
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: wsA
     }
 
     const optionsB = {
       method: 'POST',
       url: '/achievements',
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: wsB
     }
 
     const optionsC = {
       method: 'POST',
       url: `/sessions/${sessionA}/generate`,
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: {expiration: expires}
     }
 
     const optionsD = {
       method: 'POST',
       url: `/sessions/${sessionB}/generate`,
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: {expiration: expires}
     }
 
@@ -183,23 +195,32 @@ lab.experiment('User', () => {
     })
   })
 
-  lab.after('remove achievements', (done) => {
+  lab.after((done) => {
     const optionsA = {
       method: 'DELETE',
       url: '/achievements/' + achievementId,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     const optionsB = {
       method: 'DELETE',
       url: '/achievements/' + wsIdA,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     const optionsC = {
       method: 'DELETE',
       url: '/achievements/' + wsIdB,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     async.parallel([
@@ -227,7 +248,10 @@ lab.experiment('User', () => {
     const options = {
       method: 'POST',
       url: '/users',
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: userA
     }
 
@@ -247,7 +271,10 @@ lab.experiment('User', () => {
     const optionsA = {
       method: 'POST',
       url: `/sessions/${sessionA}/check-in`,
-      credentials: credentialsD,
+      auth:{
+        credentials: credentialsD,
+        strategy: 'default'
+      },
       payload: {
         users: [credentialsD.user.id],
         code: codewsA
@@ -257,7 +284,10 @@ lab.experiment('User', () => {
     const optionsB = {
       method: 'POST',
       url: `/sessions/${sessionB}/check-in`,
-      credentials: credentialsD,
+      auth:{
+        credentials: credentialsD,
+        strategy: 'default'
+      },
       payload: {
         users: [credentialsD.user.id],
         code: codewsB
@@ -267,7 +297,10 @@ lab.experiment('User', () => {
     const optionsC = {
       method: 'GET',
       url: '/achievements/active/me',
-      credentials: credentialsD
+      auth:{
+        credentials: credentialsD,
+        strategy: 'default'
+      },
     }
 
     server.inject(optionsA, (response) => {
@@ -298,7 +331,10 @@ lab.experiment('User', () => {
     const optionsA = {
       method: 'POST',
       url: `/sessions/${sessionA}/check-in`,
-      credentials: credentialsD,
+      auth:{
+        credentials: credentialsD,
+        strategy: 'default'
+      },
       payload: {
         users: [credentialsD.user.id],
         code: codewsA
@@ -308,7 +344,10 @@ lab.experiment('User', () => {
     const optionsB = {
       method: 'GET',
       url: '/achievements/active/me',
-      credentials: credentialsD
+      auth:{
+        credentials: credentialsD,
+        strategy: 'default'
+      },
     }
 
     server.inject(optionsA, (response) => {
@@ -345,7 +384,10 @@ lab.experiment('User', () => {
     const options = {
       method: 'GET',
       url: '/users',
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -361,20 +403,29 @@ lab.experiment('User', () => {
     const opt1 = {
       method: 'GET',
       url: '/users',
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     const opt2 = {
       method: 'POST',
       url: '/achievements',
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: achievementA
     }
 
     const opt3 = {
       method: 'POST',
       url: `/sessions/${achievementA.session}/check-in`,
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: { users: [userA.id] }
     }
 
@@ -407,7 +458,10 @@ lab.experiment('User', () => {
     const opt1 = {
       method: 'POST',
       url: `/sessions/${achievementA.session}/generate`,
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: {expiration: expires}
     }
 
@@ -426,7 +480,10 @@ lab.experiment('User', () => {
       const opt2 = {
         method: 'POST',
         url: `/sessions/${achievementA.session}/check-in`,
-        credentials: credentialsD,
+        auth:{
+          credentials: credentialsD,
+          strategy: 'default'
+        },
         payload: {
           users: [credentialsD.user.id],
           code: code
@@ -450,7 +507,10 @@ lab.experiment('User', () => {
     const opt1 = {
       method: 'GET',
       url: `/achievements/${achievementId}`,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     server.inject(opt1, (response) => {
@@ -464,7 +524,10 @@ lab.experiment('User', () => {
       const opt2 = {
         method: 'POST',
         url: `/sessions/${achievementA.session}/check-in`,
-        credentials: credentialsD,
+        auth:{
+          credentials: credentialsD,
+          strategy: 'default'
+        },
         payload: {
           users: [credentialsD.user.id],
           code: 'bad'
@@ -477,7 +540,10 @@ lab.experiment('User', () => {
         const opt3 = {
           method: 'POST',
           url: `/sessions/${achievementA.session}/check-in`,
-          credentials: credentialsD,
+          auth:{
+            credentials: credentialsD,
+            strategy: 'default'
+          },
           payload: {
             users: [credentialsA.user.id],
             code: code
@@ -496,19 +562,28 @@ lab.experiment('User', () => {
     const opt1 = {
       method: 'GET',
       url: `/achievements/${achievementId}/code`,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     const opt2 = {
       method: 'GET',
       url: `/achievements/${achievementId}/code`,
-      credentials: credentialsB
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
     }
 
     const opt3 = {
       method: 'GET',
       url: `/achievements/${achievementId}/code`,
-      credentials: credentialsC
+      auth:{
+        credentials: credentialsC,
+        strategy: 'default'
+      },
     }
 
     server.inject(opt1, (response) => { // Admin
@@ -544,19 +619,28 @@ lab.experiment('User', () => {
     const opt1 = {
       method: 'GET',
       url: `/achievements/code${query}`,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     const opt2 = {
       method: 'GET',
       url: `/achievements/code${query}`,
-      credentials: credentialsB
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
     }
 
     const opt3 = {
       method: 'GET',
       url: `/achievements/code${query}`,
-      credentials: credentialsC
+      auth:{
+        credentials: credentialsC,
+        strategy: 'default'
+      },
     }
 
     server.inject(opt1, (response) => { // Admin
@@ -597,7 +681,10 @@ lab.experiment('User', () => {
     const options = {
       method: 'GET',
       url: '/users/' + userA.id,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -616,7 +703,10 @@ lab.experiment('User', () => {
     const options = {
       method: 'GET',
       url: '/users/' + userA.id,
-      credentials: credentialsB
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -635,7 +725,10 @@ lab.experiment('User', () => {
     const options = {
       method: 'GET',
       url: '/users/me',
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -654,7 +747,10 @@ lab.experiment('User', () => {
     const options = {
       method: 'GET',
       url: '/users/me',
-      credentials: credentialsB
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -673,7 +769,10 @@ lab.experiment('User', () => {
     const options = {
       method: 'PUT',
       url: '/users/' + userA.id,
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: changesToA
     }
 
@@ -693,7 +792,10 @@ lab.experiment('User', () => {
     const options = {
       method: 'PUT',
       url: '/users/' + userA.id,
-      credentials: credentialsB,
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
       payload: { role: 'team' }
     }
 
@@ -707,7 +809,10 @@ lab.experiment('User', () => {
     const options = {
       method: 'PUT',
       url: '/users/' + userA.id,
-      credentials: credentialsC,
+      auth:{
+        credentials: credentialsC,
+        strategy: 'default'
+      },
       payload: { role: 'team' }
     }
 
@@ -727,7 +832,10 @@ lab.experiment('User', () => {
     const options = {
       method: 'PUT',
       url: '/users/' + userA.id,
-      credentials: credentialsC,
+      auth:{
+        credentials: credentialsC,
+        strategy: 'default'
+      },
       payload: promoteAtoCompany
     }
 
@@ -751,7 +859,10 @@ lab.experiment('User', () => {
     const options = {
       method: 'PUT',
       url: '/users/' + userA.id,
-      credentials: credentialsC,
+      auth:{
+        credentials: credentialsC,
+        strategy: 'default'
+      },
       payload: updatedACompany
     }
 
@@ -774,7 +885,10 @@ lab.experiment('User', () => {
     const options = {
       method: 'DELETE',
       url: '/users/' + userA.id + '/company?editionId=' + updatedACompany.company.edition,
-      credentials: credentialsC
+      auth:{
+        credentials: credentialsC,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -792,7 +906,10 @@ lab.experiment('User', () => {
     const options = {
       method: 'PUT',
       url: '/users/me',
-      credentials: credentialsC,
+      auth:{
+        credentials: credentialsC,
+        strategy: 'default'
+      },
       payload: { role: 'user' }
     }
 
@@ -811,7 +928,10 @@ lab.experiment('User', () => {
     const options = {
       method: 'PUT',
       url: '/users/me',
-      credentials: credentialsB,
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
       payload: { role: 'team' }
     }
 
@@ -825,7 +945,10 @@ lab.experiment('User', () => {
     const options = {
       method: 'PUT',
       url: '/users/' + userA.id,
-      credentials: credentialsB,
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
       payload: promoteAtoCompany
     }
 
@@ -839,7 +962,10 @@ lab.experiment('User', () => {
     const options = {
       method: 'GET',
       url: '/users',
-      credentials: credentialsB
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -856,7 +982,10 @@ lab.experiment('User', () => {
     const options = {
       method: 'PUT',
       url: '/users/' + userA.id,
-      credentials: credentialsB,
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
       payload: changesToA
     }
 
@@ -870,7 +999,10 @@ lab.experiment('User', () => {
     const options = {
       method: 'DELETE',
       url: '/users/' + userA.id,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -888,7 +1020,10 @@ lab.experiment('User', () => {
     const options = {
       method: 'POST',
       url: '/users',
-      credentials: credentialsB,
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
       payload: userA
     }
 
@@ -902,7 +1037,10 @@ lab.experiment('User', () => {
     const options = {
       method: 'DELETE',
       url: '/users/' + userA.id,
-      credentials: credentialsB
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {

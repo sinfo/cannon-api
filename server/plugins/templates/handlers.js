@@ -14,12 +14,12 @@ handlers.grid = {
   },
   tags: ['api', 'templates'],
   validate: {
-    params: {
+    params: Joi.object({
       achievementId: Joi.string().required().description('id of the achievement we want')
-    },
-    query: {
+    }),
+    query: Joi.object({
       quantity: Joi.number().default(10).description('how many redeem codes')
-    }
+    })
   },
   pre: [
     {

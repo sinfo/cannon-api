@@ -10,14 +10,14 @@ exports.create = {
     scope: ['company']
   },
   validate: {
-    params: {
+    params: Joi.object({
       companyId: Joi.string().required().description('Id of the company we are linking from'),
       attendeeId: Joi.string().required().description('Id of the attendee')
-    },
-    payload: {
+    }),
+    payload: Joi.object({
       editionId: Joi.string().required().description('Id of the edition'),
       day: Joi.string().required().description('Day the company is signing the users card')
-    }
+    })
   },
   pre: [
     { method: 'link.checkCompany(auth.credentials.user.id, params.companyId, payload.editionId)', assign: 'verification' },
@@ -38,13 +38,13 @@ exports.speed = {
     scope: ['company']
   },
   validate: {
-    params: {
+    params: Joi.object({
       companyId: Joi.string().required().description('Id of the company '),
       attendeeId: Joi.string().required().description('Id of the attendee')
-    },
-    payload: {
+    }),
+    payload: Joi.object({
       editionId: Joi.string().required().description('Id of the edition')
-    }
+    })
   },
   pre: [
     { method: 'link.checkCompany(auth.credentials.user.id, params.companyId, payload.editionId)', assign: 'verification' },
@@ -64,14 +64,14 @@ exports.checkIn = {
     scope: ['team', 'admin', 'user']
   },
   validate: {
-    params: {
+    params: Joi.object({
       sessionId: Joi.string().required().description('id of the session which is being performed check-in of the attendees')
-    },
-    payload: {
+    }),
+    payload: Joi.object({
       users: Joi.array().required().description('An array of users IDs'),
       code: Joi.string().description('Validation code for self signing'),
       unregisteredUsers: Joi.number().description('Number of unregistered users')
-    }
+    })
   },
   pre: [
     { method: 'achievement.addMultiUsersBySession(params.sessionId, payload.users, auth.credentials, payload.code, payload.unregisteredUsers)', assign: 'achievement' }
@@ -89,12 +89,12 @@ exports.generate = {
     scope: ['team', 'admin']
   },
   validate: {
-    params: {
+    params: Joi.object({
       sessionId: Joi.string().required().description('id of the session which code is being generated')
-    },
-    payload: {
+    }),
+    payload: Joi.object({
       expiration: Joi.date().required().description('Until when the code will be active')
-    }
+    })
   },
   pre: [
     { method: 'achievement.generateCodeSession(params.sessionId, payload.expiration)', assign: 'achievement' }

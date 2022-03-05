@@ -8,9 +8,9 @@ exports.generate = {
   tags: ['api', 'qrcode'],
   auth: false,
   validate: {
-    params: {
+    params: Joi.object({
       id: Joi.string().required().description('id of the qrcode')
-    }
+    })
   },
   handler: function (request, reply) {
     const image = qr.image(config.url + '/r/' + request.params.id, { type: 'png' })
@@ -24,9 +24,9 @@ exports.redirect = {
   tags: ['api', 'qrcode'],
   auth: false,
   validate: {
-    params: {
+    params: Joi.object({
       id: Joi.string().required().description('id of the qrcode')
-    }
+    })
   },
   handler: function (request, reply) {
     reply().redirect(config.webapp.url + '/survey/' + request.params.id)

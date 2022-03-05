@@ -1,5 +1,5 @@
-const Lab = require('lab')
-const Code = require('code')
+const Lab = require('@hapi/lab')
+const Code = require('@hapi/code')
 const async = require('async')
 const AchievementKind = require('../db/achievementKind')
 
@@ -136,49 +136,73 @@ lab.experiment('Sign', () => {
     const optionsA = {
       method: 'POST',
       url: '/users',
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: userCompany
     }
     const optionsB = {
       method: 'POST',
       url: '/users',
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: attendee
     }
     const optionsC = {
       method: 'POST',
       url: '/achievements',
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: speedDate1
     }
     const optionsD = {
       method: 'POST',
       url: '/achievements',
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: speedDate2
     }
     const optionsE = {
       method: 'POST',
       url: '/achievements',
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: achievementDay
     }
     const optionsF = {
       method: 'POST',
       url: '/achievements',
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: achievementStand1
     }
     const optionsG = {
       method: 'POST',
       url: '/achievements',
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: achievementStand2
     }
     const optionsH = {
       method: 'PUT',
       url: '/users/' + userCompany.id,
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: promoteToCompanyA
     }
 
@@ -232,37 +256,58 @@ lab.experiment('Sign', () => {
     const optionsA = {
       method: 'DELETE',
       url: '/users/' + userCompany.id,
-      credentials: credentialsAdmin
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
     }
     const optionsB = {
       method: 'DELETE',
       url: '/users/' + attendee.id,
-      credentials: credentialsAdmin
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
     }
     const optionsAchievementA = {
       method: 'DELETE',
       url: '/achievements/' + speedDate1.id,
-      credentials: credentialsAdmin
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
     }
     const optionsAchievementB = {
       method: 'DELETE',
       url: '/achievements/' + speedDate2.id,
-      credentials: credentialsAdmin
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
     }
     const optionsAchievementC = {
       method: 'DELETE',
       url: '/achievements/' + achievementStand1.id,
-      credentials: credentialsAdmin
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
     }
     const optionsAchievementD = {
       method: 'DELETE',
       url: '/achievements/' + achievementStand2.id,
-      credentials: credentialsAdmin
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
     }
     const optionsAchievementE = {
       method: 'DELETE',
       url: '/achievements/' + achievementDay.id,
-      credentials: credentialsAdmin
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
     }
 
     async.parallel([
@@ -317,14 +362,20 @@ lab.experiment('Sign', () => {
     const optionsA = {
       method: 'POST',
       url: `/company/${promoteToCompanyA.company.company}/speed/${attendee.id}`,
-      credentials: credentialsCompany,
+      auth:{
+        credentials: credentialsCompany,
+        strategy: 'default'
+      },
       payload: {editionId: event}
     }
 
     const optionsB = {
       method: 'GET',
       url: '/achievements/speed/me',
-      credentials: credentialsUser
+      auth:{
+        credentials: credentialsUser,
+        strategy: 'default'
+      },
     }
 
     server.inject(optionsA, (response) => {
@@ -354,14 +405,20 @@ lab.experiment('Sign', () => {
     const optionsA = {
       method: 'POST',
       url: `/company/${promoteToCompanyA.company.company}/speed/${attendee.id}`,
-      credentials: credentialsCompany,
+      auth:{
+        credentials: credentialsCompany,
+        strategy: 'default'
+      },
       payload: {editionId: event}
     }
 
     const optionsB = {
       method: 'GET',
       url: '/achievements/speed/me',
-      credentials: credentialsUser
+      auth:{
+        credentials: credentialsUser,
+        strategy: 'default'
+      },
     }
 
     server.inject(optionsA, (response) => {
@@ -391,14 +448,20 @@ lab.experiment('Sign', () => {
     const optionsA = {
       method: 'POST',
       url: `/company/${promoteToCompanyA.company.company}/speed/${attendee.id}`,
-      credentials: credentialsCompany,
+      auth:{
+        credentials: credentialsCompany,
+        strategy: 'default'
+      },
       payload: {editionId: event}
     }
 
     const optionsB = {
       method: 'GET',
       url: '/achievements/speed/me',
-      credentials: credentialsUser
+      auth:{
+        credentials: credentialsUser,
+        strategy: 'default'
+      },
     }
 
     server.inject(optionsA, (response) => {
@@ -428,14 +491,20 @@ lab.experiment('Sign', () => {
     const optionsA = {
       method: 'POST',
       url: `/company/${promoteToCompanyA.company.company}/speed/${attendee.id}`,
-      credentials: credentialsCompany,
+      auth:{
+        credentials: credentialsCompany,
+        strategy: 'default'
+      },
       payload: {editionId: event}
     }
 
     const optionsB = {
       method: 'GET',
       url: '/achievements/speed/me',
-      credentials: credentialsUser
+      auth:{
+        credentials: credentialsUser,
+        strategy: 'default'
+      },
     }
 
     server.inject(optionsA, (response) => {
@@ -465,14 +534,20 @@ lab.experiment('Sign', () => {
     const optionsA = {
       method: 'POST',
       url: `/company/${promoteToCompanyA.company.company}/sign/${attendee.id}`,
-      credentials: credentialsCompany,
+      auth:{
+        credentials: credentialsCompany,
+        strategy: 'default'
+      },
       payload: {editionId: event, day: 'Monday'}
     }
 
     const optionsB = {
       method: 'GET',
       url: '/achievements/active/me',
-      credentials: credentialsUser
+      auth:{
+        credentials: credentialsUser,
+        strategy: 'default'
+      },
     }
 
     server.inject(optionsA, (response) => {
@@ -501,20 +576,29 @@ lab.experiment('Sign', () => {
     const optionsA = {
       method: 'PUT',
       url: '/users/' + userCompany.id,
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: promoteToCompanyB
     }
     const optionsB = {
       method: 'POST',
       url: `/company/${promoteToCompanyB.company.company}/sign/${attendee.id}`,
-      credentials: credentialsCompany,
+      auth:{
+        credentials: credentialsCompany,
+        strategy: 'default'
+      },
       payload: {editionId: event, day: 'Monday'}
     }
 
     const optionsC = {
       method: 'GET',
       url: '/achievements/active/me',
-      credentials: credentialsUser
+      auth:{
+        credentials: credentialsUser,
+        strategy: 'default'
+      },
     }
 
     server.inject(optionsA, (response) => {
@@ -551,14 +635,20 @@ lab.experiment('Sign', () => {
     const optionsB = {
       method: 'POST',
       url: `/company/${promoteToCompanyB.company.company}/speed/${attendee.id}`,
-      credentials: credentialsCompany,
+      auth:{
+        credentials: credentialsCompany,
+        strategy: 'default'
+      },
       payload: {editionId: event}
     }
 
     const optionsC = {
       method: 'GET',
       url: '/achievements/speed/me',
-      credentials: credentialsUser
+      auth:{
+        credentials: credentialsUser,
+        strategy: 'default'
+      },
     }
 
     happyHour.create(optionsA, (err, hh) => {

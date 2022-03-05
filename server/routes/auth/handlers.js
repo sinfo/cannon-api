@@ -10,10 +10,10 @@ exports.facebook = {
     mode: 'try'
   },
   validate: {
-    payload: {
+    payload: Joi.object({
       id: Joi.string().required().description('facebook id of the member'),
       token: Joi.string().required().description('facebook token of the member')
-    }
+    })
   },
   pre: [
     { method: 'auth.facebook(payload.id, payload.token)', assign: 'member' }
@@ -31,10 +31,10 @@ exports.google = {
     mode: 'try'
   },
   validate: {
-    payload: {
+    payload: Joi.object({
       id: Joi.string().required().description('google id of the member'),
       token: Joi.string().required().description('google token of the member')
-    }
+    })
   },
   pre: [
     { method: 'auth.google(payload.id, payload.token)', assign: 'member' }
@@ -52,9 +52,9 @@ exports.fenix = {
     mode: 'try'
   },
   validate: {
-    payload: {
+    payload: Joi.object({
       code: Joi.string().required().description('fenix code of the member')
-    }
+    })
   },
   pre: [
     { method: 'auth.fenix(payload.code)', assign: 'member' }
@@ -72,9 +72,9 @@ exports.linkedin = {
     mode: 'try'
   },
   validate: {
-    payload: {
+    payload: Joi.object({
       code: Joi.string().required().description('Linkedin code of the member')
-    }
+    })
   },
   pre: [
     { method: 'auth.linkedin(payload.code)', assign: 'member' }

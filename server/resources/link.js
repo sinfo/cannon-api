@@ -112,10 +112,8 @@ function get (filter, editionId, cb) {
   })
 }
 
-function list (filter, query, cb) {
-  log.debug({ filter: filter }, 'list link')
-
-  cb = cb || query // fields is optional
+async function list (filter, query) {
+  // log.debug({ filter: filter }, 'list link')
 
   if (typeof filter === 'string') {
     filter = { company: filter }
@@ -132,37 +130,26 @@ function list (filter, query, cb) {
     sort: fieldsParser(query.sort)
   }
 
-  Link.find(filter, fields, options, (err, links) => {
-    if (err) {
-      log.error({ err: err }, 'error getting all links')
-      return cb(Boom.internal())
-    }
-
+  let links = await Link.find(filter, fields, options)
     let achFilter = {
       'validity.to':
         { '$gt': new Date('January 1, 2021 00:00:00').toISOString() },
       'kind': 'cv'
     }
 
-    log.debug({ filter: filter }, 'finding achievements')
 
-    Achievement.findOne(achFilter, (err, achievement) => {
-      if (err) {
-        log.error({ err: err }, 'error getting achievements')
-        return cb(Boom.internal())
-      }
-
-      let objLinks = Array.from(links, (l) => { return l.toObject() })
-
-      objLinks.forEach(
-        (l) => { l.cv = achievement ? achievement.toObject().users.includes(l.attendee) : false })
-
-      cb(null, objLinks)
-    })
-  })
+   let achievement = await Achievement.findOne(achFilter)
+   if(!achievement){
+     return Boom.notFound()
+   }
+   let objLinks = Array.from(links, (l) => { return l.toObject() })
+ 
+   objLinks.forEach((l) => { l.cv = achievement ? achievement.toObject().users.includes(l.attendee) : false })
+ 
+   return objLinks
 }
 
-function remove (filter, editionId, cb) {
+async function remove (filter, editionId, cb) {
   log.debug({ filter: filter, edition: editionId }, 'removing link')
 
   filter = {
@@ -171,37 +158,18 @@ function remove (filter, editionId, cb) {
     attendee: filter.attendeeId
   }
 
-  Link.findOneAndRemove(filter, (err, link) => {
-    if (err) {
-      log.error({ err: err, link: editionId }, 'error deleting link')
-      return cb(Boom.internal())
-    }
-    if (!link) {
-      log.error({ err: 'not found', link: editionId }, 'error deleting link')
-      return cb(Boom.notFound('link not found'))
-    }
-
-    return cb(null, link)
-  })
+  return Link.findOneAndRemove(filter)
 }
 
 // Checks if the user is/was part of the company whose link he trying accessing
-function checkCompany (userId, companyId, editionId, cb) {
-  server.methods.user.get({ id: userId }, (err, user) => {
-    if (err) {
-      log.error({ err: err, user: userId }, 'error getting user')
-      return cb(Boom.internal())
-    }
-
-    if (!user) {
-      log.error({ err: 'not found', user: userId }, 'error getting user')
-      return cb(Boom.notFound('user not found'))
-    }
-
-    if (_.findWhere(user.company, { company: companyId, edition: editionId })) {
-      return cb(null, true)
-    }
+async function checkCompany (userId, companyId, editionId) {
+  let user = await server.methods.user.get({ id: userId })
+  if (!user) {
+    log.error({ err: 'not found', user: userId }, 'error getting user')
+    return Boom.notFound('user not found')
+  }  
+  if (!_.findWhere(user.company, { company: companyId, edition: editionId })) {
     log.error({company: companyId, user: userId, edition: editionId, userCompany: user.company}, 'company not found')
-    return cb(Boom.notFound('company not found'))
-  })
+    return Boom.notFound('company not found')
+  }
 }

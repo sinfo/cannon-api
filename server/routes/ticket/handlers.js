@@ -11,9 +11,9 @@ exports.registerTicket = {
     scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
-    params: {
+    params: Joi.object({
       sessionId: Joi.string().required().description('Id of the session')
-    }
+    })
   },
   pre: [
     { method: 'session.get(params.sessionId)', assign: 'session' },
@@ -36,9 +36,9 @@ exports.voidTicket = {
     scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
-    params: {
+    params: Joi.object({
       sessionId: Joi.string().required().description('Id of the session')
-    }
+    })
   },
   pre: [
     { method: 'session.get(params.sessionId)', assign: 'session' },
@@ -61,9 +61,9 @@ exports.confirmTicket = {
     scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
-    params: {
+    params: Joi.object({
       sessionId: Joi.string().required().description('Id of the session')
-    }
+    })
   },
   pre: [
     { method: 'session.get(params.sessionId)', assign: 'session' },
@@ -87,9 +87,9 @@ exports.get = {
     mode: 'try'
   },
   validate: {
-    params: {
+    params: Joi.object({
       sessionId: Joi.string().required().description('Id of the session')
-    }
+    })
   },
   pre: [
     [
@@ -110,12 +110,12 @@ exports.list = {
     scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
-    query: {
+    query: Joi.object({
       fields: Joi.string().description('Fields we want to retrieve'),
       sort: Joi.string().description('Sort fields we want to retrieve'),
       skip: Joi.number().description('Number of documents we want to skip'),
       limit: Joi.number().description('Limit of documents we want to retrieve')
-    }
+    })
   },
   pre: [
     { method: 'ticket.list(query)', assign: 'tickets' }
@@ -133,10 +133,10 @@ exports.registerPresence = {
     scope: ['admin']
   },
   validate: {
-    params: {
+    params: Joi.object({
       sessionId: Joi.string().required().description('Id of the session'),
       userId: Joi.string().required().description('Id of the user')
-    }
+    })
   },
   pre: [
     [
@@ -158,9 +158,9 @@ exports.getUsers = {
     mode: 'try'
   },
   validate: {
-    params: {
+    params: Joi.object({
       sessionId: Joi.string().required().description('Id of the session')
-    }
+    })
   },
   pre: [
     { method: 'session.get(params.sessionId)', assign: 'session' },
@@ -181,9 +181,9 @@ exports.getWaiting = {
     mode: 'try'
   },
   validate: {
-    params: {
+    params: Joi.object({
       sessionId: Joi.string().required().description('Id of the session')
-    }
+    })
   },
   pre: [
     { method: 'session.get(params.sessionId)', assign: 'session' },
@@ -204,9 +204,9 @@ exports.getConfirmed = {
     mode: 'try'
   },
   validate: {
-    params: {
+    params: Joi.object({
       sessionId: Joi.string().required().description('Id of the session')
-    }
+    })
   },
   pre: [
     { method: 'session.get(params.sessionId)', assign: 'session' },
@@ -227,9 +227,9 @@ exports.getUserSessions = {
     mode: 'try'
   },
   validate: {
-    params: {
+    params: Joi.object({
       userId: Joi.string().required().description('Id of the user')
-    }
+    })
   },
   pre: [
     { method: 'ticket.getUserSessions(params.userId)', assign: 'tickets' }

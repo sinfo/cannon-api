@@ -11,11 +11,11 @@ exports.create = {
     scope: ['team', 'admin']
   },
   validate: {
-    payload: {
+    payload: Joi.object({
       id: Joi.string().required().description('Redeem Code id.'),
       achievement: Joi.string().required().description('Achievement you want to redeem.'),
       expires: Joi.date().description('Date of redeem code expiration.')
-    }
+    })
   },
   pre: [
     { method: 'redeem.create(payload)', assign: 'redeem' }
@@ -33,9 +33,9 @@ exports.get = {
     scope: ['user', 'team', 'admin']
   },
   validate: {
-    params: {
+    params: Joi.object({
       id: Joi.string().required().description('Id of the redeem code we want to retrieve')
-    }
+    })
   },
   pre: [
     { method: 'redeem.get(params.id)', assign: 'redeem' },
@@ -58,9 +58,9 @@ exports.remove = {
     scope: ['admin']
   },
   validate: {
-    params: {
+    params: Joi.object({
       id: Joi.string().required().description('Id of the redeem code we want to remove')
-    }
+    })
   },
   pre: [
     { method: 'redeem.remove(params.id)', assign: 'redeem' }

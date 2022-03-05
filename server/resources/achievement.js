@@ -31,91 +31,46 @@ server.method('achievement.createSecret', createSecret, {})
 server.method('achievement.addUserToSecret', addUserToSecret, {})
 server.method('achievement.getAchievementBySession', getAchievementBySession, {})
 
-function create (achievement, cb) {
+async function create (achievement) {
   achievement.id = achievement.id || slug(achievement.name)
-
-  log.error({ach: achievement}, 'id')
 
   achievement.updated = achievement.created = Date.now()
 
-  Achievement.create(achievement, (err, _achievement) => {
-    if (err) {
-      if (err.code === 11000) {
-        return cb(Boom.conflict(`achievement "${achievement.id}" is a duplicate`))
-      }
+  return Achievement.create(achievement)
 
-      log.error({ err: err, achievement: achievement.id }, 'error creating achievement')
-      return cb(Boom.internal())
-    }
-
-    cb(null, _achievement.toObject({ getters: true }))
-  })
 }
 
-function update (filter, achievement, cb) {
+async function update (filter, achievement) {
   if (typeof filter === 'string') {
     filter = { id: filter }
   }
 
   achievement.updated = Date.now()
 
-  Achievement.findOneAndUpdate(filter, achievement, (err, _achievement) => {
-    if (err) {
-      log.error({ err: err, achievement: filter }, 'error updating achievement')
-      return cb(Boom.internal())
-    }
-    if (!_achievement) {
-      log.error({ err: err, achievement: filter }, 'error updating achievement')
-      return cb(Boom.notFound())
-    }
-
-    cb(null, _achievement.toObject({ getters: true }))
-  })
+  return Achievement.findOneAndUpdate(filter, achievement)
 }
 
-function updateMulti (filter, achievement, cb) {
+async function updateMulti (filter, achievement) {
   if (typeof filter === 'string') {
     filter = { id: filter }
   }
 
   achievement.updated = Date.now()
 
-  Achievement.update(filter, achievement, { multi: true }, (err, _achievements) => {
-    if (err) {
-      log.error({ err: err, achievement: filter }, 'error updating achievements')
-      return cb(Boom.internal())
-    }
-    if (!_achievements) {
-      log.warn({ err: err, achievement: filter }, 'could not find achievements')
-      return cb(Boom.notFound())
-    }
-
-    cb(null, _achievements)
-  })
+  return Achievement.updateMany(filter, achievement)
 }
 
-function get (filter, cb) {
+async function get (filter) {
   // log.debug({id: id}, 'getting achievement')
 
   if (typeof filter === 'string') {
     filter = { id: filter }
   }
 
-  Achievement.findOne(filter, (err, achievement) => {
-    if (err) {
-      log.error({ err: err, achievement: filter }, 'error getting achievement')
-      return cb(Boom.internal('error getting achievement'))
-    }
-    if (!achievement) {
-      log.error({ err: 'not found', achievement: filter }, 'achievement not found')
-      return cb(Boom.notFound('achievement not found'))
-    }
-
-    cb(null, achievement.toObject({ getters: true }))
-  })
+  return Achievement.findOne(filter)
 }
 
-function getByUser (filter, cb) {
+async function getByUser (filter, cb) {
   // log.debug({id: id}, 'getting achievement')
   const now = new Date()
 
@@ -125,39 +80,15 @@ function getByUser (filter, cb) {
     'validity.to': { $gte: now }
   }
 
-  Achievement.find(filter, (err, achievements) => {
-    if (err) {
-      log.error({ err: err, achievement: filter }, 'error getting achievements')
-      return cb(Boom.internal('error getting achievements'))
-    }
-    if (!achievements) {
-      log.error({ err: 'not found', achievement: filter }, 'achievements not found')
-      return cb(Boom.notFound('achievements not found'))
-    }
-
-    cb(null, achievements)
-  })
+  return Achievement.find(filter)
 }
 
-function removeAllFromUser (userId, cb) {
-  Achievement.update({ users: userId }, { $pull: { users: userId } }, { multi: true }, (err, achievements) => {
-    if (err) {
-      log.error({ err: err, userId: userId }, 'error removing user from multiple achievements')
-      return cb(Boom.internal('error getting achievements'))
-    }
+async function removeAllFromUser (userId, cb) {
+  return Achievement.updateMany({ users: userId }, { $pull: { users: userId } })
 
-    if (!achievements) {
-      log.error({ err: 'not found', userId: userId }, 'achievements not found')
-      return cb(Boom.notFound('achievements not found'))
-    }
-
-    cb(null, achievements)
-  })
 }
 
-function list (query, cb) {
-  cb = cb || query // fields is optional
-
+async function list (query, cb) {
   const filter = {}
   const fields = fieldsParser(query.fields)
   const options = {
@@ -166,32 +97,15 @@ function list (query, cb) {
     sort: fieldsParser(query.sort)
   }
 
-  Achievement.find(filter, fields, options, (err, achievements) => {
-    if (err) {
-      log.error({ err: err }, 'error getting all achievements')
-      return cb(Boom.internal())
-    }
-
-    cb(null, achievements)
-  })
+  return Achievement.find(filter, fields, options)
 }
 
-function remove (id, cb) {
-  Achievement.findOneAndRemove({ id: id }, (err, achievement) => {
-    if (err) {
-      log.error({ err: err, achievement: id }, 'error deleting achievement')
-      return cb(Boom.internal())
-    }
-    if (!achievement) {
-      log.error({ err: 'not found', achievement: id }, 'error deleting achievement')
-      return cb(Boom.notFound('achievement not found'))
-    }
-
-    return cb(null, achievement)
-  })
+async function remove (id) {
+  return Achievement.findOneAndRemove({ id: id }) 
 }
 
-function addCV (userId, cb) {
+// 500, 404
+async function addCV (userId) {
   const achievementKind = 'cv'
   const now = new Date()
 
@@ -201,26 +115,15 @@ function addCV (userId, cb) {
     }
   }
 
-  Achievement.findOneAndUpdate({
+  return Achievement.findOneAndUpdate({
     kind: achievementKind,
     'validity.from': { $lte: now },
     'validity.to': { $gte: now }
-  }, changes, (err, achievement) => {
-    if (err) {
-      log.error({ err: err, achievement: achievement }, 'error adding user to cv achievement')
-      return cb(Boom.internal())
-    }
-
-    if (achievement === null) {
-      log.error({ userId: userId }, 'error trying to add user to cv achievement')
-      return cb(new Error('error trying to add user to cv achievement'), null)
-    }
-
-    cb(null, achievement.toObject({ getters: true }))
-  })
+  }, changes)
 }
 
-function removeCV (userId, cb) {
+// 500, 404
+async function removeCV (userId) {
   const achievementKind = 'cv'
   const now = new Date()
 
@@ -230,29 +133,18 @@ function removeCV (userId, cb) {
     }
   }
 
-  Achievement.findOneAndUpdate({
+  return Achievement.findOneAndUpdate({
     kind: achievementKind,
     'validity.from': { $lte: now },
     'validity.to': { $gte: now }
-  }, changes, (err, achievement) => {
-    if (err) {
-      log.error({ err: err, achievement: achievement }, 'error removing user from cv achievement')
-      return cb(Boom.internal())
-    }
-
-    if (achievement === null) {
-      log.error({ userId: userId }, 'error trying to remove user from cv achievement')
-      return cb(new Error('error trying to remove user from cv achievement'), null)
-    }
-
-    cb(null, achievement.toObject({ getters: true }))
-  })
+  }, changes)
 }
 
-function addUser (achievementId, userId, cb) {
+//500, 404
+async function addUser (achievementId, userId, cb) {
   if (!achievementId || !userId) {
     log.error({ userId: userId, achievementId: achievementId }, 'missing arguments on addUser')
-    return cb()
+    return Boom.badData()
   }
   const changes = {
     $addToSet: {
@@ -262,26 +154,14 @@ function addUser (achievementId, userId, cb) {
 
   const now = new Date()
 
-  Achievement.findOneAndUpdate({
+  return Achievement.findOneAndUpdate({
     id: achievementId,
     'validity.from': { $lte: now },
     'validity.to': { $gte: now }
-  }, changes, (err, achievement) => {
-    if (err) {
-      log.error({ err: err, achievement: achievementId }, 'error adding user to achievement')
-      return cb(Boom.internal())
-    }
-
-    if (achievement === null) {
-      log.error({ achievementId: achievementId, userId: userId }, 'error trying to add user to not valid achievement')
-      return cb(new Error('error trying to add user to not valid achievement'), null)
-    }
-
-    cb(null, achievement.toObject({ getters: true }))
-  })
+  }, changes)
 }
 
-function getPointsForUser (activeAchievements, userId, cb) {
+function getPointsForUser (activeAchievements, userId) {
   const result = { achievements: [], points: 0 }
 
   // list unique users at their points
@@ -298,30 +178,16 @@ function getPointsForUser (activeAchievements, userId, cb) {
     }
   })
 
-  cb(null, result)
+  return result
 }
 
-function getSpeedDatePointsForUser (userId, cb) {
-  const result = { achievements: [], points: 0 }
+async function getSpeedDatePointsForUser (userId) {
+  
   const filter = {
     kind: 'speedDate'
   }
 
-  Achievement.find(filter, (err, achievements) => {
-    if (err) {
-      log.error({err: err}, 'Error finding achievements')
-    }
-
-    achievements.forEach(ach => {
-      result.points += getSpeedDatePoints(ach, userId)
-      result.achievements.push({
-        achievement: ach,
-        frequence: userFrequence(ach, userId)
-      })
-    })
-
-    return cb(null, result)
-  })
+  return Achievement.find(filter)
 }
 
 function userFrequence (achievement, userId) {
@@ -347,10 +213,11 @@ function getSpeedDatePoints (achievement, userId) {
   return points
 }
 
-function addMultiUsers (achievementId, usersId, cb) {
+//500
+async function addMultiUsers (achievementId, usersId) {
   if (!usersId) {
     log.error('tried to add multiple users to achievement but no users where given')
-    return cb()
+    return Boom.badData()
   }
 
   const changes = {
@@ -361,20 +228,14 @@ function addMultiUsers (achievementId, usersId, cb) {
 
   const now = new Date()
 
-  Achievement.findOneAndUpdate({
+  return Achievement.findOneAndUpdate({
     id: achievementId,
     'validity.from': { $lte: now },
     'validity.to': { $gte: now }
-  }, changes, (err, achievement) => {
-    if (err) {
-      log.error({ err: err, achievement: achievementId }, 'error adding user to achievement')
-      return cb(Boom.internal())
-    }
-
-    cb(null, achievement.toObject({ getters: true }))
-  })
+  }, changes)
 }
 
+//TODO:
 function addMultiUsersBySession (sessionId, usersId, credentials, code, unregisteredUsersNumber, cb) {
   if (!usersId) {
     log.error('tried to add multiple users to achievement but no users where given')
@@ -533,7 +394,7 @@ function addMultiUsersBySession (sessionId, usersId, credentials, code, unregist
     }
   }
 }
-
+//TODO:
 function checkUserStandDay (userId, cb) {
   if (!userId) {
     log.error('tried to user to company achievement but no user was given')
@@ -618,10 +479,11 @@ function checkUserStandDay (userId, cb) {
   })
 }
 
-function addUserToStandAchievement (companyId, userId, cb) {
+//500, 404
+async function addUserToStandAchievement (companyId, userId, cb) {
   if (!userId) {
     log.error('tried to user to company achievement but no user was given')
-    return cb()
+    return Boom.badData()
   }
 
   const changes = {
@@ -632,30 +494,20 @@ function addUserToStandAchievement (companyId, userId, cb) {
 
   const now = new Date()
 
-  Achievement.findOneAndUpdate({
+  return Achievement.findOneAndUpdate({
     id: { $regex: `stand-${companyId}-` },
     'kind': 'stand',
     'validity.from': { $lte: now },
     'validity.to': { $gte: now }
-  }, changes, (err, achievement) => {
-    if (err) {
-      log.error({ err: err, companyId: companyId, userId: userId }, 'error adding user to stand achievement')
-      return cb(Boom.internal())
-    }
-
-    if (achievement === null) {
-      log.error({ companyId: companyId, userId: userId }, 'error trying to add user to not valid stand achievement')
-      return cb(new Error('error trying to add user to not valid stand achievement'), null)
-    }
-
-    cb(null, achievement.toObject({ getters: true }))
-  })
+  }, changes)
 }
 
-function addUserToSpeedDateAchievement (companyId, userId, hhs, cb) {
+
+//500, 404
+async function addUserToSpeedDateAchievement (companyId, userId, hhs) {
   if (!userId) {
     log.error('tried to user to company achievement but no user was given')
-    return cb()
+    return Boom.badData()
   }
 
   const changes = {
@@ -666,28 +518,16 @@ function addUserToSpeedDateAchievement (companyId, userId, hhs, cb) {
 
   const now = new Date()
 
-  Achievement.findOneAndUpdate({
+  return Achievement.findOneAndUpdate({
     id: { $regex: `speedDate-${companyId}-` },
     'kind': 'speedDate',
     'validity.from': { $lte: now },
     'validity.to': { $gte: now }
-  }, changes, (err, achievement) => {
-    if (err) {
-      log.error({ err: err, companyId: companyId, userId: userId }, 'error adding user to speed date achievement')
-      return cb(Boom.internal())
-    }
-
-    if (achievement === null) {
-      log.error({ companyId: companyId, userId: userId }, 'error trying to add user to not valid speed date achievement')
-      return cb(new Error('error trying to add user to not valid stand achievement'), null)
-    }
-
-    cb(null, achievement.toObject({ getters: true }))
-  })
+  }, changes)
 }
 
 // _date is a string, converted to Date inside this function
-function getActiveAchievements (query, cb) {
+async function getActiveAchievements (query, cb) {
   var date
   cb = cb || query
 
@@ -701,20 +541,13 @@ function getActiveAchievements (query, cb) {
     }
   }
 
-  Achievement.find({
+  return Achievement.find({
     'validity.from': { $lte: date },
     'validity.to': { $gte: date }
-  }, (err, achievements) => {
-    if (err) {
-      log.error({ err: err, date: date }, 'error getting active achievements on a given date')
-      return cb(err)
-    }
-
-    cb(null, achievements)
   })
 }
 
-function getActiveAchievementsCode (query, cb) {
+async function getActiveAchievementsCode (query) {
   var start, end
   cb = cb || query
 
@@ -724,7 +557,7 @@ function getActiveAchievementsCode (query, cb) {
     start = new Date(query.start)
     if (isNaN(start.getTime())) {
       log.error({ query: query.start }, 'invalid start date given on query to get active achievements')
-      return cb(Boom.notAcceptable('invalid start date given in query'))
+      return Boom.notAcceptable('invalid start date given in query')
     }
   }
   if (query.end === undefined) {
@@ -733,12 +566,13 @@ function getActiveAchievementsCode (query, cb) {
     end = new Date(query.end)
     if (isNaN(end.getTime())) {
       log.error({ query: query.end }, 'invalid end date given on query to get active achievements')
-      return cb(Boom.notAcceptable('invalid end date given in query'))
+      return Boom.notAcceptable('invalid end date given in query')
     }
   }
 
   if (end < start) {
     log.error({start: start, end: end}, 'end date is before start date')
+    return Boom.notAcceptable('invalid end date given in query')
   }
 
   const filter = {
@@ -750,27 +584,21 @@ function getActiveAchievementsCode (query, cb) {
     filter.kind = query.kind
   }
 
-  Achievement.find(filter, (err, achievements) => {
-    if (err) {
-      log.error({ err: err, start: start, end: end }, 'error getting active achievements on a given date')
-      return cb(err)
-    }
-
-    cb(null, achievements)
-  })
+  return Achievement.find(filter)
 }
 
-function generateCodeSession (sessionId, expiration, cb) {
+//500, 404
+async function generateCodeSession (sessionId, expiration) {
   if (!expiration) {
     log.error('No duration was given')
-    return cb(new Error('No duration was given'))
+    return Boom.badData()
   }
 
   let created = new Date()
   let expires = new Date(expiration)
   if (created >= expires) {
     log.error({expires: expires}, 'expiration date is in the past')
-    return cb(new Error('expiration date is in the past'))
+    return Boom.badData('expiration date is in the past')
   }
 
   let code = randomString(12)
@@ -785,22 +613,10 @@ function generateCodeSession (sessionId, expiration, cb) {
     }
   }
 
-  Achievement.findOneAndUpdate({
+  return Achievement.findOneAndUpdate({
     session: sessionId,
     'validity.to': { $gte: created }
-  }, changes, (err, achievement) => {
-    if (err) {
-      log.error({ err: err, sessionId: sessionId }, 'error adding code to achievement')
-      return cb(Boom.internal())
-    }
-
-    if (achievement === null) {
-      log.error({ sessionId: sessionId }, 'error trying to add code to not valid achievement in session')
-      return cb(new Error('error trying to add code to not valid achievement in session'), null)
-    }
-
-    cb(null, achievement.toObject({ getters: true }))
-  })
+  }, changes)
 }
 
 function randomString (size) {
@@ -814,85 +630,19 @@ function randomString (size) {
   return text
 }
 
-function createSecret (payload, cb) {
+async function createSecret (payload, cb) {
   const options = {
     kind: AchievementKind.SECRET,
     id: new RegExp(payload.event)
   }
 
-  Achievement.find(options, (err, achs) => {
-    if (err) {
-      log.error({error: err})
-      return cb(Boom.internal())
-    }
-
-    if (achs === null) {
-      log.error('error trying to create secret achievement')
-      return cb(new Error('error trying to create secret achievement'), null)
-    }
-
-    const n = achs.length
-
-    const from = new Date()
-    const to = new Date(from)
-    from.setHours(0)
-    from.setMinutes(0)
-    from.setSeconds(0)
-    from.setMilliseconds(0)
-
-    to.setHours(23)
-    to.setMinutes(59)
-    to.setSeconds(59)
-    to.setMilliseconds(999)
-
-    const code = randomString(12)
-
-    const achievement = {
-      name: 'Secret Achievement!',
-      id: `${payload.event}_secret_achievement_${n}`,
-      description: 'Secret achievement valid for a limited time!',
-      instructions: 'Redeem the code that appears in the chat at random times!',
-      img: `https://sinfo.ams3.cdn.digitaloceanspaces.com/static/${payload.event}/achievements/secret_code.webp`,
-      value: payload.points > 0 ? payload.points : 10,
-      users: [],
-      validity: {
-        from: from,
-        to: to
-      },
-      code: {
-        code: code
-      },
-      kind: AchievementKind.SECRET
-    }
-
-    achievement.updated = achievement.created = achievement.code.created = Date.now()
-    const expiration = new Date(payload.validity)
-    if (expiration <= achievement.code.created) {
-      log.error({expires: expiration}, 'expiration date is in the past')
-      return cb(Boom.badRequest())
-    }
-    achievement.code.expiration = expiration
-
-    Achievement.create(achievement, (err, _achievement) => {
-      if (err) {
-        if (err.code === 11000) {
-          log.error({achievement: achievement}, 'duplicate')
-          return cb(Boom.conflict(`achievement "${achievement.id}" is a duplicate`))
-        }
-
-        log.error({ err: err, achievement: achievement.id }, 'error creating achievement')
-        return cb(Boom.internal())
-      }
-
-      cb(null, _achievement.toObject({ getters: true }))
-    })
-  })
+  return Achievement.find(options)
 }
 
-function addUserToSecret (id, code, cb) {
+async function addUserToSecret (id, code, cb) {
   if (!id) {
     log.error('tried to redeem secret but no user was given')
-    return cb()
+    return Boom.boomify()
   }
 
   const now = new Date()
@@ -912,34 +662,11 @@ function addUserToSecret (id, code, cb) {
     'code.code': code
   }
 
-  Achievement.findOneAndUpdate(query, changes, (err, achievement) => {
-    if (err) {
-      log.error({ err: err }, 'error adding user to secret achievement')
-      return cb(Boom.internal())
-    }
-
-    if (achievement === null) {
-      log.error({ code: code }, 'no valid secret achievements with that code')
-      return cb(Boom.notFound('no valid secret achievements with that code'))
-    }
-
-    cb(null, achievement.toObject({ getters: true }))
-  })
+  return Achievement.findOneAndUpdate(query, changes)
 }
 
-function getAchievementBySession (id, cb) {
+async function getAchievementBySession (id) {
   let filter = { session: id }
 
-  Achievement.findOne(filter, (err, achievement) => {
-    if (err) {
-      log.error({ err: err, achievement: filter }, 'error getting achievement')
-      return cb(Boom.internal('error getting achievement'))
-    }
-    if (!achievement) {
-      log.error({ err: 'not found', achievement: filter }, 'achievement not found')
-      return cb(Boom.notFound('achievement not found'))
-    }
-
-    cb(null, achievement.toObject({ getters: true }))
-  })
+  return Achievement.findOne(filter)
 }

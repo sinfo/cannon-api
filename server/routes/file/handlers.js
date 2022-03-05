@@ -12,13 +12,13 @@ exports.create = {
     scope: ['admin']
   },
   validate: {
-    payload: {
+    payload: Joi.object({
       id: Joi.string().required().description('File id'),
       user: Joi.string().required().description('File user'),
       name: Joi.string().required().description('File name'),
       kind: Joi.string().required().description('File category'),
       extension: Joi.string().required().description('File type')
-    }
+    })
   },
   pre: [
     { method: 'file.create(payload)', assign: 'file' }
@@ -36,16 +36,16 @@ exports.update = {
     scope: ['admin']
   },
   validate: {
-    params: {
+    params: Joi.object({
       id: Joi.string().required().description('Id of the file we want to update')
-    },
-    payload: {
+    }),
+    payload: Joi.object({
       id: Joi.string().description('File id'),
       user: Joi.string().description('File user'),
       name: Joi.string().description('File name'),
       kind: Joi.string().description('File category'),
       extension: Joi.string().description('File type')
-    }
+    })
   },
   pre: [
     { method: 'file.update(params.id, payload)', assign: 'file' }
@@ -63,9 +63,9 @@ exports.get = {
     scope: ['admin']
   },
   validate: {
-    params: {
+    params: Joi.object({
       id: Joi.string().required().description('Id or user of the file we want to retrieve')
-    }
+    })
   },
   pre: [
     { method: 'file.get(params.id, query)', assign: 'file' }
@@ -98,9 +98,9 @@ exports.download = {
     scope: ['admin']
   },
   validate: {
-    params: {
+    params: Joi.object({
       id: Joi.string().required().description('Id or user of the file we want to retrieve')
-    }
+    })
   },
   pre: [
     { method: 'file.get(params.id, query)', assign: 'file' }
@@ -143,9 +143,9 @@ exports.downloadZip = {
     scope: ['team', 'admin']
   },
   validate: {
-    query: {
+    query: Joi.object({
       editionId: Joi.string().required().description('The edition of the event')
-    }
+    })
   },
   handler: function (request, reply) {
     server.methods.file.zipFiles(null, (_, zip) => {
@@ -161,13 +161,13 @@ exports.downloadCompany = {
     scope: ['company', 'team', 'admin']
   },
   validate: {
-    params: {
+    params: Joi.object({
       companyId: Joi.string().required().description('Company Id')
-    },
-    query: {
+    }),
+    query: Joi.object({
       editionId: Joi.string().required().description('The edition of the event'),
       links: Joi.boolean().description('Selects only the files from linked users')
-    }
+    })
   },
   pre: [
     [
@@ -208,12 +208,12 @@ exports.list = {
     scope: ['admin']
   },
   validate: {
-    query: {
+    query: Joi.object({
       fields: Joi.string().description('Fields we want to retrieve'),
       sort: Joi.string().description('Sort fields we want to retrieve'),
       skip: Joi.number().description('Number of documents we want to skip'),
       limit: Joi.number().description('Limit of documents we want to retrieve')
-    }
+    })
   },
   pre: [
     { method: 'file.list(query)', assign: 'files' }
@@ -232,9 +232,9 @@ exports.remove = {
 
   },
   validate: {
-    params: {
+    params: Joi.object({
       id: Joi.string().required().description('Id of the file we want to remove')
-    }
+    })
   },
   pre: [
     { method: 'file.remove(params.id)', assign: 'file' }
@@ -275,12 +275,12 @@ exports.upload = {
     maxBytes: configUpload.maxSize
   },
   validate: {
-    query: {
+    query: Joi.object({
       upsert: Joi.string().default('true')
-    },
-    params: {
+    }),
+    params: Joi.object({
       id: Joi.string().required().description('Id of the user whose file we want to upload')
-    },
+    }),
     payload: Joi.object().pattern(/(\w*\W*)*/,
       Joi.object({
         pipe: Joi.func().required().description('File stream'),
@@ -322,9 +322,9 @@ exports.uploadMe = {
     maxBytes: configUpload.maxSize
   },
   validate: {
-    query: {
+    query: Joi.object({
       upsert: Joi.string().invalid('false').default('true')
-    },
+    }),
     payload: Joi.object().pattern(/(\w*\W*)*/,
       Joi.object({
         pipe: Joi.func().required().description('File stream'),

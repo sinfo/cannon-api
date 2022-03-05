@@ -1,5 +1,5 @@
-const Lab = require('lab')
-const Code = require('code')
+const Lab = require('@hapi/lab')
+const Code = require('@hapi/code')
 
 const server = require('../').hapi
 
@@ -105,7 +105,10 @@ lab.experiment('Redeem', () => {
     const options = {
       method: 'POST',
       url: '/achievements',
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: achievementA
     }
 
@@ -115,7 +118,10 @@ lab.experiment('Redeem', () => {
     const optionsB = {
       method: 'POST',
       url: '/achievements',
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: achievementB
     }
 
@@ -125,7 +131,10 @@ lab.experiment('Redeem', () => {
     const optionsC = {
       method: 'POST',
       url: '/achievements',
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: achievementC
     }
 
@@ -135,7 +144,10 @@ lab.experiment('Redeem', () => {
     const userOptions = {
       method: 'POST',
       url: '/users',
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: userA
     }
 
@@ -148,7 +160,10 @@ lab.experiment('Redeem', () => {
     const userOptions = {
       method: 'DELETE',
       url: '/users/' + userA.id,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     server.inject(userOptions, (response) => {
@@ -160,7 +175,10 @@ lab.experiment('Redeem', () => {
     const options = {
       method: 'POST',
       url: '/redeem',
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: redeemA
     }
 
@@ -181,7 +199,10 @@ lab.experiment('Redeem', () => {
     const options = {
       method: 'GET',
       url: '/redeem/' + redeemA.id,
-      credentials: credentialsB
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -199,28 +220,40 @@ lab.experiment('Redeem', () => {
     const options = {
       method: 'POST',
       url: '/redeem',
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: redeemA
     }
 
     const optionsB = {
       method: 'POST',
       url: '/redeem',
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: redeemB
     }
 
     const optionsC = {
       method: 'POST',
       url: '/redeem',
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: redeemC
     }
 
     const optionsD = {
       method: 'POST',
       url: '/redeem',
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: redeemD
     }
 
@@ -265,25 +298,37 @@ lab.experiment('Redeem', () => {
     const options = {
       method: 'DELETE',
       url: '/redeem/' + redeemA.id,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     const optionsB = {
       method: 'DELETE',
       url: '/redeem/' + redeemB.id,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     const optionsC = {
       method: 'DELETE',
       url: '/redeem/' + redeemC.id,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     const optionsD = {
       method: 'DELETE',
       url: '/redeem/' + redeemD.id,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -325,7 +370,10 @@ lab.experiment('Redeem', () => {
     const options = {
       method: 'POST',
       url: '/redeem',
-      credentials: credentialsB,
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
       payload: redeemA
     }
 
@@ -339,7 +387,10 @@ lab.experiment('Redeem', () => {
     const options = {
       method: 'DELETE',
       url: '/redeem/' + redeemA.id,
-      credentials: credentialsB
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -352,18 +403,27 @@ lab.experiment('Redeem', () => {
     const options = {
       method: 'DELETE',
       url: '/achievements/' + achievementA.id,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
     const optionsB = {
       method: 'DELETE',
       url: '/achievements/' + achievementB.id,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     const optionsC = {
       method: 'DELETE',
       url: '/achievements/' + achievementC.id,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {

@@ -1,5 +1,5 @@
-const Lab = require('lab')
-const Code = require('code')
+const Lab = require('@hapi/lab')
+const Code = require('@hapi/code')
 
 const server = require('../').hapi
 
@@ -48,7 +48,10 @@ lab.experiment('File', () => {
     const options = {
       method: 'POST',
       url: '/files',
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: fileA
     }
 
@@ -69,7 +72,10 @@ lab.experiment('File', () => {
     const options = {
       method: 'GET',
       url: '/files',
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -86,7 +92,10 @@ lab.experiment('File', () => {
     const options = {
       method: 'GET',
       url: '/files/' + fileA.id,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -106,7 +115,10 @@ lab.experiment('File', () => {
     const options = {
       method: 'GET',
       url: '/files',
-      credentials: credentialsB
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -119,7 +131,10 @@ lab.experiment('File', () => {
     const options = {
       method: 'GET',
       url: '/files/' + fileA.id,
-      credentials: credentialsB
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -132,7 +147,10 @@ lab.experiment('File', () => {
     const options = {
       method: 'PUT',
       url: '/files/' + fileA.id,
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: changesToA
     }
 
@@ -153,7 +171,10 @@ lab.experiment('File', () => {
     const options = {
       method: 'PUT',
       url: '/files/' + fileA.id,
-      credentials: credentialsB,
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
       payload: changesToA
     }
 
@@ -168,7 +189,10 @@ lab.experiment('File', () => {
     const options = {
       method: 'DELETE',
       url: '/files/' + fileA.id,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -187,7 +211,10 @@ lab.experiment('File', () => {
     const options = {
       method: 'POST',
       url: '/files',
-      credentials: credentialsB,
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
       payload: fileA
     }
 
@@ -201,7 +228,10 @@ lab.experiment('File', () => {
     const options = {
       method: 'DELETE',
       url: '/files/' + fileA.id,
-      credentials: credentialsB
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {

@@ -1,5 +1,5 @@
-const Lab = require('lab')
-const Code = require('code')
+const Lab = require('@hapi/lab')
+const Code = require('@hapi/code')
 const async = require('async')
 
 const server = require('../').hapi
@@ -153,43 +153,64 @@ lab.experiment('Link', () => {
     const optionsA = {
       method: 'POST',
       url: '/users',
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: userA
     }
     const optionsB = {
       method: 'POST',
       url: '/users',
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: userB
     }
     const optionsC = {
       method: 'POST',
       url: '/users',
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: userC
     }
     const optionsD = {
       method: 'POST',
       url: '/users',
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: userD
     }
     const optionsTeam = {
       method: 'POST',
       url: '/users',
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: userTeam
     }
     const optionsAchievementA = {
       method: 'POST',
       url: '/achievements',
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: achievementA
     }
     const optionsAchievementD = {
       method: 'POST',
       url: '/achievements',
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: achievementD
     }
 
@@ -238,37 +259,58 @@ lab.experiment('Link', () => {
     const optionsA = {
       method: 'DELETE',
       url: '/users/' + userA.id,
-      credentials: credentialsAdmin
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
     }
     const optionsB = {
       method: 'DELETE',
       url: '/users/' + userB.id,
-      credentials: credentialsAdmin
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
     }
     const optionsC = {
       method: 'DELETE',
       url: '/users/' + userC.id,
-      credentials: credentialsAdmin
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
     }
     const optionsD = {
       method: 'DELETE',
       url: '/users/' + userD.id,
-      credentials: credentialsAdmin
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
     }
     const optionsTeam = {
       method: 'DELETE',
       url: '/users/' + userTeam.id,
-      credentials: credentialsAdmin
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
     }
     const optionsAchievementA = {
       method: 'DELETE',
       url: '/achievements/' + achievementA.id,
-      credentials: credentialsAdmin
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
     }
     const optionsAchievementD = {
       method: 'DELETE',
       url: '/achievements/' + achievementD.id,
-      credentials: credentialsAdmin
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
     }
 
     async.parallel([
@@ -316,7 +358,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'POST',
       url: `/company/${userA.company[0].company}/link`,
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: linkA
     }
 
@@ -339,7 +384,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'POST',
       url: `/company/${userA.company[0].company}/link`,
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: linkC
     }
 
@@ -362,7 +410,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'POST',
       url: `/company/${userA.company[0].company}/link`,
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: linkB
     }
 
@@ -390,7 +441,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'POST',
       url: `/company/${userA.company[0].company}/sign/${userB.id}`,
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: sign
     }
 
@@ -416,7 +470,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'POST',
       url: `/company/${userD.company[0].company}/sign/${userB.id}`,
-      credentials: credentialsD,
+      auth:{
+        credentials: credentialsD,
+        strategy: 'default'
+      },
       payload: sign
     }
 
@@ -442,7 +499,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'POST',
       url: `/company/${userA.company[0].company}/sign/${userB.id}`,
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: sign
     }
 
@@ -463,7 +523,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'POST',
       url: `/users/${userB.id}/redeem-card`,
-      credentials: credentialsTeam,
+      auth:{
+        credentials: credentialsTeam,
+        strategy: 'default'
+      },
       payload: {
         day: 'Thursday',
         editionId: '25-SINFO'
@@ -480,7 +543,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'Get',
       url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -501,7 +567,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'Get',
       url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
-      credentials: credentialsC
+      auth:{
+        credentials: credentialsC,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -514,7 +583,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'PUT',
       url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: { notes: null }
     }
 
@@ -537,7 +609,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'PUT',
       url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: changesToA
     }
 
@@ -560,7 +635,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'PUT',
       url: `/company/NullConsulting/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: changesToA
     }
 
@@ -575,7 +653,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'Get',
       url: `/company/${userA.company[0].company}/link?editionId=${linkA.editionId}`,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -595,7 +676,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'Get',
       url: `/company/NullConsulting/link?editionId=${linkA.editionId}`,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -608,7 +692,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'POST',
       url: `/company/${userA.company[0].company}/link`,
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: linkA
     }
 
@@ -623,7 +710,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'DELETE',
       url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -644,7 +734,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'DELETE',
       url: `/company/${userA.company[0].company}/link/${linkB.attendeeId}?editionId=${linkB.editionId}`,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -656,7 +749,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'DELETE',
       url: `/company/${userA.company[0].company}/link/${linkC.attendeeId}?editionId=${linkC.editionId}`,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -669,7 +765,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'POST',
       url: `/company/${userA.company[0].company}/link`,
-      credentials: credentialsB,
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
       payload: linkA
     }
 
@@ -684,7 +783,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'GET',
       url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
-      credentials: credentialsB
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -698,7 +800,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'GET',
       url: `/company/${userA.company[0].company}/link?editionId=${linkA.editionId}`,
-      credentials: credentialsB
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -712,7 +817,10 @@ lab.experiment('Link', () => {
     const options = {
       method: 'GET',
       url: `/company/${userA.company[0].company}/link/${linkA.attendeeId}?editionId=${linkA.editionId}`,
-      credentials: credentialsB
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {

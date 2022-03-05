@@ -10,7 +10,7 @@ exports.create = {
     scope: ['admin']
   },
   validate: {
-    payload: {
+    payload: Joi.object({
       id: Joi.string().description('Id of the user'),
       name: Joi.string().required().description('Name of the user'),
       img: Joi.string().uri().description('Image of the user'),
@@ -54,7 +54,7 @@ exports.create = {
       }),
       registered: Joi.date().description('Date of register'),
       updated: Joi.date().description('Last update')
-    }
+    })
   },
   pre: [
     { method: 'user.create(payload)', assign: 'user' }
@@ -72,7 +72,7 @@ exports.updateMe = {
     scope: ['user', 'company', 'team', 'admin']
   },
   validate: {
-    payload: {
+    payload: Joi.object({
       name: Joi.string().description('Name of the user'),
       img: Joi.string().uri().description('Image of the user'),
       mail: Joi.string().email().description('Mail of the user'),
@@ -84,7 +84,7 @@ exports.updateMe = {
         internship: Joi.boolean().description('Interested in internship'),
         start: Joi.date().description('Available for hire')
       })
-    }
+    })
   },
   pre: [
     { method: 'user.updateMe(auth.credentials.user.id, payload)', assign: 'user' }
@@ -103,9 +103,9 @@ exports.find = {
     mode: 'try'
   },
   validate: {
-    query: {
+    query: Joi.object({
       date: Joi.date().description('all users\' points on this date')
-    }
+    })
   },
   pre: [
     { method: 'achievement.getActiveAchievements(query)', assign: 'activeAchievements' },
@@ -124,7 +124,7 @@ exports.update = {
     scope: ['team', 'admin']
   },
   validate: {
-    payload: {
+    payload: Joi.object({
       id: Joi.string().description('Id of the user'),
       name: Joi.string().description('Name of the user'),
       img: Joi.string().uri().description('Image of the user'),
@@ -168,7 +168,7 @@ exports.update = {
       }),
       registered: Joi.date().description('Date of register'),
       updated: Joi.date().description('Last update')
-    }
+    })
   },
   pre: [
     { method: 'user.update(params.id, payload)', assign: 'user' }
@@ -187,9 +187,9 @@ exports.get = {
     mode: 'try'
   },
   validate: {
-    params: {
+    params: Joi.object({
       id: Joi.string().required().description('Id of the user we want to retrieve')
-    }
+    })
   },
   pre: [
     { method: 'user.get(params.id, query)', assign: 'user' }
@@ -208,9 +208,9 @@ exports.getMulti = {
     mode: 'try'
   },
   validate: {
-    payload: {
+    payload: Joi.object({
       users: Joi.array().required().description('An array of users IDs')
-    }
+    })
   },
   pre: [
     { method: 'user.getMulti(payload.users)', assign: 'users' }
@@ -240,12 +240,12 @@ exports.removeCompany = {
     scope: ['team', 'admin']
   },
   validate: {
-    params: {
+    params: Joi.object({
       id: Joi.string().required().description('Id of the user we want to remove')
-    },
-    query: {
+    }),
+    query: Joi.object({
       editionId: Joi.string().required().description('Id of the edition of the participation you want to remove')
-    }
+    })
   },
   pre: [
     { method: 'user.removeCompany(params.id, query.editionId)', assign: 'user' }
@@ -263,9 +263,9 @@ exports.remove = {
     scope: ['admin']
   },
   validate: {
-    params: {
+    params: Joi.object({
       id: Joi.string().required().description('Id of the user we want to remove')
-    }
+    })
   },
   pre: [
     { method: 'user.remove(params.id)', assign: 'user' }
@@ -298,13 +298,13 @@ exports.redeemCard = {
     scope: ['team', 'admin']
   },
   validate: {
-    params: {
+    params: Joi.object({
       id: Joi.string().required().description('Id of the user we want to redeem the card from')
-    },
-    payload: {
+    }),
+    payload: Joi.object({
       day: Joi.string().required().description('ISO Date of the day you are redeeming the card from'),
       editionId: Joi.string().required().description('Id of the current edition')
-    }
+    })
   },
   pre: [
     { method: 'user.redeemCard(params.id, payload)', assign: 'user' }

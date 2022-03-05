@@ -4,7 +4,8 @@ const handlers = require('./handlers')
 server.route({
   method: 'POST',
   path: '/company/{companyId}/link',
-  config: handlers.create
+  handler: handlers.create.handler,
+  options: handlers.create.options
 })
 
 server.route({
@@ -28,5 +29,6 @@ server.route({
 server.route({
   method: 'DELETE',
   path: '/company/{companyId}/link/{attendeeId}',
-  config: handlers.remove
+  options: handlers.remove.options,
+  handler: handlers.remove.handler
 })

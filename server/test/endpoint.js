@@ -1,5 +1,5 @@
-const Lab = require('lab')
-const Code = require('code')
+const Lab = require('@hapi/lab')
+const Code = require('@hapi/code')
 const async = require('async')
 
 const server = require('../').hapi
@@ -80,19 +80,28 @@ lab.experiment('Endpoint', () => {
     const optionsUser = {
       method: 'POST',
       url: '/users',
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: userCompany
     }
     const optionsUserMalvino = {
       method: 'POST',
       url: '/users',
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: userCompanyMalvino
     }
     const optionsLink = {
       method: 'POST',
       url: '/company/chavaile-consulting/link',
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: {
         userId: 'tuda.chavaile',
         attendeeId: 'jane.doe',
@@ -102,7 +111,10 @@ lab.experiment('Endpoint', () => {
     const optionsFile = {
       method: 'POST',
       url: '/files',
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: fileA
     }
     async.parallel([
@@ -135,22 +147,34 @@ lab.experiment('Endpoint', () => {
     const optionsUser = {
       method: 'DELETE',
       url: `/users/${userCompany.id}`,
-      credentials: credentialsAdmin
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
     }
     const optionsUserMalvino = {
       method: 'DELETE',
       url: `/users/${userCompanyMalvino.id}`,
-      credentials: credentialsAdmin
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
     }
     const optionsLink = {
       method: 'DELETE',
       url: '/company/chavaile-consulting/link/jane.doe',
-      credentials: credentialsAdmin
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
     }
     const optionsFile = {
       method: 'DELETE',
       url: `/files/${fileA.id}`,
-      credentials: credentialsAdmin
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
     }
 
     async.parallel([
@@ -186,7 +210,10 @@ lab.experiment('Endpoint', () => {
     const options = {
       method: 'POST',
       url: '/company-endpoint',
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: {
         companies: ['sinfo-consulting', 'chavaile-consulting'],
         edition: '25-SINFO',
@@ -229,7 +256,10 @@ lab.experiment('Endpoint', () => {
     const options = {
       method: 'POST',
       url: '/company-endpoint',
-      credentials: credentialsUser,
+      auth:{
+        credentials: credentialsUser,
+        strategy: 'default'
+      },
       payload: {
         companies: ['sinfo-consulting', 'chavaile-consulting'],
         edition: '25-SINFO',
@@ -250,7 +280,10 @@ lab.experiment('Endpoint', () => {
     const options = {
       method: 'GET',
       url: '/company-endpoint?edition=25-SINFO',
-      credentials: credentialsAdmin
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -268,7 +301,10 @@ lab.experiment('Endpoint', () => {
     const options = {
       method: 'GET',
       url: '/company-endpoint',
-      credentials: credentialsUser
+      auth:{
+        credentials: credentialsUser,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -281,7 +317,10 @@ lab.experiment('Endpoint', () => {
     const options = {
       method: 'GET',
       url: '/company-endpoint/sinfo-consulting?edition=25-SINFO',
-      credentials: credentialsAdmin
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -302,7 +341,10 @@ lab.experiment('Endpoint', () => {
     const options = {
       method: 'GET',
       url: '/company-endpoint/sinfo-consulting?edition=25-SINFO',
-      credentials: credentialsUser
+      auth:{
+        credentials: credentialsUser,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -316,7 +358,10 @@ lab.experiment('Endpoint', () => {
     const options = {
       method: 'PUT',
       url: '/company-endpoint/sinfo-consulting?edition=25-SINFO',
-      credentials: credentialsAdmin,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
       payload: {
         validity: {
           to
@@ -341,7 +386,10 @@ lab.experiment('Endpoint', () => {
     const options = {
       method: 'PUT',
       url: '/company-endpoint/sinfo-consulting?edition=25-SINFO',
-      credentials: credentialsUser,
+      auth:{
+        credentials: credentialsUser,
+        strategy: 'default'
+      },
       payload: {
         validity: {
           to
@@ -385,7 +433,10 @@ lab.experiment('Endpoint', () => {
     const options = {
       method: 'Get',
       url: `/files/download?editionId=25-SINFO`,
-      credentials: credentialsUser
+      auth:{
+        credentials: credentialsUser,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -398,7 +449,10 @@ lab.experiment('Endpoint', () => {
     const options = {
       method: 'Get',
       url: `/files/download?editionId=25-SINFO`,
-      credentials: credentialsCompany
+      auth:{
+        credentials: credentialsCompany,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -411,7 +465,10 @@ lab.experiment('Endpoint', () => {
     const options = {
       method: 'Get',
       url: `/company/late-consulting/files/download?editionId=25-SINFO`,
-      credentials: credentialsCompanyMalvino
+      auth:{
+        credentials: credentialsCompanyMalvino,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -437,7 +494,10 @@ lab.experiment('Endpoint', () => {
     const options = {
       method: 'Get',
       url: `/company/chavaile-consulting/files/download?editionId=25-SINFO`,
-      credentials: credentialsCompanyMalvino
+      auth:{
+        credentials: credentialsCompanyMalvino,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -450,7 +510,10 @@ lab.experiment('Endpoint', () => {
     const options = {
       method: 'DELETE',
       url: '/company-endpoint/sinfo-consulting?edition=25-SINFO',
-      credentials: credentialsUser
+      auth:{
+        credentials: credentialsUser,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {
@@ -463,7 +526,10 @@ lab.experiment('Endpoint', () => {
     const options = {
       method: 'DELETE',
       url: '/company-endpoint/sinfo-consulting?edition=25-SINFO',
-      credentials: credentialsAdmin
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
     }
 
     server.inject(options, (response) => {

@@ -33,9 +33,10 @@ exports.register = function (plugin, options, next) {
     config: handlers.grid
   })
 
-  next()
 }
 
 exports.register.attributes = {
   pkg: require('./package.json')
 }
+
+exports.name = 'templates'

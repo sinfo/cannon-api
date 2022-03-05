@@ -7,11 +7,11 @@ exports.create = {
   tags: ['api', 'link'],
   auth: { strategies: ['default'], scope: ['company', 'team', 'admin'] },
   validate: {
-    params: {
+    params: Joi.object({
       companyId: Joi.string().required().description(
         'Id of the company we are linking from')
-    },
-    payload: {
+    }),
+    payload: Joi.object({
       userId: Joi.string().required().description(
         'Id of the user working for the company'),
       attendeeId: Joi.string().required().description('Id of the attendee'),
@@ -30,7 +30,7 @@ exports.create = {
           Joi.string().allow('').description('Attendee\'s availability'),
         otherObservations: Joi.string().allow('').description('Other notes')
       })
-    }
+    })
   },
   pre: [
     {
@@ -51,14 +51,15 @@ exports.update = {
   tags: ['api', 'link'],
   auth: { strategies: ['default'], scope: ['company', 'team', 'admin'] },
   validate: {
-    params: {
+    params: Joi.object({
       companyId: Joi.string().required().description(
         'Id of the company we are linking from'),
       attendeeId: Joi.string().required().description('Id of the attendee')
-    },
-    query:
-      { editionId: Joi.string().required().description('Id of the edition') },
-    payload: {
+    }),
+    query: Joi.object({ 
+      editionId: Joi.string().required().description('Id of the edition') 
+    }),
+    payload: Joi.object({
       userId:
         Joi.string().description('Id of the user working for the company'),
       notes: Joi.object().keys({
@@ -74,7 +75,7 @@ exports.update = {
           Joi.string().allow('').description('Attendee\'s availability'),
         otherObservations: Joi.string().allow('').description('Other notes')
       }).allow(null)
-    }
+    })
   },
   pre: [
     {
@@ -94,12 +95,14 @@ exports.get = {
   tags: ['api', 'link'],
   auth: { strategies: ['default'], scope: ['company', 'team', 'admin'] },
   validate: {
-    params: {
+    params: Joi.object({
       companyId: Joi.string().required().description(
         'Id of the company we are linking from'),
       attendeeId: Joi.string().required().description('Id of the attendee')
-    },
-    query: { editionId: Joi.string().required().description('Id of the edition') }
+    }),
+    query: Joi.object({
+      editionId: Joi.string().required().description('Id of the edition') 
+    })
   },
   pre: [
     {
@@ -116,56 +119,65 @@ exports.get = {
 }
 
 exports.list = {
-  tags: ['api', 'link'],
-  auth: { strategies: ['default'], scope: ['company', 'team', 'admin'] },
-  validate: {
-    query: {
-      editionId: Joi.string().required().description('Id of the edition'),
-      fields: Joi.string().description('Fields we want to retrieve'),
-      sort: Joi.string().description('Sort fields we want to retrieve'),
-      skip: Joi.number().description('Number of documents we want to skip'),
-      limit: Joi.number().description('Limit of documents we want to retrieve')
+  options:{
+    tags: ['api', 'link'],
+    auth: { strategies: ['default'], scope: ['company', 'team', 'admin'] },
+    validate: {
+      query: Joi.object({
+        editionId: Joi.string().required().description('Id of the edition'),
+        fields: Joi.string().description('Fields we want to retrieve'),
+        sort: Joi.string().description('Sort fields we want to retrieve'),
+        skip: Joi.number().description('Number of documents we want to skip'),
+        limit: Joi.number().description('Limit of documents we want to retrieve')
+      }),
+      params: Joi.object({
+        companyId: Joi.string().required().description(
+          'Id of the company we are removing the link from')
+      })
     },
-    params: {
-      companyId: Joi.string().required().description(
-        'Id of the company we are removing the link from')
+    description: 'Gets all the links of the company'
+  },
+  handler: async function (request, h) {
+    try{
+      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.query.editionId)
+      let links = await request.server.methods.link.list(request.params.companyId, request.query)
+      return h.response(render(links))
+    }catch(err){
+      log.error({ err: err, user: userId }, 'error ')
+      return Boom.internal()
     }
   },
-  pre: [
-    {
-      method:
-        'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)',
-      assign: 'verification'
-    },
-    { method: 'link.list(params.companyId, query)', assign: 'links' }
-  ],
-  handler: function (request, reply) {
-    reply(render(request.pre.links))
-  },
-  description: 'Gets all the links of the company'
 }
 
 exports.remove = {
+  options:{
   tags: ['api', 'link'],
   auth: { strategies: ['default'], scope: ['company', 'team', 'admin'] },
   validate: {
-    params: {
+    params: Joi.object({
       companyId: Joi.string().required().description(
         'Id of the company we are removing the link from'),
       attendeeId: Joi.string().required().description('Id of the attendee')
-    },
-    query: { editionId: Joi.string().required().description('Id of the edition') }
-  },
-  pre: [
-    {
-      method:
-        'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)',
-      assign: 'verification'
-    },
-    { method: 'link.remove(params, query.editionId)', assign: 'link' }
-  ],
-  handler: function (request, reply) {
-    reply(render(request.pre.link))
+    }),
+    query: Joi.object({
+      editionId: Joi.string().required().description('Id of the edition')
+    })
   },
   description: 'Removes a link'
+},
+  handler: async function (request, h) {
+    try{
+      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.query.editionId)
+      let link = await request.server.methods.link.remove(request.params, request.query.editionId)
+      if (!link) {
+        log.error({ err: 'not found', link: editionId }, 'error deleting link')
+        return Boom.notFound('link not found')
+      }
+      //reply(render(request.pre.link))
+      return h.response(render(link))
+    }catch(err){
+      log.error({ err: err, link: editionId }, 'error deleting link')
+      return Boom.internal()
+    }
+  },
 }

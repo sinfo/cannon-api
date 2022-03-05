@@ -25,7 +25,7 @@ config.upload = {
 }
 
 config.mongo = {
-  url: process.env.CANNON_MONGO_URL || 'mongodb://localhost/cannon'
+  url: process.env.CANNON_MONGO_URL || 'mongodb://localhost:27018/cannon'
 }
 
 config.facebook = {
@@ -115,7 +115,7 @@ config.mailgun = {
 }
 
 if (process.env.NODE_ENV === 'test') {
-  config.mongo.url = process.env.CANNON_MONGO_TEST_URL || 'mongodb://localhost/cannon_test'
+  config.mongo.url = process.env.CANNON_MONGO_TEST_URL || 'mongodb://localhost:27018/cannon_test'
   config.bunyan.level = process.env.CANNON_LOG_LEVEL_TEST || 'error'
 }
 
