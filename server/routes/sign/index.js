@@ -4,23 +4,27 @@ const handlers = require('./handlers')
 server.route({
   method: 'POST',
   path: '/company/{companyId}/sign/{attendeeId}',
-  config: handlers.create
+  options: handlers.create.options,
+  handler: handlers.create.handler
 })
 
 server.route({
   method: 'POST',
   path: '/company/{companyId}/speed/{attendeeId}',
-  config: handlers.speed
+  options: handlers.speed.options,
+  handler: handlers.speed.handler
 })
 
 server.route({
   method: 'POST',
   path: '/sessions/{sessionId}/check-in',
-  config: handlers.checkIn
+  options: handlers.checkIn.options,
+  handler: handlers.checkIn.handler
 })
 
 server.route({
   method: 'POST',
   path: '/sessions/{sessionId}/generate',
-  config: handlers.generate
+  options: handlers.generate.options,
+  handler: handlers.generate.handler
 })

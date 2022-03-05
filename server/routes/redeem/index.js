@@ -4,17 +4,20 @@ const handlers = require('./handlers')
 server.route({
   method: 'GET',
   path: '/redeem/{id}',
-  config: handlers.get
+  options: handlers.get.options,
+  handler: handlers.get.handler
 })
 
 server.route({
   method: 'POST',
   path: '/redeem',
-  config: handlers.create
+  options: handlers.create.options,
+  handler: handlers.create.handler
 })
 
 server.route({
   method: ['DELETE'],
   path: '/redeem/{id}',
-  config: handlers.remove
+  options: handlers.remove.options,
+  handler: handlers.remove.handler
 })

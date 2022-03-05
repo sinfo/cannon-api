@@ -4,59 +4,69 @@ const handlers = require('./handlers')
 server.route({
   method: 'POST',
   path: '/tickets/{sessionId}',
-  config: handlers.registerTicket
+  options: handlers.registerTicket.options,
+  handler: handlers.registerTicket.handler
 })
 
 server.route({
   method: 'DELETE',
   path: '/tickets/{sessionId}',
-  config: handlers.voidTicket
+  options: handlers.voidTicket.options,
+  handler: handlers.voidTicket.handler
 })
 
 server.route({
   method: 'PUT',
   path: '/tickets/{sessionId}',
-  config: handlers.confirmTicket
+  options: handlers.confirmTicket.options,
+  handler: handlers.confirmTicket.handler
 })
 
 server.route({
   method: 'GET',
   path: '/tickets/{sessionId}',
-  config: handlers.get
+  options: handlers.get.options,
+  handler: handlers.get.handler
 })
 
 server.route({
   method: 'GET',
   path: '/tickets',
-  config: handlers.list
+  options: handlers.list.options,
+  handler: handlers.list.handler
 })
 
 server.route({
   method: 'PUT',
   path: '/tickets/{sessionId}/{userId}',
-  config: handlers.registerPresence
+  options: handlers.registerPresence.options,
+  handler: handlers.registerPresence.handler
 })
 
 server.route({
   method: 'GET',
   path: '/tickets/{sessionId}/users',
-  config: handlers.getUsers
+  options: handlers.getUsers.options,
+  handler: handlers.getUsers.handler
 })
 
 server.route({
   method: 'GET',
   path: '/tickets/{sessionId}/waiting',
-  config: handlers.getWaiting
+  options: handlers.getWaiting.options,
+  handler: handlers.getWaiting.handler
 })
 
 server.route({
   method: 'GET',
   path: '/tickets/{sessionId}/confirmed',
-  config: handlers.getConfirmed
+  options: handlers.getConfirmed.options,
+  handler: handlers.getConfirmed.handler
 })
 
 server.route({
   method: 'GET',
   path: '/users/{userId}/sessions',
-  config: handlers.getUserSessions
+  options: handlers.getUserSessions.options,
+  handler: handlers.getUserSessions.handler
 })
