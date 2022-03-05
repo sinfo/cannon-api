@@ -32,7 +32,7 @@ exports.redirect = {
     },
     description: 'Redirect a request from QRCode to somewhere'
   },
-  handler: function (request, reply) {
-    reply().redirect(config.webapp.url + '/survey/' + request.params.id)
+  handler: function (request, h) {
+    h.response().redirect(config.webapp.url + '/survey/' + request.params.id)
   },
 }

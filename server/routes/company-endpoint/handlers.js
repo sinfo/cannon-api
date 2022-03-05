@@ -125,15 +125,12 @@ exports.list = {
         limit: Joi.number().description('Limit of documents we want to retrieve')
       })
     },
-    pre: [
-      { method: 'endpoint.list(query)', assign: 'endpoints' }
-    ],
     description: 'Gets all company endpoints'
   },
   handler: async (request, h) => {
     try {
-      let comp = await request.server.methods.endpoint.list(request.query)
-      return h.response(render(request.pre.endpoint))
+      let endpoint = await request.server.methods.endpoint.list(request.query)
+      return h.response(render(endpoint))
     } catch (err) {
       log.error({ err: err }, 'Error finding endpoints')
       return Boom.boomify(err)
@@ -165,7 +162,7 @@ exports.remove = {
         log.error({ id: request.params.id, error: err })
         return Boom.notFound('company not found')
       }
-      return render(comp)
+      return h.response(render(comp))
     } catch (err) {
       log.error({ info: request.info, error: err })
       return Boom.boomify(err)
