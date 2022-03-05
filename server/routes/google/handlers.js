@@ -19,7 +19,7 @@ var liveInfo = {
 exports = module.exports
 
 exports.getLivestream = {
-  tags: ['api', 'google'],
+  options: {tags: ['api', 'google']},
   handler: function (req, reply) {
     reply(liveInfo)
   }
