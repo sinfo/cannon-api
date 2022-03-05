@@ -7,13 +7,8 @@ const google = require('../helpers/google')
 const fenix = require('../helpers/fenix')
 const linkedin = require('../helpers/linkedin')
 
-server.method('auth.facebook', facebookAuth, {})
-server.method('auth.fenix', fenixAuth, {})
-server.method('auth.google', googleAuth, {})
-server.method('auth.linkedin', linkedinAuth, {})
-
-async function facebookAuth (id, token) {
-  try{
+async function facebookAuth(id, token) {
+  try {
     // Check with Facebook if token is valid
     await facebook.verifyToken(id, token)
     // Get user profile information from Facebook
@@ -34,12 +29,12 @@ async function facebookAuth (id, token) {
     }
     return await authenticate(res.userId, changedAttributes)
   }
-  catch(err){
+  catch (err) {
     Boom.unauthorized(err)
-  } 
+  }
 }
 
-async function googleAuth (id, token) {
+async function googleAuth(id, token) {
   try {
     // Check with Google if token is valid
     let gUser = await google.verifyToken(id, token)
@@ -60,12 +55,12 @@ async function googleAuth (id, token) {
     }
     return await authenticate(res.userId, changedAttributes)
   }
-  catch(err){
+  catch (err) {
     Boom.unauthorized(err)
-  } 
+  }
 }
 
-function fenixAuth (code) {
+async function fenixAuth(code) {
   try {
     // Exchange the code given by the user by a token from Fenix
     let token = await fenix.getToken(code)
@@ -75,7 +70,7 @@ function fenixAuth (code) {
     let res = await fenix.getUser(fenixUser)
     // If user does not exist we create, otherwise we update existing user
     if (res.createUser) {
-      let userId =  fenix.createUser(fenixUser)
+      let userId = fenix.createUser(fenixUser)
       authenticate(userId, null)
     }
 
@@ -87,12 +82,12 @@ function fenixAuth (code) {
       img: `https://fenix.tecnico.ulisboa.pt/user/photo/${fenixUser.username}`
     }
     return await authenticate(res.userId, changedAttributes)
-  } catch(err) {
+  } catch (err) {
     Boom.unauthorized(err)
   }
 }
 
-function linkedinAuth (code) {
+async function linkedinAuth(code) {
   try {
     // Exchange the code given by the user by a token from Linkedin
     let token = await linkedin.getToken(code)
@@ -114,12 +109,12 @@ function linkedinAuth (code) {
       img: linkedinUser.pictureUrl
     }
     return authenticate(res.userId, changedAttributes)
-  } catch(err) {
+  } catch (err) {
     Boom.unauthorized(err)
   }
 }
 
-async function authenticate (userId, changedAttributes) {
+async function authenticate(userId, changedAttributes) {
   const newToken = token.createJwt(userId)
   changedAttributes = { $set: changedAttributes } || {}
 
