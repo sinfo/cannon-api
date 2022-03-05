@@ -18,7 +18,7 @@ server.method('user.removeCompany', removeCompany, {})
 server.method('user.sign', sign, {})
 server.method('user.redeemCard', redeemCard, {})
 
-function create (user, cb) {
+function create(user, cb) {
   user.id = user.id || Math.random().toString(36).substr(2, 20)
   user.role = user.role || config.auth.permissions[0]
   user.resgistered = user.resgistered || Date.now()
@@ -39,7 +39,7 @@ function create (user, cb) {
   })
 }
 
-function updateMe (filter, user, opts, cb) {
+function updateMe(filter, user, opts, cb) {
   if (typeof opts === 'function') {
     cb = opts
     opts = {}
@@ -53,7 +53,7 @@ function updateMe (filter, user, opts, cb) {
   update(filter, user, opts, cb)
 }
 
-function update (filter, user, opts, cb) {
+function update(filter, user, opts, cb) {
   user.updated = Date.now()
 
   if (typeof opts === 'function') {
@@ -74,7 +74,7 @@ function update (filter, user, opts, cb) {
 
     removeCompany(pushCompany)
 
-    function removeCompany (done) {// eslint-disable-line
+    function removeCompany(done) {// eslint-disable-line
       User.findOneAndUpdate(filter, user, opts, function (err, _user) {
         if (err && err.code !== 16837) {
           log.error({ err: err, requestedUser: filter }, 'error pulling user.company')
@@ -85,7 +85,7 @@ function update (filter, user, opts, cb) {
       })
     }
 
-    function pushCompany () { // eslint-disable-line
+    function pushCompany() { // eslint-disable-line
       opts.new = true
 
       User.findOneAndUpdate(filter, user2, opts, function (err, user) {
@@ -113,7 +113,7 @@ function update (filter, user, opts, cb) {
   }
 }
 
-function get (filter, query, cb) {
+function get(filter, query, cb) {
   cb = cb || query // fields is optional
 
   const fields = fieldsParser(query.fields)
@@ -136,7 +136,7 @@ function get (filter, query, cb) {
   })
 }
 
-function getByToken (token, cb) {
+function getByToken(token, cb) {
   User.findOne({ 'bearer.token': token }, (err, user) => {
     if (err) {
       log.error({ err: err, requestedUser: user }, 'error getting user')
@@ -151,7 +151,7 @@ function getByToken (token, cb) {
   })
 }
 
-function list (activeAchievements, cb) {
+function list(activeAchievements, cb) {
   const usersToSearch = []
   const points = {}
 
@@ -194,7 +194,7 @@ function list (activeAchievements, cb) {
   })
 }
 
-function getMulti (ids, query, cb) {
+function getMulti(ids, query, cb) {
   cb = cb || query // fields is optional
 
   const filter = { id: { $in: ids } }
@@ -215,7 +215,7 @@ function getMulti (ids, query, cb) {
   })
 }
 
-function removeCompany (filter, editionId, cb) {
+function removeCompany(filter, editionId, cb) {
   if (typeof filter === 'string') {
     filter = { id: filter }
   }
@@ -240,7 +240,7 @@ function removeCompany (filter, editionId, cb) {
   })
 }
 
-function remove (filter, cb) {
+function remove(filter, cb) {
   if (typeof filter === 'string') {
     filter = { id: filter }
   }
@@ -259,7 +259,7 @@ function remove (filter, cb) {
   })
 }
 
-function sign (attendeeId, companyId, payload, cb) {
+function sign(attendeeId, companyId, payload, cb) {
   // todo verify
   const filter = {
     id: attendeeId,
@@ -271,7 +271,7 @@ function sign (attendeeId, companyId, payload, cb) {
     }
   }
 
-  const sig = {companyId: companyId, date: new Date()}
+  const sig = { companyId: companyId, date: new Date() }
 
   const update = {
     $addToSet: {
@@ -302,7 +302,7 @@ function sign (attendeeId, companyId, payload, cb) {
     cb(null, user.toObject({ getters: true }))
   })
 
-  function addNewDayEntry (filter, update, cb) {
+  function addNewDayEntry(filter, update, cb) {
     User.findOneAndUpdate(filter, update, (err, user) => {
       if (err) {
         log.error({ err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
@@ -318,7 +318,7 @@ function sign (attendeeId, companyId, payload, cb) {
   }
 }
 
-function redeemCard (attendeeId, payload, cb) {
+function redeemCard(attendeeId, payload, cb) {
   // todo verify
   const filter = {
     id: attendeeId,
@@ -351,7 +351,7 @@ function redeemCard (attendeeId, payload, cb) {
     // this should not be hardcoded
     let signatures = _user.signatures.filter(s => s.day === payload.day && s.edition === payload.editionId)
 
-    if (signatures && signatures.length > 0 && signatures[0].signatures.length < 6) {
+    if (signatures && signatures.length > 0 && signatures[0].signatures.length < 10) {
       log.error({ user: _user }, 'not enough signatures to validate card')
       return cb(Boom.badData({ user: _user }, 'not enough signatures to validate card'))
     }

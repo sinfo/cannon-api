@@ -11,6 +11,7 @@ function renderObject (model, wCode) {
     id: model.id,
     event: model.event,
     session: model.session,
+    unregisteredUsers: model.unregisteredUsers,
     name: model.name,
     description: model.description,
     instructions: model.instructions,

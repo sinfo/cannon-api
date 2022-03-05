@@ -11,6 +11,8 @@ const aux = token.createJwt('john.doe')
 
 const secretId = 'secret_achievement_'
 
+const session = 'session-code-id'
+
 const credentialsA = {
   user: {
     id: 'john.doe',
@@ -32,6 +34,7 @@ const achievementId = 'WENT-TO-SINFO-XXII'
 
 const achievementA = {
   name: 'WENT TO SINFO XXII',
+  session: session,
   event: 'SINFO XXII',
   value: 10,
   validity: {
@@ -130,6 +133,7 @@ lab.experiment('Achievement', () => {
       Code.expect(result).to.be.instanceof(Object)
       Code.expect(result.id).to.equal(achievementId)
       Code.expect(result.name).to.equal(achievementA.name)
+      Code.expect(result.session).to.equal(achievementA.session)
 
       done()
     })
@@ -171,6 +175,26 @@ lab.experiment('Achievement', () => {
     })
   })
 
+  lab.test('Get one by session', (done) => {
+    const options = {
+      method: 'GET',
+      url: '/achievements/session/' + session,
+      credentials: credentialsA
+    }
+
+    server.inject(options, (response) => {
+      const result = response.result
+
+      Code.expect(response.statusCode).to.equal(200)
+      Code.expect(result).to.be.instanceof(Object)
+      Code.expect(result.id).to.equal(achievementId)
+      Code.expect(result.name).to.equal(achievementA.name)
+      Code.expect(result.session).to.equal(session)
+
+      done()
+    })
+  })
+
   lab.test('Update as an admin', (done) => {
     const options = {
       method: 'PUT',
@@ -205,6 +229,7 @@ lab.experiment('Achievement', () => {
       done()
     })
   })
+
   lab.test('Delete as an admin', (done) => {
     const options = {
       method: 'DELETE',
