@@ -20,13 +20,13 @@ exports.registerTicket = {
   },
   handler: async function (request, h) { 
     try {
-      let session = request.server.methods.session.get(params.sessionId)
+      let session = await request.server.methods.session.get(params.sessionId)
       request.server.methods.session.ticketsNeeded(session)
       request.server.methods.session.inRegistrationPeriod(session)
       
-      request.server.methods.ticket.userRegistered(request.params.sessionId, request.auth.credentials.user.id)
+      await request.server.methods.ticket.userRegistered(request.params.sessionId, request.auth.credentials.user.id)
 
-      let ticket = request.server.methods.ticket.addUser(request.params.sessionId, request.auth.credentials.user.id, session)
+      let ticket = await request.server.methods.ticket.addUser(request.params.sessionId, request.auth.credentials.user.id, session)
     
       request.server.methods.ticket.registrationEmail(ticket, session, request.auth.credentials.user.id)
     
@@ -54,11 +54,11 @@ exports.voidTicket = {
   },
   handler: async function (request, h) {
     try {
-      let session = request.server.methods.session.get(request.params.sessionId)
+      let session = await request.server.methods.session.get(request.params.sessionId)
       request.server.methods.session.ticketsNeeded(session)
       
-      let ticket = request.server.methods.ticket.get(request.params.sessionId)
-      let removedTicket = request.server.methods.ticket.removeUser(session.id, request.auth.credentials.user.id, session)
+      let ticket = await request.server.methods.ticket.get(request.params.sessionId)
+      let removedTicket = await request.server.methods.ticket.removeUser(session.id, request.auth.credentials.user.id, session)
       let user = request.server.methods.ticket.getAcceptedUser(ticket, session, request.auth.credentials.user)
     
       request.server.methods.ticket.registrationAcceptedEmail(ticket, session, user)
@@ -87,12 +87,12 @@ exports.confirmTicket = {
   },
   handler: async function (request, h) {
     try {
-      let session = request.server.methods.session.get(request.params.sessionId)
+      let session = await request.server.methods.session.get(request.params.sessionId)
       request.server.methods.session.ticketsNeeded(session)
       request.server.methods.session.inConfirmationPeriod(session)
-      request.server.methods.ticket.userConfirmed(request.params.sessionId, auth.credentials.user.id)
+      await request.server.methods.ticket.userConfirmed(request.params.sessionId, auth.credentials.user.id)
       
-      let ticket = request.server.methods.ticket.confirmUser(request.params.sessionId, request.auth.credentials.user.id, session)
+      let ticket = await request.server.methods.ticket.confirmUser(request.params.sessionId, request.auth.credentials.user.id, session)
       request.server.methods.ticket.confirmationEmail(ticket, session, request.auth.credentials.user)
       return h.response(render(ticket, session))
     } catch (err) {
@@ -119,8 +119,8 @@ exports.get = {
   },
   handler: async function (request, h) {
     try {
-      let session = request.server.methods.session.get(request.params.sessionId)
-      let ticket = request.server.methods.ticket.get(request.params.sessionId)
+      let session = await request.server.methods.session.get(request.params.sessionId)
+      let ticket = await request.server.methods.ticket.get(request.params.sessionId)
       return h.response(render(ticket, session));
     } catch (err) {
       log.error({ err: err, msg:'error getting ticket'}, 'error getting ticket')
@@ -148,7 +148,7 @@ exports.list = {
   },
   handler: async function (request, h) {
     try {
-      let tickets = request.server.methods.ticket.list(request.query)
+      let tickets = await request.server.methods.ticket.list(request.query)
       return h.response(render(tickets));
     } catch (err) {
       log.error({ err: err, msg:'error getting all tickets'}, 'error getting all tickets')
@@ -174,8 +174,8 @@ exports.registerPresence = {
   },
   handler: async function (request, h) {
     try {
-      let session = request.server.methods.session.get(request.params.sessionId)
-      let ticket = request.server.methods.ticket.registerUserPresence(request.params.sessionId, request.params.userId)
+      let session = await request.server.methods.session.get(request.params.sessionId)
+      let ticket = await request.server.methods.ticket.registerUserPresence(request.params.sessionId, request.params.userId)
       return h.response(render(ticket, session))
     } catch (err) {
       log.error({ err: err, msg:'error registering presence'}, 'error registering presence')
@@ -201,9 +201,9 @@ exports.getUsers = {
   },
   handler: async function (request, h) {
     try {
-      let session = request.server.methods.session.get(request.params.sessionId)
-      let userIds = request.server.methods.ticket.getRegisteredUsers(request.params.sessionId, session)
-      let users = request.server.methods.user.getMulti(userIds)
+      let session = await request.server.methods.session.get(request.params.sessionId)
+      let userIds = await request.server.methods.ticket.getRegisteredUsers(request.params.sessionId, session)
+      let users = await request.server.methods.user.getMulti(userIds)
       return h.response(renderUsers(users, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {
       log.error({ err: err, msg:'error getting users'}, 'error getting users')
@@ -229,9 +229,9 @@ exports.getWaiting = {
   },
   handler: async function (request, h) {
     try {
-      let session = request.server.methods.session.get(request.params.sessionId)
-      let userIds = request.server.methods.ticket.getWaitingUsers(request.params.sessionId, session)
-      let users = request.server.methods.user.getMulti(userIds)
+      let session = await request.server.methods.session.get(request.params.sessionId)
+      let userIds = await request.server.methods.ticket.getWaitingUsers(request.params.sessionId, session)
+      let users = await request.server.methods.user.getMulti(userIds)
       return h.response(renderUsers(users, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {
       log.error({ err: err, msg:'error getting waiting users'}, 'error getting waiting users')
@@ -257,9 +257,9 @@ exports.getConfirmed = {
   },
   handler: async function (request, h) {
     try {
-      let session = request.server.methods.session.get(request.params.sessionId)
-      let userIds = request.server.methods.ticket.getConfirmedUsers(request.params.sessionId, session)
-      let users = request.server.methods.user.getMulti(userIds)
+      let session = await request.server.methods.session.get(request.params.sessionId)
+      let userIds = await request.server.methods.ticket.getConfirmedUsers(request.params.sessionId, session)
+      let users = await request.server.methods.user.getMulti(userIds)
       return h.response(renderUsers(users, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {
       log.error({ err: err, msg:'error getting confirmed users'}, 'error getting confirmed users')
@@ -285,7 +285,7 @@ exports.getUserSessions = {
   },
   handler: async function (request, h) {
     try {
-      let tickets = request.server.methods.ticket.getUserSessions(request.params.userId)
+      let tickets = await request.server.methods.ticket.getUserSessions(request.params.userId)
       return h.response(tickets);
     } catch (err) {
       log.error({ err: err, msg:'error getting user sessions'}, 'error getting user sessions')

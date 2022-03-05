@@ -24,9 +24,9 @@ exports.create = {
   },
   handler: async function (request, h) {
     try {
-      let verification = request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.payload.editionId)
-      let achievement = request.server.methods.achievement.addUserToStandAchievement(request.params.companyId, request.params.attendeeId)
-      let user = request.server.methods.user.sign(request.params.attendeeId, request.params.companyId, request.payload)
+      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.payload.editionId)
+      await request.server.methods.achievement.addUserToStandAchievement(request.params.companyId, request.params.attendeeId)
+      let user = await request.server.methods.user.sign(request.params.attendeeId, request.params.companyId, request.payload)
       request.server.methods.achievement.checkUserStandDay(request.params.attendeeId)
       return h.response(render(user, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {
@@ -56,9 +56,9 @@ exports.speed = {
   },
   handler: async function (request, h) {
     try {
-      let verification = request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.payload.editionId)
-      let happyHours = request.server.methods.happyHour.get()
-      let achievement = request.server.methods.achievement.addUserToSpeedDateAchievement(request.params.companyId, request.params.attendeeId, happyHours)
+      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.payload.editionId)
+      let happyHours = await request.server.methods.happyHour.get()
+      let achievement = await request.server.methods.achievement.addUserToSpeedDateAchievement(request.params.companyId, request.params.attendeeId, happyHours)
       return h.response(achievement)
     } catch (err) {
       log.error({ err: err, msg: 'error creating signature for speed dating' }, 'error creating signature for speed dating')
@@ -116,7 +116,7 @@ exports.generate = {
   },
   handler: async function (request, h) {
     try {
-      let achievement = request.server.methods.achievement.generateCodeSession(request.params.sessionId, request.payload.expiration)
+      let achievement = await request.server.methods.achievement.generateCodeSession(request.params.sessionId, request.payload.expiration)
       return h.response(achievement)
     } catch (err) {
       log.error({ err: err, msg: 'error checking in session for users' }, 'error checking in session for users')
