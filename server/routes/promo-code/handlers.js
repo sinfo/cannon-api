@@ -10,12 +10,20 @@ exports.find = {
       scope: ['user', 'company', 'team', 'admin'],
       mode: 'try'
     },
-    pre: [
-      { method: 'promoCode.get()', assign: 'codes' }
-    ],
     description: 'Gets all available promo codes'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.codes))
-  },
+
+  handler: async (request, h) =>{
+    try{
+      let code = await request.server.methods.promoCode.get()
+      if(!code) {
+        log.error({ err: err}, 'error getting promo code')
+        return Boom.notFound()
+      }
+      return h.response(render(code))
+    }catch (err) {
+      log.error({ err: err }, 'could not find promo code')
+      return Boom.internal()
+    }
+  }
 }

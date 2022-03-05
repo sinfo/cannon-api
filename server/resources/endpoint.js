@@ -12,7 +12,7 @@ server.method('endpoint.remove', remove, {})
 server.method('endpoint.isValid', isValid, {})
 server.method('endpoint.incrementVisited', incrementVisited, {})
 
-function create (endpoint) {
+async function create(endpoint, cb) {
   // generates an enpoint item for every company in endpoin.companies
   // `endpoint` is passed as `this` to the map function
   const endpoints = Array.from(endpoint.companies, (company) => {
@@ -28,7 +28,7 @@ function create (endpoint) {
       updated: new Date()
     }
   })
-  try  {
+  try {
     let list = await Endpoint.collection.insert(endpoints)
     return list
   }
@@ -43,7 +43,7 @@ function create (endpoint) {
 
 }
 
-function update (companyId, editionId, endpoint) {
+async function update(companyId, editionId, endpoint) {
   const filter = {
     company: companyId,
     edition: editionId
@@ -64,7 +64,7 @@ function update (companyId, editionId, endpoint) {
 
 }
 
-function get (companyId, editionId, cb) {
+function get(companyId, editionId, cb) {
   const filter = {
     company: companyId,
     edition: editionId
@@ -84,7 +84,7 @@ function get (companyId, editionId, cb) {
   })
 }
 
-function list (query) {
+async function list(query) {
 
   const filter = { edition: query.edition }
   const fields = fieldsParser(query.fields)
@@ -103,7 +103,7 @@ function list (query) {
   }
 }
 
-function remove (companyId, editionId) {
+async function remove(companyId, editionId) {
   try {
     let endpoint = await Endpoint.findOneAndRemove({ company: companyId, edition: editionId })
     if (!endpoint) {
@@ -117,7 +117,7 @@ function remove (companyId, editionId) {
   }
 }
 
-async function isValid (companyId, editionId) {
+async function isValid(companyId, editionId) {
   const filter = {
     company: companyId,
     edition: editionId
@@ -144,7 +144,7 @@ async function isValid (companyId, editionId) {
   }
 }
 
-async function incrementVisited (companyId, editionId) {
+async function incrementVisited(companyId, editionId) {
   const filter = {
     company: companyId,
     edition: editionId

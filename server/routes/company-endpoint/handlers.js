@@ -6,7 +6,7 @@ const Boom = require('boom')
 exports = module.exports
 
 exports.create = {
-  options:{
+  options: {
     tags: ['api', 'company-endpoint'],
     auth: {
       strategies: ['default'],
@@ -25,23 +25,23 @@ exports.create = {
     description: 'Creates a new company endpoint'
   },
   handler: async (request, h) => {
-    try{
+    try {
       let comp = await request.server.methods.endpoint.create(request.payload)
       return h.response(render(comp)).created('/company-endpoint/' + comp.id)
-    }catch (err) {
+    } catch (err) {
       if (err.code === 11000) {
-        log.error({msg: "company is a duplicate" })
+        log.error({ msg: "company is a duplicate" })
         return Boom.conflict(`company "${comp.id}" is a duplicate`)
       }
 
-      log.error({ err: err, msg:'error creating company'}, 'error creating company')
+      log.error({ err: err, msg: 'error creating company' }, 'error creating company')
       return Boom.internal()
     }
   },
 }
 
 exports.update = {
-  options:{
+  options: {
     tags: ['api', 'company-endpoint'],
     auth: {
       strategies: ['default'],
@@ -64,23 +64,23 @@ exports.update = {
     description: 'Updates a company endpoint'
   },
   handler: async (request, h) => {
-    try{
+    try {
       let comp = await request.server.methods.endpoint.update(request.params.id, request.payload)
       if (!comp) {
         log.error({ err: err, company: filter }, 'error updating company')
         return Boom.notFound()
       }
       return h.response(render(comp))
-    }catch (err) {
+    } catch (err) {
       log.error({ err: err, company: filter }, 'error updating company')
       return Boom.internal()
     }
-    
+
   },
 }
 
 exports.get = {
-  options:{
+  options: {
     tags: ['api', 'company-endpoint'],
     auth: {
       strategies: ['default'],
@@ -97,14 +97,14 @@ exports.get = {
     description: 'Gets a company endpoint'
   },
   handler: async (request, h) => {
-    try{
+    try {
       let comp = await request.server.methods.endpoint.get(request.params.id)
       if (!comp) {
         log.error({ err: err, company: filter }, 'error getting company')
         return Boom.notFound()
       }
       return h.response(render(comp))
-    }catch (err) {
+    } catch (err) {
       log.error({ err: err, company: filter }, 'error getting company')
       return Boom.internal()
     }
@@ -112,7 +112,7 @@ exports.get = {
 }
 
 exports.list = {
-  options:{
+  options: {
     tags: ['api', 'company-endpoint'],
     auth: {
       strategies: ['default'],
@@ -127,24 +127,21 @@ exports.list = {
         limit: Joi.number().description('Limit of documents we want to retrieve')
       })
     },
-    pre: [
-      { method: 'endpoint.list(query)', assign: 'endpoints' }
-    ],
     description: 'Gets all company endpoints'
   },
   handler: async (request, h) => {
-    try{
-      let comp = await request.server.methods.endpoint.list(request.query)
-      return h.response(render(request.pre.endpoint))
-    }catch(err){
-      log.error({err: err}, 'Error finding endpoints')
+    try {
+      let endpoint = await request.server.methods.endpoint.list(request.query)
+      return h.response(render(endpoint))
+    } catch (err) {
+      log.error({ err: err }, 'Error finding endpoints')
       return Boom.boomify(err)
     }
   },
 }
 
 exports.remove = {
-  options:{
+  options: {
     tags: ['api', 'company-endpoint'],
     auth: {
       strategies: ['default'],
@@ -161,15 +158,14 @@ exports.remove = {
     description: 'Removes a company endpoint'
   },
   handler: async (request, h) => {
-    reply(render(request.pre.endpoint))
-    try{
+    try {
       let comp = await request.server.methods.endpoint.remove(request.params.id)
-      if(!comp){
+      if (!comp) {
         log.error({ id: request.params.id, error: err })
         return Boom.notFound('company not found')
       }
-      return render(comp)
-    }catch (err) {
+      return h.response(render(comp))
+    } catch (err) {
       log.error({ info: request.info, error: err })
       return Boom.boomify(err)
     }
