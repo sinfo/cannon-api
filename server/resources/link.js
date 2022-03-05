@@ -121,22 +121,20 @@ async function list (filter, query) {
   }
 
   let links = await Link.find(filter, fields, options)
-    let achFilter = {
-      'validity.to':
-        { '$gt': new Date('January 1, 2021 00:00:00').toISOString() },
-      'kind': 'cv'
-    }
-
-
-   let achievement = await Achievement.findOne(achFilter)
-   if(!achievement){
-     return Boom.notFound()
-   }
-   let objLinks = Array.from(links, (l) => { return l.toObject() })
+  let achFilter = {
+    'validity.to':
+      { '$gt': new Date('January 1, 2021 00:00:00').toISOString() },
+    'kind': 'cv'
+  }
+  let achievement = await Achievement.findOne(achFilter)
+  if(!achievement){
+    return Boom.notFound()
+  }
+  let objLinks = Array.from(links, (l) => { return l.toObject() })
  
-   objLinks.forEach((l) => { l.cv = achievement ? achievement.toObject().users.includes(l.attendee) : false })
+  objLinks.forEach((l) => { l.cv = achievement ? achievement.toObject().users.includes(l.attendee) : false })
  
-   return objLinks
+  return objLinks
 }
 
 async function remove (filter, editionId, cb) {

@@ -47,7 +47,7 @@ async function update (filter, achievement) {
 
   achievement.updated = Date.now()
 
-  return Achievement.findOneAndUpdate(filter, achievement)
+  return Achievement.findOneAndUpdate(filter, achievement, {new: true})
 }
 
 async function updateMulti (filter, achievement) {
@@ -88,7 +88,7 @@ async function removeAllFromUser (userId, cb) {
 
 }
 
-async function list (query, cb) {
+async function list (query) {
   const filter = {}
   const fields = fieldsParser(query.fields)
   const options = {
@@ -549,7 +549,6 @@ async function getActiveAchievements (query, cb) {
 
 async function getActiveAchievementsCode (query) {
   var start, end
-  cb = cb || query
 
   if (query.start === undefined) {
     start = new Date() // now
@@ -583,6 +582,8 @@ async function getActiveAchievementsCode (query) {
   if (query.kind) {
     filter.kind = query.kind
   }
+
+  
 
   return Achievement.find(filter)
 }
@@ -630,16 +631,81 @@ function randomString (size) {
   return text
 }
 
-async function createSecret (payload, cb) {
+
+async function createSecret (payload) {
   const options = {
     kind: AchievementKind.SECRET,
     id: new RegExp(payload.event)
   }
 
-  return Achievement.find(options)
+  let achs = await Achievement.find(options).catch((err) => {
+    log.error({error: err})
+    return Boom.internal()
+  })
+
+  if (achs === null) {
+    log.error('error trying to create secret achievement')
+    return new Error('error trying to create secret achievement')
+  }
+
+  const n = achs.length
+
+  const from = new Date()
+  const to = new Date(from)
+  from.setHours(0)
+  from.setMinutes(0)
+  from.setSeconds(0)
+  from.setMilliseconds(0)
+
+  to.setHours(23)
+  to.setMinutes(59)
+  to.setSeconds(59)
+  to.setMilliseconds(999)
+
+  const code = randomString(12)
+
+  const achievement = {
+    name: 'Secret Achievement!',
+    id: `${payload.event}_secret_achievement_${n}`,
+    description: 'Secret achievement valid for a limited time!',
+    instructions: 'Redeem the code that appears in the chat at random times!',
+    img: `https://sinfo.ams3.cdn.digitaloceanspaces.com/static/${payload.event}/achievements/secret_code.webp`,
+    value: payload.points > 0 ? payload.points : 10,
+    users: [],
+    validity: {
+      from: from,
+      to: to
+    },
+    code: {
+      code: code
+    },
+    kind: AchievementKind.SECRET
+  }
+
+  achievement.updated = achievement.created = achievement.code.created = Date.now()
+  const expiration = new Date(payload.validity)
+  if (expiration <= achievement.code.created) {
+    log.error({expires: expiration}, 'expiration date is in the past')
+    return Boom.badRequest()
+  }
+  achievement.code.expiration = expiration
+
+  
+
+  let ach = await Achievement.create(achievement).catch((err) => {
+    if (err.code === 11000) {
+      log.error({achievement: achievement}, 'duplicate')
+      Boom.conflict(`achievement "${ach.id}" is a duplicate`)
+    }
+
+    log.error({ err: err, achievement: ach.id }, 'error creating achievement')
+    return Boom.internal()
+  })
+
+  return ach.toObject({ getters: true })
 }
 
-async function addUserToSecret (id, code, cb) {
+async function addUserToSecret (id, code) {
   if (!id) {
     log.error('tried to redeem secret but no user was given')
     return Boom.boomify()
@@ -662,7 +728,7 @@ async function addUserToSecret (id, code, cb) {
     'code.code': code
   }
 
-  return Achievement.findOneAndUpdate(query, changes)
+  return Achievement.findOneAndUpdate(query, changes, {new: true})
 }
 
 async function getAchievementBySession (id) {

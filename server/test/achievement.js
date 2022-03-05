@@ -1,6 +1,6 @@
 const Lab = require('@hapi/lab')
 const Code = require('@hapi/code')
-const async = require('async')
+const slug = require('slug')
 
 const server = require('../').hapi
 
@@ -30,7 +30,6 @@ const credentialsB = {
   bearer: aux.token,
   scope: 'user'
 }
-const achievementId = 'WENT-TO-SINFO-XXII'
 
 const achievementA = {
   name: 'WENT TO SINFO XXII',
@@ -42,6 +41,7 @@ const achievementA = {
     to: new Date(new Date().getTime() + (1000 * 60 * 60)) // 1 h
   }
 }
+const achievementId = slug(achievementA.name)
 
 const changesToA = {
   name: 'WENT TO SINFO XXIII'
@@ -311,9 +311,9 @@ lab.experiment('Achievement', () => {
     Code.expect(result).to.be.instanceof(Array)
     Code.expect(result.length).to.equal(2)
     Code.expect(result[0].code).to.be.instanceof(Object)
-    Code.expect(result[0].code.code).to.equal(codeA)
+    Code.expect([codeA, codeB]).to.once.include(result[0].code.code)
     Code.expect(result[1].code).to.be.instanceof(Object)
-    Code.expect(result[1].code.code).to.equal(codeB)
+    Code.expect([codeA, codeB]).to.once.include(result[1].code.code)
 
       
   
@@ -333,6 +333,7 @@ lab.experiment('Achievement', () => {
 
     Code.expect(response.statusCode).to.equal(200)
     Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.code).to.be.instanceof(Object)
     Code.expect(result.code.code).to.equal(codeA)
     Code.expect(result.users.length).to.equal(1)
     Code.expect(result.users[0]).to.equal(credentialsB.user.id)

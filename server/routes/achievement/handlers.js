@@ -39,7 +39,7 @@ exports.create = {
     }catch (err) {
       if (err.code === 11000) {
         log.error({msg: "achievement is a duplicate" })
-        return Boom.conflict(`achievement "${achievement.id}" is a duplicate`)
+        return Boom.conflict(`achievement is a duplicate`)
       }
 
       log.error({ err: err, msg:'error creating achievement'}, 'error creating achievement')
@@ -306,7 +306,7 @@ exports.list = {
   handler: async function (request, h) {
     try{
       let achievements = await request.server.methods.achievement.list(request.query)
-      return h.response(render(request.pre.achievements))
+      return h.response(render(achievements))
     }catch(err){
       log.error({err: err}, 'Error finding achievements')
       return Boom.boomify(err)
@@ -421,58 +421,10 @@ exports.createSecret = {
 },
   handler: async function (request, h) {
     try{
-      let achs = await request.server.methods.achievement.createSecret(request.payload)
-      if (achs === null) {
-        log.error('error trying to create secret achievement')
-        return Boom.boomify('error trying to create secret achievement')
-      }
-      
-      const n = achs.length
-
-      const from = new Date()
-      const to = new Date(from)
-      from.setHours(0)
-      from.setMinutes(0)
-      from.setSeconds(0)
-      from.setMilliseconds(0)
-
-      to.setHours(23)
-      to.setMinutes(59)
-      to.setSeconds(59)
-      to.setMilliseconds(999)
-
-      const code = randomString(12)
-
-      const achievement = {
-        name: 'Secret Achievement!',
-        id: `${payload.event}_secret_achievement_${n}`,
-        description: 'Secret achievement valid for a limited time!',
-        instructions: 'Redeem the code that appears in the chat at random times!',
-        img: `https://sinfo.ams3.cdn.digitaloceanspaces.com/static/${payload.event}/achievements/secret_code.webp`,
-        value: payload.points > 0 ? payload.points : 10,
-        users: [],
-        validity: {
-          from: from,
-          to: to
-        },
-        code: {
-          code: code
-        },
-        kind: AchievementKind.SECRET
-      }
-
-      achievement.updated = achievement.created = achievement.code.created = Date.now()
-      const expiration = new Date(payload.validity)
-      if (expiration <= achievement.code.created) {
-        log.error({expires: expiration}, 'expiration date is in the past')
-        return Boom.badRequest()
-      }
-      achievement.code.expiration = expiration
-
-      let ach = await request.server.methods.achievement.create(achievement)
+      let ach = await request.server.methods.achievement.createSecret(request.payload)
       return h.response(render(ach, true)).created('/achievement/' + ach.id)
     }catch(err){
-      log.error({ err: err, achievement: achievement.id }, 'error creating achievement')
+      log.error({ err: err }, 'error creating achievement')
       return Boom.internal()
     }
   },
@@ -496,11 +448,11 @@ exports.signSecret = {
   handler: async function (request, h) {
     try{
       let ach = await request.server.methods.achievement.addUserToSecret(request.auth.credentials.user.id, request.payload.code)
-      if (ach === null) {
-        log.error({ code: code }, 'no valid secret achievements with that code')
+      if (!ach) {
+        log.error({ code: request.payload.code }, 'no valid secret achievements with that code')
         return Boom.notFound('no valid secret achievements with that code')
       }
-      return h.response(render(ach))
+      return h.response(render(ach, true))
     }catch(err){
       log.error({ err: err }, 'error adding user to secret achievement')
       return Boom.internal()

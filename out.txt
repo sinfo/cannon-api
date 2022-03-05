@@ -1,194 +1,98 @@
 
 > cannon-api@0.0.0 test /home/diogo/sinfo/cannon-api
-> lab server/test -l  -m 2000 --verbose
+> lab server/test -l -m 2000 --verbose
 
 Achievement
-  ✔ 1) Create as an admin (390 ms)
-{"name":"WENT TO SINFO XXII","hostname":"MinasTirith","pid":42430,"level":50,"session":"session-code-id","event":"SINFO XXII","value":10,"validity":{"from":"2022-03-04T19:09:31.880Z","to":"2022-03-04T20:09:31.880Z"},"msg":"","time":"2022-03-04T19:09:32.388Z","v":0}
-{"name":"cannon-api","hostname":"MinasTirith","pid":42430,"level":50,"ach":{"name":"WENT TO SINFO XXII","session":"session-code-id","event":"SINFO XXII","value":10,"validity":{"from":"2022-03-04T19:09:31.880Z","to":"2022-03-04T20:09:31.880Z"},"id":"went-to-sinfo-xxii","created":1646420972389,"updated":1646420972389},"msg":"","time":"2022-03-04T19:09:32.389Z","v":0}
-Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
-    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
-    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 2) List all as an admin (28 ms)
-Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
-    at runNextTicks (internal/process/task_queues.js:60:5)
-    at processImmediate (internal/timers.js:437:9)
-    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
-    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 3) Get one as an admin (3 ms)
-Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
-    at runNextTicks (internal/process/task_queues.js:60:5)
-    at processImmediate (internal/timers.js:437:9)
-    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
-    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 4) List all as an user (1 ms)
-Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
-    at runNextTicks (internal/process/task_queues.js:60:5)
-    at processImmediate (internal/timers.js:437:9)
-    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
-    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 5) Get one  as an user (1 ms)
-Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
-    at runNextTicks (internal/process/task_queues.js:60:5)
-    at processImmediate (internal/timers.js:437:9)
-    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
-    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 6) Get one by session (2 ms)
-  ✔ 7) Update as an admin (0 ms)
-Debug: internal, implementation, error 
-    TypeError: Cannot read property 'update' of undefined
-    at method (/home/diogo/sinfo/cannon-api/server/routes/achievement/handlers.js:83:49)
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
-    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
-    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
-    at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 8) Update as a user (2 ms)
-  ✔ 9) Delete as an admin (1 ms)
-Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
-    at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at runNextTicks (internal/process/task_queues.js:64:3)
-    at processImmediate (internal/timers.js:437:9)
-    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
-    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✔ 1) Create as an admin (621 ms)
+{"name":"cannon-api","hostname":"MinasTirith","pid":69379,"level":50,"err":{},"msg":"Error finding achievements","time":"2022-03-05T13:05:11.232Z","v":0}
+  ✖ 2) List all as an admin
+  ✔ 3) Get one as an admin (10 ms)
+{"name":"cannon-api","hostname":"MinasTirith","pid":69379,"level":50,"err":{},"msg":"Error finding achievements","time":"2022-03-05T13:05:11.254Z","v":0}
+  ✖ 4) List all as an user
+  ✔ 5) Get one  as an user (15 ms)
+  ✔ 6) Get one by session (15 ms)
+  ✖ 7) Update as an admin
+  ✔ 8) Update as a user (4 ms)
+  ✔ 9) Delete as an admin (5 ms)
   ✔ 10) Create as a user (2 ms)
   ✔ 11) Delete as a user (1 ms)
-  ✔ 12) Create secret achievement (1 ms)
 Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
+    ReferenceError: achievement is not defined
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/achievement/handlers.js:475:42)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at runNextTicks (internal/process/task_queues.js:64:3)
-    at processImmediate (internal/timers.js:437:9)
+    at async exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:60:28)
     at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
+    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:20)
     at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✖ 12) Create secret achievement
+{"name":"cannon-api","hostname":"MinasTirith","pid":69379,"level":50,"err":{},"msg":"Error finding achievements","time":"2022-03-05T13:05:11.324Z","v":0}
+  ✖ 13) List secret with codes
+  ✖ 14) Sign in to secret with code
+{"name":"cannon-api","hostname":"MinasTirith","pid":69379,"level":50,"err":{},"msg":"error adding user to secret achievement","time":"2022-03-05T13:05:11.329Z","v":0}
+  ✖ 15) Sign in to secret with code fail
+{"name":"cannon-api","hostname":"MinasTirith","pid":69379,"level":50,"info":{"acceptEncoding":"identity","completed":0,"cors":{"isOriginMatch":false},"host":"localhost:8090","hostname":"localhost","id":"1646485511330:MinasTirith:69379:l0duymen:10015","received":1646485511330,"referrer":"","remoteAddress":"127.0.0.1","remotePort":"","responded":0},"error":{},"msg":"","time":"2022-03-05T13:05:11.332Z","v":0}
+{"name":"cannon-api","hostname":"MinasTirith","pid":69379,"level":50,"info":{"acceptEncoding":"identity","completed":0,"cors":{"isOriginMatch":false},"host":"localhost:8090","hostname":"localhost","id":"1646485511333:MinasTirith:69379:l0duymen:10016","received":1646485511333,"referrer":"","remoteAddress":"127.0.0.1","remotePort":"","responded":0},"error":{},"msg":"","time":"2022-03-05T13:05:11.334Z","v":0}
 Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
-    at runNextTicks (internal/process/task_queues.js:60:5)
-    at processImmediate (internal/timers.js:437:9)
-    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
-    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 13) List secret with codes (3 ms)
-  ✔ 14) Sign in to secret with code (0 ms)
-  ✔ 15) Sign in to secret with code fail (1 ms)
-Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
-    at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at runNextTicks (internal/process/task_queues.js:64:3)
-    at processImmediate (internal/timers.js:437:9)
-    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
-    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
-    at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at runNextTicks (internal/process/task_queues.js:64:3)
-    at processImmediate (internal/timers.js:437:9)
-    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
-    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
-    at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at runNextTicks (internal/process/task_queues.js:64:3)
-    at processImmediate (internal/timers.js:437:9)
-    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
-    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:63:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:63:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'company' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/link.js:12:20)
+    at render (/home/diogo/sinfo/cannon-api/server/views/link.js:7:12)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/link/handlers.js:44:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/file.js:11:15)
+    at render (/home/diogo/sinfo/cannon-api/server/views/file.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/file/handlers.js:27:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at runNextTicks (internal/process/task_queues.js:64:3)
-    at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Endpoint
   ✔ 16) Create as an admin (4 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'company' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/endpoint.js:11:20)
+    at render (/home/diogo/sinfo/cannon-api/server/views/endpoint.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/company-endpoint/handlers.js:26:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
@@ -196,252 +100,453 @@ Debug: internal, implementation, error
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
   ✔ 17) Create as a user (1 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'company' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/endpoint.js:11:20)
+    at render (/home/diogo/sinfo/cannon-api/server/views/endpoint.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/company-endpoint/handlers.js:26:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at runNextTicks (internal/process/task_queues.js:64:3)
+    at processImmediate (internal/timers.js:437:9)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+Debug: internal, implementation, error 
+    TypeError: Cannot read property 'company' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/endpoint.js:11:20)
+    at render (/home/diogo/sinfo/cannon-api/server/views/endpoint.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/company-endpoint/handlers.js:102:11)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at runNextTicks (internal/process/task_queues.js:60:5)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
   ✔ 18) List as an admin (1 ms)
-  ✔ 19) List as a user (1 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'company' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/endpoint.js:11:20)
+    at render (/home/diogo/sinfo/cannon-api/server/views/endpoint.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/company-endpoint/handlers.js:102:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at runNextTicks (internal/process/task_queues.js:60:5)
+    at processImmediate (internal/timers.js:437:9)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✔ 19) List as a user (0 ms)
+Debug: internal, implementation, error 
+    TypeError: Cannot read property 'company' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/endpoint.js:11:20)
+    at render (/home/diogo/sinfo/cannon-api/server/views/endpoint.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/company-endpoint/handlers.js:78:11)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at runNextTicks (internal/process/task_queues.js:60:5)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
   ✔ 20) Get as an admin (1 ms)
-  ✔ 21) Get as a user (0 ms)
-  ✔ 22) Update as an Admin (0 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'company' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/endpoint.js:11:20)
+    at render (/home/diogo/sinfo/cannon-api/server/views/endpoint.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/company-endpoint/handlers.js:78:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at runNextTicks (internal/process/task_queues.js:60:5)
+    at processImmediate (internal/timers.js:437:9)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✔ 21) Get as a user (1 ms)
+  ✔ 22) Update as an Admin (0 ms)
+Debug: internal, implementation, error 
+    TypeError: Cannot read property 'company' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/endpoint.js:11:20)
+    at render (/home/diogo/sinfo/cannon-api/server/views/endpoint.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/company-endpoint/handlers.js:55:11)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
   ✔ 23) Update as a User (1 ms)
-  ✔ 24) Get All CVs as User (0 ms)
-  ✔ 25) Get All CVs as Company (0 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'company' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/endpoint.js:11:20)
+    at render (/home/diogo/sinfo/cannon-api/server/views/endpoint.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/company-endpoint/handlers.js:55:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at runNextTicks (internal/process/task_queues.js:64:3)
+    at processImmediate (internal/timers.js:437:9)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+Debug: internal, implementation, error 
+    Error: handler method did not return a value, a promise, or throw an error
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
     at runNextTicks (internal/process/task_queues.js:60:5)
     at processImmediate (internal/timers.js:437:9)
+    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
+    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:20)
+    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✔ 24) Get All CVs as User (2 ms)
+Debug: internal, implementation, error 
+    Error: handler method did not return a value, a promise, or throw an error
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
+    at runNextTicks (internal/process/task_queues.js:60:5)
+    at processImmediate (internal/timers.js:437:9)
+    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
+    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:20)
+    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✔ 25) Get All CVs as Company (2 ms)
+Debug: internal, implementation, error 
+    Error: handler method did not return a value, a promise, or throw an error
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
+    at runNextTicks (internal/process/task_queues.js:60:5)
+    at processImmediate (internal/timers.js:437:9)
+    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
+    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:20)
+    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
   ✔ 26) Get CVs as Company Endpoint closed (1 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
-    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
-    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    Error: handler method did not return a value, a promise, or throw an error
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
     at runNextTicks (internal/process/task_queues.js:60:5)
     at processImmediate (internal/timers.js:437:9)
+    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
+    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:20)
+    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 27) Get Links CVs as Other Company (1 ms)
-  ✔ 28) Delete as a User (0 ms)
-  ✔ 29) Delete as an Admin (1 ms)
+  ✔ 27) Get Links CVs as Other Company (5 ms)
+  ✔ 28) Delete as a User (3 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'company' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/endpoint.js:11:20)
+    at render (/home/diogo/sinfo/cannon-api/server/views/endpoint.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/company-endpoint/handlers.js:125:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✔ 29) Delete as an Admin (4 ms)
+Debug: internal, implementation, error 
+    TypeError: Cannot read property 'company' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/endpoint.js:11:20)
+    at render (/home/diogo/sinfo/cannon-api/server/views/endpoint.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/company-endpoint/handlers.js:125:11)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:274:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:274:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/file.js:11:15)
+    at render (/home/diogo/sinfo/cannon-api/server/views/file.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/file/handlers.js:243:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 File
-  ✔ 30) Create as an admin (3 ms)
+  ✔ 30) Create as an admin (5 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/file.js:11:15)
+    at render (/home/diogo/sinfo/cannon-api/server/views/file.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/file/handlers.js:27:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/file.js:11:15)
+    at render (/home/diogo/sinfo/cannon-api/server/views/file.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/file/handlers.js:222:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at runNextTicks (internal/process/task_queues.js:60:5)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 31) List all as an admin (1 ms)
+  ✔ 31) List all as an admin (2 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/file.js:11:15)
+    at render (/home/diogo/sinfo/cannon-api/server/views/file.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/file/handlers.js:74:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at runNextTicks (internal/process/task_queues.js:60:5)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 32) Get one as an admin (1 ms)
-  ✔ 33) List all as a user (0 ms)
-  ✔ 34) Get one as a user (1 ms)
-  ✔ 35) Update as an admin (0 ms)
+  ✔ 32) Get one as an admin (2 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/file.js:11:15)
+    at render (/home/diogo/sinfo/cannon-api/server/views/file.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/file/handlers.js:222:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at runNextTicks (internal/process/task_queues.js:60:5)
+    at processImmediate (internal/timers.js:437:9)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✔ 33) List all as a user (2 ms)
+Debug: internal, implementation, error 
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/file.js:11:15)
+    at render (/home/diogo/sinfo/cannon-api/server/views/file.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/file/handlers.js:74:11)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at runNextTicks (internal/process/task_queues.js:60:5)
+    at processImmediate (internal/timers.js:437:9)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✔ 34) Get one as a user (2 ms)
+  ✔ 35) Update as an admin (2 ms)
+Debug: internal, implementation, error 
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/file.js:11:15)
+    at render (/home/diogo/sinfo/cannon-api/server/views/file.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/file/handlers.js:54:11)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 36) Update as an user (1 ms)
+  ✔ 36) Update as an user (2 ms)
+Debug: internal, implementation, error 
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/file.js:11:15)
+    at render (/home/diogo/sinfo/cannon-api/server/views/file.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/file/handlers.js:54:11)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at runNextTicks (internal/process/task_queues.js:64:3)
+    at processImmediate (internal/timers.js:437:9)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
   ✔ 37) Delete as an admin (1 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/file.js:11:15)
+    at render (/home/diogo/sinfo/cannon-api/server/views/file.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/file/handlers.js:243:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 38) Create as an user (1 ms)
+  ✔ 38) Create as an user (2 ms)
+Debug: internal, implementation, error 
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/file.js:11:15)
+    at render (/home/diogo/sinfo/cannon-api/server/views/file.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/file/handlers.js:27:11)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at runNextTicks (internal/process/task_queues.js:64:3)
+    at processImmediate (internal/timers.js:437:9)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
   ✔ 39) Delete as an user (1 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/file.js:11:15)
+    at render (/home/diogo/sinfo/cannon-api/server/views/file.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/file/handlers.js:243:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:63:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:63:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:63:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:63:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-{"name":"Went to stand","hostname":"MinasTirith","pid":42430,"level":50,"id":"stand-SINFO-","kind":"stand","value":10,"validity":{"from":"2022-03-04T19:09:31.947Z","to":"2022-03-04T20:09:31.947Z"},"event":"22","msg":"","time":"2022-03-04T19:09:32.469Z","v":0}
-{"name":"cannon-api","hostname":"MinasTirith","pid":42430,"level":50,"ach":{"id":"stand-SINFO-","name":"Went to stand","kind":"stand","value":10,"validity":{"from":"2022-03-04T19:09:31.947Z","to":"2022-03-04T20:09:31.947Z"},"event":"22","created":1646420972469,"updated":1646420972469},"msg":"","time":"2022-03-04T19:09:32.469Z","v":0}
-{"name":"Went to stand","hostname":"MinasTirith","pid":42430,"level":50,"id":"stand-Chavaile.Inc-","event":"25-SINFO","kind":"stand","value":10,"validity":{"from":"2022-03-04T19:09:31.947Z","to":"2022-03-04T20:09:31.947Z"},"msg":"","time":"2022-03-04T19:09:32.471Z","v":0}
-{"name":"cannon-api","hostname":"MinasTirith","pid":42430,"level":50,"ach":{"id":"stand-Chavaile.Inc-","name":"Went to stand","event":"25-SINFO","kind":"stand","value":10,"validity":{"from":"2022-03-04T19:09:31.947Z","to":"2022-03-04T20:09:31.947Z"},"created":1646420972471,"updated":1646420972471},"msg":"","time":"2022-03-04T19:09:32.471Z","v":0}
+Debug: internal, implementation, error 
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:63:11)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at runNextTicks (internal/process/task_queues.js:64:3)
+    at processImmediate (internal/timers.js:437:9)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Link
-  ✔ 40) Create link ok as company (8 ms)
+  ✔ 40) Create link ok as company (10 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'company' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/link.js:12:20)
+    at render (/home/diogo/sinfo/cannon-api/server/views/link.js:7:12)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/link/handlers.js:44:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 41) Create Link empty string as company (1 ms)
+  ✔ 41) Create Link empty string as company (3 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'company' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/link.js:12:20)
+    at render (/home/diogo/sinfo/cannon-api/server/views/link.js:7:12)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/link/handlers.js:44:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 42) Create Link null note as company (1 ms)
+  ✔ 42) Create Link null note as company (2 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'company' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/link.js:12:20)
+    at render (/home/diogo/sinfo/cannon-api/server/views/link.js:7:12)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/link/handlers.js:44:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 43) Sign B as company I day I (1 ms)
+  ✔ 43) Sign B as company I day I (3 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/sign/handlers.js:29:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
@@ -449,58 +554,73 @@ Debug: internal, implementation, error
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
   ✔ 44) Sign B as company II day I (1 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/sign/handlers.js:29:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 45) Sign B as company I day II (1 ms)
+  ✔ 45) Sign B as company I day II (8 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/sign/handlers.js:29:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 46) Redeem Card day II as User (1 ms)
+  ✔ 46) Redeem Card day II as User (7 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:313:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'company' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/link.js:12:20)
+    at render (/home/diogo/sinfo/cannon-api/server/views/link.js:7:12)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/link/handlers.js:129:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at runNextTicks (internal/process/task_queues.js:60:5)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 47) Get as company (1 ms)
+  ✔ 47) Get as company (7 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'company' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/link.js:12:20)
+    at render (/home/diogo/sinfo/cannon-api/server/views/link.js:7:12)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/link/handlers.js:129:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at runNextTicks (internal/process/task_queues.js:60:5)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
   ✔ 48) Get other company as company (1 ms)
-  ✔ 49) Update remove note as company (0 ms)
+  ✔ 49) Update remove note as company (2 ms)
 Debug: internal, implementation, error 
     TypeError: method is not a function
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
@@ -509,18 +629,7 @@ Debug: internal, implementation, error
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 50) Update as company (1 ms)
-Debug: internal, implementation, error 
-    TypeError: method is not a function
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
-    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
-    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
-    at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at runNextTicks (internal/process/task_queues.js:64:3)
-    at processImmediate (internal/timers.js:437:9)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 51) Update Non Existing as company (1 ms)
+  ✔ 50) Update as company (7 ms)
 Debug: internal, implementation, error 
     TypeError: method is not a function
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
@@ -531,270 +640,344 @@ Debug: internal, implementation, error
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✔ 51) Update Non Existing as company (2 ms)
 Debug: internal, implementation, error 
     TypeError: method is not a function
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
     at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at runNextTicks (internal/process/task_queues.js:64:3)
+    at processImmediate (internal/timers.js:437:9)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+Debug: internal, implementation, error 
+    ReferenceError: log is not defined
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/link/handlers.js:159:7)
+    at runNextTicks (internal/process/task_queues.js:60:5)
+    at processImmediate (internal/timers.js:437:9)
+    at async exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:60:28)
+    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
+    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:20)
+    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✔ 52) List as company (3 ms)
+Debug: internal, implementation, error 
+    ReferenceError: log is not defined
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/link/handlers.js:159:7)
+    at runNextTicks (internal/process/task_queues.js:60:5)
+    at processImmediate (internal/timers.js:437:9)
+    at async exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:60:28)
+    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
+    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:20)
+    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✔ 53) List Non Existing as company (2 ms)
+  ✔ 54) Create same as company (1 ms)
+Debug: internal, implementation, error 
+    TypeError: Cannot read property 'company' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/link.js:12:20)
+    at render (/home/diogo/sinfo/cannon-api/server/views/link.js:7:12)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/link/handlers.js:44:11)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✔ 55) Delete A as company (3 ms)
+Debug: internal, implementation, error 
+    ReferenceError: log is not defined
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/link/handlers.js:192:7)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at runNextTicks (internal/process/task_queues.js:64:3)
+    at processImmediate (internal/timers.js:437:9)
+    at async exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:60:28)
+    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
+    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:20)
+    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✔ 56) Delete B as company (3 ms)
+Debug: internal, implementation, error 
+    ReferenceError: log is not defined
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/link/handlers.js:192:7)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at runNextTicks (internal/process/task_queues.js:64:3)
+    at processImmediate (internal/timers.js:437:9)
+    at async exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:60:28)
+    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
+    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:20)
+    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✔ 57) Delete C as company (3 ms)
+Debug: internal, implementation, error 
+    ReferenceError: log is not defined
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/link/handlers.js:192:7)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at runNextTicks (internal/process/task_queues.js:64:3)
+    at processImmediate (internal/timers.js:437:9)
+    at async exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:60:28)
+    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
+    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:20)
+    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✔ 58) Create as user (2 ms)
+Debug: internal, implementation, error 
+    TypeError: Cannot read property 'company' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/link.js:12:20)
+    at render (/home/diogo/sinfo/cannon-api/server/views/link.js:7:12)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/link/handlers.js:44:11)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at runNextTicks (internal/process/task_queues.js:64:3)
+    at processImmediate (internal/timers.js:437:9)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+Debug: internal, implementation, error 
+    TypeError: Cannot read property 'company' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/link.js:12:20)
+    at render (/home/diogo/sinfo/cannon-api/server/views/link.js:7:12)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/link/handlers.js:129:11)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at runNextTicks (internal/process/task_queues.js:60:5)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 52) List as company (2 ms)
+  ✔ 59) Get as user (2 ms)
+  ✔ 60) List as user (2 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'company' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/link.js:12:20)
+    at render (/home/diogo/sinfo/cannon-api/server/views/link.js:7:12)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/link/handlers.js:129:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at runNextTicks (internal/process/task_queues.js:60:5)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 53) List Non Existing as company (1 ms)
-  ✔ 54) Create same as company (0 ms)
+  ✔ 61) Delete as user (2 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:274:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
-    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
-    at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 55) Delete A as company (1 ms)
-Debug: internal, implementation, error 
-    TypeError: method is not a function
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
-    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
-    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
-    at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at runNextTicks (internal/process/task_queues.js:64:3)
-    at processImmediate (internal/timers.js:437:9)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 56) Delete B as company (1 ms)
-Debug: internal, implementation, error 
-    TypeError: method is not a function
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
-    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
-    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
-    at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at runNextTicks (internal/process/task_queues.js:64:3)
-    at processImmediate (internal/timers.js:437:9)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 57) Delete C as company (1 ms)
-Debug: internal, implementation, error 
-    TypeError: method is not a function
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
-    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
-    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
-    at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at runNextTicks (internal/process/task_queues.js:64:3)
-    at processImmediate (internal/timers.js:437:9)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 58) Create as user (1 ms)
-  ✔ 59) Get as user (1 ms)
-  ✔ 60) List as user (0 ms)
-  ✔ 61) Delete as user (1 ms)
-Debug: internal, implementation, error 
-    TypeError: method is not a function
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
-    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:274:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:274:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:274:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:274:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
-    at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at runNextTicks (internal/process/task_queues.js:64:3)
-    at processImmediate (internal/timers.js:437:9)
-    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
-    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
-    at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
-    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-{"name":"WENT TO SINFO XXII","hostname":"MinasTirith","pid":42430,"level":50,"id":"WENT-TO-SINFO-XXII","event":"SINFO XXII","value":10,"validity":{"from":"2022-03-04T19:09:31.954Z","to":"2022-03-04T19:09:33.074Z"},"msg":"","time":"2022-03-04T19:09:32.498Z","v":0}
-{"name":"cannon-api","hostname":"MinasTirith","pid":42430,"level":50,"ach":{"id":"WENT-TO-SINFO-XXII","name":"WENT TO SINFO XXII","event":"SINFO XXII","value":10,"validity":{"from":"2022-03-04T19:09:31.954Z","to":"2022-03-04T19:09:33.074Z"},"created":1646420972498,"updated":1646420972498},"msg":"","time":"2022-03-04T19:09:32.498Z","v":0}
-{"name":"WENT TO SOME WORKSHOP AT SINFO XXII","hostname":"MinasTirith","pid":42430,"level":50,"id":"WENT-TO-SOME-WORKHOP-AT-SINFO-XXII","event":"SINFO XXII","value":5,"validity":{"from":"2022-03-04T19:09:31.954Z","to":"2022-03-04T19:09:33.074Z"},"msg":"","time":"2022-03-04T19:09:32.500Z","v":0}
-{"name":"cannon-api","hostname":"MinasTirith","pid":42430,"level":50,"ach":{"id":"WENT-TO-SOME-WORKHOP-AT-SINFO-XXII","name":"WENT TO SOME WORKSHOP AT SINFO XXII","event":"SINFO XXII","value":5,"validity":{"from":"2022-03-04T19:09:31.954Z","to":"2022-03-04T19:09:33.074Z"},"created":1646420972500,"updated":1646420972500},"msg":"","time":"2022-03-04T19:09:32.500Z","v":0}
-{"name":"WENT TO SOME OTHER WORKSHOP AT SINFO XXII","hostname":"MinasTirith","pid":42430,"level":50,"id":"WENT-TO-SOME-OTHER-WORKHOP-AT-SINFO-XXII","event":"SINFO XXII","value":6,"validity":{"from":"2022-03-04T19:09:31.954Z","to":"2022-03-04T19:09:33.074Z"},"msg":"","time":"2022-03-04T19:09:32.501Z","v":0}
-{"name":"cannon-api","hostname":"MinasTirith","pid":42430,"level":50,"ach":{"id":"WENT-TO-SOME-OTHER-WORKHOP-AT-SINFO-XXII","name":"WENT TO SOME OTHER WORKSHOP AT SINFO XXII","event":"SINFO XXII","value":6,"validity":{"from":"2022-03-04T19:09:31.954Z","to":"2022-03-04T19:09:33.074Z"},"created":1646420972501,"updated":1646420972501},"msg":"","time":"2022-03-04T19:09:32.501Z","v":0}
-Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:63:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Redeem
-  ✔ 62) Create as an admin (6 ms)
+  ✔ 62) Create as an admin (13 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/redeem.js:11:15)
+    at render (/home/diogo/sinfo/cannon-api/server/views/redeem.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/redeem/handlers.js:24:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/achievement.js:11:15)
+    at render (/home/diogo/sinfo/cannon-api/server/views/achievement.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/redeem/handlers.js:48:20)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at runNextTicks (internal/process/task_queues.js:60:5)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 63) Get one as an user (1 ms)
-  ✔ 64) Create again as an admin (0 ms)
+  ✔ 63) Get one as an user (5 ms)
+  ✔ 64) Create again as an admin (5 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/redeem.js:11:15)
+    at render (/home/diogo/sinfo/cannon-api/server/views/redeem.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/redeem/handlers.js:24:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 65) Delete as an admin (1 ms)
+  ✔ 65) Delete as an admin (2 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: reply is not a function
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/redeem/handlers.js:69:5)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
-    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
-    at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at runNextTicks (internal/process/task_queues.js:64:3)
-    at processImmediate (internal/timers.js:437:9)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 66) Create as an user (1 ms)
-  ✔ 67) Delete as an user (1 ms)
-Debug: internal, implementation, error 
-    TypeError: method is not a function
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
-    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✔ 66) Create as an user (2 ms)
 Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/redeem.js:11:15)
+    at render (/home/diogo/sinfo/cannon-api/server/views/redeem.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/redeem/handlers.js:24:11)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
-    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
-    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✔ 67) Delete as an user (7 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: reply is not a function
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/redeem/handlers.js:69:5)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:274:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-{"name":"SPEED DATE 1","hostname":"MinasTirith","pid":42430,"level":50,"id":"speedDate-sinfo-consulting-1","event":"sinfoX","value":20,"validity":{"from":"2022-03-04T19:09:31.973Z","to":"2022-03-04T20:09:31.973Z"},"kind":"speedDate","msg":"","time":"2022-03-04T19:09:32.517Z","v":0}
-{"name":"cannon-api","hostname":"MinasTirith","pid":42430,"level":50,"ach":{"id":"speedDate-sinfo-consulting-1","name":"SPEED DATE 1","event":"sinfoX","value":20,"validity":{"from":"2022-03-04T19:09:31.973Z","to":"2022-03-04T20:09:31.973Z"},"kind":"speedDate","created":1646420972517,"updated":1646420972517},"msg":"","time":"2022-03-04T19:09:32.517Z","v":0}
-{"name":"SPEED DATE 2","hostname":"MinasTirith","pid":42430,"level":50,"id":"speedDate-sinfo-engineering-1","event":"sinfoX","value":20,"validity":{"from":"2022-03-04T19:09:31.974Z","to":"2022-03-04T20:09:31.974Z"},"kind":"speedDate","msg":"","time":"2022-03-04T19:09:32.519Z","v":0}
-{"name":"cannon-api","hostname":"MinasTirith","pid":42430,"level":50,"ach":{"id":"speedDate-sinfo-engineering-1","name":"SPEED DATE 2","event":"sinfoX","value":20,"validity":{"from":"2022-03-04T19:09:31.974Z","to":"2022-03-04T20:09:31.974Z"},"kind":"speedDate","created":1646420972519,"updated":1646420972519},"msg":"","time":"2022-03-04T19:09:32.519Z","v":0}
-{"name":"TOTAL DAY","hostname":"MinasTirith","pid":42430,"level":50,"id":"totalday","value":500,"validity":{"from":"2022-03-04T19:09:31.974Z","to":"2022-03-04T20:09:31.974Z"},"kind":"standDay","event":"22","msg":"","time":"2022-03-04T19:09:32.520Z","v":0}
-{"name":"cannon-api","hostname":"MinasTirith","pid":42430,"level":50,"ach":{"name":"TOTAL DAY","id":"totalday","value":500,"validity":{"from":"2022-03-04T19:09:31.974Z","to":"2022-03-04T20:09:31.974Z"},"kind":"standDay","event":"22","created":1646420972520,"updated":1646420972520},"msg":"","time":"2022-03-04T19:09:32.520Z","v":0}
-{"name":"Stand 1","hostname":"MinasTirith","pid":42430,"level":50,"id":"stand-sinfo-consulting-1","value":10,"validity":{"from":"2022-03-04T19:09:31.974Z","to":"2022-03-04T20:09:31.974Z"},"kind":"stand","event":"22","msg":"","time":"2022-03-04T19:09:32.521Z","v":0}
-{"name":"cannon-api","hostname":"MinasTirith","pid":42430,"level":50,"ach":{"name":"Stand 1","id":"stand-sinfo-consulting-1","value":10,"validity":{"from":"2022-03-04T19:09:31.974Z","to":"2022-03-04T20:09:31.974Z"},"kind":"stand","event":"22","created":1646420972522,"updated":1646420972522},"msg":"","time":"2022-03-04T19:09:32.522Z","v":0}
-{"name":"Stand 1","hostname":"MinasTirith","pid":42430,"level":50,"id":"stand-sinfo-engineering-1","value":10,"validity":{"from":"2022-03-04T19:09:31.974Z","to":"2022-03-04T20:09:31.974Z"},"kind":"stand","event":"22","msg":"","time":"2022-03-04T19:09:32.523Z","v":0}
-{"name":"cannon-api","hostname":"MinasTirith","pid":42430,"level":50,"ach":{"name":"Stand 1","id":"stand-sinfo-engineering-1","value":10,"validity":{"from":"2022-03-04T19:09:31.974Z","to":"2022-03-04T20:09:31.974Z"},"kind":"stand","event":"22","created":1646420972523,"updated":1646420972523},"msg":"","time":"2022-03-04T19:09:32.523Z","v":0}
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:63:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at runNextTicks (internal/process/task_queues.js:64:3)
+    at processImmediate (internal/timers.js:437:9)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+Debug: internal, implementation, error 
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:63:11)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at runNextTicks (internal/process/task_queues.js:64:3)
+    at processImmediate (internal/timers.js:437:9)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+Debug: internal, implementation, error 
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:177:11)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Sign
-  ✔ 68) Sign into speed date once (10 ms)
+  ✔ 68) Sign into speed date once (17 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: reply is not a function
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/sign/handlers.js:55:5)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
@@ -802,224 +985,209 @@ Debug: internal, implementation, error
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
   ✔ 69) Sign into speed date twice (1 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: reply is not a function
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/sign/handlers.js:55:5)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 70) Sign into speed date thrice (1 ms)
+  ✔ 70) Sign into speed date thrice (2 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: reply is not a function
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/sign/handlers.js:55:5)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 71) Sign into speed date 4 times (1 ms)
+  ✔ 71) Sign into speed date 4 times (2 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: reply is not a function
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/sign/handlers.js:55:5)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 72) Sign into stand 1 (1 ms)
+  ✔ 72) Sign into stand 1 (2 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/sign/handlers.js:29:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 73) Sign into all stands (1 ms)
+  ✔ 73) Sign into all stands (2 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:177:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 74) Get total speed dating points (2 ms)
+  ✔ 74) Get total speed dating points (4 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:274:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:274:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
+    TypeError: reply is not a function
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/sign/handlers.js:55:5)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at runNextTicks (internal/process/task_queues.js:64:3)
-    at processImmediate (internal/timers.js:437:9)
-    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
-    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
-    at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at runNextTicks (internal/process/task_queues.js:64:3)
-    at processImmediate (internal/timers.js:437:9)
-    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
-    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
-    at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at runNextTicks (internal/process/task_queues.js:64:3)
-    at processImmediate (internal/timers.js:437:9)
-    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
-    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
-    at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at runNextTicks (internal/process/task_queues.js:64:3)
-    at processImmediate (internal/timers.js:437:9)
-    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
-    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
-    at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
-    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-{"name":"WS A","hostname":"MinasTirith","pid":42430,"level":50,"event":"SINFO 28","id":"ws1","value":10,"session":"sessionA","validity":{"from":"2022-03-04T19:09:31.986Z","to":"2022-03-04T20:09:31.986Z"},"kind":"workshop","msg":"","time":"2022-03-04T19:09:32.539Z","v":0}
-{"name":"cannon-api","hostname":"MinasTirith","pid":42430,"level":50,"ach":{"name":"WS A","event":"SINFO 28","id":"ws1","value":10,"session":"sessionA","validity":{"from":"2022-03-04T19:09:31.986Z","to":"2022-03-04T20:09:31.986Z"},"kind":"workshop","created":1646420972539,"updated":1646420972539},"msg":"","time":"2022-03-04T19:09:32.539Z","v":0}
-{"name":"WS B","hostname":"MinasTirith","pid":42430,"level":50,"event":"SINFO 28","id":"ws2","value":10,"session":"sessionB","validity":{"from":"2022-03-04T19:09:31.986Z","to":"2022-03-04T20:09:31.986Z"},"kind":"workshop","msg":"","time":"2022-03-04T19:09:32.540Z","v":0}
-{"name":"cannon-api","hostname":"MinasTirith","pid":42430,"level":50,"ach":{"name":"WS B","event":"SINFO 28","id":"ws2","value":10,"session":"sessionB","validity":{"from":"2022-03-04T19:09:31.986Z","to":"2022-03-04T20:09:31.986Z"},"kind":"workshop","created":1646420972540,"updated":1646420972540},"msg":"","time":"2022-03-04T19:09:32.540Z","v":0}
 User
-  ✔ 75) Create as admin (3 ms)
+  ✔ 75) Create as admin (9 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:63:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at runNextTicks (internal/process/task_queues.js:64:3)
+    at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 76) Block double concurrent workshop (1 ms)
-  ✔ 77) Double sign in same workshop should not deduce points (1 ms)
+  ✔ 76) Block double concurrent workshop (4 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: reply is not a function
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/sign/handlers.js:80:5)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at runNextTicks (internal/process/task_queues.js:64:3)
+    at processImmediate (internal/timers.js:437:9)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✔ 77) Double sign in same workshop should not deduce points (3 ms)
+Debug: internal, implementation, error 
+    TypeError: reply is not a function
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/sign/handlers.js:80:5)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at runNextTicks (internal/process/task_queues.js:64:3)
+    at processImmediate (internal/timers.js:437:9)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+Debug: internal, implementation, error 
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:115:11)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at runNextTicks (internal/process/task_queues.js:60:5)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 78) List all as admin (1 ms)
-  ✔ 79) List all with achievement as admin (0 ms)
-{"name":"WENT TO SINFO XXII","hostname":"MinasTirith","pid":42430,"level":50,"event":"SINFO XXII","session":"not","value":10,"validity":{"from":"2022-03-04T19:09:31.986Z","to":"2022-03-04T20:09:31.986Z"},"msg":"","time":"2022-03-04T19:09:32.546Z","v":0}
-{"name":"cannon-api","hostname":"MinasTirith","pid":42430,"level":50,"ach":{"name":"WENT TO SINFO XXII","event":"SINFO XXII","session":"not","value":10,"validity":{"from":"2022-03-04T19:09:31.986Z","to":"2022-03-04T20:09:31.986Z"},"id":"went-to-sinfo-xxii","created":1646420972546,"updated":1646420972546},"msg":"","time":"2022-03-04T19:09:32.546Z","v":0}
-  ✔ 80) Post code as admin and sign as user (2 ms)
+  ✔ 78) List all as admin (4 ms)
+  ✔ 79) List all with achievement as admin (1 ms)
+  ✔ 80) Post code as admin and sign as user (5 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: reply is not a function
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/sign/handlers.js:103:5)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
-    at runNextTicks (internal/process/task_queues.js:60:5)
+    at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
-    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
-    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
   ✔ 81) Self sign fail (3 ms)
+  ✔ 82) Get one with codes (3 ms)
 Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
-    at runNextTicks (internal/process/task_queues.js:60:5)
-    at processImmediate (internal/timers.js:437:9)
+    ReferenceError: filter is not defined
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/achievement/handlers.js:120:42)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at async exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:60:28)
     at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
+    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:20)
     at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 82) Get one with codes (1 ms)
+{"name":"cannon-api","hostname":"MinasTirith","pid":69379,"level":50,"err":{},"msg":"Error finding achievements","time":"2022-03-05T13:05:11.606Z","v":0}
+{"name":"cannon-api","hostname":"MinasTirith","pid":69379,"level":50,"err":{},"msg":"Error finding achievements","time":"2022-03-05T13:05:11.606Z","v":0}
+  ✔ 83) List with codes (7 ms)
 Debug: internal, implementation, error 
-    Error: method method did not return a value, a promise, or throw an error
-    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:81:29)
-    at runNextTicks (internal/process/task_queues.js:60:5)
-    at processImmediate (internal/timers.js:437:9)
-    at async Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:20)
-    at async Promise.all (index 0)
-    at async exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:20:31)
-    at async Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:32)
-    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 83) List with codes (1 ms)
-Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:198:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at runNextTicks (internal/process/task_queues.js:60:5)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 84) Get one as admin (1 ms)
+  ✔ 84) Get one as admin (2 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:198:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at runNextTicks (internal/process/task_queues.js:60:5)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 85) Get one as user (1 ms)
+  ✔ 85) Get one as user (4 ms)
 Debug: internal, implementation, error 
     TypeError: reply is not a function
     at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:231:5)
@@ -1041,34 +1209,56 @@ Debug: internal, implementation, error
     at runNextTicks (internal/process/task_queues.js:60:5)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 87) Get me as user (1 ms)
-  ✔ 88) Update as admin (1 ms)
+  ✔ 87) Get me as user (5 ms)
+  ✔ 88) Update as admin (0 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:177:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 89) Promote to team as user (1 ms)
-  ✔ 90) Promote to team as team (1 ms)
+  ✔ 89) Promote to team as user (3 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:177:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 91) Promote to company as team (1 ms)
+  ✔ 90) Promote to team as team (1 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:177:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at runNextTicks (internal/process/task_queues.js:64:3)
+    at processImmediate (internal/timers.js:437:9)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✔ 91) Promote to company as team (4 ms)
+Debug: internal, implementation, error 
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:177:11)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
@@ -1076,75 +1266,215 @@ Debug: internal, implementation, error
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
   ✔ 92) Update A company as team (1 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:177:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 93) Delete A company as team (1 ms)
+  ✔ 93) Delete A company as team (6 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:254:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 94) Demote me (1 ms)
+  ✔ 94) Demote me (3 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:93:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 95) Update me as user (1 ms)
+  ✔ 95) Update me as user (5 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:93:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 96) Promote to company as user (1 ms)
+  ✔ 96) Promote to company as user (2 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:177:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at runNextTicks (internal/process/task_queues.js:64:3)
+    at processImmediate (internal/timers.js:437:9)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+Debug: internal, implementation, error 
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:115:11)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at runNextTicks (internal/process/task_queues.js:60:5)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 97) List all as user (1 ms)
-  ✔ 98) Update as user (0 ms)
-  ✔ 99) Delete as admin (0 ms)
+  ✔ 97) List all as user (4 ms)
+  ✔ 98) Update as user (4 ms)
 Debug: internal, implementation, error 
-    TypeError: method is not a function
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:177:11)
     at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
     at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
-    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:17:37)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✔ 99) Delete as admin (2 ms)
+Debug: internal, implementation, error 
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:274:11)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
     at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
     at processTicksAndRejections (internal/process/task_queues.js:95:5)
     at runNextTicks (internal/process/task_queues.js:64:3)
     at processImmediate (internal/timers.js:437:9)
     at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
-  ✔ 100) Create as user (1 ms)
-  ✔ 101) Delete as user (0 ms)
+  ✔ 100) Create as user (5 ms)
+Debug: internal, implementation, error 
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:63:11)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at runNextTicks (internal/process/task_queues.js:64:3)
+    at processImmediate (internal/timers.js:437:9)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
+  ✔ 101) Delete as user (1 ms)
+Debug: internal, implementation, error 
+    TypeError: Cannot read property 'id' of undefined
+    at renderObject (/home/diogo/sinfo/cannon-api/server/views/user.js:11:59)
+    at render (/home/diogo/sinfo/cannon-api/server/views/user.js:6:10)
+    at handler (/home/diogo/sinfo/cannon-api/server/routes/user/handlers.js:274:11)
+    at exports.Manager.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/toolkit.js:57:29)
+    at Object.internals.handler (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:46:48)
+    at exports.execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/handler.js:31:36)
+    at Request._lifecycle (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:371:68)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at runNextTicks (internal/process/task_queues.js:64:3)
+    at processImmediate (internal/timers.js:437:9)
+    at async Request._execute (/home/diogo/sinfo/cannon-api/node_modules/@hapi/hapi/lib/request.js:281:9)
 
 
-101 tests complete
-Test duration: 583 ms
+Failed tests:
 
+  2) Achievement List all as an admin:
+
+      actual expected
+
+      500200
+
+      Expected 500 to equal specified value: 200
+
+      at /home/diogo/sinfo/cannon-api/server/test/achievement.js:106:41
+
+  4) Achievement List all as an user:
+
+      actual expected
+
+      500200
+
+      Expected 500 to equal specified value: 200
+
+      at /home/diogo/sinfo/cannon-api/server/test/achievement.js:141:41
+
+  7) Achievement Update as an admin:
+
+      actual expected
+
+      'WENT TO SINFO XXIIXXIII'
+
+      Expected 'WENT TO SINFO XXII' to equal specified value: 'WENT TO SINFO XXIII'
+
+      at /home/diogo/sinfo/cannon-api/server/test/achievement.js:199:33
+
+  12) Achievement Create secret achievement:
+
+      actual expected
+
+      500201
+
+      Expected 500 to equal specified value: 201
+
+      at /home/diogo/sinfo/cannon-api/server/test/achievement.js:279:41
+
+  13) Achievement List secret with codes:
+
+      result.sort is not a function
+
+      at /home/diogo/sinfo/cannon-api/server/test/achievement.js:308:12
+      at processTicksAndRejections (internal/process/task_queues.js:95:5)
+      at async Immediate.<anonymous> (/home/diogo/sinfo/cannon-api/node_modules/@hapi/lab/lib/runner.js:662:21)
+
+  14) Achievement Sign in to secret with code:
+
+      actual expected
+
+      400200
+
+      Expected 400 to equal specified value: 200
+
+      at /home/diogo/sinfo/cannon-api/server/test/achievement.js:334:41
+
+  15) Achievement Sign in to secret with code fail:
+
+      actual expected
+
+      500404
+
+      Expected 500 to equal specified value: 404
+
+      at /home/diogo/sinfo/cannon-api/server/test/achievement.js:352:41
+
+
+7 of 101 tests failed
+Test duration: 1128 ms
+
+npm ERR! Test failed.  See above for more details.
