@@ -105,7 +105,7 @@ function get (filter, editionId, cb) {
     }
     if (!link) {
       log.error({ err: 'not found', link: filter }, 'link not found')
-      return cb(Boom.notFound('link not found'))
+      return cb()
     }
 
     cb(null, link.toObject({ getters: true }))
