@@ -34,11 +34,12 @@ async function updateMe (filter, user, opts) {
   // }
 
   // role can only be user
+  log.error('here')
   if (user.role && user.role !== 'user') {
-    return Boom.unauthorized('Can only demote self, not promte')
+    throw Boom.unauthorized('Can only demote self, not promte')
   }
 
-  update(filter, user, opts)
+  return update(filter, user, opts)
 }
 
 async function update (filter, user, opts) {
@@ -55,38 +56,41 @@ async function update (filter, user, opts) {
     delete user.company
     delete user2.company
 
-    try {
-      await User.findOneAndUpdate(filter, user, opts)
-    } catch (err) {
-      if (err && err.code !== 16837) {
-        log.error({ err: err, requestedUser: filter }, 'error pulling user.company')
-        return Boom.internal()
-      }
-    }
-    try {
-      opts.new = true
-      return await User.findOneAndUpdate(filter, user2, opts)
-    } catch (err) {
-      if (err) {
-        log.error({ err: err, requestedUser: filter }, 'error pushing user.company')
-        return Boom.internal()
-      }
-    }
+    
+    log.error({filter: filter, user: user, opts: opts})
 
+    await User.findOneAndUpdate(filter, user, opts).catch((err)=> {
+      log.error({ err: err }, 'error pulling user.company')
+     throw Boom.boomify(err)
+    })
+
+
+    if(opts){
+      opts.new = true
+    }else{
+      opts = {new: true}
+    }
+    return await User.findOneAndUpdate(filter, user2, opts).catch((err) =>{
+      log.error({ err: err }, 'error pushing user.company')
+     throw Boom.boomify(err)
+    })
   } else {
-    return await User.findOneAndUpdate(filter, user)
+    return await User.findOneAndUpdate(filter, user, {new: true})
   }
 }
 
 async function get (filter, query) {
 
-  const fields = fieldsParser(query.fields)
+  let fields = {}
+  if(query){
+    fields = fieldsParser(query.fields)
+  }
 
   if (typeof filter === 'string') {
     filter = { id: filter }
   }
 
-  return await User.findOne(filter, fields) //fields is always empty ¯\_(ツ)_/¯
+  return User.findOne(filter, fields) //fields is always empty ¯\_(ツ)_/¯
 }
 
 async function getByToken (token) {
@@ -159,11 +163,11 @@ async function removeCompany (filter, editionId) {
     }
   }
 
-  let user = await User.findOneAndUpdate(filter, update)
-    if (!user) {
-      log.error({ err: err, requestedUser: filter, edition: editionId }, 'error deleting user.company')
-      return cb(Boom.notFound())
-    }
+  let user = await User.findOneAndUpdate(filter, update, {new: true})
+  if (!user) {
+    log.error({ err: err, requestedUser: filter, edition: editionId }, 'error deleting user.company')
+    return cb(Boom.notFound())
+  }
   return user 
 }
 
@@ -204,7 +208,10 @@ async function sign (attendeeId, companyId, payload, cb) {
     }
   }
 
-  let user = await User.findOneAndUpdate(filter, update)
+  let user = await User.findOneAndUpdate(filter, update, {new: true}).catch((err) => {
+    log.error({ err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
+   throw Boom.boomify(err)
+  })
   if (!user) {
     // day,event combination entry did not exist
     return addNewDayEntry(
@@ -221,27 +228,21 @@ async function sign (attendeeId, companyId, payload, cb) {
     )
   }
   return user
-    if (err) {
-      log.error({ err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
-      return cb(Boom.internal())
-    }
-
 
   async function addNewDayEntry (filter, update) {
-    let user = await User.findOneAndUpdate(filter, update)
+    let user = await User.findOneAndUpdate(filter, update, {new: true}).catch((err) =>{
+      log.error({ err: err }, 'Error signing user')
+      throw Boom.boomify(err)
+    })
     if (!user) {
       log.error({ err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
-      return Boom.notFound()
+      throw Boom.notFound()
     }
     return user
-    if (err) {
-      log.error({ err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
-      return cb(Boom.internal())
-    }
   }
 }
 
-async function redeemCard (attendeeId, payload, cb) {
+async function redeemCard (attendeeId, payload) {
   // todo verify
   const filter = {
     id: attendeeId,
@@ -260,38 +261,40 @@ async function redeemCard (attendeeId, payload, cb) {
   }
 
   // this should not be here
-  let user = await User.findOne(filter)
-  if (_err) {
-    log.error({ err: _err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId }, 'Error getting user')
-    return Boom.internal()
-  }
-  if (!_user) {
+  let user = await User.findOne(filter).catch((err) => {
+    log.error({ err: err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId }, 'Error getting user')
+    throw Boom.internal()
+  })
+
+
+  if (!user) {
     // day,event combination entry did not exist
-    log.error({ err: _err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId }, 'Error getting user')
-    return Boom.notFound()
+    log.error({ attendeeId: attendeeId, day: payload.day, editionId: payload.editionId }, 'Error getting user')
+    throw Boom.notFound()
   }
 
   // this should not be hardcoded
-  let signatures = _user.signatures.filter(s => s.day === payload.day && s.edition === payload.editionId)
+  let signatures = user.signatures.filter(s => s.day === payload.day && s.edition === payload.editionId)
   if (signatures || signatures.length == 0){
-    log.error({ user: _user }, 'not enough signatures to validate card')
-    return Boom.badData({ user: _user }, 'not enough signatures to validate card')
+    log.error({ user: user }, 'not enough signatures to validate card')
+    throw Boom.badData({ user: user }, 'not enough signatures to validate card')
   }
 
-  if (signatures[0].signatures.length < 6) {
-    log.error({ user: _user }, 'not enough signatures to validate card')
-    return Boom.badData({ user: _user }, 'not enough signatures to validate card')
+  if (signatures[0].signatures.length < 10) {
+    log.error({ user: user }, 'not enough signatures to validate card')
+    throw Boom.badData({ user: user }, 'not enough signatures to validate card')
   }
 
   if (signatures[0].redeemed !== undefined && signatures[0].redeemed) {
-    return Boom.conflict({ user: _user }, 'card already validated')
+    log.error({ user: user }, 'card already validated')
+    throw Boom.conflict({ user: user }, 'card already validated')
   }
 
-  user = await User.findOneAndUpdate(filter, update)
+  user = await User.findOneAndUpdate(filter, update,{new: true})
   if (!user) {
     // day,event combination entry did not exist
     log.error({ err: err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
-    return Boom.notFound()
+    throw Boom.notFound()
   }
   return user
 }

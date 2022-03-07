@@ -343,7 +343,7 @@ lab.experiment('Sign', () => {
     }
 
     let response = await server.inject(optionsA)
-    const result = response.result
+    let result = response.result
 
     Code.expect(response.statusCode).to.equal(200)
     Code.expect(result.id).to.equal(speedDate1.id)

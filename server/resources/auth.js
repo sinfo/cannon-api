@@ -7,6 +7,11 @@ const google = require('../helpers/google')
 const fenix = require('../helpers/fenix')
 const linkedin = require('../helpers/linkedin')
 
+server.method('auth.facebook', facebookAuth, {})
+server.method('auth.fenix', fenixAuth, {})
+server.method('auth.google', googleAuth, {})
+server.method('auth.linkedin', linkedinAuth, {})
+
 async function facebookAuth(id, token) {
   try {
     // Check with Facebook if token is valid
@@ -35,29 +40,25 @@ async function facebookAuth(id, token) {
 }
 
 async function googleAuth(id, token) {
-  try {
-    // Check with Google if token is valid
-    let gUser = await google.verifyToken(id, token)
-    // Get user in cannon by Google User email
-    let res = await google.getUser(gUser)
-    // If user does not exist we create, otherwise we update existing user
-    if (res.createUser) {
-      let userId = await google.createUser(gUser)
-      return await authenticate(userId, null)
-    }
+  log.info('googleAuth')
+  // Check with Google if token is valid
+  let gUser = await google.verifyToken(id, token)
+  // Get user in cannon by Google User email
+  let res = await google.getUser(gUser)
+  // If user does not exist we create, otherwise we update existing user
+  if (res.createUser) {
+    let userId = await google.createUser(gUser)
+    return await authenticate(userId, null)
+  }
 
-    const changedAttributes = {
-      google: {
-        id: gUser.sub
-      },
-      name: gUser.name,
-      img: gUser.picture
-    }
-    return await authenticate(res.userId, changedAttributes)
+  const changedAttributes = {
+    google: {
+      id: gUser.sub
+    },
+    name: gUser.name,
+    img: gUser.picture
   }
-  catch (err) {
-    Boom.unauthorized(err)
-  }
+  return await authenticate(res.userId, changedAttributes)
 }
 
 async function fenixAuth(code) {
@@ -88,44 +89,35 @@ async function fenixAuth(code) {
 }
 
 async function linkedinAuth(code) {
-  try {
-    // Exchange the code given by the user by a token from Linkedin
-    let token = await linkedin.getToken(code)
-    // Get user profile information from Linkedin
-    let linkedinUser = await linkedin.getLinkedinUser(token)
-    // Get user in cannon by Linkedin User email
-    let res = await linkedin.getUser(linkedinUser)
-    // If user does not exist we create, otherwise we update existing user
-    if (res.createUser) {
-      let userId = await linkedin.createUser(linkedinUser)
-      return await authenticate(userId, null)
-    }
-    const changedAttributes = {
-      linkedin: {
-        id: linkedinUser.id
-      },
-      name: `${linkedinUser.firstName} ${linkedinUser.lastName}`,
-      mail: linkedinUser.emailAddress,
-      img: linkedinUser.pictureUrl
-    }
-    return authenticate(res.userId, changedAttributes)
-  } catch (err) {
-    Boom.unauthorized(err)
+  // Exchange the code given by the user by a token from Linkedin
+  let token = await linkedin.getToken(code)
+  // Get user profile information from Linkedin
+  let linkedinUser = await linkedin.getLinkedinUser(token)
+  // Get user in cannon by Linkedin User email
+  let res = await linkedin.getUser(linkedinUser)
+  // If user does not exist we create, otherwise we update existing user
+  if (res.createUser) {
+    let userId = await linkedin.createUser(linkedinUser)
+    return await authenticate(userId, null)
   }
+  const changedAttributes = {
+    linkedin: {
+      id: linkedinUser.id
+    },
+    name: `${linkedinUser.firstName} ${linkedinUser.lastName}`,
+    mail: linkedinUser.emailAddress,
+    img: linkedinUser.pictureUrl
+  }
+  return authenticate(res.userId, changedAttributes)
 }
 
 async function authenticate(userId, changedAttributes) {
+  log.info('authenticate')
   const newToken = token.createJwt(userId)
   changedAttributes = { $set: changedAttributes } || {}
-
-  try {
-    await server.methods.user.update({ id: userId }, changedAttributes)
-    log.info({ userId }, '[login] user logged in')
-    // Finally resolves a new JWT token from Cannon that authenticates the user on the following requests
-    return newToken
-  }
-  catch (err) {
-    log.error({ user: userId, changedAttributes: changedAttributes }, '[login] error updating user')
-    return Boom.internal(err)
-  }
+  await server.methods.user.update({ id: userId }, changedAttributes)
+  log.info({ userId }, '[login] user logged in')
+  // Finally resolves a new JWT token from Cannon that authenticates the user on the following requests
+  log.info('authenticate done')
+  return newToken
 }

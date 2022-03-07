@@ -29,7 +29,7 @@ exports.create = {
       await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.payload.editionId)
       await request.server.methods.achievement.addUserToStandAchievement(request.params.companyId, request.params.attendeeId)
       let user = await request.server.methods.user.sign(request.params.attendeeId, request.params.companyId, request.payload)
-      request.server.methods.achievement.checkUserStandDay(request.params.attendeeId)
+      await request.server.methods.achievement.checkUserStandDay(request.params.attendeeId)
       return h.response(render(user, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {
       log.error({ err: err, msg: 'error creating signature' }, 'error creating signature')

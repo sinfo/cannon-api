@@ -989,13 +989,6 @@
   dependencies:
     "hoek" "2.x.x"
 
-"boom@7.2.0":
-  "integrity" "sha1-K/8kpVVldn/ehp7ICDF+sQxI6WY="
-  "resolved" "https://registry.npmjs.org/boom/-/boom-7.2.0.tgz"
-  "version" "7.2.0"
-  dependencies:
-    "hoek" "5.x.x"
-
 "boxen@^5.0.0":
   "integrity" "sha512-9gYgQKXx+1nP8mP7CzFyaUARhg7D3n1dF/FnErWmu9l6JvGpNUN278h0aSb+QjoiKSWG+iZ3uHrcqk0qrY9RQQ=="
   "resolved" "https://registry.npmjs.org/boxen/-/boxen-5.1.2.tgz"
@@ -2483,11 +2476,6 @@
   "integrity" "sha1-ILt0A9POo5jpHcRxCo/xuCdKJe0="
   "resolved" "https://registry.npmjs.org/hoek/-/hoek-2.16.3.tgz"
   "version" "2.16.3"
-
-"hoek@5.x.x":
-  "integrity" "sha512-Alr4ZQgoMlnere5FZJsIyfIjORBqZll5POhDsF4q64dPuJR6rNxXdDxtHSQq8OXRurhmx+PWYEE8bXRROY8h0w=="
-  "resolved" "https://registry.npmjs.org/hoek/-/hoek-5.0.4.tgz"
-  "version" "5.0.4"
 
 "hosted-git-info@^2.1.4":
   "integrity" "sha512-mxIDAb9Lsm6DoOJ7xH+5+X4y1LU/4Hi50L9C5sIswK3JzULS4bwk1FvjdBgvYR4bzT4tuUQiC15FE2f5HbLvYw=="

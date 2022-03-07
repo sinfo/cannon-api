@@ -1,5 +1,7 @@
 const Joi = require('joi')
 const render = require('../../views/link')
+const log = require('../../helpers/logger')
+const Boom = require('@hapi/boom')
 
 exports = module.exports
 
@@ -13,8 +15,6 @@ exports.create = {
           'Id of the company we are linking from')
       }),
       payload: Joi.object({
-        userId: Joi.string().required().description(
-          'Id of the user working for the company'),
         attendeeId: Joi.string().required().description('Id of the attendee'),
         editionId: Joi.string().required().description('Id of the edition'),
         notes: Joi.object().keys({
@@ -33,19 +33,17 @@ exports.create = {
         })
       })
     },
-    pre: [
-      {
-        method:
-          'link.checkCompany(auth.credentials.user.id, params.companyId, payload.editionId)',
-        assign: 'verification'
-      },
-      { method: 'link.create(params.companyId, payload)', assign: 'link' }
-    ],
     description: 'Creates a new link'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.link))
-      .created(`/company/${request.params.companyId}/link/${request.pre.link.attendeeId}`)
+  handler: async function (request, h) {
+    try{
+      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.payload.editionId)
+      let link = await request.server.methods.link.create(request.params.companyId, request.payload)
+      return h.response(render(link)).created(`/company/${request.params.companyId}/link/${link.attendeeId}`)
+    }catch(err){
+      log.error({err: err}, 'error creating link')
+      return Boom.boomify(err)
+    }
   },
 }
 
@@ -80,18 +78,17 @@ exports.update = {
         }).allow(null)
       })
     },
-    pre: [
-      {
-        method:
-          'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)',
-        assign: 'verification'
-      },
-      { method: 'link.update(params, query.editionId, payload)', assign: 'link' }
-    ],
     description: 'Updates a link'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.link))
+  handler: async function (request, h) {
+    try{
+      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.query.editionId)
+      let link = await request.server.methods.link.update(request.params, request.query.editionId, request.payload)
+      return h.response(render(link))
+    }catch(err){
+      log.error({err: err}, 'error creating link')
+      return Boom.boomify(err)
+    }
   },
 }
 
@@ -109,18 +106,17 @@ exports.get = {
         editionId: Joi.string().required().description('Id of the edition') 
       })
     },
-    pre: [
-      {
-        method:
-          'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)',
-        assign: 'verification'
-      },
-      { method: 'link.get(params, query.editionId)', assign: 'link' }
-    ],
     description: 'Gets a link'
   },
-  handler: function (request, reply) {
-    reply(render(request.pre.link))
+  handler: async function (request, h) {
+    try{
+      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.query.editionId)
+      let link = await request.server.methods.link.get(request.params, request.query.editionId)
+      return h.response(render(link))
+    }catch(err){
+      log.error({err: err}, 'error creating link')
+      return Boom.boomify(err)
+    }
   },
 }
 
@@ -149,8 +145,8 @@ exports.list = {
       let links = await request.server.methods.link.list(request.params.companyId, request.query)
       return h.response(render(links))
     }catch(err){
-      log.error({ err: err, user: userId }, 'error ')
-      return Boom.internal()
+      log.error({ err: err }, 'error ')
+      return Boom.boomify(err)
     }
   },
 }
@@ -179,11 +175,10 @@ exports.remove = {
         log.error({ err: 'not found', link: editionId }, 'error deleting link')
         return Boom.notFound('link not found')
       }
-      //reply(render(request.pre.link))
       return h.response(render(link))
     }catch(err){
       log.error({ err: err, link: editionId }, 'error deleting link')
-      return Boom.internal()
+      return Boom.boomify(err)
     }
   },
 }

@@ -11,34 +11,25 @@ function createJwt (userId) {
     issuer: tokenConfig.issuer
   }
   const token = jwt.sign({ userId }, tokenConfig.privateKey, options)
+  log.info(token)
   return { token }
 }
 
-function verify (token, cb) {
+async function verify (request, token, h) {
   let credentials = {}
   let isValid = false
 
-  jwt.verify(token, tokenConfig.publicKey, { issuer: tokenConfig.issuer }, (err, decoded) => {
-    if (err) {
-      log.warn({ err, tokenDecoded: decoded }, '[Auth] invalid token')
-      return cb(Boom.unauthorized(), isValid)
-    }
+  decoded = jwt.verify(token, tokenConfig.publicKey, { issuer: tokenConfig.issuer })
 
-    User.findOne({ id: decoded.userId }, (err, user) => {
-      if (err) {
-        log.error({ err, token }, '[Auth] error finding user')
-        return cb(Boom.unauthorized(), isValid)
-      }
-      if (!user) {
-        log.error({ err, token }, '[Auth] user not found')
-        return cb(Boom.unauthorized(), isValid)
-      }
-      credentials.user = user.toObject({ getters: true })
-      credentials.scope = user.role
-      isValid = true
-      cb(null, isValid, credentials)
-    })
-  })
+  let user = await User.findOne({ id: decoded.userId })
+  if (!user) {
+    log.error({ err, token }, '[Auth] user not found')
+    throw Boom.unauthorized()
+  }
+  credentials.user = user.toObject({ getters: true })
+  credentials.scope = user.role
+  isValid = true
+  return {isValid, credentials}
 }
 
 module.exports.verify = verify

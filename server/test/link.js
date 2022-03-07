@@ -1,6 +1,5 @@
 const Lab = require('@hapi/lab')
 const Code = require('@hapi/code')
-const async = require('async')
 
 const server = require('../').hapi
 
@@ -124,7 +123,6 @@ const credentialsTeam = {
 }
 
 const linkA = {
-  userId: credentialsA.user.id,
   attendeeId: credentialsB.user.id,
   editionId: userA.company[0].edition,
   notes: {
@@ -133,13 +131,11 @@ const linkA = {
 }
 
 const linkB = {
-  userId: credentialsA.user.id,
   attendeeId: credentialsD.user.id,
   editionId: userA.company[0].edition
 }
 
 const linkC = {
-  userId: credentialsA.user.id,
   attendeeId: credentialsC.user.id,
   editionId: userA.company[0].edition,
   notes: { otherObservations: '' }
@@ -557,7 +553,7 @@ lab.experiment('Link', () => {
       payload: changesToA
     }
 
-    server.inject(options)
+    let response = await server.inject(options)
     Code.expect(response.statusCode).to.equal(404)
   
   })
@@ -572,7 +568,7 @@ lab.experiment('Link', () => {
       },
     }
 
-    server.inject(options)
+    let response = await server.inject(options)
     const result = response.result
 
     Code.expect(response.statusCode).to.equal(200)

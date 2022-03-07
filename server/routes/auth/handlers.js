@@ -1,5 +1,7 @@
 const Joi = require('joi')
 const render = require('../../views/auth')
+const log = require('../../helpers/logger')
+const Boom = require('@hapi/boom')
 
 exports = module.exports
 
@@ -51,7 +53,9 @@ exports.google = {
   },
   handler: async function (request, h) {
     try {
-      let member = await request.server.methods.auth.googleAuth(request.payload.id, request.payload.token);
+      log.info({payload: request.payload})
+      let member = await request.server.methods.auth.google(request.payload.id, request.payload.token);
+      log.info({member: member, render: render(member)})
       return h.response(render(member))
     } catch (err) {
       if (err.code === 11000) {
@@ -84,7 +88,7 @@ exports.fenix = {
   },
   handler: async function (request, h) {
     try {
-      let member = await request.server.methods.auth.fenixAuth(request.payload.id, request.payload.token);
+      let member = await request.server.methods.auth.fenix(request.payload.id, request.payload.token);
       return h.response(render(member))
     } catch (err) {
       if (err.code === 11000) {
@@ -114,7 +118,7 @@ exports.linkedin = {
   },
   handler: async function (request, h) {
     try {
-      let member = await request.server.methods.auth.linkedinAuth(request.payload.id, request.payload.token);
+      let member = await request.server.methods.auth.linkedin(request.payload.code);
       return h.response(render(member))
     } catch (err) {
       if (err.code === 11000) {

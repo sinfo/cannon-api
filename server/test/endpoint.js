@@ -11,14 +11,20 @@ const auxCompany = token.createJwt('tuda.chavaile')
 const auxCompanyMalvino = token.createJwt('malvino')
 const auxUser = token.createJwt('jane.doe')
 
+const userAdmin = {
+  id: 'john.doe',
+  name: 'John Doe',
+  mail: 'john@doe.com'
+}
+
 const credentialsAdmin = {
   user: {
-    id: 'john.doe',
-    name: 'John Doe'
+    id: userAdmin.id,
+    name: userAdmin.name
   },
   bearer: auxAdmin.token,
-  scope: 'admin'
-}
+    scope: 'admin'
+  }
 
 const userCompany = {
   id: 'tuda.chavaile',
@@ -76,7 +82,17 @@ const fileA = {
 
 lab.experiment('Endpoint', () => {
   lab.before( async () => {
-    const optionsUser = {
+    const optionsAdmin = {
+      method: 'POST',
+      url: '/users',
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
+      payload: userAdmin
+    }
+
+    const optionsCompany = {
       method: 'POST',
       url: '/users',
       auth:{
@@ -85,6 +101,17 @@ lab.experiment('Endpoint', () => {
       },
       payload: userCompany
     }
+
+    const optionsUser = {
+      method: 'POST',
+      url: '/users',
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
+      payload: userUser
+    }
+
     const optionsUserMalvino = {
       method: 'POST',
       url: '/users',
@@ -96,15 +123,14 @@ lab.experiment('Endpoint', () => {
     }
     const optionsLink = {
       method: 'POST',
-      url: '/company/chavaile-consulting/link',
+      url: `/company/${userCompany.company[0].company}/link`,
       auth:{
-        credentials: credentialsAdmin,
+        credentials: credentialsCompany,
         strategy: 'default'
       },
       payload: {
-        userId: 'tuda.chavaile',
-        attendeeId: 'jane.doe',
-        editionId: 'chavaile.consulting'
+        attendeeId: userUser.id,
+        editionId: '25-SINFO'
       }
     }
     const optionsFile = {
@@ -117,16 +143,43 @@ lab.experiment('Endpoint', () => {
       payload: fileA
     }
     
-    await server.inject(optionsUser)
-    await server.inject(optionsUserMalvino)
-    await server.inject(optionsLink)
-    await server.inject(optionsFile)
+    let response = await server.inject(optionsAdmin)
+    Code.expect(response.statusCode).to.equal(201)
+    response = await server.inject(optionsUser)
+    Code.expect(response.statusCode).to.equal(201)
+    response = await server.inject(optionsCompany)
+    Code.expect(response.statusCode).to.equal(201)
+    response = await server.inject(optionsUserMalvino)
+    Code.expect(response.statusCode).to.equal(201)
+    response = await server.inject(optionsLink)
+    Code.expect(response.statusCode).to.equal(201)
+    response = await server.inject(optionsFile)
+    Code.expect(response.statusCode).to.equal(201)
   })
 
   lab.after( async () => {
-    const optionsUser = {
+
+    const optionsAdmin = {
+      method: 'DELETE',
+      url: `/users/${userAdmin.id}`,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
+    }
+
+    const optionsCompany = {
       method: 'DELETE',
       url: `/users/${userCompany.id}`,
+      auth:{
+        credentials: credentialsAdmin,
+        strategy: 'default'
+      },
+    }
+
+    const optionsUser = {
+      method: 'DELETE',
+      url: `/users/${userUser.id}`,
       auth:{
         credentials: credentialsAdmin,
         strategy: 'default'
@@ -142,9 +195,9 @@ lab.experiment('Endpoint', () => {
     }
     const optionsLink = {
       method: 'DELETE',
-      url: '/company/chavaile-consulting/link/jane.doe',
+      url: `/company/${userCompany.company[0].company}/link/${userUser.id}?editionId=25-SINFO`,
       auth:{
-        credentials: credentialsAdmin,
+        credentials: credentialsCompany,
         strategy: 'default'
       },
     }
@@ -161,7 +214,9 @@ lab.experiment('Endpoint', () => {
     await server.inject(optionsUser)
     await server.inject(optionsUserMalvino)
     await server.inject(optionsLink)
+    await server.inject(optionsCompany)
     await server.inject(optionsFile)
+    await server.inject(optionsAdmin)
   })
 
   lab.test('Create as an admin',  async () => {
@@ -314,7 +369,7 @@ lab.experiment('Endpoint', () => {
       },
       payload: {
         validity: {
-          to
+          to: to
         }
       }
     }

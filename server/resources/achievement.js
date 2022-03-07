@@ -36,7 +36,13 @@ async function create (achievement) {
 
   achievement.updated = achievement.created = Date.now()
 
-  return Achievement.create(achievement)
+  return Achievement.create(achievement).catch((err) =>{
+    if (err.code === 11000) {
+      log.error({msg: "achievement is a duplicate" })
+      throw Boom.conflict(`achievement is a duplicate`)
+    }
+    throw err
+  })
 
 }
 
@@ -137,7 +143,7 @@ async function removeCV (userId) {
     kind: achievementKind,
     'validity.from': { $lte: now },
     'validity.to': { $gte: now }
-  }, changes)
+  }, changes, {new: true})
 }
 
 //500, 404
@@ -182,12 +188,25 @@ function getPointsForUser (activeAchievements, userId) {
 }
 
 async function getSpeedDatePointsForUser (userId) {
-  
+  const result = { achievements: [], points: 0 }
   const filter = {
     kind: 'speedDate'
   }
 
-  return Achievement.find(filter)
+  let achievements = await Achievement.find(filter).catch((err) => {
+      log.error({err: err}, 'Error finding achievements')
+      throw Boom.boomify(err)
+  })
+
+  achievements.forEach(ach => {
+    result.points += getSpeedDatePoints(ach, userId)
+    result.achievements.push({
+      achievement: ach,
+      frequence: userFrequence(ach, userId)
+    })
+  })
+
+  return result
 }
 
 function userFrequence (achievement, userId) {
@@ -514,7 +533,7 @@ async function addUserToSpeedDateAchievement (companyId, userId, hhs) {
     'kind': 'speedDate',
     'validity.from': { $lte: now },
     'validity.to': { $gte: now }
-  }, changes)
+  }, changes, {new: true})
 }
 
 // _date is a string, converted to Date inside this function

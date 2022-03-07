@@ -319,14 +319,16 @@ lab.experiment('Redeem', () => {
 
     let response = await server.inject(options)
     const result = response.result
+    Code.expect(result).to.equal(1)
 
     Code.expect(response.statusCode).to.equal(200)
     Code.expect(result).to.be.a.number()
+    
 
     let responseB = await server.inject(optionsB)
     const resultB = responseB.result
 
-    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(responseB.statusCode).to.equal(200)
     Code.expect(resultB).to.be.a.number()
     Code.expect(resultB).to.equal(1)
 

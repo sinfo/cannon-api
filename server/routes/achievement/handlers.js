@@ -37,13 +37,8 @@ exports.create = {
       let ach = await request.server.methods.achievement.create(request.payload)
       return h.response(render(ach)).created('/achievement/' + ach.id)
     } catch (err) {
-      if (err.code === 11000) {
-        log.error({msg: "achievement is a duplicate" })
-        return Boom.conflict(`achievement is a duplicate`)
-      }
-
       log.error({ err: err, msg: 'error creating achievement' }, 'error creating achievement')
-      return Boom.internal()
+      return Boom.boomify(err)
     }
   }
 }
@@ -243,16 +238,8 @@ exports.getMeSpeed = {
   },
   handler: async function (request, h) {
     try {
-      const result = { achievements: [], points: 0 }
-      let achievements = request.server.methods.achievement.getSpeedDatePointsForUser(request.auth.credentials.user.id)
-      achievements.forEach(ach => {
-        result.points += getSpeedDatePoints(ach, userId)
-        result.achievements.push({
-          achievement: ach,
-          frequence: userFrequence(ach, userId)
-        })
-      })
-      return h.response(achievements)
+      let result = await request.server.methods.achievement.getSpeedDatePointsForUser(request.auth.credentials.user.id)
+      return h.response(result)
     } catch (err) {
       log.error({ err: err }, 'Error finding achievements')
       return Boom.boomify(err)

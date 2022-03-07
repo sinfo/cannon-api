@@ -1,10 +1,10 @@
 const Lab = require('@hapi/lab')
 const Code = require('@hapi/code')
 
-const server = require('./server').hapi
+const server = require('../').hapi
 
 const lab = exports.lab = Lab.script()
-const token = require('./server/auth/token')
+const token = require('../auth/token')
 
 const aux = token.createJwt('john.doe')
 

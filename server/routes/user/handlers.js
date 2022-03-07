@@ -104,14 +104,14 @@ exports.updateMe = {
     },
     description: 'Updates the user'
   },
-  handler: async (request, reply) =>{
+  handler: async (request, h) =>{
     try {
-      let user = await user.updateMe(auth.credentials.user.id, request.payload)
-      h.response(render(user, request.auth.credentials && request.auth.credentials.user))
+      let user = await request.server.methods.user.updateMe(request.auth.credentials.user.id, request.payload)
       if (!user) {
         log.error({ err: err, requestedUser: filter }, 'user not found')
         return Boom.notFound()
       }
+      return h.response(render(user, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {
       if (err) {
         log.error({ err: err }, 'error updating user')
@@ -206,12 +206,12 @@ exports.update = {
   },
   handler: async (request, h) => {
     try {
-      let user = await user.update(request.payload.id, request.payload)
+      let user = await request.server.methods.user.update(request.params.id, request.payload)
       if (!user) {
-        log.error({ err: err, requestedUser: filter }, 'user not found')
+        log.error({ err: err}, 'user not found')
         return Boom.notFound()
       }
-      h.response(render(user, request.auth.credentials && request.auth.credentials.user))
+      return h.response(render(user, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {
         log.error({ err: err}, 'error updating user')
         return Boom.boomify(err)
@@ -236,14 +236,14 @@ exports.get = {
   },
   handler: async (request, h) => {
     try {
-      let user = request.server.methods.user.get(request.params.id)
+      let user = await request.server.methods.user.get(request.params.id)
       if (!user) {
-        log.error({ err: err, requestedUser: filter }, 'user not found')
+        log.error('user not found')
         return Boom.notFound()
       }
-      h.response(render(user, request.auth.credentials && request.auth.credentials.user))
-    } catch {
-      log.error({ err: err}, 'error updating user')
+      return h.response(render(user, request.auth.credentials && request.auth.credentials.user))
+    } catch (err){
+      log.error({ err: err}, 'error getting user')
       return Boom.boomify(err)
     }
   },
@@ -280,7 +280,9 @@ exports.getMe = {
     tags: ['api', 'user'],
     auth: {
       strategies: ['default'],
-      scope: ['user', 'company', 'team', 'admin']
+      access:{
+        scope: ['user', 'company', 'team', 'admin']
+      }
     },
     description: 'Gets the user'
   },
@@ -307,7 +309,7 @@ exports.removeCompany = {
   },
   handler: async (request, h) => {
     try {
-      let user = await user.removeCompany(request.params.id, request.query.editionId)
+      let user = await request.server.methods.user.removeCompany(request.params.id, request.query.editionId)
       return h.response(render(user, request.auth.credentials.user))
     } catch(err){
       log.error({ err: err}, 'error deleting user.company')
@@ -328,13 +330,16 @@ exports.remove = {
         id: Joi.string().required().description('Id of the user we want to remove')
       })
     },
-    pre: [
-      { method: 'user.remove(params.id)', assign: 'user' }
-    ],
     description: 'Removes an user'
   },
   handler: async (request, h) => {
-    return h.response(render(request.pre.user, request.auth.credentials.user))
+    try{
+      let user = await request.server.methods.user.remove(request.params.id)
+      return h.response(render(user, request.auth.credentials.user))
+    }catch(err){
+      log.error({ err: err}, 'error deleting user')
+      return Boom.boomify(err)
+    }
   },
 }
 
@@ -345,13 +350,16 @@ exports.removeMe = {
       strategies: ['default'],
       scope: ['user', 'company', 'team', 'admin']
     },
-    pre: [
-      { method: 'user.remove(auth.credentials.user.id)', assign: 'user' }
-    ],
     description: 'Removes the user'
   },
   handler: async (request, h) => {
-    reply(render(request.pre.user, request.auth.credentials && request.auth.credentials.user))
+    try{
+      let user = await request.server.methods.user.remove(request.auth.credentials.user.id)
+      h.response(render(request.pre.user, request.auth.credentials && request.auth.credentials.user))
+    }catch(err){
+      log.error({ err: err}, 'error deleting user')
+      return Boom.boomify(err)
+    }
   },
 }
 
@@ -371,12 +379,15 @@ exports.redeemCard = {
         editionId: Joi.string().required().description('Id of the current edition')
       })
     },
-    pre: [
-      { method: 'user.redeemCard(params.id, payload)', assign: 'user' }
-    ],
     description: 'Clears Users Card Signatures for the day'
   },
   handler: async (request, h) => {
-    reply(render(request.pre.user, request.auth.credentials && request.auth.credentials.user))
+    try{
+      let user = await request.server.methods.user.redeemCard(request.params.id, request.payload)
+      return h.response(render(user, request.auth.credentials && request.auth.credentials.user))
+    }catch(err){
+      log.error({err: err}, 'error redeeming card')
+      return Boom.boomify(err)
+    }
   },
 }

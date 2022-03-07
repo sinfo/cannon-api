@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const render = require('../../views/endpoint')
 const log = require('../../helpers/logger')
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 
 exports = module.exports
 
@@ -29,13 +29,8 @@ exports.create = {
       let comp = await request.server.methods.endpoint.create(request.payload)
       return h.response(render(comp)).created('/company-endpoint/' + comp.id)
     } catch (err) {
-      if (err.code === 11000) {
-        log.error({ msg: "company is a duplicate" })
-        return Boom.conflict(`company "${comp.id}" is a duplicate`)
-      }
-
       log.error({ err: err, msg: 'error creating company' }, 'error creating company')
-      return Boom.internal()
+      return Boom.boomify(err)
     }
   },
 }
@@ -65,14 +60,14 @@ exports.update = {
   },
   handler: async (request, h) => {
     try {
-      let comp = await request.server.methods.endpoint.update(request.params.id, request.payload)
+      let comp = await request.server.methods.endpoint.update(request.params.companyId, request.query, request.payload)
       if (!comp) {
-        log.error({ err: err, company: filter }, 'error updating company')
+        log.error({ err: err }, 'error updating company')
         return Boom.notFound()
       }
       return h.response(render(comp))
     } catch (err) {
-      log.error({ err: err, company: filter }, 'error updating company')
+      log.error({ err: err}, 'error updating company')
       return Boom.internal()
     }
 
@@ -98,14 +93,10 @@ exports.get = {
   },
   handler: async (request, h) => {
     try {
-      let comp = await request.server.methods.endpoint.get(request.params.id)
-      if (!comp) {
-        log.error({ err: err, company: filter }, 'error getting company')
-        return Boom.notFound()
-      }
+      let comp = await request.server.methods.endpoint.get(request.params.companyId, request.query)
       return h.response(render(comp))
     } catch (err) {
-      log.error({ err: err, company: filter }, 'error getting company')
+      log.error({ err: err}, 'error getting company')
       return Boom.internal()
     }
   },
@@ -159,7 +150,7 @@ exports.remove = {
   },
   handler: async (request, h) => {
     try {
-      let comp = await request.server.methods.endpoint.remove(request.params.id)
+      let comp = await request.server.methods.endpoint.remove(request.params.companyId, request.query.edition)
       if (!comp) {
         log.error({ id: request.params.id, error: err })
         return Boom.notFound('company not found')

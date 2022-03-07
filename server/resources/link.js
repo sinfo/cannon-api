@@ -49,21 +49,19 @@ async function create (companyId, link) {
       }
   }
 
-  try {
 
-    let newlink = await Link.create(_link)
-      if (err) {
-     }
 
-    return newlink
-  } catch(err){
+  let newlink = await Link.create(_link).catch((err) => {
     if (err.code === 11000) {
       log.error({ link: _link }, `Link is a duplicate`)
-      return Boom.conflict(`Link is a duplicate`)
+      throw Boom.conflict(`Link is a duplicate`)
     }
     log.error({ err: err, link: _link }, 'error creating link')
-    return Boom.internal()
-  }
+    throw Boom.boomify(err)
+  })
+
+  return newlink
+
 }
 
 async function update (filter, editionId, link) {
@@ -77,22 +75,21 @@ async function update (filter, editionId, link) {
 
   link.updated = Date.now()
 
-  try {
-    let _link = await Link.findOneAndUpdate(filter, link)
-    if (!_link) {
-      log.error({ err: err, link: filter }, 'error updating link')
-      return Boom.notFound()
-    }
-    return _link
-  }
-  catch (err) {
+
+  let _link = await Link.findOneAndUpdate(filter, link, {new: true}).catch((err) =>{
     log.error({ err: err, link: filter }, 'error updating link')
-    return Boom.internal()
+    throw Boom.boomify(err)
+  })
+
+  if (!_link) {
+    log.error({ err: err, link: filter }, 'error updating link')
+    throw Boom.notFound()
   }
+  return _link
 }
 
 async function get (filter, editionId) {
-  log.debug({ filter: filter, edition: editionId }, 'getting link')
+  // log.debug({ filter: filter, edition: editionId }, 'getting link')
 
   filter = {
     company: filter.companyId,
@@ -100,23 +97,24 @@ async function get (filter, editionId) {
     attendee: filter.attendeeId
   }
 
-  try{
-    let link = await Link.findOne(filter)
+
+    let link = await Link.findOne(filter).catch((err) =>{
+      log.error({ err: err, link: filter }, 'error getting link')
+      throw Boom.boomify(err)
+    })
     if (!link) {
       log.error({ err: 'not found', link: filter }, 'link not found')
-      return Boom.notFound('link not found')
+      throw Boom.notFound('link not found')
     }
     return link
-  } catch (err) {
-    log.error({ err: err, link: filter }, 'error getting link')
-    return Boom.internal('error getting link')
-  }
 
 }
 
 async function list (filter, query) {
   // log.debug({ filter: filter }, 'list link')
-
+  if(!filter){
+    filter = {}
+  }
   if (typeof filter === 'string') {
     filter = { company: filter }
   }
@@ -138,10 +136,11 @@ async function list (filter, query) {
       { '$gt': new Date('January 1, 2021 00:00:00').toISOString() },
     'kind': 'cv'
   }
-  let achievement = await Achievement.findOne(achFilter)
-  if(!achievement){
-    return Boom.notFound()
-  }
+  let achievement = await Achievement.findOne(achFilter).catch((err) =>{
+    log.error({ err: err, link: filter }, 'link not found')
+    throw Boom.notFound('link not found')
+  })
+  
   let objLinks = Array.from(links, (l) => { return l.toObject() })
  
   objLinks.forEach((l) => { l.cv = achievement ? achievement.toObject().users.includes(l.attendee) : false })
@@ -150,7 +149,7 @@ async function list (filter, query) {
 }
 
 async function remove (filter, editionId) {
-  log.debug({ filter: filter, edition: editionId }, 'removing link')
+  // log.debug({ filter: filter, edition: editionId }, 'removing link')
 
   filter = {
     company: filter.companyId,
@@ -166,10 +165,10 @@ async function checkCompany (userId, companyId, editionId) {
   let user = await server.methods.user.get({ id: userId })
   if (!user) {
     log.error({ err: 'not found', user: userId }, 'error getting user')
-    return Boom.notFound('user not found')
+    throw Boom.notFound('user not found')
   }  
   if (!_.findWhere(user.company, { company: companyId, edition: editionId })) {
     log.error({company: companyId, user: userId, edition: editionId, userCompany: user.company}, 'company not found')
-    return Boom.notFound('company not found')
+    throw Boom.notFound('company not found')
   }
 }

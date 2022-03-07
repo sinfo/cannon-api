@@ -7,7 +7,7 @@
 
 const google = require('../../helpers/google')
 const log = require('../../helpers/logger')
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 
 // Time between calls
 const timeOut = 5 * (60 * 1000)

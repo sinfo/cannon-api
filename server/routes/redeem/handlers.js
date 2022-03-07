@@ -1,6 +1,8 @@
 const Joi = require('joi')
 const render = require('../../views/redeem')
 const renderAchievement = require('../../views/achievement')
+const Boom = require('@hapi/boom');
+const log = require('../../helpers/logger')
 
 exports = module.exports
 
@@ -22,8 +24,8 @@ exports.create = {
   },
   handler: async function (request, h) {
     try {
-      let redeem = request.server.methods.redeem.create(request.payload)
-      return h.response(render(redeem))
+      let redeem = await request.server.methods.redeem.create(request.payload)
+      return h.response(render(redeem)).created()
     } catch (err) {
       log.error({ err: err, msg:'error creating redeem code'}, 'error creating redeem code')
       return Boom.boomify(err)
@@ -47,8 +49,8 @@ exports.get = {
   },
   handler: async function (request, h) {
     try {
-      let redeem = request.server.methods.redeem.get(request.params.id)
-      request.server.methods.redeem.use(redeem, request.auth.credentials.user.id)
+      let redeem = await request.server.methods.redeem.get(request.params.id)
+      await request.server.methods.redeem.use(redeem, request.auth.credentials.user.id)
       let achievement = await request.server.methods.achievement.addUser(redeem.achievement, request.auth.credentials.user.id)
       return h.response({ success: true, achievement: renderAchievement(achievement)})
     } catch (err) {
@@ -74,7 +76,7 @@ exports.remove = {
   },
   handler: async function (request, h) {
     try {
-      let redeem = request.server.methods.redeem.remove(request.params.id)
+      let redeem = await request.server.methods.redeem.remove(request.params.id)
       return h.response(redeem)
     } catch (err) {
       log.error({ err: err, msg:'error removing redeem code'}, 'error removing redeem code')

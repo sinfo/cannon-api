@@ -12,7 +12,7 @@ server.method('endpoint.remove', remove, {})
 server.method('endpoint.isValid', isValid, {})
 server.method('endpoint.incrementVisited', incrementVisited, {})
 
-async function create(endpoint, cb) {
+async function create(endpoint) {
   // generates an enpoint item for every company in endpoin.companies
   // `endpoint` is passed as `this` to the map function
   const endpoints = Array.from(endpoint.companies, (company) => {
@@ -28,60 +28,53 @@ async function create(endpoint, cb) {
       updated: new Date()
     }
   })
-  try {
-    let list = await Endpoint.collection.insert(endpoints)
-    return list
-  }
-  catch (err) {
+  let list = await Endpoint.create(endpoints).catch((err) =>{
     if (err.code === 11000) {
-      return Boom.conflict(`endpoint <${endpoint.company}, ${endpoint.edition}> is a duplicate`)
+      throw Boom.conflict(`endpoint <${endpoint.company}, ${endpoint.edition}> is a duplicate`)
     }
 
     log.error({ err: err, endpoint: endpoint }, 'error creating endpoint')
-    return Boom.internal()
-  }
-
+    throw Boom.boomify(err)
+  })
+  return list
 }
 
-async function update(companyId, editionId, endpoint) {
+async function update(companyId, query, endpoint) {
   const filter = {
     company: companyId,
-    edition: editionId
+    edition: query? query.edition : null
   }
 
   endpoint.updated = new Date()
-  try {
-    let _endpoint = await Endpoint.findOneAndUpdate(filter, endpoint)
-    if (!_endpoint) {
-      log.error({ err: 'Not Found', company: companyId, edition: editionId }, 'error updating endpoint')
-      return Boom.notFound()
-    }
-    return _endpoint
-  } catch (err) {
-    log.error({ err: err, company: companyId, edition: editionId }, 'error updating endpoint')
-    return Boom.internal()
+
+  let _endpoint = await Endpoint.findOneAndUpdate(filter, endpoint, {new: true}).catch((err) =>{
+    log.error({ err: err, company: companyId }, 'error updating endpoint')
+    throw Boom.internal()
+  })
+  if (!_endpoint) {
+    log.error({ err: 'Not Found', company: companyId }, 'error updating endpoint')
+    throw Boom.notFound()
   }
+  return _endpoint
 
 }
 
-function get(companyId, editionId, cb) {
+async function get(companyId, query) {
   const filter = {
     company: companyId,
-    edition: editionId
+    edition: query? query.edition : null
   }
 
-  Endpoint.findOne(filter, (err, endpoint) => {
-    if (err) {
-      log.error({ err: err, company: companyId, edition: editionId }, 'error getting endpoint')
-      return cb(Boom.internal('error getting endpoint'))
-    }
-    if (!endpoint) {
-      log.error({ err: 'not found', company: companyId, edition: editionId }, 'error getting endpoint')
-      return cb(Boom.notFound('endpoint not found'))
-    }
+  log.error({n:"2", company: companyId, query: query})
 
-    cb(null, endpoint.toObject({ getters: true }))
-  })
+  let endpoint = await Endpoint.findOne(filter)
+  log.error({n:"1", end: endpoint})
+  if (!endpoint) {
+    log.error({ err: 'not found', company: companyId, edition: editionId }, 'error getting endpoint')
+    throw Boom.notFound('endpoint not found')
+  }
+
+  return endpoint.toObject({ getters: true })
 }
 
 async function list(query) {
@@ -99,7 +92,7 @@ async function list(query) {
   }
   catch (err) {
     log.error({ err: err, edition: query.edition }, 'error getting all endpoints')
-    return Boom.internal()
+    throw Boom.internal()
   }
 }
 
@@ -108,12 +101,12 @@ async function remove(companyId, editionId) {
     let endpoint = await Endpoint.findOneAndRemove({ company: companyId, edition: editionId })
     if (!endpoint) {
       log.error({ err: 'not found', company: companyId, edition: editionId }, 'error deleting endpoint')
-      return Boom.notFound('Endpoint not found')
+      throw Boom.notFound('Endpoint not found')
     }
     return endpoint
   } catch (err) {
     log.error({ err: err, company: companyId, edition: editionId }, 'error deleting endpoint')
-    return Boom.internal()
+    throw Boom.internal()
   }
 }
 
@@ -123,25 +116,21 @@ async function isValid(companyId, editionId) {
     edition: editionId
   }
 
-  try {
-    let endpoint = await Endpoint.findOne(filter)
-    if (!endpoint) {
-      log.error({ err: 'not found', company: companyId, edition: editionId }, 'error validating endpoint')
-      return Boom.notFound('Endpoint not created yet.')
-    }
 
-    let now = new Date()
-    if (now > new Date(endpoint.validity.from) && now < new Date(endpoint.validity.to)) {
-      return true
-    }
+  let endpoint = await Endpoint.findOne(filter)
+  if (!endpoint) {
+    log.error({ err: 'not found', company: companyId, edition: editionId }, 'error validating endpoint')
+    throw Boom.notFound('Endpoint not created yet.')
+  }
 
-    log.error('isvalid')
-    return Boom.notFound('isValid')
+  let now = new Date()
+  if (now > new Date(endpoint.validity.from) && now < new Date(endpoint.validity.to)) {
+    return true
   }
-  catch (err) {
-    log.error({ err: err, company: companyId, edition: editionId }, 'error validating endpoint')
-    return Boom.internal('error getting endpoint')
-  }
+
+  log.error('isvalid')
+  throw Boom.notFound('isValid')
+  
 }
 
 async function incrementVisited(companyId, editionId) {
@@ -154,15 +143,11 @@ async function incrementVisited(companyId, editionId) {
     $inc: { 'visited': 1 }
   }
 
-  try {
-    let endpoint = await Endpoint.findOneAndUpdate(filter, update)
-    if (!endpoint) {
-      log.error({ err: 'not found', company: companyId, edition: editionId }, 'error incrementing endpoint visited')
-      return Boom.notFound('endpoint not found')
-    }
-    return endpoint
-  } catch (err) {
-    log.error({ err: err, company: companyId, edition: editionId }, 'error incrementing endpoint visited')
-    return cb(Boom.internal('error getting endpoint'))
+  let endpoint = await Endpoint.findOneAndUpdate(filter, update)
+  if (!endpoint) {
+    log.error({ err: 'not found', company: companyId, edition: editionId }, 'error incrementing endpoint visited')
+    throw Boom.notFound('endpoint not found')
   }
+  return endpoint
+
 }

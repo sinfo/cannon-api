@@ -12,6 +12,6 @@ const internal = (username, password, cb) => {
 }
 
 module.exports = {
-  bearer: bearer,
+  bearer: verify,
   internal: internal
 }

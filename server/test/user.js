@@ -10,7 +10,6 @@ const AchievementKind = require('../db/achievementKind')
 
 const aux = token.createJwt('john.doe')
 const auxB = token.createJwt('jane.doe')
-const async = require('async')
 
 const credentialsA = {
   user: {
@@ -166,11 +165,15 @@ lab.experiment('User', () => {
     }
 
  
-    await server.inject(optionsA)
-    await server.inject(optionsB)
-    let response  = await server.inject(optionsC)
+    let response = await server.inject(optionsA)
+    Code.expect(response.statusCode).to.equal(201)
+    response = await server.inject(optionsB)
+    Code.expect(response.statusCode).to.equal(201)
+    response  = await server.inject(optionsC)
+    Code.expect(response.statusCode).to.equal(200)
     codewsA = response.result.code.code
     response = await server.inject(optionsD)
+    Code.expect(response.statusCode).to.equal(200)
     codewsB = response.result.code.code
   })
 
@@ -203,9 +206,12 @@ lab.experiment('User', () => {
     }
 
 
-    await server.inject(optionsA)
-    await server.inject(optionsB)
-    await server.inject(optionsC)
+    let response = await server.inject(optionsA)
+    Code.expect(response.statusCode).to.equal(200)
+    response = await server.inject(optionsB)
+    Code.expect(response.statusCode).to.equal(200)
+    response = await server.inject(optionsC)
+    Code.expect(response.statusCode).to.equal(200)
   })
 
   lab.test('Create as admin',  async () => {
@@ -497,7 +503,7 @@ lab.experiment('User', () => {
       }
     }
 
-    server.inject(opt3)
+    response = await server.inject(opt3)
     Code.expect(response.statusCode).to.equal(400)
   
   })

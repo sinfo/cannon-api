@@ -1,6 +1,6 @@
-const Boom = require("boom");
-const server = require("../").hapi;
+const Boom = require('@hapi/boom');
 const log = require("../helpers/logger");
+const server = require("../").hapi;
 const Redeem = require("../db/redeem");
 const Achievement = require("../db/achievement");
 const uuid = require("uuid");
@@ -14,12 +14,16 @@ server.method("redeem.use", use, {});
 async function create(redeem) {
   redeem.created = Date.now();
 
-  try {
-    let _redeem = await Redeem.create(redeem)
-    return _redeem.toObject({ getters: true })
-  } catch (err) {
-    return Boom.internal("Error creating redeem in database");
-  }
+  let _redeem = await Redeem.create(redeem).catch((err) =>{
+    if (err.code === 11000) {
+      log.error({msg: "achievement is a duplicate" })
+      throw Boom.conflict(`achievement is a duplicate`)
+    }
+    log.error({err: err},"Error creating redeem in database" )
+    throw Boom.boomify(err);
+  })
+  return _redeem.toObject({ getters: true })
+  
 }
 
 async function get(id) {
@@ -29,7 +33,7 @@ async function get(id) {
 
   if (!redeem) {
     log.error({ err: "not found", redeem: id }, "error getting redeem");
-    return Boom.notFound("redeem code not found");
+    throw Boom.notFound("redeem code not found");
   }
 
   var now = new Date();
@@ -40,7 +44,7 @@ async function get(id) {
       { err: "expired", redeem: id },
       "tried to redeem an expired code"
     );
-    return Boom.notAcceptable("expired redeem code");
+    throw Boom.notAcceptable("expired redeem code");
   }
 
   return redeem.toObject({ getters: true });
@@ -49,7 +53,7 @@ async function get(id) {
 async function use(redeem, userId) {
   if (redeem === null) {
     log.error({ redeem: redeem.id }, "redeem code not found");
-    return Boom.notAcceptable();
+    throw Boom.notAcceptable();
   }
 
   if (redeem.achievement === null) {
@@ -57,7 +61,7 @@ async function use(redeem, userId) {
       { achievement: redeem.achievement },
       "achievement of redeem not found"
     );
-    return Boom.notAcceptable();
+    throw Boom.notAcceptable();
   }
 
   if (
@@ -69,7 +73,7 @@ async function use(redeem, userId) {
       { user: userId, redeem: redeem.id },
       "redeem code not available anymore"
     );
-    return Boom.notAcceptable();
+    throw Boom.notAcceptable();
   }
 
   let filter = { id: redeem.achievement };
@@ -81,7 +85,7 @@ async function use(redeem, userId) {
       { err: err, achievement: achievement.id },
       "achievement of redeem not found"
     );
-    return Boom.notFound();
+    throw Boom.notFound();
   }
 
   let now = new Date().getTime();
@@ -95,14 +99,14 @@ async function use(redeem, userId) {
       { err: err, user: userId, redeem: redeem.id },
       "achievement expired"
     );
-    return Boom.notAcceptable();
+    throw Boom.notAcceptable();
   }
 
   let users = achievement.users;
 
   if (users === undefined || users.length === undefined) {
     log.error({ err: err, user: userId }, "user not given");
-    return Boom.notAcceptable();
+    throw Boom.notAcceptable();
   }
 
   let alreadyRedeemed = users.filter((u) => u === userId).length > 0;
@@ -112,7 +116,7 @@ async function use(redeem, userId) {
       { err: err, user: userId, redeem: redeem.id },
       "user already used the redeem code"
     );
-    return Boom.notAcceptable();
+    throw Boom.notAcceptable();
   }
 
   // no limit to this redeem code
@@ -127,7 +131,7 @@ async function use(redeem, userId) {
 
   if (!_redeem) {
     log.error({ err: "not found", redeem: redeem.id }, "error using redeem");
-    return Boom.notFound();
+    throw Boom.notFound();
   }
 
   log.info(
@@ -138,36 +142,25 @@ async function use(redeem, userId) {
   return redeem;
 }
 
-async function remove(id, achievement) {
+async function remove(id) {
   //cb = cb || achievement // achievement and user are optional
 
   let filter = { id: id };
 
-  let redeem = await Reddem.findOne(filter);
+  let redeem = await Redeem.findOne(filter);
+
 
   if (!redeem) {
     log.error({ err: "not found", redeem: id }, "error deleting redeem");
-    return Boom.notFound();
+    throw Boom.notFound();
   }
+ 
+  let res = await Redeem.deleteOne(filter).catch((err) =>{
+    log.error({err: err})
+    throw Boom.boomify(err)
+  });
 
-  let user = redeem.user;
-  let _achievement = redeem.achievement;
-
-  if (_achievement && user) {
-    filter = { user: user, achievement: _achievement };
-  }
-
-  let res = await Redeem.remove(filter);
-
-  log.debug("Ok? ", res.ok, ". Deleted ", res.deletedCount, " documents");
-
-  if (!res.ok) {
-    log.error(
-      { err: "error deleting redeem", redeem: id },
-      "error deleting redeem"
-    );
-    return Boom.internal();
-  }
+  return res.deletedCount
 }
 
 function prepareRedeemCodes(sessionId, users) {

@@ -3,8 +3,7 @@ const render = require('../../views/file')
 const configUpload = require('../../../config').upload
 const server = require('../../').hapi
 const log = require('../../helpers/logger')
-const Boom = require('boom')
-const { FileSystem } = require('adm-zip/util')
+const Boom = require('@hapi/boom')
 
 exports = module.exports
 
@@ -29,12 +28,8 @@ exports.create = {
   handler: async (request, h) => {
     try{
       let file = await request.server.methods.file.create(request.payload)
-      return h.response(render(file)).created('/files/' + ach.id)
+      return h.response(render(file)).created('/files/' + file.id)
     }catch (err) {
-      if (err.code === 11000) {
-        log.error({msg: "file is a duplicate" })
-        return Boom.conflict(`file "${file.id}" is a duplicate`)
-      }
       log.error({ err: err, msg:'error creating file'}, 'error creating file')
       return Boom.internal()
     }
@@ -89,21 +84,18 @@ exports.get = {
         id: Joi.string().required().description('Id or user of the file we want to retrieve')
       })
     },
-    pre: [
-      { method: 'file.get(params.id, query)', assign: 'file' }
-    ],
     description: 'Gets the model of the file'
   },
   handler: async (request, h) => {
     try{
       let file = await request.server.methods.file.get(request.params.id)
       if (!file) {
-        log.error({ err: err, file: filter }, 'error getting file')
+        log.error({ err: err }, 'error getting file')
         return Boom.notFound()
       }
       return h.response(render(file))
     }catch (err) {
-      log.error({ err: err, file: filter }, 'error getting file')
+      log.error({ err: err}, 'error getting file')
       return Boom.internal()
     }
   },
@@ -155,7 +147,7 @@ exports.download = {
       filename: file.name,
       mode: 'attachment'
     }
-    return h.response.file(path, options)
+    return h.file(path, options)
   },
 }
 
@@ -168,14 +160,14 @@ exports.downloadMe = {
     },
     description: 'Downloads the file of the user'
   },
-  handler: async (request, reply) => {
+  handler: async (request, h) => {
     let file = await request.server.methods.file.get(request.auth.credentials.user.id, request.query)
     const path = configUpload.path + '/' + file.id
     const options = {
       filename: file.name,
       mode: 'attachment'
     }
-    return h.response.file(path, options).type('application/pdf')
+    return h.file(path, options).type('application/pdf')
   },
 }
 
@@ -193,10 +185,14 @@ exports.downloadZip = {
     },
     description: 'Downloads users files'
   },
-  handler: function (request, reply) {
-    server.methods.file.zipFiles(null, (_, zip) => {
-      return reply.file(configUpload.cvsZipPath, { mode: 'attachment', filename: 'CVs.zip' }) // Return generic zip
-    })
+  handler: async function (request, h) {
+    try{
+      await request.server.methods.file.zipFiles(null)
+      return h.file(configUpload.cvsZipPath, { mode: 'attachment', filename: 'CVs.zip' }) // Return generic zip
+    }catch(err){
+      log.error({err: err}, 'error downloading file')
+      return Boom.boomify(err)
+    }
   },
 }
 
@@ -216,35 +212,34 @@ exports.downloadCompany = {
         links: Joi.boolean().description('Selects only the files from linked users')
       })
     },
-    pre: [
-      [
-        // Verify the user has access to the company
-        { method: 'link.checkCompany(auth.credentials.user.id, params.companyId, query.editionId)' },
-        // Make sure enpoint is still open
-        { method: 'endpoint.isValid(params.companyId, query.editionId)' }
-      ],
-      { method: 'endpoint.incrementVisited(params.companyId, query.editionId)' }
-    ],
     description: 'Downloads users files'
   },
-  handler: function (request, reply) {
-    // Concat links CVs if asked. Select generic CVs zip if not
-    if (request.query.links) {
-      server.methods.link.list(request.params.companyId, request.query, (_, links) => {
-        return server.methods.file.zipFiles(links, handleZip)
-      })
-    } else {
-      return server.methods.file.zipFiles(null, handleZip)
-    }
+  handler: async function (request, h) {
+    try{
+      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.query.editionId)
+      await request.server.methods.endpoint.isValid(request.params.companyId, request.query.editionId)
+      await request.server.methods.endpoint.incrementVisited(request.params.companyId, request.query.editionId)
+      if (request.query.links) {
+          let links = await request.server.methods.link.list(request.params.companyId, request.query)
+          await request.server.methods.file.zipFiles(links)
+          return handleZip(true)
+      } else {
+        await request.server.methods.file.zipFiles(null)
+        return handleZip(false)
+      }
+  }catch(err){
+    log.error({err: err}, 'error downloading files')
+    return Boom.boomify(err)
+  }
 
-  function handleZip (err, zip) {// eslint-disable-line
+  function handleZip (zip) {
       if (!zip) {
-        return reply.file(configUpload.cvsZipPath, { mode: 'attachment', filename: 'CVs.zip' }) // Return generic zip
+        return h.file(configUpload.cvsZipPath, { mode: 'attachment', filename: 'CVs.zip' }) // Return generic zip
       }
       /* return reply(zip).bytes(zip.length).header('Content-Type', 'application/zip')
       .header('Content-Disposition', 'attachment; filename=linksCVs.zip') // Return Links zip
       */
-      return reply.file(configUpload.cvsLinkPath, { mode: 'attachment', filename: 'LinksCVs.zip' }) // Return links zip
+      return h.file(configUpload.cvsLinkPath, { mode: 'attachment', filename: 'LinksCVs.zip' }) // Return links zip
     }
   },
 }
@@ -268,7 +263,7 @@ exports.list = {
   },
   handler: async function (request, h) {
     try {
-      let files = request.servers.methods.file.list(request.query)
+      let files = await request.server.methods.file.list(request.query)
       return h.response(render(files))
     }
     catch (err) {
@@ -295,7 +290,7 @@ exports.remove = {
   },
   handler: async function (request, h) {
     try {
-      let file = request.server.methods.file.remove(request.params.id)
+      let file = await request.server.methods.file.remove(request.params.id)
       return h.response(render(file))
     }
     catch (err) {
@@ -317,8 +312,8 @@ exports.removeMe = {
   },
   handler: async function (request, h) {
     try {
-      let file = request.server.methods.file.removeFromUser(request.auth.credentials.user.id)
-      let achievement = request.server.methods.achievement.removeCV(request.auth.credentials.user.id)
+      let file = await request.server.methods.file.removeFromUser(request.auth.credentials.user.id)
+      await request.server.methods.achievement.removeCV(request.auth.credentials.user.id)
       return h.response(render(file))
     }
     catch (err) {
@@ -365,11 +360,11 @@ exports.upload = {
   },
   handler: async function (request, h) {
     try {
-      let user = request.server.methods.user.get(request.params.id)
-      let file = request.server.methods.file.uploadCV(request.payload)
-      let oldFile = request.server.methods.file.get(request.auth.credentials.user.id)
-      let deleteFile = request.server.methods.file.delete(oldFile.id)
-      let fileInfo = request.server.methods.file.update(oldFile.id)
+      await request.server.methods.user.get(request.params.id)
+      await request.server.methods.file.uploadCV(request.payload)
+      let oldFile = await request.server.methods.file.get(request.auth.credentials.user.id)
+      await request.server.methods.file.delete(oldFile.id)
+      let fileInfo = await request.server.methods.file.update(oldFile.id)
       return h.response(render(fileInfo)).created('/api/file/' + fileInfo.id)
     } catch (err) {
       log.error({ err: err, msg: 'error uploading file' }, 'error uploading file')
@@ -413,11 +408,11 @@ exports.uploadMe = {
 
   handler: async function (request, h) {
     try {
-      let file = request.server.methods.file.uploadCV(request.payload)
-      let oldFile = request.server.methods.file.get(request.auth.credentials.user.id)
-      let deleteFile = request.server.methods.file.delete(oldFile.id)
+      let file = await request.server.methods.file.uploadCV(request.payload)
+      let oldFile = await request.server.methods.file.get(request.auth.credentials.user.id)
+      await request.server.methods.file.delete(oldFile.id)
       let fileInfo = request.server.methods.file.update(oldFile.id, file, request.auth.credentials.user.id, request.query)
-      let achievement = request.server.methods.achievement.addCV(request.auth.credentials.user.id)
+      await request.server.methods.achievement.addCV(request.auth.credentials.user.id)
       return h.response(render(fileInfo)).created('/api/file/' + fileInfo.id)
     } catch (err) {
       log.error({ err: err, msg: 'error uploading file' }, 'error uploading file')
