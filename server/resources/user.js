@@ -18,6 +18,7 @@ server.method('user.removeCompany', removeCompany, {})
 server.method('user.sign', sign, {})
 server.method('user.redeemCard', redeemCard, {})
 
+
 async function create (user) {
   user.id = user.id || Math.random().toString(36).substr(2, 20)
   user.role = user.role || config.auth.permissions[0]
@@ -26,6 +27,7 @@ async function create (user) {
 
   return User.create(user)
 }
+
 
 async function updateMe (filter, user, opts) {
   // if (typeof opts === 'function') {
@@ -63,7 +65,6 @@ async function update (filter, user, opts) {
       log.error({ err: err }, 'error pulling user.company')
      throw Boom.boomify(err)
     })
-
 
     if(opts){
       opts.new = true
@@ -140,7 +141,6 @@ async function list (activeAchievements) {
 }
 
 async function getMulti (ids, query) {
-
   const filter = { id: { $in: ids } }
   const fields = fieldsParser(query.fields)
   const options = {
@@ -200,7 +200,7 @@ async function sign (attendeeId, companyId, payload, cb) {
     }
   }
 
-  const sig = {companyId: companyId, date: new Date()}
+  const sig = { companyId: companyId, date: new Date() }
 
   const update = {
     $addToSet: {
@@ -212,6 +212,7 @@ async function sign (attendeeId, companyId, payload, cb) {
     log.error({ err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
    throw Boom.boomify(err)
   })
+  
   if (!user) {
     // day,event combination entry did not exist
     return addNewDayEntry(
@@ -265,7 +266,6 @@ async function redeemCard (attendeeId, payload) {
     log.error({ err: err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId }, 'Error getting user')
     throw Boom.internal()
   })
-
 
   if (!user) {
     // day,event combination entry did not exist
