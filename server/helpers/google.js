@@ -60,10 +60,10 @@ google.getUser = async gUser => {
         throw Boom.boomify(err)
       // A user exist with a given Google email, we only need to update 'google.id' and 'img' in DB
     })
-    log.info('getUser done')
+
     return {
       createUser: false,
-      userId: user.id
+      userId: user ? user.id : undefined
     }
 }
 
