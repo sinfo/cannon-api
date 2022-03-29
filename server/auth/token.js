@@ -10,6 +10,7 @@ function createJwt (userId) {
     expiresIn: tokenConfig.expiresIn,
     issuer: tokenConfig.issuer
   }
+
   const token = jwt.sign({ userId }, tokenConfig.privateKey, options)
   log.info(token)
   return { token }
@@ -22,14 +23,16 @@ async function verify (request, token, h) {
   decoded = jwt.verify(token, tokenConfig.publicKey, { issuer: tokenConfig.issuer })
 
   let user = await User.findOne({ id: decoded.userId })
+
   if (!user) {
-    log.error({ err, token }, '[Auth] user not found')
+    log.error({ token }, '[Auth] user not found')
     throw Boom.unauthorized()
   }
+
   credentials.user = user.toObject({ getters: true })
   credentials.scope = user.role
   isValid = true
-  return {isValid, credentials}
+  return { isValid, credentials }
 }
 
 module.exports.verify = verify
