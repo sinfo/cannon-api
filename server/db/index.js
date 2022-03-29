@@ -12,7 +12,7 @@ db.on('error', function (err) {
 })
 
 db.once('open', function () {
-  log.info('Successfuly connected to mongoDB')
+  log.info('Successfully connected to mongoDB')
 })
 
 module.exports = db
