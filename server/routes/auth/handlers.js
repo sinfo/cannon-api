@@ -62,7 +62,7 @@ exports.google = {
         log.error({ msg: "Could not login user with google." })
         return Boom.unauthorized(`User "${request.payload.id}" could not login with google.`)
       }
-
+ 
       log.error({ err: err, msg: 'Error with google login.' }, 'Error with google login.')
       return Boom.internal()
     }

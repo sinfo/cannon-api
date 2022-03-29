@@ -45,6 +45,7 @@ async function googleAuth(id, token) {
   let gUser = await google.verifyToken(id, token)
   // Get user in cannon by Google User email
   let res = await google.getUser(gUser)
+
   // If user does not exist we create, otherwise we update existing user
   if (res.createUser) {
     let userId = await google.createUser(gUser)
@@ -58,6 +59,7 @@ async function googleAuth(id, token) {
     name: gUser.name,
     img: gUser.picture
   }
+  
   return await authenticate(res.userId, changedAttributes)
 }
 

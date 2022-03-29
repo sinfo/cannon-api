@@ -26,10 +26,10 @@ exports.create = {
     description: 'Creates a new file model'
   },
   handler: async (request, h) => {
-    try{
+    try {
       let file = await request.server.methods.file.create(request.payload)
       return h.response(render(file)).created('/files/' + file.id)
-    }catch (err) {
+    } catch (err) {
       log.error({ err: err, msg:'error creating file'}, 'error creating file')
       return Boom.internal()
     }
@@ -58,14 +58,14 @@ exports.update = {
     description: 'Updates a file model'
   },
   handler: async (request, h) => {
-    try{
+    try {
       let file = await request.server.methods.file.update(request.params.id, request.payload)
       if (!file) {
         log.error({ err: err, file: filter }, 'error updating file')
         return Boom.notFound()
       }
       return h.response(render(file))
-    }catch (err) {
+    } catch (err) {
       log.error({ err: err, file: filter }, 'error updating file')
       return Boom.internal()
     }
@@ -87,14 +87,14 @@ exports.get = {
     description: 'Gets the model of the file'
   },
   handler: async (request, h) => {
-    try{
+    try {
       let file = await request.server.methods.file.get(request.params.id)
       if (!file) {
         log.error({ err: err }, 'error getting file')
         return Boom.notFound()
       }
       return h.response(render(file))
-    }catch (err) {
+    } catch (err) {
       log.error({ err: err}, 'error getting file')
       return Boom.internal()
     }
@@ -111,15 +111,16 @@ exports.getMe = {
     description: 'Gets the file model of the user'
   },
   handler: async (request, h) => {
-    try{
-      let file = await request.server.methods.file.getByUser(request.auth.credentials.user.id)
+    const userId = request.auth.credentials.user.id;
+    try {
+      let file = await request.server.methods.file.getByUser(userId)
       if (!file) {
-        log.error({ err: err, file: filter }, 'error getting file')
+        log.error({ err: err, userId: userId }, 'error getting file')
         return Boom.notFound()
       }
       return h.response(render(file))
-    }catch (err) {
-      log.error({ err: err, file: filter }, 'error getting file')
+    } catch (err) {
+      log.error({ err: err, userId: userId }, 'error getting file')
       return Boom.internal()
     }
   },
@@ -186,10 +187,10 @@ exports.downloadZip = {
     description: 'Downloads users files'
   },
   handler: async function (request, h) {
-    try{
+    try {
       await request.server.methods.file.zipFiles(null)
       return h.file(configUpload.cvsZipPath, { mode: 'attachment', filename: 'CVs.zip' }) // Return generic zip
-    }catch(err){
+    } catch(err){
       log.error({err: err}, 'error downloading file')
       return Boom.boomify(err)
     }
@@ -215,7 +216,7 @@ exports.downloadCompany = {
     description: 'Downloads users files'
   },
   handler: async function (request, h) {
-    try{
+    try {
       await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.query.editionId)
       await request.server.methods.endpoint.isValid(request.params.companyId, request.query.editionId)
       await request.server.methods.endpoint.incrementVisited(request.params.companyId, request.query.editionId)
@@ -227,7 +228,7 @@ exports.downloadCompany = {
         await request.server.methods.file.zipFiles(null)
         return handleZip(false)
       }
-  }catch(err){
+  } catch(err){
     log.error({err: err}, 'error downloading files')
     return Boom.boomify(err)
   }
