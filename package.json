@@ -33,7 +33,7 @@
   "homepage": "https://github.com/sinfo/cannon-api",
   "dependencies": {
     "adm-zip": "^0.4.7",
-    "async": "^0.9.0",
+    "async": "^3.2.2",
     "boom": "~2.5.1",
     "bunyan": "^1.8.12",
     "esprima": "^4.0.1",
