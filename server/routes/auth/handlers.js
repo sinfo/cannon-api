@@ -81,9 +81,6 @@ exports.fenix = {
         code: Joi.string().required().description('fenix code of the member')
       })
     },
-    pre: [
-      { method: 'auth.fenix(payload.code)', assign: 'member' }
-    ],
     description: 'Fenix login'
   },
   handler: async function (request, h) {

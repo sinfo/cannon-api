@@ -325,7 +325,7 @@ exports.removeMe = {
 }
 
 exports.upload = {
-  options:{
+  options: {
     tags: ['api', 'file'],
     auth: {
       strategies: ['default'],
@@ -333,6 +333,7 @@ exports.upload = {
     },
     payload: {
       output: 'stream',
+      multipart: true,
       parse: true,
       allow: 'multipart/form-data',
       maxBytes: configUpload.maxSize
@@ -375,7 +376,7 @@ exports.upload = {
 }
 
 exports.uploadMe = {
-  options:{
+  options: {
     tags: ['api', 'file'],
     auth: {
       strategies: ['default'],
@@ -383,6 +384,7 @@ exports.uploadMe = {
     },
     payload: {
       output: 'stream',
+      multipart: true,
       parse: true,
       allow: 'multipart/form-data',
       maxBytes: configUpload.maxSize
@@ -411,8 +413,11 @@ exports.uploadMe = {
     try {
       let file = await request.server.methods.file.uploadCV(request.payload)
       let oldFile = await request.server.methods.file.get(request.auth.credentials.user.id)
-      await request.server.methods.file.delete(oldFile.id)
-      let fileInfo = request.server.methods.file.update(oldFile.id, file, request.auth.credentials.user.id, request.query)
+
+      if (oldFile !== -1)
+        await request.server.methods.file.delete(oldFile.id)
+
+      let fileInfo = await request.server.methods.file.update(oldFile !== -1 ? oldFile.id : file.id, file, request.auth.credentials.user.id, request.query)
       await request.server.methods.achievement.addCV(request.auth.credentials.user.id)
       return h.response(render(fileInfo)).created('/api/file/' + fileInfo.id)
     } catch (err) {
