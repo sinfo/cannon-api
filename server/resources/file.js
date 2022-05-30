@@ -5,7 +5,7 @@ const options = require('../options')
 const server = require('../').hapi
 const log = require('../helpers/logger')
 const async = require('async')
-const fs = require('fs').promises
+const fs = require('fs')
 const urlencode = require('urlencode')
 const fieldsParser = require('../helpers/fieldsParser')
 const File = require('../db/file')
@@ -79,10 +79,13 @@ async function update (id, file, user, query) {
 
   let filter = { id: id }
 
-  let _file = await File.findOneAndUpdate(filter, file, {new: true})
+  let _file = await File.findOneAndUpdate(filter, file, {
+    new: true,
+    upsert: true
+  })
 
   if (!_file) {
-    log.error({err: err, file: id}, 'error updating file')
+    log.error({file: id}, '[file] error updating file')
     throw Boom.notFound()
   }
 
@@ -102,8 +105,8 @@ async function get (id, query) {
   let file = await File.findOne(filter, fields)
 
   if (!file) {
-    log.error('file not found')
-    throw Boom.notFound()
+    log.error('[file] file not found')
+    return -1
   }
 
   return file.toObject({ getters: true })
@@ -167,7 +170,8 @@ async function upload (kind, data) {
       throw Boom.internal()
     }
   })
-  saveFiles(kind, files, data)
+  
+  return saveFiles(kind, files, data)
 }
 
 async function saveFiles (kind, files, data) {
@@ -177,7 +181,7 @@ async function saveFiles (kind, files, data) {
   }
 
   if (files.length === 1) {
-    return saveFile(kind, data[files[0]])
+    return await saveFile(kind, data[files[0]])
   }
 
   await async.map(files, (file, cbAsync) => {
@@ -202,14 +206,14 @@ async function deleteFile (file) {
         throw Boom.boomify(err)
       }
 
-      if(err.errno === -2){
+      if (err.errno === -2) {
         log.warn('[file] issue with file path')
         return
       } //File not found
       log.error({err: err, path: path}, '[file] error deleting file')
       throw Boom.boomify(err)
     }
-  }).then((_) =>{
+  }).then((_) => {
     log.info({path: path}, '[file] successfully deleted file')
   })
 }
@@ -217,14 +221,14 @@ async function deleteFile (file) {
 async function saveFile (kind, data) {
   const mimeType = data.hapi.headers['content-type']
   const fileInfo = {
-    id: kind + '_' + Math.random().toString(36).substr(2, 20),
+    id: kind + '_' + Math.random().toString(36).substring(2, 20),
     kind: kind,
     name: urlencode.decode(data.hapi.filename)
   }
   const file = data
   const path = config.upload.path + '/' + fileInfo.id
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const fileStream = fs.createWriteStream(path)
 
     fileStream.on('error', (err) => {
@@ -259,7 +263,8 @@ async function saveFile (kind, data) {
         log.error({err: err}, '[file] invalid file type for requested kind')
         throw Boom.badData(err)
       }
-      fileInfo.extension = Mime.extension(mimeType)
+      
+      fileInfo.extension = Mime.getExtension(mimeType)
       resolve(fileInfo)
     })
   })
