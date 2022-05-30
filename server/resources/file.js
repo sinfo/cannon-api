@@ -151,7 +151,7 @@ async function removeFromUser(id) {
     throw Boom.notFound()
   }
 
-  remove(file.id)
+  return remove(file.id)
 }
 
 async function uploadCV (data) {
