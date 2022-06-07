@@ -199,23 +199,16 @@ async function deleteFile (file) {
 
   const path = config.upload.path + '/' + file
 
-  await fs.unlink(path).catch((err) => {
+  fs.unlink(path, (err) => {
     if (err) {
       if (err.errno === 34) {
         log.error('[file] issue with file path')
-        throw Boom.boomify(err)
       }
-
-      if (err.errno === -2) {
-        log.warn('[file] issue with file path')
-        return
-      } //File not found
       log.error({err: err, path: path}, '[file] error deleting file')
       throw Boom.boomify(err)
     }
-  }).then((_) => {
     log.info({path: path}, '[file] successfully deleted file')
-  })
+  });
 }
 
 async function saveFile (kind, data) {
