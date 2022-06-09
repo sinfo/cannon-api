@@ -72,15 +72,16 @@ exports.update = {
     description: 'Updates an achievement'
   },
   handler: async (request, h) => {
+    const achievementId = request.params.id
     try {
-      let ach = await request.server.methods.achievement.update(request.params.id, request.payload)
+      let ach = await request.server.methods.achievement.update(achievementId, request.payload)
       if (!ach) {
-        log.error({ err: err, achievement: filter }, 'error updating achievement')
+        log.error({ err: err, achievement: achievementId }, 'error updating achievement')
         return Boom.notFound()
       }
       return h.response(render(ach))
     } catch (err) {
-      log.error({ err: err, achievement: filter }, 'error updating achievement')
+      log.error({ err: err, achievement: achievementId }, 'error updating achievement')
       return Boom.internal()
     }
   }
@@ -105,15 +106,16 @@ exports.get = {
     description: 'Gets an achievement'
   },
   handler: async (request, h) => {
+    const achievementId = request.params.id
     try {
-      let ach = await request.server.methods.achievement.get(request.params.id)
+      let ach = await request.server.methods.achievement.get(achievementId)
       if (!ach) {
-        log.error({ err: err, achievement: filter }, 'error getting achievement')
+        log.error({ err: err, achievement: achievementId }, 'error getting achievement')
         return Boom.notFound()
       }
       return h.response(render(ach))
     } catch (err) {
-      log.error({ err: err, achievement: filter }, 'error getting achievement')
+      log.error({ err: err, achievement: achievementId }, 'error getting achievement')
       return Boom.internal()
     }
   }
@@ -129,15 +131,16 @@ exports.getMe = {
     description: 'Gets my achievements'
   },
   handler: async (request, h) => {
+    const userId = request.auth.credentials.user.id
     try {
-      let ach = await request.server.methods.achievement.getByUser(request.auth.credentials.user.id)
+      let ach = await request.server.methods.achievement.getByUser(userId)
       if (!ach) {
-        log.error({ err: err, achievement: filter }, 'error getting achievement')
+        log.error({ err: err, userId: userId }, 'error getting achievement')
         return Boom.notFound()
       }
       return h.response(render(ach))
     } catch (err) {
-      log.error({ err: err, achievement: filter }, 'error getting achievement')
+      log.error({ err: err, userId: userId }, 'error getting achievement')
       return Boom.internal()
     }
   }
@@ -466,15 +469,16 @@ exports.getAchievementBySession = {
     description: 'Gets an achievement by session ID'
   },
   handler: async function (request, h) {
+    const sessionId = request.params.id
     try {
-      let ach = await request.server.methods.achievement.getAchievementBySession(request.params.id)
+      let ach = await request.server.methods.achievement.getAchievementBySession(sessionId)
       if (!ach) {
-        log.error({ err: 'not found', achievement: filter }, 'achievement not found')
+        log.error({ err: 'not found', session: sessionId }, 'achievement not found')
         return Boom.notFound('achievement not found')
       }
       return h.response(render(ach))
     } catch (err) {
-      log.error({ err: err, achievement: filter }, 'error getting achievement')
+      log.error({ err: err, session: sessionId }, 'error getting achievement')
       return Boom.internal('error getting achievement')
     }
   },
