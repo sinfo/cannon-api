@@ -1,6 +1,5 @@
 const Lab = require('@hapi/lab')
 const Code = require('@hapi/code')
-const log = require('../helpers/logger')
 
 const server = require('../').hapi
 
@@ -176,7 +175,7 @@ lab.experiment('File', () => {
     Code.expect(response.statusCode).to.equal(403)
   })
 
-  /* lab.test('Delete as an admin',  async () => {
+  lab.test('Delete as an admin',  async () => {
     const options = {
       method: 'DELETE',
       url: '/files/' + fileA.id,
@@ -194,7 +193,7 @@ lab.experiment('File', () => {
     Code.expect(result.id).to.equal(fileA.id)
     Code.expect(result.name).to.equal(changesToA.name)
     Code.expect(result.extension).to.equal(fileA.extension)
-  }) */
+  })
 
   lab.test('Create as an user',  async () => {
     const options = {
