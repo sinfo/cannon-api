@@ -137,6 +137,7 @@ async function remove(id) {
     log.error({err: 'not found', file: id}, 'error deleting file')
     throw Boom.notFound()
   }
+
   await deleteFile(file.id)
   return file
 }
@@ -203,7 +204,11 @@ async function deleteFile (file) {
     if (err) {
       if (err.errno === 34) {
         log.error('[file] issue with file path')
+      } else if (err.errno === -2) {
+        log.error('[file] no file was found')
+        return
       }
+
       log.error({err: err, path: path}, '[file] error deleting file')
       throw Boom.boomify(err)
     }
