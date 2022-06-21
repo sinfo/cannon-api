@@ -368,12 +368,14 @@ exports.upload = {
         return Boom.notFound()
       }
 
-      let oldFile = await request.server.methods.file.get(request.auth.credentials.user.id)
+      let file = await request.server.methods.file.uploadCV(request.payload)
+      let oldFile = await request.server.methods.file.get(request.params.id)
 
       if (oldFile !== -1)
         await request.server.methods.file.delete(oldFile.id)
 
-      let fileInfo = await request.server.methods.file.uploadCV(request.payload)
+        let fileInfo = await request.server.methods.file.update(oldFile !== -1 ? oldFile.id : file.id, file, request.params.id, request.query)
+      
       return h.response(render(fileInfo)).created('/api/file/' + fileInfo.id)
     } catch (err) {
       log.error({ err: err, msg: 'error uploading file' }, 'error uploading file')
