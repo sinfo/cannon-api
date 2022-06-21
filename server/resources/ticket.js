@@ -1,4 +1,4 @@
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 const server = require('../').hapi
 const log = require('../helpers/logger')
 const fieldsParser = require('../helpers/fieldsParser')
@@ -23,44 +23,46 @@ server.method('ticket.registrationEmail', registrationEmail, {})
 server.method('ticket.registrationAcceptedEmail', registrationAcceptedEmail, {})
 server.method('ticket.getUserSessions', getUserSessions, {})
 
-function userConfirmed (sessionId, userId, cb) {
-  Ticket.findOne({ session: sessionId }, (err, _ticket) => {
-    if (err) {
-      log.error({ err: err, session: sessionId }, 'error getting ticket')
-      return cb(Boom.internal())
-    }
-    if (!_ticket) {
-      log.warn({ err: err, session: sessionId }, 'ticket not found')
-      return cb(null, false)
-    }
-    if (_ticket.confirmed.indexOf(userId) >= 0) {
-      log.error({ err: err, session: sessionId, user: userId }, 'user alreaday confirmed')
-      return cb(Boom.conflict('user alreaday confirmed'))
-    }
-    cb(null, true)
-  })
+async function userConfirmed(sessionId, userId) {
+  let filter = { session: sessionId }
+
+  let _ticket = await Ticket.findOne(filter)
+
+  if (!_ticket) {
+    log.warn({ err: err, session: sessionId }, 'ticket not found')
+    return false
+  }
+
+  if (_ticket.confirmed.indexOf(userId) >= 0) {
+    log.error({ err: err, session: sessionId, user: userId }, 'user alreaday confirmed')
+    return Boom.conflict('user alreaday confirmed')
+  }
+
+  return true
 }
 
-function userRegistered (sessionId, userId, cb) {
-  Ticket.findOne({ session: sessionId }, (err, _ticket) => {
-    if (err) {
-      log.error({ err: err, session: sessionId }, 'error getting ticket')
-      return cb(Boom.internal())
-    }
-    if (!_ticket) {
-      log.warn({ err: err, session: sessionId }, 'ticket not found')
-      return cb(null, false)
-    }
-    if (_ticket.users.indexOf(userId) >= 0) {
-      log.error({ err: err, session: sessionId, user: userId }, 'user alreaday registered')
-      return cb(Boom.conflict('user alreaday registered'))
-    }
-    cb(null, true)
-  })
+async function userRegistered(sessionId, userId) {
+  let filter = { session: sessionId }
+
+  let _ticket = await Ticket.findOne(filter)
+
+  if (!_ticket) {
+    log.warn({ err: err, session: sessionId }, 'ticket not found')
+    return false
+  }
+
+  if (_ticket.users.indexOf(userId) >= 0) {
+    log.error({ err: err, session: sessionId, user: userId }, 'user alreaday registered')
+    return Boom.conflict('user alreaday registered')
+  }
+
+  return true
 }
 
-function addUser (sessionId, userId, session, cb) {
+async function addUser (sessionId, userId, session) {
   log.debug({ userId, sessionName: session.name }, 'got session')
+
+  let filter = { session: sessionId }
 
   const changes = {
     $addToSet: {
@@ -72,17 +74,14 @@ function addUser (sessionId, userId, session, cb) {
     }
   }
 
-  Ticket.findOneAndUpdate({ session: sessionId }, changes, { upsert: true }, (err, _ticket) => {
-    if (err) {
-      log.error({ err: err, session: sessionId }, 'error registering ticket')
-      return cb(Boom.internal())
-    }
+  let _ticket = await Ticket.findOneAndUpdate(filter, changes, { upsert: true }).orFail('error registering ticket')
 
-    cb(null, _ticket.toObject({ getters: true }))
-  })
+  return _ticket.toObject({ getters: true })
 }
 
-function removeUser (sessionId, userId, session, cb) {
+async function removeUser(sessionId, userId, session) {
+  let filter = { session: sessionId }
+  
   const changes = {
     $pull: {
       users: userId,
@@ -91,64 +90,53 @@ function removeUser (sessionId, userId, session, cb) {
     }
   }
 
-  Ticket.findOneAndUpdate({ session: sessionId }, changes, (err, _ticket) => {
-    if (err) {
-      log.error({ err: err, session: sessionId }, 'error voiding ticket')
-      return cb(Boom.internal())
-    }
+  let _ticket = await Ticket.findOneAndUpdate(filter, changes)
 
-    if (!_ticket) {
-      return cb(Boom.notFound('Couln\'t find session'))
-    }
+  if (!_ticket) {
+    return Boom.notFound('Couldn\'t find session')
+  }
 
-    cb(null, _ticket.toObject({ getters: true }))
-  })
+  return _ticket.toObject({ getters: true })
 }
 
-function confirmUser (sessionId, userId, session, cb) {
+async function confirmUser(sessionId, userId, session) {
+  let filter = { session: sessionId, users: { $in: [userId] } }
+
   const changes = {
     $addToSet: {
       confirmed: userId
     }
   }
 
-  Ticket.findOneAndUpdate({ session: sessionId, users: { $in: [userId] } }, changes, (err, _ticket) => {
-    if (err) {
-      log.error({ err: err, session: sessionId }, 'error confirming ticket')
-      return cb(Boom.internal())
-    }
+  let _ticket = await Ticket.findOneAndUpdate(filter, changes)
 
-    if (!_ticket) {
-      return cb(Boom.notFound('Couln\'t find session, make sure you\'re already registered in this session'))
-    }
+  if (!_ticket) {
+    return Boom.notFound('Couldn\'t find session, make sure you\'re already registered in this session')
+  }
 
-    cb(null, _ticket.toObject({ getters: true }))
-  })
+  return _ticket.toObject({ getters: true })
 }
 
-function registerUserPresence (sessionId, userId, session, cb) {
+async function registerUserPresence(sessionId, userId, session) {
+  let filter = { session: sessionId }
+
   const changes = {
     $addToSet: {
       present: userId
     }
   }
 
-  Ticket.findOneAndUpdate({ session: sessionId }, changes, (err, _ticket) => {
-    if (err) {
-      log.error({ err: err, session: sessionId }, 'error confirming ticket')
-      return cb(Boom.internal())
-    }
+  let _ticket = await Ticket.findOneAndUpdate(filter, changes)
 
-    if (!_ticket) {
-      return cb(Boom.notFound('Couldn\'t find session'))
-    }
+  if (!_ticket) {
+    return Boom.notFound('Couldn\'t find session')
+  }
 
-    cb(null, _ticket.toObject({ getters: true }))
-  })
+  return _ticket.toObject({ getters: true })
 }
 
-function get (filter, query, cb) {
-  cb = cb || query // fields is optional
+async function get (filter, query) {
+  //cb = cb || query // fields is optional
 
   const fields = fieldsParser(query.fields)
 
@@ -156,41 +144,35 @@ function get (filter, query, cb) {
     filter = { session: filter }
   }
 
-  Ticket.findOne(filter, fields, (err, ticket) => {
-    if (err) {
-      log.error({ err: err, requestedTicket: filter }, 'error getting ticket')
-      return cb(Boom.internal())
-    }
-    if (!ticket) {
-      log.warn({ err: err, requestedTicket: filter }, 'could not find ticket')
-      return cb(Boom.notFound())
-    }
+  let ticket = await Ticket.findOne(filter, fields)
 
-    cb(null, ticket)
-  })
+  if (!ticket) {
+    log.warn({ err: err, requestedTicket: filter }, 'could not find ticket')
+    return Boom.notFound()
+  }
+
+  return ticket
 }
 
-function updateMulti (filter, ticket, cb) {
+//this function does not return anything for now
+//if you want all updated tickets, you can do a find
+async function updateMulti(filter, ticket) {
+  if (!ticket) {
+    log.warn({ err: err, requestedTicket: filter }, 'could not find ticket')
+    return Boom.notFound()
+  }
+
   if (typeof filter === 'string') {
     filter = { id: filter }
   }
 
-  Ticket.update(filter, ticket, { multi: true }, (err, tickets) => {
-    if (err) {
-      log.error({ err: err, requestedTicket: filter }, 'error updating ticket')
-      return cb(Boom.internal())
-    }
-    if (!ticket) {
-      log.warn({ err: err, requestedTicket: filter }, 'could not find ticket')
-      return cb(Boom.notFound())
-    }
+  let res = await Ticket.updateMany(filter, ticket)
 
-    cb(null, tickets)
-  })
+  log.debug("Matched ", res.matchedCount, " tickets and updated ", res.modifiedCount, " tickets")
 }
 
-function list (query, cb) {
-  cb = cb || query // fields is optional
+async function list (query) {
+  //cb = cb || query // fields is optional
 
   const filter = {}
   const fields = fieldsParser(query.fields)
@@ -200,161 +182,144 @@ function list (query, cb) {
     sort: fieldsParser(query.sort)
   }
 
-  Ticket.find(filter, fields, options, (err, tickets) => {
-    if (err) {
-      log.error({ err: err }, 'error getting all tickets')
-      return cb(Boom.internal())
-    }
+  let tickets = await Ticket.find(filter, fields, options)
 
-    cb(null, tickets)
-  })
+  return tickets
 }
 
-function getUserSessions (id, cb) {
-  Ticket.find({
-    users: id
-  }, (err, tickets) => {
-    if (err) {
-      log.error({ err: err }, 'error getting tickets')
-      return cb(Boom.internal())
-    }
+async function getUserSessions(id) {
+  let filter = { users: id }
+  let tickets = await Ticket.find(filter)
 
-    const ids = tickets.map((ticket) => {
-      return ticket.session
-    })
-
-    cb(null, ids)
+  const ids = tickets.map((ticket) => {
+    return ticket.session
   })
+
+  return ids
 }
 
-function getRegisteredUsers (sessionId, session, cb) {
-  cb = cb || session // session is optional
+async function getRegisteredUsers (sessionId, session) {
+  //cb = cb || session // session is optional
 
   const filter = { session: sessionId }
 
-  Ticket.findOne(filter, { users: 1 }, (err, ticket) => {
-    if (err) {
-      log.error({ err: err, requestedTicket: filter }, 'error getting ticket')
-      return cb(Boom.internal())
-    }
-    if (!ticket) {
-      log.warn({ err: err, requestedTicket: filter }, 'could not find ticket')
-      return cb(Boom.notFound())
-    }
+  const fields = { users: 1 }
 
-    let users = ticket.users
-    if (session && session.tickets && session.tickets.max) {
-      users = users.slice(0, session.tickets.max)
-    }
+  let ticket = await Ticket.findOne(filter, fields)
 
-    cb(null, users)
-  })
+  if (!ticket) {
+    log.warn({ err: err, requestedTicket: filter }, 'could not find ticket')
+    return Boom.notFound()
+  }
+
+  let users = ticket.users
+  if (session && session.tickets && session.tickets.max) {
+    users = users.slice(0, session.tickets.max)
+  }
+
+  return users
 }
 
-function getWaitingUsers (sessionId, session, cb) {
-  cb = cb || session // session is optional
+async function getWaitingUsers (sessionId, session) {
+  //cb = cb || session // session is optional
 
   const filter = { session: sessionId }
 
-  Ticket.findOne(filter, { users: 1 }, (err, ticket) => {
-    if (err) {
-      log.error({ err: err, requestedTicket: filter }, 'error getting ticket')
-      return cb(Boom.internal())
-    }
-    if (!ticket) {
-      log.warn({ err: err, requestedTicket: filter }, 'could not find ticket')
-      return cb(Boom.notFound())
-    }
+  const fields = { users: 1 }
 
-    let users = ticket.users
-    if (session && session.tickets && session.tickets.max) {
-      if (users.length > session.tickets.max) {
-        users = users.slice(session.tickets.max)
-      } else {
-        users = []
-      }
-    }
+  let ticket = await Ticket.findOne(filter, fields)
 
-    cb(null, users)
-  })
+  if (!ticket) {
+    log.warn({ err: err, requestedTicket: filter }, 'could not find ticket')
+    return Boom.notFound()
+  }
+
+  let users = ticket.users
+  if (session && session.tickets && session.tickets.max) {
+    if (users.length > session.tickets.max) {
+      users = users.slice(session.tickets.max)
+    } else {
+      users = []
+    }
+  }
+
+  return users
 }
 
-function getConfirmedUsers (sessionId, session, cb) {
-  cb = cb || session // session is optional
+async function getConfirmedUsers (sessionId, session) {
+  //cb = cb || session // session is optional
 
   const filter = { session: sessionId }
 
-  Ticket.findOne(filter, { users: 1 }, (err, ticket) => {
-    if (err) {
-      log.error({ err: err, requestedTicket: filter }, 'error getting ticket')
-      return cb(Boom.internal())
-    }
-    if (!ticket) {
-      log.warn({ err: err, requestedTicket: filter }, 'could not find ticket')
-      return cb(Boom.notFound())
-    }
+  const fields = { users: 1 }
 
-    const users = ticket.users.filter((o) => {
-      return ticket.confirmed && ticket.confirmed.indexOf(o.id) !== -1
-    })
+  let ticket = await Ticket.findOne(filter, fields)
 
-    cb(null, users)
+  if (!ticket) {
+    log.warn({ err: err, requestedTicket: filter }, 'could not find ticket')
+    return Boom.notFound()
+  }
+
+  const users = ticket.users.filter((o) => {
+    return ticket.confirmed && ticket.confirmed.indexOf(o.id) !== -1
   })
+
+  return users
 }
 
-function getAcceptedUser (ticket, session, user, cb) {
+function getAcceptedUser (ticket, session, user) {
   if (!session.tickets || !session.tickets.max || ticket.users.length <= session.tickets.max) {
     log.debug({ ticket: ticket }, 'ticket does not have waiting list')
-    return cb(Boom.notFound('user list does not have waiting list'))
+    return Boom.notFound('user list does not have waiting list')
   }
 
   if (ticket.users.indexOf(user.id) >= session.tickets.max) {
     log.debug({ ticket: ticket, user: user.id }, 'user was in the waiting list')
-    return cb(Boom.preconditionFailed('voided ticket in waiting list'))
+    return Boom.preconditionFailed('voided ticket in waiting list')
   }
 
-  server.methods.user.get(ticket.users[session.tickets.max], cb)
+  server.methods.user.get(ticket.users[session.tickets.max])
 }
 
-function registrationAcceptedEmail (ticket, session, user, cb) {
+function registrationAcceptedEmail (ticket, session, user) {
   if (!user || !user.mail) {
     log.error({ user: user, ticket: ticket }, 'user does not have a valid email address')
-    return cb(Boom.preconditionFailed('user does not have a valid email address'))
+    return Boom.preconditionFailed('user does not have a valid email address')
   }
 
   if (ticket.users.indexOf(user.id) < 0) {
     log.error({ ticket: ticket, user: user }, 'error sending mail, user not in ticket')
-    return cb(Boom.notFound())
+    return Boom.notFound()
   }
 
-  server.methods.email.send(getRegistrationAcceptedEmail(session, user), cb)
+  server.methods.email.send(getRegistrationAcceptedEmail(session, user))
 }
 
-function confirmationEmail (ticket, session, user, cb) {
+function confirmationEmail (ticket, session, user) {
   if (!user || !user.mail) {
     log.error({ user: user, ticket: ticket }, 'user does not have a valid email address')
-    return cb(Boom.preconditionFailed('user does not have a valid email address'))
+    return Boom.preconditionFailed('user does not have a valid email address')
   }
 
   if (ticket.confirmed.indexOf(user.id) < 0) {
     log.error({ ticket: ticket, user: user }, 'error sending mail, user not in the confirmed list of the ticket')
-    return cb(Boom.notFound())
+    return Boom.notFound()
   }
 
-  server.methods.email.send(getConfirmationEmail(session, user), cb)
+  server.methods.email.send(getConfirmationEmail(session, user))
 }
 
-function registrationEmail (ticket, session, user, cb) {
+function registrationEmail (ticket, session, user) {
   const index = ticket.users.indexOf(user.id)
 
   if (!user || !user.mail) {
     log.error({ user: user, ticket: ticket }, 'user does not have a valid email address')
-    return cb(Boom.preconditionFailed('user does not have a valid email address'))
+    return Boom.preconditionFailed('user does not have a valid email address')
   }
 
   if (index < 0) {
     log.error({ ticket: ticket, user: user }, 'error sending mail, user not in ticket')
-    return cb(Boom.notFound())
+    return Boom.notFound()
   }
 
   if (index >= session.tickets.max) {

@@ -1,5 +1,5 @@
 const config = require('../../config')
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 const server = require('../').hapi
 const log = require('../helpers/logger')
 const path = require('path')
@@ -14,7 +14,7 @@ const mailgun = require('mailgun-js')(
 
 server.method('email.send', send, {})
 
-function send (mailOptions, cb) {
+function send (mailOptions) {
   log.debug({ mailOptions }, 'sending email')
 
   let data = {
@@ -26,7 +26,7 @@ function send (mailOptions, cb) {
   fs.readFile(path.join(__dirname, '/../helpers/ticketEmail.html'), 'utf8', (err, ticketTemplateSource) => {
     if (err) {
       log.error({ err }, 'Error reading email template. Mails not sent')
-      return cb(Boom.internal())
+      return Boom.internal(err)
     }
 
     const surveyTemplate = Handlebars.compile(ticketTemplateSource)
@@ -41,10 +41,10 @@ function send (mailOptions, cb) {
     mailgun.messages().send(data, (err, body) => {
       if (err) {
         log.error({ err }, 'error sending email')
-        return cb(err)
+        return Boom.internal(err)
       }
       log.info('email sent to', mailOptions.name)
-      cb(body)
+      return body
     })
   })
 }

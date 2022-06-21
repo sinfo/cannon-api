@@ -13,11 +13,11 @@ module.exports = {
       allowQueryToken: true,
       allowMultipleHeaders: true,
       accessTokenName: 'access_token',
-      validateFunc: auth.bearer
+      validate: auth.bearer
     },
     internal: {
       allowEmptyUsername: false,
-      validateFunc: auth.internal
+      validate: auth.internal
     }
   },
   upload: [

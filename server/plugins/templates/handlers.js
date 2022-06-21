@@ -1,5 +1,5 @@
 var Joi = require('joi')
-var Boom = require('boom')
+var Boom = require('@hapi/boom')
 var log = require('../../helpers/logger')
 var config = require('../../../config')
 var async = require('async')
@@ -14,12 +14,12 @@ handlers.grid = {
   },
   tags: ['api', 'templates'],
   validate: {
-    params: {
+    params: Joi.object({
       achievementId: Joi.string().required().description('id of the achievement we want')
-    },
-    query: {
+    }),
+    query: Joi.object({
       quantity: Joi.number().default(10).description('how many redeem codes')
-    }
+    })
   },
   pre: [
     {

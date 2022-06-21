@@ -1,6 +1,6 @@
-const mongoose = require('mongoose')
+let mongoose = require('mongoose')
 
-const schema = new mongoose.Schema({
+let achievementSchema = mongoose.Schema({
   id: { type: String, unique: true },
   session: String,
   name: String,
@@ -33,4 +33,6 @@ const schema = new mongoose.Schema({
   }
 })
 
-module.exports = mongoose.model('Achievement', schema)
+achievementSchema.index({ id: 1 }, { unique: true })
+
+module.exports = mongoose.model('Achievement', achievementSchema)

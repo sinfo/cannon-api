@@ -1,4 +1,4 @@
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 const server = require('../').hapi
 const log = require('../helpers/logger')
 const fieldsParser = require('../helpers/fieldsParser')
@@ -12,7 +12,7 @@ server.method('endpoint.remove', remove, {})
 server.method('endpoint.isValid', isValid, {})
 server.method('endpoint.incrementVisited', incrementVisited, {})
 
-function create (endpoint, cb) {
+async function create(endpoint) {
   // generates an enpoint item for every company in endpoin.companies
   // `endpoint` is passed as `this` to the map function
   const endpoints = Array.from(endpoint.companies, (company) => {
@@ -28,65 +28,56 @@ function create (endpoint, cb) {
       updated: new Date()
     }
   })
-
-  Endpoint.collection.insert(endpoints, (err, list) => {
-    if (err) {
-      if (err.code === 11000) {
-        return cb(Boom.conflict(`endpoint <${endpoint.company}, ${endpoint.edition}> is a duplicate`))
-      }
-
-      log.error({ err: err, endpoint: endpoint }, 'error creating endpoint')
-      return cb(Boom.internal())
+  let list = await Endpoint.create(endpoints).catch((err) =>{
+    if (err.code === 11000) {
+      throw Boom.conflict(`endpoint <${endpoint.company}, ${endpoint.edition}> is a duplicate`)
     }
 
-    cb(null, list)
+    log.error({ err: err, endpoint: endpoint }, 'error creating endpoint')
+    throw Boom.boomify(err)
   })
+  return list
 }
 
-function update (companyId, editionId, endpoint, cb) {
+async function update(companyId, query, endpoint) {
   const filter = {
     company: companyId,
-    edition: editionId
+    edition: query? query.edition : null
   }
 
   endpoint.updated = new Date()
 
-  Endpoint.findOneAndUpdate(filter, endpoint, (err, _endpoint) => {
-    if (err) {
-      log.error({ err: err, company: companyId, edition: editionId }, 'error updating endpoint')
-      return cb(Boom.internal())
-    }
-    if (!_endpoint) {
-      log.error({ err: 'Not Found', company: companyId, edition: editionId }, 'error updating endpoint')
-      return cb(Boom.notFound())
-    }
-
-    cb(null, _endpoint.toObject({ getters: true }))
+  let _endpoint = await Endpoint.findOneAndUpdate(filter, endpoint, {new: true}).catch((err) =>{
+    log.error({ err: err, company: companyId }, 'error updating endpoint')
+    throw Boom.internal()
   })
+  if (!_endpoint) {
+    log.error({ err: 'Not Found', company: companyId }, 'error updating endpoint')
+    throw Boom.notFound()
+  }
+  return _endpoint
+
 }
 
-function get (companyId, editionId, cb) {
+async function get(companyId, query) {
   const filter = {
     company: companyId,
-    edition: editionId
+    edition: query? query.edition : null
   }
 
-  Endpoint.findOne(filter, (err, endpoint) => {
-    if (err) {
-      log.error({ err: err, company: companyId, edition: editionId }, 'error getting endpoint')
-      return cb(Boom.internal('error getting endpoint'))
-    }
-    if (!endpoint) {
-      log.error({ err: 'not found', company: companyId, edition: editionId }, 'error getting endpoint')
-      return cb(Boom.notFound('endpoint not found'))
-    }
+  log.error({n:"2", company: companyId, query: query})
 
-    cb(null, endpoint.toObject({ getters: true }))
-  })
+  let endpoint = await Endpoint.findOne(filter)
+  log.error({n:"1", end: endpoint})
+  if (!endpoint) {
+    log.error({ err: 'not found', company: companyId, edition: editionId }, 'error getting endpoint')
+    throw Boom.notFound('endpoint not found')
+  }
+
+  return endpoint.toObject({ getters: true })
 }
 
-function list (query, cb) {
-  cb = cb || query // fields is optional
+async function list(query) {
 
   const filter = { edition: query.edition }
   const fields = fieldsParser(query.fields)
@@ -96,58 +87,53 @@ function list (query, cb) {
     sort: fieldsParser(query.sort)
   }
 
-  Endpoint.find(filter, fields, options, (err, endpoints) => {
-    if (err) {
-      log.error({ err: err, edition: query.edition }, 'error getting all endpoints')
-      return cb(Boom.internal())
-    }
-
-    cb(null, endpoints)
-  })
+  try {
+    return await Endpoint.find(filter, fields, options)
+  }
+  catch (err) {
+    log.error({ err: err, edition: query.edition }, 'error getting all endpoints')
+    throw Boom.internal()
+  }
 }
 
-function remove (companyId, editionId, cb) {
-  Endpoint.findOneAndRemove({ company: companyId, edition: editionId }, (err, endpoint) => {
-    if (err) {
-      log.error({ err: err, company: companyId, edition: editionId }, 'error deleting endpoint')
-      return cb(Boom.internal())
-    }
+async function remove(companyId, editionId) {
+  try {
+    let endpoint = await Endpoint.findOneAndRemove({ company: companyId, edition: editionId })
     if (!endpoint) {
       log.error({ err: 'not found', company: companyId, edition: editionId }, 'error deleting endpoint')
-      return cb(Boom.notFound('Endpoint not found'))
+      throw Boom.notFound('Endpoint not found')
     }
-
-    return cb(null, endpoint)
-  })
+    return endpoint
+  } catch (err) {
+    log.error({ err: err, company: companyId, edition: editionId }, 'error deleting endpoint')
+    throw Boom.internal()
+  }
 }
 
-function isValid (companyId, editionId, cb) {
+async function isValid(companyId, editionId) {
   const filter = {
     company: companyId,
     edition: editionId
   }
 
-  Endpoint.findOne(filter, (err, endpoint) => {
-    if (err) {
-      log.error({ err: err, company: companyId, edition: editionId }, 'error validating endpoint')
-      return cb(Boom.internal('error getting endpoint'))
-    }
-    if (!endpoint) {
-      log.error({ err: 'not found', company: companyId, edition: editionId }, 'error validating endpoint')
-      return cb(Boom.notFound('Endpoint not created yet.'))
-    }
 
-    let now = new Date()
-    if (now > new Date(endpoint.validity.from) && now < new Date(endpoint.validity.to)) {
-      return cb(null, true)
-    }
+  let endpoint = await Endpoint.findOne(filter)
+  if (!endpoint) {
+    log.error({ err: 'not found', company: companyId, edition: editionId }, 'error validating endpoint')
+    throw Boom.notFound('Endpoint not created yet.')
+  }
 
-    log.error('isvalid')
-    return cb(Boom.notFound('isValid'))
-  })
+  let now = new Date()
+  if (now > new Date(endpoint.validity.from) && now < new Date(endpoint.validity.to)) {
+    return true
+  }
+
+  log.error('isvalid')
+  throw Boom.notFound('isValid')
+  
 }
 
-function incrementVisited (companyId, editionId, cb) {
+async function incrementVisited(companyId, editionId) {
   const filter = {
     company: companyId,
     edition: editionId
@@ -157,16 +143,11 @@ function incrementVisited (companyId, editionId, cb) {
     $inc: { 'visited': 1 }
   }
 
-  Endpoint.findOneAndUpdate(filter, update, (err, endpoint) => {
-    if (err) {
-      log.error({ err: err, company: companyId, edition: editionId }, 'error incrementing endpoint visited')
-      return cb(Boom.internal('error getting endpoint'))
-    }
-    if (!endpoint) {
-      log.error({ err: 'not found', company: companyId, edition: editionId }, 'error incrementing endpoint visited')
-      return cb(Boom.notFound('endpoint not found'))
-    }
+  let endpoint = await Endpoint.findOneAndUpdate(filter, update)
+  if (!endpoint) {
+    log.error({ err: 'not found', company: companyId, edition: editionId }, 'error incrementing endpoint visited')
+    throw Boom.notFound('endpoint not found')
+  }
+  return endpoint
 
-    return cb(null, endpoint)
-  })
 }

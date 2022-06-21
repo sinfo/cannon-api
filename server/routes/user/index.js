@@ -4,65 +4,76 @@ const handlers = require('./handlers')
 server.route({
   method: 'POST',
   path: '/users',
-  config: handlers.create
+  options: handlers.create.options,
+  handler: handlers.create.handler
 })
 
 server.route({
   method: 'GET',
   path: '/users',
-  config: handlers.find
+  options: handlers.find.options,
+  handler: handlers.find.handler
 })
 
 server.route({
   method: ['PATCH', 'PUT'],
   path: '/users/{id}',
-  config: handlers.update
+  options: handlers.update.options,
+  handler: handlers.update.handler
 })
 
 server.route({
   method: ['PATCH', 'PUT'],
   path: '/users/me',
-  config: handlers.updateMe
+  options: handlers.updateMe.options,
+  handler: handlers.updateMe.handler
 })
 
 server.route({
   method: 'POST',
   path: '/users/{id}/redeem-card',
-  config: handlers.redeemCard
+  options: handlers.redeemCard.options,
+  handler: handlers.redeemCard.handler
 })
 
 server.route({
   method: 'GET',
   path: '/users/{id}',
-  config: handlers.get
+  options: handlers.get.options,
+  handler: handlers.get.handler
 })
 
 server.route({
   method: 'GET',
   path: '/users/me',
-  config: handlers.getMe
+  options: handlers.getMe.options,
+  handler: handlers.getMe.handler
 })
 
 server.route({
   method: 'POST',
   path: '/users/users',
-  config: handlers.getMulti
+  options: handlers.getMulti.options,
+  handler: handlers.getMulti.handler
 })
 
 server.route({
   method: 'DELETE',
   path: '/users/{id}/company',
-  config: handlers.removeCompany
+  options: handlers.removeCompany.options,
+  handler: handlers.removeCompany.handler
 })
 
 server.route({
   method: 'DELETE',
   path: '/users/{id}',
-  config: handlers.remove
+  options: handlers.remove.options,
+  handler: handlers.remove.handler
 })
 
 server.route({
   method: 'DELETE',
   path: '/users/me',
-  config: handlers.removeMe
+  options: handlers.removeMe.options,
+  handler: handlers.removeMe.handler
 })

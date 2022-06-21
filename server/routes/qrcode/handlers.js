@@ -5,31 +5,34 @@ const config = require('../../../config')
 exports = module.exports
 
 exports.generate = {
-  tags: ['api', 'qrcode'],
-  auth: false,
-  validate: {
-    params: {
-      id: Joi.string().required().description('id of the qrcode')
-    }
+  options:{
+    tags: ['api', 'qrcode'],
+    auth: false,
+    validate: {
+      params: Joi.object({
+        id: Joi.string().required().description('id of the qrcode')
+      })
+    },
+    description: 'Generate a QRCode'
   },
-  handler: function (request, reply) {
+  handler: (request, h) =>{
     const image = qr.image(config.url + '/r/' + request.params.id, { type: 'png' })
-
-    reply(image)
+    return h.response(image)
   },
-  description: 'Generate a QRCode'
 }
 
 exports.redirect = {
-  tags: ['api', 'qrcode'],
-  auth: false,
-  validate: {
-    params: {
-      id: Joi.string().required().description('id of the qrcode')
-    }
+  options:{
+    tags: ['api', 'qrcode'],
+    auth: false,
+    validate: {
+      params: Joi.object({
+        id: Joi.string().required().description('id of the qrcode')
+      })
+    },
+    description: 'Redirect a request from QRCode to somewhere'
   },
-  handler: function (request, reply) {
-    reply().redirect(config.webapp.url + '/survey/' + request.params.id)
+  handler: function (request, h) {
+    h.response().redirect(config.webapp.url + '/survey/' + request.params.id)
   },
-  description: 'Redirect a request from QRCode to somewhere'
 }

@@ -6,6 +6,8 @@
 */
 
 const google = require('../../helpers/google')
+const log = require('../../helpers/logger')
+const Boom = require('@hapi/boom')
 
 // Time between calls
 const timeOut = 5 * (60 * 1000)
@@ -19,9 +21,9 @@ var liveInfo = {
 exports = module.exports
 
 exports.getLivestream = {
-  tags: ['api', 'google'],
-  handler: function (req, reply) {
-    reply(liveInfo)
+  options: {tags: ['api', 'google']},
+  handler: async (req, h) => {
+    h.response(liveInfo)
   }
 }
 
