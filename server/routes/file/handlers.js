@@ -362,11 +362,18 @@ exports.upload = {
   },
   handler: async function (request, h) {
     try {
-      await request.server.methods.user.get(request.params.id)
-      await request.server.methods.file.uploadCV(request.payload)
+      let user = await request.server.methods.user.get(request.params.id)
+      if (!user) {
+        log.error({ err: err}, 'user not found')
+        return Boom.notFound()
+      }
+
       let oldFile = await request.server.methods.file.get(request.auth.credentials.user.id)
-      await request.server.methods.file.delete(oldFile.id)
-      let fileInfo = await request.server.methods.file.update(oldFile.id)
+
+      if (oldFile !== -1)
+        await request.server.methods.file.delete(oldFile.id)
+
+      let fileInfo = await request.server.methods.file.uploadCV(request.payload)
       return h.response(render(fileInfo)).created('/api/file/' + fileInfo.id)
     } catch (err) {
       log.error({ err: err, msg: 'error uploading file' }, 'error uploading file')
