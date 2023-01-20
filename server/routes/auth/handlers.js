@@ -85,7 +85,7 @@ exports.fenix = {
   },
   handler: async function (request, h) {
     try {
-      let member = await request.server.methods.auth.fenix(request.payload.id, request.payload.token);
+      let member = await request.server.methods.auth.fenix(request.payload.code);
       return h.response(render(member))
     } catch (err) {
       if (err.code === 11000) {
