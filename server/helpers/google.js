@@ -45,25 +45,24 @@ google.getUser = async gUser => {
     let user = await server.methods.user.get({
       'mail': gUser.email
     }).catch((err) => {
-        // If does not find a user with a given Google email, we create a new user
-        if (err.output && err.output.statusCode === 404) {
-          return {
-            createUser: true,
-            gUser
-          }
-        }
-
         log.error({
           err: err,
           google: gUser
         }, '[google-login] error getting user by google email')
         throw Boom.boomify(err)
-      // A user exist with a given Google email, we only need to update 'google.id' and 'img' in DB
     })
 
-    return {
-      createUser: false,
-      userId: user ? user.id : undefined
+    // A user exist with a given Google email, we only need to update 'google.id' and 'img' in DB
+    if (user) {
+      return {
+        createUser: false,
+        userId: user.id
+      }
+    } else {
+      return {
+        createUser: true,
+        gUser
+      }
     }
 }
 
