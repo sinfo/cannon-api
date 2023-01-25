@@ -113,7 +113,7 @@ exports.getMe = {
   handler: async (request, h) => {
     const userId = request.auth.credentials.user.id;
     try {
-      let file = await request.server.methods.file.getByUser(userId)
+      let file = await request.server.methods.file.get(userId, request.query)
       if (!file) {
         log.error({ err: err, userId: userId }, 'error getting file')
         return Boom.notFound()
