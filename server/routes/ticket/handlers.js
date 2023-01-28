@@ -1,5 +1,7 @@
 const Joi = require("joi");
 const render = require("../../views/ticket");
+const log = require('../../helpers/logger');
+const Boom = require('@hapi/boom');
 const renderUsers = require("../../views/user");
 
 exports = module.exports;
@@ -33,7 +35,7 @@ exports.registerTicket = {
       return h.response(render(ticket, session))
     } catch (err) {
       log.error({ err: err, msg:'error registering ticket'}, 'error registering ticket')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   }
 };
@@ -66,7 +68,7 @@ exports.voidTicket = {
       return h.response(render(removedTicket, session))
     } catch (err) {
       log.error({ err: err, msg:'error voiding ticket for current user'}, 'error voiding ticket for current user')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 };
@@ -97,7 +99,7 @@ exports.confirmTicket = {
       return h.response(render(ticket, session))
     } catch (err) {
       log.error({ err: err, msg:'error confirming ticket for user'}, 'error confirming ticket for user')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 };
@@ -124,7 +126,7 @@ exports.get = {
       return h.response(render(ticket, session));
     } catch (err) {
       log.error({ err: err, msg:'error getting ticket'}, 'error getting ticket')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 };
@@ -152,7 +154,7 @@ exports.list = {
       return h.response(render(tickets));
     } catch (err) {
       log.error({ err: err, msg:'error getting all tickets'}, 'error getting all tickets')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 };
@@ -179,7 +181,7 @@ exports.registerPresence = {
       return h.response(render(ticket, session))
     } catch (err) {
       log.error({ err: err, msg:'error registering presence'}, 'error registering presence')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 };
@@ -207,7 +209,7 @@ exports.getUsers = {
       return h.response(renderUsers(users, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {
       log.error({ err: err, msg:'error getting users'}, 'error getting users')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 };
@@ -235,7 +237,7 @@ exports.getWaiting = {
       return h.response(renderUsers(users, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {
       log.error({ err: err, msg:'error getting waiting users'}, 'error getting waiting users')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 };
@@ -263,7 +265,7 @@ exports.getConfirmed = {
       return h.response(renderUsers(users, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {
       log.error({ err: err, msg:'error getting confirmed users'}, 'error getting confirmed users')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 };
@@ -289,7 +291,7 @@ exports.getUserSessions = {
       return h.response(tickets);
     } catch (err) {
       log.error({ err: err, msg:'error getting user sessions'}, 'error getting user sessions')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 };

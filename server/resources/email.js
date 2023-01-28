@@ -26,7 +26,7 @@ function send (mailOptions) {
   fs.readFile(path.join(__dirname, '/../helpers/ticketEmail.html'), 'utf8', (err, ticketTemplateSource) => {
     if (err) {
       log.error({ err }, 'Error reading email template. Mails not sent')
-      return Boom.internal(err)
+      throw Boom.internal(err)
     }
 
     const surveyTemplate = Handlebars.compile(ticketTemplateSource)
@@ -41,7 +41,7 @@ function send (mailOptions) {
     mailgun.messages().send(data, (err, body) => {
       if (err) {
         log.error({ err }, 'error sending email')
-        return Boom.internal(err)
+        throw Boom.internal(err)
       }
       log.info('email sent to', mailOptions.name)
       return body

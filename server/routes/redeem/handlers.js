@@ -28,7 +28,7 @@ exports.create = {
       return h.response(render(redeem)).created()
     } catch (err) {
       log.error({ err: err, msg:'error creating redeem code'}, 'error creating redeem code')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -55,7 +55,7 @@ exports.get = {
       return h.response({ success: true, achievement: renderAchievement(achievement)})
     } catch (err) {
       log.error({ err: err, msg:'error getting redeem code'}, 'error getting redeem code')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -80,7 +80,7 @@ exports.remove = {
       return h.response(redeem)
     } catch (err) {
       log.error({ err: err, msg:'error removing redeem code'}, 'error removing redeem code')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }

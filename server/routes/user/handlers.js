@@ -71,11 +71,11 @@ exports.create = {
     } catch (err) {
       if (err.code === 11000) {
         log.warn({ err: err }, 'user is a duplicate')
-        return Boom.conflict('user is a duplicate')
+        throw Boom.conflict('user is a duplicate')
       }
 
       log.error({ err: err }, 'error creating user')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   }
 }
@@ -109,13 +109,13 @@ exports.updateMe = {
       let user = await request.server.methods.user.updateMe(request.auth.credentials.user.id, request.payload)
       if (!user) {
         log.error({ err: err, requestedUser: filter }, 'user not found')
-        return Boom.notFound()
+        throw Boom.notFound()
       }
       return h.response(render(user, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {
       if (err) {
         log.error({ err: err }, 'error updating user')
-        return Boom.boomify(err)
+        throw Boom.boomify(err)
       }
     }
   },
@@ -143,7 +143,7 @@ exports.find = {
       return h.response(render(users, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {
       log.error({ err: err }, 'error getting all users')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -209,12 +209,12 @@ exports.update = {
       let user = await request.server.methods.user.update(request.params.id, request.payload)
       if (!user) {
         log.error({ err: err}, 'user not found')
-        return Boom.notFound()
+        throw Boom.notFound()
       }
       return h.response(render(user, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {
         log.error({ err: err}, 'error updating user')
-        return Boom.boomify(err)
+        throw Boom.boomify(err)
     }
   },
 }
@@ -239,12 +239,12 @@ exports.get = {
       let user = await request.server.methods.user.get(request.params.id)
       if (!user) {
         log.error('user not found')
-        return Boom.notFound()
+        throw Boom.notFound()
       }
       return h.response(render(user, request.auth.credentials && request.auth.credentials.user))
     } catch (err){
       log.error({ err: err}, 'error getting user')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -270,7 +270,7 @@ exports.getMulti = {
       return h.response(render(users, request.auth.credentials && request.auth.credentials.user))
     } catch (err)  {
       log.error({ err: err }, 'error getting multiple users')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -313,7 +313,7 @@ exports.removeCompany = {
       return h.response(render(user, request.auth.credentials.user))
     } catch(err){
       log.error({ err: err}, 'error deleting user.company')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -338,7 +338,7 @@ exports.remove = {
       return h.response(render(user, request.auth.credentials.user))
     }catch(err){
       log.error({ err: err}, 'error deleting user')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -358,7 +358,7 @@ exports.removeMe = {
       h.response(render(request.pre.user, request.auth.credentials && request.auth.credentials.user))
     }catch(err){
       log.error({ err: err}, 'error deleting user')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -387,7 +387,7 @@ exports.redeemCard = {
       return h.response(render(user, request.auth.credentials && request.auth.credentials.user))
     }catch(err){
       log.error({err: err}, 'error redeeming card')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }

@@ -35,7 +35,7 @@ async function userConfirmed(sessionId, userId) {
 
   if (_ticket.confirmed.indexOf(userId) >= 0) {
     log.error({ err: err, session: sessionId, user: userId }, 'user alreaday confirmed')
-    return Boom.conflict('user alreaday confirmed')
+    throw Boom.conflict('user alreaday confirmed')
   }
 
   return true
@@ -53,7 +53,7 @@ async function userRegistered(sessionId, userId) {
 
   if (_ticket.users.indexOf(userId) >= 0) {
     log.error({ err: err, session: sessionId, user: userId }, 'user alreaday registered')
-    return Boom.conflict('user alreaday registered')
+    throw Boom.conflict('user alreaday registered')
   }
 
   return true
@@ -93,7 +93,7 @@ async function removeUser(sessionId, userId, session) {
   let _ticket = await Ticket.findOneAndUpdate(filter, changes)
 
   if (!_ticket) {
-    return Boom.notFound('Couldn\'t find session')
+    throw Boom.notFound('Couldn\'t find session')
   }
 
   return _ticket.toObject({ getters: true })
@@ -111,7 +111,7 @@ async function confirmUser(sessionId, userId, session) {
   let _ticket = await Ticket.findOneAndUpdate(filter, changes)
 
   if (!_ticket) {
-    return Boom.notFound('Couldn\'t find session, make sure you\'re already registered in this session')
+    throw Boom.notFound('Couldn\'t find session, make sure you\'re already registered in this session')
   }
 
   return _ticket.toObject({ getters: true })
@@ -129,28 +129,28 @@ async function registerUserPresence(sessionId, userId, session) {
   let _ticket = await Ticket.findOneAndUpdate(filter, changes)
 
   if (!_ticket) {
-    return Boom.notFound('Couldn\'t find session')
+    throw Boom.notFound('Couldn\'t find session')
   }
 
   return _ticket.toObject({ getters: true })
 }
 
-async function get (filter, query) {
-  //cb = cb || query // fields is optional
-
-  const fields = fieldsParser(query.fields)
-
+async function get (filter) {
   if (typeof filter === 'string') {
     filter = { session: filter }
   }
 
-  let ticket = await Ticket.findOne(filter, fields)
-
-  if (!ticket) {
-    log.warn({ err: err, requestedTicket: filter }, 'could not find ticket')
-    return Boom.notFound()
+  try {
+    let ticket = await Ticket.findOne(filter)
+    if (!ticket) {
+      log.error({ err: err, requestedTicket: filter }, 'could not find ticket')
+      throw Boom.notFound("Ticket not found")
+    }
+  } catch (err) {
+    log.error({ err: err, requestedTicket: filter }, 'could not find ticket')
+    throw Boom.notFound("Ticket not found")
   }
-
+  
   return ticket
 }
 
@@ -159,7 +159,7 @@ async function get (filter, query) {
 async function updateMulti(filter, ticket) {
   if (!ticket) {
     log.warn({ err: err, requestedTicket: filter }, 'could not find ticket')
-    return Boom.notFound()
+    throw Boom.notFound()
   }
 
   if (typeof filter === 'string') {
@@ -209,7 +209,7 @@ async function getRegisteredUsers (sessionId, session) {
 
   if (!ticket) {
     log.warn({ err: err, requestedTicket: filter }, 'could not find ticket')
-    return Boom.notFound()
+    throw Boom.notFound()
   }
 
   let users = ticket.users
@@ -231,7 +231,7 @@ async function getWaitingUsers (sessionId, session) {
 
   if (!ticket) {
     log.warn({ err: err, requestedTicket: filter }, 'could not find ticket')
-    return Boom.notFound()
+    throw Boom.notFound()
   }
 
   let users = ticket.users
@@ -257,7 +257,7 @@ async function getConfirmedUsers (sessionId, session) {
 
   if (!ticket) {
     log.warn({ err: err, requestedTicket: filter }, 'could not find ticket')
-    return Boom.notFound()
+    throw Boom.notFound()
   }
 
   const users = ticket.users.filter((o) => {
@@ -270,12 +270,12 @@ async function getConfirmedUsers (sessionId, session) {
 function getAcceptedUser (ticket, session, user) {
   if (!session.tickets || !session.tickets.max || ticket.users.length <= session.tickets.max) {
     log.debug({ ticket: ticket }, 'ticket does not have waiting list')
-    return Boom.notFound('user list does not have waiting list')
+    throw Boom.notFound('user list does not have waiting list')
   }
 
   if (ticket.users.indexOf(user.id) >= session.tickets.max) {
     log.debug({ ticket: ticket, user: user.id }, 'user was in the waiting list')
-    return Boom.preconditionFailed('voided ticket in waiting list')
+    throw Boom.preconditionFailed('voided ticket in waiting list')
   }
 
   server.methods.user.get(ticket.users[session.tickets.max])
@@ -284,12 +284,12 @@ function getAcceptedUser (ticket, session, user) {
 function registrationAcceptedEmail (ticket, session, user) {
   if (!user || !user.mail) {
     log.error({ user: user, ticket: ticket }, 'user does not have a valid email address')
-    return Boom.preconditionFailed('user does not have a valid email address')
+    throw Boom.preconditionFailed('user does not have a valid email address')
   }
 
   if (ticket.users.indexOf(user.id) < 0) {
     log.error({ ticket: ticket, user: user }, 'error sending mail, user not in ticket')
-    return Boom.notFound()
+    throw Boom.notFound()
   }
 
   server.methods.email.send(getRegistrationAcceptedEmail(session, user))
@@ -298,12 +298,12 @@ function registrationAcceptedEmail (ticket, session, user) {
 function confirmationEmail (ticket, session, user) {
   if (!user || !user.mail) {
     log.error({ user: user, ticket: ticket }, 'user does not have a valid email address')
-    return Boom.preconditionFailed('user does not have a valid email address')
+    throw Boom.preconditionFailed('user does not have a valid email address')
   }
 
   if (ticket.confirmed.indexOf(user.id) < 0) {
     log.error({ ticket: ticket, user: user }, 'error sending mail, user not in the confirmed list of the ticket')
-    return Boom.notFound()
+    throw Boom.notFound()
   }
 
   server.methods.email.send(getConfirmationEmail(session, user))
@@ -314,12 +314,12 @@ function registrationEmail (ticket, session, user) {
 
   if (!user || !user.mail) {
     log.error({ user: user, ticket: ticket }, 'user does not have a valid email address')
-    return Boom.preconditionFailed('user does not have a valid email address')
+    throw Boom.preconditionFailed('user does not have a valid email address')
   }
 
   if (index < 0) {
     log.error({ ticket: ticket, user: user }, 'error sending mail, user not in ticket')
-    return Boom.notFound()
+    throw Boom.notFound()
   }
 
   if (index >= session.tickets.max) {
