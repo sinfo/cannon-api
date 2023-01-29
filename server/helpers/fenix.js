@@ -2,31 +2,64 @@ const server = require('../').hapi
 const log = require('./logger')
 const fenixConfig = require('../../config').fenix
 const fenixEdu = require('fenixedu')(fenixConfig)
+const axios = require('axios').default
+const qs = require('qs')
 
 const fenix = {}
 
-fenix.getToken = code => {
-  return new Promise((resolve, reject) => {
-    fenixEdu.auth.getAccessToken(code, (err, response, body) => {
-      if (err || !body) {
-        log.error({ err, response: response.statusCode, body }, '[fenix-login] error getting access token')
-        return reject('error getting access token')
-      }
-      return resolve(body.access_token)
+fenix.getToken = async function(code) {
+  const queryParams = {
+    client_id: fenixConfig.clientId,
+    client_secret: fenixConfig.clientSecret,
+    redirect_uri: fenixConfig.redirectUri,
+    code: code,
+    grant_type: 'authorization_code'
+  }
+
+  const options = {
+    url: fenixConfig.oauthUrl + 'access_token?'+ qs.stringify(queryParams),
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+  }
+
+  let response = await axios.post(options.url, options.headers, { json: true }).catch((error) => {
+    log.warn({
+      error,
+      fenixConfig: fenixConfig,
+      where: 'getToken'
     })
+
+    throw error
   })
+
+  if(response.status !== 200){
+    throw new Error('[Fenix-Auth] Invalid token')
+  }  
+
+  log.info(response.data)
+  return response.data.access_token
 }
 
-fenix.getFenixUser = token => {
-  return new Promise((resolve, reject) => {
-    fenixEdu.person.getPerson(token, (err, fenixUser) => {
-      if (err || !fenixUser) {
-        log.error({ err, fenixUser }, '[fenix-login] error getting person')
-        return reject('error getting person')
-      }
-      return resolve(fenixUser)
+fenix.getFenixUser = async function(token) {
+  const options = {
+    url: fenixConfig.url + 'person?access_token=' + encodeURIComponent(token)
+  }
+
+  let response = await axios.get(options.url, null, { json: true }).catch((error) => {
+    log.warn({
+      error,
+      where: 'getFenixUser'
     })
+
+    throw error
   })
+
+  if(response.status !== 200){
+    throw new Error('[Fenix-Auth] Error getting person')
+  }  
+
+  return response.data
 }
 
 /**
@@ -35,47 +68,39 @@ fenix.getFenixUser = token => {
  * @param {*} fenixUser.email
  * @param {string} fenixUser.username Fenix ID (e.g. ist112345)
  */
-fenix.getUser = fenixUser => {
-  return new Promise((resolve, reject) => {
-    server.methods.user.get({ 'mail': fenixUser.email }, (err, user) => {
-      if (err) {
-        // If does not find a user with a given Fenix email, we create a new user
-        if (err.output && err.output.statusCode === 404) {
-          return resolve({ createUser: true, fenixUser })
-        }
-        log.error({ err, fenixUser }, '[fenix-login] error getting user')
-        return reject('error getting user')
-      }
-      // A user exist with a given Fenix email, we only need to update 'fenix.id' and 'img' in DB
-      return resolve({ createUser: false, userId: user.id })
-    })
-  })
-}
-
-fenix.createUser = fenixUser => {
-  return new Promise((resolve, reject) => {
-    const user = {
-      fenix: {
-        id: fenixUser.username
-      },
-      name: fenixUser.name,
-      mail: fenixUser.email,
-      img: `https://fenix.tecnico.ulisboa.pt/user/photo/${fenixUser.username}`
+fenix.getUser = async function (fenixUser) {
+  let user = await server.methods.user.get({ 'mail': fenixUser.email }).catch((err) => {
+    if (err.output && err.output.statusCode === 404) {
+      return { createUser: true, fenixUser }
     }
 
-    log.debug('[fenix-login] creating user', user)
-
-    server.methods.user.create(user, (err, result) => {
-      if (err) {
-        log.error({ user }, '[fenix-login] error creating user')
-        return reject(err)
-      }
-
-      log.debug({ userId: result.id }, '[fenix-login] new user created')
-
-      return resolve(result.id)
-    })
+    log.error({ err, fenixUser }, '[Fenix-Auth] Error getting user')
+    throw err
   })
+
+  // A user exist with a given Fenix email, we only need to update 'fenix.id' and 'img' in DB
+  return { createUser: false, userId: user.id }
+}
+
+fenix.createUser = async function(fenixUser) {
+  const user = {
+    fenix: {
+      id: fenixUser.username
+    },
+    name: fenixUser.name,
+    mail: fenixUser.email,
+    img: `https://fenix.tecnico.ulisboa.pt/user/photo/${fenixUser.username}`
+  }
+
+  log.debug('[Fenix-Auth] Creating ne user', user)
+
+  let result = await server.methods.user.create(user).catch((err) => {
+    log.error({ user }, '[Fenix-Auth] Error creating user')
+    throw err
+  })
+
+  log.debug({ userId: result.id }, '[Fenix-Auth] New user created')
+  return result.id
 }
 
 module.exports = fenix

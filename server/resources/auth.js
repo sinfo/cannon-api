@@ -84,6 +84,7 @@ async function fenixAuth(code) {
       name: fenixUser.name,
       img: `https://fenix.tecnico.ulisboa.pt/user/photo/${fenixUser.username}`
     }
+    
     return await authenticate(res.userId, changedAttributes)
   } catch (err) {
     Boom.unauthorized(err)
