@@ -1,7 +1,6 @@
 const server = require('../').hapi
 const log = require('./logger')
 const fenixConfig = require('../../config').fenix
-const fenixEdu = require('fenixedu')(fenixConfig)
 const axios = require('axios').default
 const qs = require('qs')
 
