@@ -266,7 +266,7 @@ exports.getMulti = {
   },
   handler: async (request, h) => {
     try{
-      let users = user.getMulti(request.payload.users)
+      let users = await request.server.methods.user.getMulti(request.payload.users)
       return h.response(render(users, request.auth.credentials && request.auth.credentials.user))
     } catch (err)  {
       log.error({ err: err }, 'error getting multiple users')

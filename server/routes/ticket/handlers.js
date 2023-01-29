@@ -22,7 +22,7 @@ exports.registerTicket = {
   },
   handler: async function (request, h) { 
     try {
-      let session = await request.server.methods.session.get(params.sessionId)
+      let session = await request.server.methods.session.get(request.params.sessionId)
       request.server.methods.session.ticketsNeeded(session)
       request.server.methods.session.inRegistrationPeriod(session)
       
@@ -30,7 +30,7 @@ exports.registerTicket = {
 
       let ticket = await request.server.methods.ticket.addUser(request.params.sessionId, request.auth.credentials.user.id, session)
     
-      request.server.methods.ticket.registrationEmail(ticket, session, request.auth.credentials.user.id)
+      request.server.methods.ticket.registrationEmail(ticket, session, request.auth.credentials.user)
     
       return h.response(render(ticket, session))
     } catch (err) {
@@ -62,8 +62,10 @@ exports.voidTicket = {
       let ticket = await request.server.methods.ticket.get(request.params.sessionId)
       let removedTicket = await request.server.methods.ticket.removeUser(session.id, request.auth.credentials.user.id, session)
       let user = request.server.methods.ticket.getAcceptedUser(ticket, session, request.auth.credentials.user)
-    
-      request.server.methods.ticket.registrationAcceptedEmail(ticket, session, user)
+      
+      if (user) {
+        request.server.methods.ticket.registrationAcceptedEmail(ticket, session, user)
+      }
 
       return h.response(render(removedTicket, session))
     } catch (err) {

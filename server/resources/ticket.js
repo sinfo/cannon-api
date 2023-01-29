@@ -59,8 +59,8 @@ async function userRegistered(sessionId, userId) {
   return true
 }
 
-async function addUser (sessionId, userId, session) {
-  log.debug({ userId, sessionName: session.name }, 'got session')
+async function addUser (sessionId, userId, sessionObj) {
+  log.debug({ userId, sessionName: sessionObj.name }, 'got session')
 
   let filter = { session: sessionId }
 
@@ -74,7 +74,7 @@ async function addUser (sessionId, userId, session) {
     }
   }
 
-  let _ticket = await Ticket.findOneAndUpdate(filter, changes, { upsert: true }).orFail('error registering ticket')
+  let _ticket = await Ticket.findOneAndUpdate(filter, changes, { new: true, upsert: true }).orFail('error registering ticket')
 
   return _ticket.toObject({ getters: true })
 }
@@ -140,17 +140,12 @@ async function get (filter) {
     filter = { session: filter }
   }
 
-  try {
-    let ticket = await Ticket.findOne(filter)
-    if (!ticket) {
-      log.error({ err: err, requestedTicket: filter }, 'could not find ticket')
-      throw Boom.notFound("Ticket not found")
-    }
-  } catch (err) {
+  let ticket = await Ticket.findOne(filter)
+  if (!ticket) {
     log.error({ err: err, requestedTicket: filter }, 'could not find ticket')
     throw Boom.notFound("Ticket not found")
   }
-  
+
   return ticket
 }
 
@@ -270,15 +265,15 @@ async function getConfirmedUsers (sessionId, session) {
 function getAcceptedUser (ticket, session, user) {
   if (!session.tickets || !session.tickets.max || ticket.users.length <= session.tickets.max) {
     log.debug({ ticket: ticket }, 'ticket does not have waiting list')
-    throw Boom.notFound('user list does not have waiting list')
+    return null
   }
 
   if (ticket.users.indexOf(user.id) >= session.tickets.max) {
-    log.debug({ ticket: ticket, user: user.id }, 'user was in the waiting list')
-    throw Boom.preconditionFailed('voided ticket in waiting list')
+    log.debug({ ticket: ticket, user: user.id }, 'user was in the waiting list. voided ticket in waiting list')
+    return null
   }
 
-  server.methods.user.get(ticket.users[session.tickets.max])
+  return server.methods.user.get(ticket.users[session.tickets.max])
 }
 
 function registrationAcceptedEmail (ticket, session, user) {
@@ -323,9 +318,9 @@ function registrationEmail (ticket, session, user) {
   }
 
   if (index >= session.tickets.max) {
-    return server.methods.email.send(getWaitingListEmail(session, user), cb)
+    return server.methods.email.send(getWaitingListEmail(session, user))
   }
-  server.methods.email.send(getResgisteredListEmail(session, user), cb)
+  server.methods.email.send(getResgisteredListEmail(session, user))
 }
 
 function getWaitingListEmail (session, user) {
