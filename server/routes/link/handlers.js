@@ -15,6 +15,7 @@ exports.create = {
           'Id of the company we are linking from')
       }),
       payload: Joi.object({
+        userId: Joi.string().required().description('Id of the user working for the company'),
         attendeeId: Joi.string().required().description('Id of the attendee'),
         editionId: Joi.string().required().description('Id of the edition'),
         notes: Joi.object().keys({
