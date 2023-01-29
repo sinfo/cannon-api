@@ -110,15 +110,20 @@ linkedin.getLinkedinUserEmail = async linkedinUserToken => {
  */
 linkedin.getUser = async linkedinUser => {
   let user = await server.methods.user.get({ 'mail': linkedinUser.emailAddress }).catch((err) => {
-    // If does not find a user with a given linkedin email, we create a new user
-    if (err.output && err.output.statusCode === 404) {
-      return { createUser: true, linkedinUser }
-    }
     log.error({ err: err, linkedinUser }, '[linkedin-login] error getting user by linkedin email')
     throw err
   })
-  // A user exist with a given linkedin email, we only need to update 'linkedin.id' and 'img' in DB
-  return { createUser: false, userId: user.id }
+
+  if (user) {
+    return { 
+      createUser: false, 
+      userId: user.id
+    }
+  } else {
+    return { 
+      createUser: true
+    }
+  }
 }
 
 linkedin.createUser = async linkedinUser => {
