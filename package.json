@@ -42,7 +42,6 @@
     "axios": "^0.26.0",
     "bunyan": "^1.8.15",
     "esprima": "^4.0.1",
-    "fenixedu": "https://github.com/jgantunes/fenixedu/tarball/master",
     "good": "^2.3.0",
     "google-auth-library": "^7.14.0",
     "handlebars": "^4.7.7",
