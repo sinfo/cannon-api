@@ -117,8 +117,10 @@ async function linkedinAuth(code) {
 async function authenticate(userId, changedAttributes) {
   log.info('authenticate')
   const newToken = token.createJwt(userId)
-  changedAttributes = { $set: changedAttributes } || {}
-  await server.methods.user.update({ id: userId }, changedAttributes)
+  if (changedAttributes != null) {
+    changedAttributes = { $set: changedAttributes }
+    await server.methods.user.update({ id: userId }, changedAttributes)
+  }
   log.info({ userId }, '[login] user logged in')
   // Finally resolves a new JWT token from Cannon that authenticates the user on the following requests
   log.info('authenticate done')
