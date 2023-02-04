@@ -34,8 +34,8 @@ async function userConfirmed(sessionId, userId) {
   }
 
   if (_ticket.confirmed.indexOf(userId) >= 0) {
-    log.error({ err: err, session: sessionId, user: userId }, 'user alreaday confirmed')
-    throw Boom.conflict('user alreaday confirmed')
+    log.error({ err: err, session: sessionId, user: userId }, 'user alreday confirmed')
+    throw Boom.conflict('user already confirmed')
   }
 
   return true
@@ -52,8 +52,8 @@ async function userRegistered(sessionId, userId) {
   }
 
   if (_ticket.users.indexOf(userId) >= 0) {
-    log.error({ err: err, session: sessionId, user: userId }, 'user alreaday registered')
-    throw Boom.conflict('user alreaday registered')
+    log.error({ err: err, session: sessionId, user: userId }, 'user alreday registered')
+    throw Boom.conflict('user already registered')
   }
 
   return true
