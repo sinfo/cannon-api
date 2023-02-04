@@ -447,9 +447,9 @@ exports.signSecret = {
         throw Boom.notFound('no valid secret achievements with that code')
       }
       return h.response(render(ach, true))
-    }catch(err){
+    } catch(err) {
       log.error({ err: err }, 'error adding user to secret achievement')
-      throw Boom.internal()
+      throw Boom.notFound()
     }
   },
 }
