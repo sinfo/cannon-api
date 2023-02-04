@@ -49,6 +49,12 @@ function renderObject (model, user) {
       edition: participation && participation.edition,
       company: participation && participation.company
     }))
+  } else {
+    //FIXME: return only this edition's company
+    result.company = model.company && model.company.map(participation => ({
+      edition: participation && participation.edition,
+      company: participation && participation.company
+    }))
   }
 
   return result

@@ -1,12 +1,14 @@
 const mongoose = require('mongoose')
 
 const schema = new mongoose.Schema({
+  author: String,
   company: String,
   edition: String,
   attendee: String,
   created: Date,
   updated: Date,
   user: String,
+  //TODO: add attendee notes
   notes: {
     contacts: { email: String, phone: String },
     interestedIn: String,
@@ -17,6 +19,6 @@ const schema = new mongoose.Schema({
 })
 
 // Makes pair unique
-schema.index({ 'company': 1, 'edition': 1, 'attendee': 1 }, { 'unique': true })
+schema.index({ 'company': 1, 'edition': 1, 'attendee': 1, 'author': 1 }, { 'unique': true })
 
 module.exports = mongoose.model('Link', schema)

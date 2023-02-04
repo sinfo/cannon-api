@@ -9,6 +9,7 @@ module.exports =
 
 function renderObject (model) {
   return {
+    author: model.author,
     company: model.company,
     edition: model.edition,
     user: model.user,
