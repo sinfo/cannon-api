@@ -83,7 +83,7 @@ google.createUser = async gUser => {
       log.error({
         user
       }, '[google-login] error creating user')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     })
 
     log.debug({

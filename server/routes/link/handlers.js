@@ -43,7 +43,7 @@ exports.create = {
       return h.response(render(link)).created(`/company/${request.params.companyId}/link/${link.attendeeId}`)
     }catch(err){
       log.error({err: err}, 'error creating link')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -88,7 +88,7 @@ exports.update = {
       return h.response(render(link))
     }catch(err){
       log.error({err: err}, 'error creating link')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -116,7 +116,7 @@ exports.get = {
       return h.response(render(link))
     }catch(err){
       log.error({err: err}, 'error creating link')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -147,7 +147,7 @@ exports.list = {
       return h.response(render(links))
     }catch(err){
       log.error({ err: err }, 'error ')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -174,12 +174,12 @@ exports.remove = {
       let link = await request.server.methods.link.remove(request.params, request.query.editionId)
       if (!link) {
         log.error({ err: 'not found', link: editionId }, 'error deleting link')
-        return Boom.notFound('link not found')
+        throw Boom.notFound('link not found')
       }
       return h.response(render(link))
     }catch(err){
       log.error({ err: err, link: editionId }, 'error deleting link')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }

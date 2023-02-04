@@ -18,7 +18,7 @@ async function get () {
 
   if (!happyHours) {
     log.warn({ err: err }, 'could not find happy hours')
-    return Boom.notFound()
+    throw Boom.notFound()
   }
 
   return Array.from(happyHours, c => { return c.toObject() })
@@ -33,6 +33,6 @@ async function create (hh) {
     let happyHour = await HappyHour.create(hh)
     return happyHour.toObject({ getters: true })
   } catch (err) {
-    return Boom.internal('Error creating Happy Hour in database')
+    throw Boom.internal('Error creating Happy Hour in database')
   }
 }

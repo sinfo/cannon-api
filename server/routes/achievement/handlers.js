@@ -38,7 +38,7 @@ exports.create = {
       return h.response(render(ach)).created('/achievement/' + ach.id)
     } catch (err) {
       log.error({ err: err, msg: 'error creating achievement' }, 'error creating achievement')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   }
 }
@@ -77,12 +77,12 @@ exports.update = {
       let ach = await request.server.methods.achievement.update(achievementId, request.payload)
       if (!ach) {
         log.error({ err: err, achievement: achievementId }, 'error updating achievement')
-        return Boom.notFound()
+        throw Boom.notFound()
       }
       return h.response(render(ach))
     } catch (err) {
       log.error({ err: err, achievement: achievementId }, 'error updating achievement')
-      return Boom.internal()
+      throw Boom.internal()
     }
   }
 }
@@ -111,12 +111,12 @@ exports.get = {
       let ach = await request.server.methods.achievement.get(achievementId)
       if (!ach) {
         log.error({ err: err, achievement: achievementId }, 'error getting achievement')
-        return Boom.notFound()
+        throw Boom.notFound()
       }
       return h.response(render(ach))
     } catch (err) {
       log.error({ err: err, achievement: achievementId }, 'error getting achievement')
-      return Boom.internal()
+      throw Boom.internal()
     }
   }
 }
@@ -136,12 +136,12 @@ exports.getMe = {
       let ach = await request.server.methods.achievement.getByUser(userId)
       if (!ach) {
         log.error({ err: err, userId: userId }, 'error getting achievement')
-        return Boom.notFound()
+        throw Boom.notFound()
       }
       return h.response(render(ach))
     } catch (err) {
       log.error({ err: err, userId: userId }, 'error getting achievement')
-      return Boom.internal()
+      throw Boom.internal()
     }
   }
 }
@@ -160,12 +160,12 @@ exports.removeMe = {
       let ach = await request.server.methods.achievement.removeAllFromUser(request.auth.credentials.user.id)
       if (!ach) {
         log.error({ err: 'not found', userId: userId }, 'achievements not found')
-        return Boom.notFound('achievements not found')
+        throw Boom.notFound('achievements not found')
       }
       return h.response(render(ach))
     } catch (err) {
       log.error({ err: err, userId: userId }, 'error removing user from multiple achievements')
-      return Boom.internal('error getting achievements')
+      throw Boom.internal('error getting achievements')
     }
   }
 }
@@ -191,7 +191,7 @@ exports.getActive = {
       return h.response(render(ach))
     } catch (err) {
       log.error({ err: err, date: date }, 'error getting active achievements on a given date')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   }
 }
@@ -225,7 +225,7 @@ exports.getMeActive = {
       return h.response(result)
     } catch (err) {
       log.error({ err: err }, 'error getting active achievements on a given date')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -245,7 +245,7 @@ exports.getMeSpeed = {
       return h.response(result)
     } catch (err) {
       log.error({ err: err }, 'Error finding achievements')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -274,7 +274,7 @@ exports.getUser = {
       return h.response(render(achievements))
     } catch (err) {
       log.error({ err: err }, 'Error finding achievements')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -303,7 +303,7 @@ exports.list = {
       return h.response(render(achievements))
     }catch(err){
       log.error({err: err}, 'Error finding achievements')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -327,12 +327,12 @@ exports.remove = {
       let ach = await request.server.methods.achievement.remove(request.params.id)
       if (!ach) {
         log.error({ id: request.params.id, error: err })
-        return Boom.notFound('achievement not found')
+        throw Boom.notFound('achievement not found')
       }
       return render(ach)
     } catch (err) {
       log.error({ info: request.info, error: err })
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -360,7 +360,7 @@ exports.listWithCode = {
       return h.response(render(achievements, true))
     } catch (err) {
       log.error({ err: err }, 'Error finding achievements')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -387,12 +387,12 @@ exports.getWithCode = {
       let ach = await request.server.methods.achievement.get(request.params.id)
       if (!ach) {
         log.error({ err: err }, 'Error finding achievement')
-        return Boom.notFound('Error finding achievement')
+        throw Boom.notFound('Error finding achievement')
       }
       return h.response(render(ach, true))
     } catch (err) {
       log.error({ err: err }, 'Error finding achievements')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -419,7 +419,7 @@ exports.createSecret = {
       return h.response(render(ach, true)).created('/achievement/' + ach.id)
     }catch(err){
       log.error({ err: err }, 'error creating achievement')
-      return Boom.internal()
+      throw Boom.internal()
     }
   },
 }
@@ -444,12 +444,12 @@ exports.signSecret = {
       let ach = await request.server.methods.achievement.addUserToSecret(request.auth.credentials.user.id, request.payload.code)
       if (!ach) {
         log.error({ code: request.payload.code }, 'no valid secret achievements with that code')
-        return Boom.notFound('no valid secret achievements with that code')
+        throw Boom.notFound('no valid secret achievements with that code')
       }
       return h.response(render(ach, true))
-    }catch(err){
+    } catch(err) {
       log.error({ err: err }, 'error adding user to secret achievement')
-      return Boom.internal()
+      throw Boom.notFound()
     }
   },
 }
@@ -474,12 +474,12 @@ exports.getAchievementBySession = {
       let ach = await request.server.methods.achievement.getAchievementBySession(sessionId)
       if (!ach) {
         log.error({ err: 'not found', session: sessionId }, 'achievement not found')
-        return Boom.notFound('achievement not found')
+        throw Boom.notFound('achievement not found')
       }
       return h.response(render(ach))
     } catch (err) {
       log.error({ err: err, session: sessionId }, 'error getting achievement')
-      return Boom.internal('error getting achievement')
+      throw Boom.internal('error getting achievement')
     }
   },
 }

@@ -142,14 +142,19 @@ async function list (activeAchievements) {
 
 async function getMulti (ids, query) {
   const filter = { id: { $in: ids } }
-  const fields = fieldsParser(query.fields)
-  const options = {
-    skip: query.skip,
-    limit: query.limit,
-    sort: fieldsParser(query.sort)
+
+  if (query) {
+    const fields = fieldsParser(query.fields)
+    const options = {
+      skip: query.skip,
+      limit: query.limit,
+      sort: fieldsParser(query.sort)
+    }
+    return User.find(filter, fields, options)
+  } else {
+    return User.find(filter)
   }
 
-  return User.find(filter, fields, options)
 }
 
 async function removeCompany (filter, editionId) {

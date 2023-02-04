@@ -18,12 +18,12 @@ exports.find = {
       let code = await request.server.methods.promoCode.get()
       if(!code) {
         log.error({ err: err}, 'error getting promo code')
-        return Boom.notFound()
+        throw Boom.notFound()
       }
       return h.response(render(code))
     }catch (err) {
       log.error({ err: err }, 'could not find promo code')
-      return Boom.internal()
+      throw Boom.internal()
     }
   }
 }
