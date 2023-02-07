@@ -7,7 +7,6 @@ const LI_API_URL = 'https://www.linkedin.com/oauth/v2'
 const linkedin = {}
 
 linkedin.getToken = async code => {
-  log.info(code)
   const url = `${LI_API_URL}/accessToken?grant_type=authorization_code&code=${code}&redirect_uri=${linkedinConfig.redirectUri}&client_id=${linkedinConfig.clientId}&client_secret=${linkedinConfig.clientSecret}`
 
   let response = await axios.post(url,null, { json: true }).catch((error) => {
@@ -41,7 +40,7 @@ linkedin.getLinkedinUser = async linkedinUserToken => {
         throw error
     })
 
-    if(response.status !== 200){
+    if (response.status !== 200) {
       log.error('error fetching linkedin user')
       throw new Error('error fetching linkedin user')
     }
