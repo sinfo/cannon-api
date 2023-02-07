@@ -91,8 +91,7 @@ microsoft.createUser = async function(microsoftUser) {
         id: microsoftUser.id
       },
       name: microsoftUser.displayName,
-      mail: microsoft.getEmail(microsoftUser),
-      img: ''
+      mail: microsoft.getEmail(microsoftUser)
     }
   
     log.debug('[Microsoft-Auth] Creating a new user', user)

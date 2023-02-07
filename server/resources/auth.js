@@ -82,8 +82,7 @@ async function microsoftAuth(code) {
         id: microsoftUser.id
       },
       name: microsoftUser.displayName,
-      mail: microsoft.getEmail(microsoftUser),
-      img: ''
+      mail: microsoft.getEmail(microsoftUser)
     }
 
     return await authenticate(res.userId, changedAttributes)
