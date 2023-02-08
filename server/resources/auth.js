@@ -6,11 +6,13 @@ const facebook = require('../helpers/facebook')
 const google = require('../helpers/google')
 const fenix = require('../helpers/fenix')
 const linkedin = require('../helpers/linkedin')
+const microsoft = require('../helpers/microsoft')
 
 server.method('auth.facebook', facebookAuth, {})
 server.method('auth.fenix', fenixAuth, {})
 server.method('auth.google', googleAuth, {})
 server.method('auth.linkedin', linkedinAuth, {})
+server.method('auth.microsoft', microsoftAuth, {})
 
 async function facebookAuth(id, token) {
   try {
@@ -40,7 +42,6 @@ async function facebookAuth(id, token) {
 }
 
 async function googleAuth(id, token) {
-  log.info('googleAuth')
   // Check with Google if token is valid
   let gUser = await google.verifyToken(id, token)
   // Get user in cannon by Google User email
@@ -61,6 +62,34 @@ async function googleAuth(id, token) {
   }
   
   return await authenticate(res.userId, changedAttributes)
+}
+
+async function microsoftAuth(code) {
+  try {
+    const token = await microsoft.getToken(code)
+    // Get Microsoft User
+    const microsoftUser = await microsoft.getMicrosoftUser(token)
+    // Get user in cannon by Microsoft User mail
+    const res = await microsoft.getUser(microsoftUser)
+    // If the user does not exist we create, otherwise we update the existing user
+    if (res.createUser) {
+      const userId = microsoft.createUser(microsoftUser)
+      authenticate(userId, null)
+    }
+
+    const changedAttributes = {
+      microsoft: {
+        id: microsoftUser.id
+      },
+      name: microsoftUser.displayName,
+      mail: microsoft.getEmail(microsoftUser)
+    }
+
+    return await authenticate(res.userId, changedAttributes)
+  } catch(err) {
+    Boom.unauthorized(err)
+  }
+  
 }
 
 async function fenixAuth(code) {
@@ -85,7 +114,7 @@ async function fenixAuth(code) {
       img: `https://fenix.tecnico.ulisboa.pt/user/photo/${fenixUser.username}`
     }
     
-    return await authenticate(res.userId, changedAttributes)
+    return authenticate(res.userId, changedAttributes)
   } catch (err) {
     Boom.unauthorized(err)
   }

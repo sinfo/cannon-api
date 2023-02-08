@@ -53,9 +53,7 @@ exports.google = {
   },
   handler: async function (request, h) {
     try {
-      log.info({payload: request.payload})
       let member = await request.server.methods.auth.google(request.payload.id, request.payload.token);
-      log.info({member: member, render: render(member)})
       return h.response(render(member))
     } catch (err) {
       if (err.code === 11000) {
@@ -68,6 +66,37 @@ exports.google = {
     }
   }
 }
+
+exports.microsoft = {
+  options: {
+    tags: ['api', 'auth'],
+    auth: {
+      strategies: ['default'],
+      mode: 'try'
+    },
+    validate: {
+      payload: Joi.object({
+        code: Joi.string().required().description('microsoft code of the member')
+      })
+    },
+    description: 'Microsoft login'
+  },
+  handler: async function (request, h) {
+    try {
+      let member = await request.server.methods.auth.microsoft(request.payload.code)
+      return h.response(render(member))
+    } catch (err) {
+      if (err.code === 11000) {
+        log.error({ msg: "Could not login user with microsoft." })
+        return Boom.unauthorized(`User with token ${request.payload.code} could not login with microsoft.`)
+      }
+ 
+      log.error({ err: err, msg: 'Error with microsoft login.' }, 'Error with microsoft login.')
+      return Boom.internal()
+    }
+  }
+}
+
 
 exports.fenix = {
   options: {
