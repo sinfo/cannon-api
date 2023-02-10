@@ -22,7 +22,6 @@ async function create (authorId, link, author) {
     attendee: author === "attendee" ? authorId : link.attendeeId,
     updated: Date.now(),
     created: Date.now(),
-    //TODO change attendee link notes
     notes: link.notes === undefined ? {
       contacts: {
         email: '',
@@ -31,7 +30,8 @@ async function create (authorId, link, author) {
       interestedIn: undefined,
       degree: undefined,
       availability: undefined,
-      otherObservations: undefined
+      otherObservations: undefined,
+      internships: undefined
     }
       : {
         contacts: {
@@ -40,14 +40,15 @@ async function create (authorId, link, author) {
             ? link.notes.contacts.email
             : '',
           phone: link.notes.contacts !== undefined &&
-            link.notes.contacts.email !== undefined
+            link.notes.contacts.phone !== undefined
             ? link.notes.contacts.phone
             : ''
         },
         interestedIn: link.notes.interestedIn,
         degree: link.notes.degree,
         availability: link.notes.availability,
-        otherObservations: link.notes.otherObservations
+        otherObservations: link.notes.otherObservations,
+        internships: link.notes.internships
       }
   }
 

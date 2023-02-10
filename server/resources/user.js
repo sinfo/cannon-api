@@ -190,6 +190,16 @@ async function remove (filter) {
 
 async function sign (attendeeId, companyId, payload, cb) {
   // todo verify
+
+  let user = await get({ "id" : attendeeId }).catch((err) => {
+    log.error({ err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
+   throw Boom.boomify(err)
+  })
+
+  if (user.role === "company") {
+    throw Boom.badData('invalid signature')
+  }
+
   const filter = {
     id: attendeeId,
     signatures: {
@@ -208,7 +218,7 @@ async function sign (attendeeId, companyId, payload, cb) {
     }
   }
 
-  let user = await User.findOneAndUpdate(filter, update, {new: true}).catch((err) => {
+  user = await User.findOneAndUpdate(filter, update, {new: true}).catch((err) => {
     log.error({ err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
    throw Boom.boomify(err)
   })

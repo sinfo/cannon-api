@@ -8,33 +8,89 @@ module.exports =
   }
 
 function renderObject (model) {
-  return {
-    author: model.author,
-    company: model.company,
-    edition: model.edition,
-    user: model.user,
-    attendee: model.attendee,
-    notes: model.notes !== undefined && model.notes !== null ? {
-      contacts: model.notes.contacts !== undefined ? {
-        email: model.notes.contacts.email,
-        phone: model.notes.contacts.phone
-      } : { email: '', phone: '' },
-      interestedIn: model.notes.interestedIn? model.notes.interestedIn: '',
-      degree: model.notes.degree? model.notes.degree : '',
-      availability: model.notes.availability? model.notes.availability : '',
-      otherObservations: model.notes.otherObservations? model.notes.otherObservations: ''
-    } : {
-      contacts: {
-        email: '',
+  const result = {}
+  let _contacts
+
+  // Common to attendee and company views of links
+  result.author = model.author
+  result.company = model.company
+  result.edition = model.edition
+  result.user = model.user
+  result.attendee = model.attendee
+  result.created = model.created
+  result.updated = model.updated
+
+  if (model.author === "company") {  // Company link view
+    result.cv = model.cv
+    if (!model.notes) {
+      _contacts = {
+        email: '', 
         phone: ''
-      },
-      interestedIn: '',
-      degree: '',
-      availability: '',
-      otherObservations: ''
-    },
-    created: model.created,
-    updated: model.updated,
-    cv: model.cv
+      }
+      result.notes = {
+        contacts : _contacts,
+        interestedIn : '',
+        degree: '',
+        availability: '',
+        otherObservations: ''
+      }
+
+      return result
+    }
+
+    if (model.notes.contacts){
+      _contacts = {
+        email: model.notes.contacts.email ?? '',
+        phone: model.notes.contacts.phone ?? ''
+      }
+    }
+    else {
+      _contacts = {
+        email: '', 
+        phone: ''
+      }
+    }
+    result.notes = {
+      contacts : _contacts,
+      interestedIn : model.notes.interestedIn ?? '',
+      degree: model.notes.degree ?? '',
+      availability: model.notes.availability ?? '',
+      otherObservations: model.notes.otherObservations ?? ''
+    }
+
+    return result
+  } 
+  else { // Attendee link view
+    if (!model.notes) {
+      _contacts = {
+        email: ''
+      }
+      result.notes = {
+        contacts : _contacts,
+        internships : '',
+        otherObservations: ''
+      }
+
+      return result
+    }
+
+    if (model.notes.contacts){
+      _contacts = {
+        email: model.notes.contacts.email ?? ''
+      }
+    }
+    else {
+      _contacts = {
+        email: ''
+      }
+    }
+
+    result.notes = {
+      contacts : _contacts,
+      internships : model.notes.internships ?? '',
+      otherObservations: model.notes.otherObservations ?? ''
+    }
+    
+    return result
   }
 }

@@ -61,19 +61,11 @@ exports.createAttendeeLink = {
         userId: Joi.string().required().description('Id of the user working for the company'),
         companyId: Joi.string().required().description('Id of the company'),
         editionId: Joi.string().required().description('Id of the edition'),
-        //TODO: change notes content
         notes: Joi.object().keys({
           contacts: Joi.object().keys({
             email: Joi.string().allow('').description('Email of the attendee'),
-            phone:
-              Joi.string().allow('').description('Phone number of the attendee')
           }),
-          interestedIn: Joi.string().allow('').description(
-            'Interests of the attendee relevant to the company'),
-          degree: Joi.string().allow('').description(
-            'Degree of the attendee (e.g. Computer Science bachelor\'s)'),
-          availability:
-            Joi.string().allow('').description('Attendee\'s availability'),
+          internships: Joi.string().allow('').description('Internship details'),
           otherObservations: Joi.string().allow('').description('Other notes')
         })
       })
@@ -82,9 +74,7 @@ exports.createAttendeeLink = {
   },
   handler: async function (request, h) {
     try{
-      //TODO validations
-      //check user
-      //await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.payload.editionId)
+      await request.server.methods.link.checkCompany(request.payload.userId, request.payload.companyId, request.payload.editionId)
       let link = await request.server.methods.link.create(request.params.attendeeId, request.payload, "attendee")
       return h.response(render(link)).created(`/users/${request.params.attendeeId}/link/${link.companyId}`)
     }catch(err){
@@ -158,14 +148,8 @@ exports.updateAttendeeLink = {
         notes: Joi.object().keys({
           contacts: Joi.object().keys({
             email: Joi.string().description('Email of the attendee').allow(''),
-            phone: Joi.string().description('Phone number of the attendee').allow('')
           }),
-          interestedIn: Joi.string().allow('').description(
-            'Interests of the attendee relevant to the company'),
-          degree: Joi.string().allow('').description(
-            'Degree of the attendee (e.g. Computer Science bachelor\'s)'),
-          availability:
-            Joi.string().allow('').description('Attendee\'s availability'),
+          internships: Joi.string().allow('').description('Internship details'),
           otherObservations: Joi.string().allow('').description('Other notes')
         }).allow(null)
       })
@@ -174,7 +158,6 @@ exports.updateAttendeeLink = {
   },
   handler: async function (request, h) {
     try{
-      //await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.query.editionId)
       let link = await request.server.methods.link.update(request.params, request.query.editionId, request.payload, "attendee")
       return h.response(render(link))
     }catch(err){
@@ -203,7 +186,7 @@ exports.getCompanyLink = {
   handler: async function (request, h) {
     try{
       await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.query.editionId)
-      let link = await request.server.methods.link.get(request.params, request.query.editionId)
+      let link = await request.server.methods.link.get(request.params, request.query.editionId, "company")
       return h.response(render(link))
     }catch(err){
       log.error({err: err}, 'error getting company link')
@@ -230,9 +213,6 @@ exports.getAttendeeLink = {
   },
   handler: async function (request, h) {
     try{
-      //TODO validations
-      //await request.server.methods.link.checkUser
-      //await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.query.editionId)
       let link = await request.server.methods.link.get(request.params, request.query.editionId, 'attendee')
       return h.response(render(link))
     }catch(err){
@@ -293,8 +273,6 @@ exports.listAttendeeLinks = {
   },
   handler: async function (request, h) {
     try{
-      //TODO validations
-      //await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.query.editionId)
       let links = await request.server.methods.link.list(request.params.companyId, request.query, "attendee")
       return h.response(render(links))
     }catch(err){
@@ -353,7 +331,6 @@ exports.removeAttendeeLink = {
 },
   handler: async function (request, h) {
     try{
-      //await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.query.editionId)
       let link = await request.server.methods.link.remove(request.params, request.query.editionId, "attendee")
       if (!link) {
         log.error({ err: 'not found', link: editionId }, 'error deleting attendee link')

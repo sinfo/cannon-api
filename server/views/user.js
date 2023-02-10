@@ -1,12 +1,12 @@
-module.exports = function render (content, user) {
+module.exports = function render (content, user, editionId) {
   if (content instanceof Array) {
-    return content.map(model => renderObject(model, user))
+    return content.map(model => renderObject(model, user, editionId))
   }
 
-  return renderObject(content, user)
+  return renderObject(content, user, editionId)
 }
 
-function renderObject (model, user) {
+function renderObject (model, user, editionId) {
   const result = {}
   const isAdmin = user && (user.role === 'admin' || model.id === user.id)
   const isTeam = user && (user.role === 'team' || isAdmin)
@@ -50,11 +50,16 @@ function renderObject (model, user) {
       company: participation && participation.company
     }))
   } else {
-    //FIXME: return only this edition's company
-    result.company = model.company && model.company.map(participation => ({
-      edition: participation && participation.edition,
-      company: participation && participation.company
-    }))
+    //a normal user should only be allowed to view the employee's current company
+    //TODO: fetch editionID from deck instead of receiving it from the webapp
+    result.company = model.company && model.company.map(participation => {
+      if(participation.edition === editionId) {
+        return ({
+          edition: participation && participation.edition,
+          company: participation && participation.company
+        })
+      }
+    })
   }
 
   return result

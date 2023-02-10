@@ -27,8 +27,8 @@ exports.create = {
   handler: async function (request, h) {
     try {
       await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.payload.editionId)
-      await request.server.methods.achievement.addUserToStandAchievement(request.params.companyId, request.params.attendeeId)
       let user = await request.server.methods.user.sign(request.params.attendeeId, request.params.companyId, request.payload)
+      await request.server.methods.achievement.addUserToStandAchievement(request.params.companyId, request.params.attendeeId)
       await request.server.methods.achievement.checkUserStandDay(request.params.attendeeId)
       return h.response(render(user, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {

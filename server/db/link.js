@@ -8,13 +8,13 @@ const schema = new mongoose.Schema({
   created: Date,
   updated: Date,
   user: String,
-  //TODO: add attendee notes
   notes: {
     contacts: { email: String, phone: String },
     interestedIn: String,
     degree: String,
     availability: String,
-    otherObservations: String
+    otherObservations: String,
+    internships: String
   }
 })
 
