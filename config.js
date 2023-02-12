@@ -24,6 +24,16 @@ config.upload = {
   cvsLinkPath: join(__dirname, `/CVSlink.zip`)
 }
 
+config.aws = {
+  storageRegion: process.env.CANNON_AWS_STORAGE_REGION || 'AWS_STORAGE_REGION',
+  storageDomain: process.env.CANNON_AWS_STORAGE_DOMAIN || 'AWS_STORAGE_DOMAIN',
+  storageKey: process.env.CANNON_AWS_STORAGE_KEY || 'AWS_STORAGE_KEY',
+  storageSecret: process.env.CANNON_AWS_STORAGE_SECRET || 'AWS_STORAGE_SECRET',
+  storageName: process.env.CANNON_AWS_STORAGE_NAME || 'AWS_STORAGE_NAME',
+  storagePath: process.env.CANNON_AWS_STORAGE_PATH || 'AWS_STORAGE_PATH',
+  storageTest: process.env.CANNON_AWS_STORAGE_TEST || '/corlief/test/'
+}
+
 config.mongo = {
   url: process.env.CANNON_MONGO_URL || 'mongodb://localhost:27018/cannon'
 }
