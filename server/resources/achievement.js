@@ -1,6 +1,7 @@
 const Boom = require('@hapi/boom')
 const slug = require('slug')
 const server = require('../').hapi
+const aws = require('../plugins/aws')
 const log = require('../helpers/logger')
 const fieldsParser = require('../helpers/fieldsParser')
 const Achievement = require('../db/achievement')
@@ -30,6 +31,9 @@ server.method('achievement.checkUserStandDay', checkUserStandDay, {})
 server.method('achievement.createSecret', createSecret, {})
 server.method('achievement.addUserToSecret', addUserToSecret, {})
 server.method('achievement.getAchievementBySession', getAchievementBySession, {})
+server.method('files.achievements.upload', uploadAchievement)
+server.method('files.achievements.download', downloadAchievement)
+server.method('files.achievements.remove', removeAchievement)
 
 async function create (achievement) {
   achievement.id = achievement.id || slug(achievement.name)
@@ -743,4 +747,32 @@ async function getAchievementBySession (id) {
   let filter = { session: id }
 
   return Achievement.findOne(filter)
+}
+
+/* AWS Functions */
+function getAchievementPath(edition, companyId) {
+  return companyId !== undefined
+  ? `/static/${edition}/achievements/stands/${companyId}/`
+  : `/static/${edition}/achievements/`
+}
+
+function uploadAchievement() {
+  return (file, filename, edition, companyId) => {
+    const path = getAchievementPath(edition, companyId)
+    return aws.upload(path, file, filename, true)
+  }
+}
+
+function downloadAchievement() {
+  return (filename, edition, companyId) => {
+    const path = getAchievementPath(edition, companyId)
+    return aws.download(path, filename)
+  }
+}
+
+function removeAchievement() {
+  return (filename, edition, companyId) => {
+    const path = getAchievementPath(edition, companyId)
+    return aws.delete(path, filename)
+  }
 }
