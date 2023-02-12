@@ -3,35 +3,41 @@ const path = require('path')
 const config = require(path.join(__dirname, '..', 'config'))
 
 const DECK_API_URL = `${config.deck.url}/api`
+let LATEST_EVENT
 
 async function getLatestEdition() {
-    const events = await axios.get(`${DECK_API_URL}/events`, { responseType: 'json' })
+  if (LATEST_EVENT) {
+    return LATEST_EVENT
+  }
+  
+  const events = await axios.get(`${DECK_API_URL}/events`, { responseType: 'json' })
 
-    let latestEvent = events.length > 0 ? events[0] : null
-    let latestEventDate = events.length > 0 ? new Date(events[0].date).getTime() : null
+  let latestEvent = events.length > 0 ? events[0] : null
+  let latestEventDate = events.length > 0 ? new Date(events[0].date).getTime() : null
 
-    events.forEach(event => {
-        const thisDate = new Date(event.date).getTime()
-        if (thisDate > latestEventDate) {
-            latestEvent = event
-            latestEventDate = thisDate
-        }
-    })
+  events.forEach(event => {
+      const thisDate = new Date(event.date).getTime()
+      if (thisDate > latestEventDate) {
+          latestEvent = event
+          latestEventDate = thisDate
+      }
+  })
 
-    return latestEvent
+  LATEST_EVENT = latestEvent
+  return latestEvent
 }
 
 async function getCompanies(edition) {
-    const companies = await axios.get(`${DECK_API_URL}/companies?event=${edition}`, { json: true })
+  const companies = await axios.get(`${DECK_API_URL}/companies?event=${edition}`, { json: true })
 
-    return companies.map(company => {
-      return {
-        id: company.id,
-        name: company.name,
-        advertisementLvl: company.advertisementLvl,
-        img: company.img
-      }
-    })
+  return companies.map(company => {
+    return {
+      id: company.id,
+      name: company.name,
+      advertisementLvl: company.advertisementLvl,
+      img: company.img
+    }
+  })
 }
 
 async function getCompany(companyId) {
