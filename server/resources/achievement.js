@@ -31,14 +31,28 @@ server.method('achievement.checkUserStandDay', checkUserStandDay, {})
 server.method('achievement.createSecret', createSecret, {})
 server.method('achievement.addUserToSecret', addUserToSecret, {})
 server.method('achievement.getAchievementBySession', getAchievementBySession, {})
-server.method('files.achievements.upload', uploadAchievement)
-server.method('files.achievements.download', downloadAchievement)
-server.method('files.achievements.remove', removeAchievement)
 
-async function create (achievement) {
+async function create (data) {
+  let achievement = {
+    id: data.id,
+    name: data.name,
+    event: data.event,
+    session: data.session,
+    description: data.description,
+    category: data.category,
+    instructions: data.instructions,
+    validity: {
+      from: data.validity.from,
+      to: data.validity.to
+    },
+    kind: data.kind
+  }
+
   achievement.id = achievement.id || slug(achievement.name)
-
   achievement.updated = achievement.created = Date.now()
+
+  const imgUrl = await uploadAchievementImage(achievement, data.img, data.companyId, data.day)
+  achievement.img = imgUrl
 
   return Achievement.create(achievement).catch((err) =>{
     if (err.code === 11000) {
@@ -111,6 +125,7 @@ async function list (query) {
 }
 
 async function remove (id) {
+  await removeAchievementImage(id)
   return Achievement.findOneAndRemove({ id: id }) 
 }
 
@@ -750,29 +765,47 @@ async function getAchievementBySession (id) {
 }
 
 /* AWS Functions */
-function getAchievementPath(edition, companyId) {
-  return companyId !== undefined
-  ? `/static/${edition}/achievements/stands/${companyId}/`
-  : `/static/${edition}/achievements/`
+function getFileName(achievement, companyId, day) {
+  let name = ''
+
+  switch (achievement.kind) {
+    case AchievementKind.STAND:
+      name = AchievementKind.STAND + `_${companyId}_${day}`
+      break
+    case AchievementKind.SPEEDDATE:
+      name = `speed_date_${companyId}_${day}`
+      break
+    case AchievementKind.KEYNOTE:
+      name = achievement.session
+      break
+    case AchievementKind.WORKSHOP:
+      name = achievement.session
+      break
+    case AchievementKind.PRESENTATION:
+      name = achievement.session
+      break
+    case AchievementKind.TALK:
+      name = achievement.session
+      break
+    case AchievementKind.CV:
+      name = AchievementKind.CV
+      break
+  }
+
+  return name + '.webp'
 }
 
-function uploadAchievement() {
-  return (file, filename, edition, companyId) => {
-    const path = getAchievementPath(edition, companyId)
-    return aws.upload(path, file, filename, true)
-  }
+function getAchievementPath(achievement) {
+  return `/static/${achievement.edition}/achievements/${achievement.kind}s/`
 }
 
-function downloadAchievement() {
-  return (filename, edition, companyId) => {
-    const path = getAchievementPath(edition, companyId)
-    return aws.download(path, filename)
-  }
+async function uploadAchievementImage(achievement, file, companyId, day) {
+  const path = getAchievementPath(achievement)
+  const fileName = getFileName(achievement, companyId, day)
+  return aws.upload(path, file, fileName, true)
 }
 
-function removeAchievement() {
-  return (filename, edition, companyId) => {
-    const path = getAchievementPath(edition, companyId)
-    return aws.delete(path, filename)
-  }
-}
+/*async function removeAchievementImage(id) {
+  const path = getAchievementPath(edition, kind, companyId)
+  return aws.delete(path, filename)
+}*/
