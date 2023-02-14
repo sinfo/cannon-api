@@ -1,6 +1,6 @@
 const Lab = require('@hapi/lab')
 const Code = require('@hapi/code')
-const slug = require('slug')
+const uuid = require('uuid')
 
 const server = require('../').hapi
 
@@ -41,7 +41,7 @@ const achievementA = {
     to: new Date(new Date().getTime() + (1000 * 60 * 60)) // 1 h
   }
 }
-const achievementId = slug(achievementA.name)
+const achievementId = uuid.v4()
 
 const changesToA = {
   name: 'WENT TO SINFO XXIII'
