@@ -30,7 +30,7 @@ config.aws = {
   storageKey: process.env.CANNON_AWS_STORAGE_KEY || 'AWS_STORAGE_KEY',
   storageSecret: process.env.CANNON_AWS_STORAGE_SECRET || 'AWS_STORAGE_SECRET',
   storageName: process.env.CANNON_AWS_STORAGE_NAME || 'AWS_STORAGE_NAME',
-  storageTest: process.env.CANNON_AWS_STORAGE_TEST || '/corlief/test/'
+  storageTest: process.env.CANNON_AWS_STORAGE_TEST || '/cannon/test/'
 }
 
 config.mongo = {
