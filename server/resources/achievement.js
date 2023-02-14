@@ -1,5 +1,5 @@
 const Boom = require('@hapi/boom')
-const slug = require('slug')
+const uuid = require('uuid')
 const server = require('../').hapi
 const aws = require('../plugins/aws')
 const log = require('../helpers/logger')
@@ -48,10 +48,10 @@ async function create (data) {
     kind: data.kind
   }
 
-  achievement.id = achievement.id || slug(achievement.name)
+  achievement.id = achievement.id || uuid.v4()
   achievement.updated = achievement.created = Date.now()
 
-  const imgUrl = await uploadAchievementImage(achievement, data.img, data.companyId, data.day)
+  const imgUrl = await uploadAchievementImage(achievement, data.img)
   achievement.img = imgUrl
 
   return Achievement.create(achievement).catch((err) =>{
@@ -125,7 +125,8 @@ async function list (query) {
 }
 
 async function remove (id) {
-  await removeAchievementImage(id)
+  const achievement = await Achievement.findOne({ id: id })
+  await removeAchievementImage(achievement)
   return Achievement.findOneAndRemove({ id: id }) 
 }
 
@@ -765,47 +766,22 @@ async function getAchievementBySession (id) {
 }
 
 /* AWS Functions */
-function getFileName(achievement, companyId, day) {
-  let name = ''
-
-  switch (achievement.kind) {
-    case AchievementKind.STAND:
-      name = AchievementKind.STAND + `_${companyId}_${day}`
-      break
-    case AchievementKind.SPEEDDATE:
-      name = `speed_date_${companyId}_${day}`
-      break
-    case AchievementKind.KEYNOTE:
-      name = achievement.session
-      break
-    case AchievementKind.WORKSHOP:
-      name = achievement.session
-      break
-    case AchievementKind.PRESENTATION:
-      name = achievement.session
-      break
-    case AchievementKind.TALK:
-      name = achievement.session
-      break
-    case AchievementKind.CV:
-      name = AchievementKind.CV
-      break
-  }
-
-  return name + '.webp'
+function getFileName(achievement) {
+  return achievement.id + '.webp'
 }
 
 function getAchievementPath(achievement) {
   return `/static/${achievement.edition}/achievements/${achievement.kind}s/`
 }
 
-async function uploadAchievementImage(achievement, file, companyId, day) {
+async function uploadAchievementImage(achievement, file) {
   const path = getAchievementPath(achievement)
-  const fileName = getFileName(achievement, companyId, day)
+  const fileName = getFileName(achievement)
   return aws.upload(path, file, fileName, true)
 }
 
-/*async function removeAchievementImage(id) {
-  const path = getAchievementPath(edition, kind, companyId)
-  return aws.delete(path, filename)
-}*/
+async function removeAchievementImage(achievement) {
+  const path = getAchievementPath(achievement)
+  const fileName = getFileName(achievement)
+  return aws.delete(path, fileName)
+}
