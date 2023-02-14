@@ -52,6 +52,11 @@ async function create (data) {
   achievement.updated = achievement.created = Date.now()
 
   const imgUrl = await uploadAchievementImage(achievement, data.img)
+  if (!imgUrl) {
+    log.error('Error setting image URL for achievement ' + achievement.id)
+    throw Boom.internal('Error setting image URL for achievement ' + achievement.id)
+  }
+
   achievement.img = imgUrl
 
   return Achievement.create(achievement).catch((err) =>{
@@ -765,19 +770,38 @@ async function getAchievementBySession (id) {
   return Achievement.findOne(filter)
 }
 
-/* AWS Functions */
+/* Image Functions */
+function getDataFromStream(stream) {
+  return new Promise((resolve, reject) => {
+    let data = []
+
+    stream.on('data', (chunk) => {
+      data.push(chunk)
+    })
+
+    stream.on('end', () => {
+      resolve(Buffer.concat(data))
+    })
+
+    stream.on('error', (err) => {
+      reject(err)
+    })
+  })
+}
+
 function getFileName(achievement) {
   return achievement.id + '.webp'
 }
 
 function getAchievementPath(achievement) {
-  return `/static/${achievement.edition}/achievements/${achievement.kind}s/`
+  return `/static/${achievement.event}/achievements/${achievement.kind}s`
 }
 
 async function uploadAchievementImage(achievement, file) {
   const path = getAchievementPath(achievement)
   const fileName = getFileName(achievement)
-  return aws.upload(path, file, fileName, true)
+  const data = await getDataFromStream(file)
+  return aws.upload(path, data, fileName, true)
 }
 
 async function removeAchievementImage(achievement) {
