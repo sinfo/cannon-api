@@ -2,6 +2,7 @@ const Joi = require('joi')
 const render = require('../../views/achievement')
 const log = require('../../helpers/logger')
 const Boom = require('@hapi/boom')
+const configUpload = require('../../../config').upload
 
 exports = module.exports
 
@@ -12,13 +13,20 @@ exports.create = {
       strategies: ['default'],
       scope: ['admin']
     },
+    payload: {
+      output: 'stream',
+      multipart: true,
+      parse: true,
+      allow: 'multipart/form-data',
+      maxBytes: configUpload.maxSize
+    },
     validate: {
       payload: Joi.object({
         id: Joi.string().description('Id of the achievement'),
         name: Joi.string().required().description('Name of the achievement'),
         event: Joi.string().default('22').description('Event the achievement is associated to'),
         session: Joi.string().description('Id of a session associated to this achievement'),
-        img: Joi.string().dataUri().description('Image of the achievement'),
+        img: Joi.any().meta({ swaggerType: 'file' }).description('Image of the achievement'),
         description: Joi.string().description('Description of the achievement'),
         category: Joi.string().description('Category of the achievement'),
         instructions: Joi.string().description('Instructions on how to get the achievement'),
@@ -27,9 +35,7 @@ exports.create = {
           from: Joi.date().description('Date when the achievement starts being available for grabs'),
           to: Joi.date().description('Date when the achievement starts stops being available for grabs')
         }),
-        kind: Joi.string().description('Kind of achievement (cv, for example)'),
-        companyId: Joi.string().description('Id of the company'),
-        day: Joi.number().min(1).max(5).description('The day the achievement is valid for')
+        kind: Joi.string().description('Kind of achievement (cv, for example)')
       })
     },
     description: 'Creates a new achievement',
