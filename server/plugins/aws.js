@@ -2,6 +2,7 @@ const aws = require('aws-sdk')
 const path = require('path')
 const config = require(path.join(__dirname, '..', '..', 'config'))
 const mime = require('mime-types')
+const log = require('../helpers/logger')
 
 const AWS_URL = `https://${config.aws.storageRegion}.${config.aws.storageDomain}${path}`
 
@@ -9,6 +10,7 @@ function promiseWrapper(s3, key, params, returnData) {
   return new Promise((resolve, reject) => {
     s3[key](params, (err, data) => {
       if (err) {
+        log.error({ error: err })
         resolve(null)
       }
 
