@@ -1,6 +1,6 @@
 const aws = require('aws-sdk')
 const path = require('path')
-const config = require(path.join(__dirname, '..', '..', '..', 'config'))
+const config = require(path.join(__dirname, '..', '..', 'config'))
 const mime = require('mime-types')
 
 const AWS_URL = `https://${config.aws.storageRegion}.${config.aws.storageDomain}${path}`
