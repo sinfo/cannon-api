@@ -2,6 +2,20 @@ const server = require('../../').hapi
 const handlers = require('./handlers')
 
 server.route({
+  method: 'GET',
+  path: '/company',
+  options: handlers.getAll.options,
+  handler: handlers.getAll.handler
+})
+
+server.route({
+  method: 'GET',
+  path: '/company/{companyId}',
+  options: handlers.getCompany.options,
+  handler: handlers.getCompany.handler
+})
+
+server.route({
   method: 'POST',
   path: '/company-endpoint',
   options: handlers.create.options,
