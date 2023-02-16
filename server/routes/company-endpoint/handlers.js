@@ -1,9 +1,48 @@
 const Joi = require('joi')
 const render = require('../../views/endpoint')
+const renderCompanies = require('../../views/company')
 const log = require('../../helpers/logger')
 const Boom = require('@hapi/boom')
 
 exports = module.exports
+
+exports.getAll = {
+  options: {
+    tags: ['api', 'company-endpoint'],
+    description: 'Gets all companies for the latest edition'
+  },
+  handler: async (request, h) => {
+    try {
+      const latestEdition = await request.server.methods.deck.getLatestEdition()
+      const companies = await request.server.methods.deck.getCompanies(latestEdition)
+      return h.response(renderCompanies(companies))
+    } catch (err) {
+      log.error({ err: err}, 'error getting company')
+      throw Boom.internal()
+    }
+  },
+}
+
+exports.getCompany = {
+  options: {
+    tags: ['api', 'company-endpoint'],
+    validate: {
+      params: Joi.object({
+        companyId: Joi.string().required().description('Id of the company')
+      })
+    },
+    description: 'Gets specific company'
+  },
+  handler: async (request, h) => {
+    try {
+      const company = await request.server.methods.deck.getCompany(request.params.companyId)
+      return h.response(renderCompanies(company))
+    } catch (err) {
+      log.error({ err: err}, 'error getting company')
+      throw Boom.internal()
+    }
+  },
+}
 
 exports.create = {
   options: {
