@@ -32,7 +32,7 @@ server.method('achievement.createSecret', createSecret, {})
 server.method('achievement.addUserToSecret', addUserToSecret, {})
 server.method('achievement.getAchievementBySession', getAchievementBySession, {})
 
-async function create (data) {
+async function create(data) {
   let achievement = {
     id: data.id,
     name: data.name,
@@ -41,10 +41,7 @@ async function create (data) {
     description: data.description,
     category: data.category,
     instructions: data.instructions,
-    validity: {
-      from: data.validity.from,
-      to: data.validity.to
-    },
+    validity: data.validity,
     kind: data.kind
   }
 
@@ -794,7 +791,7 @@ function getFileName(achievement) {
 }
 
 function getAchievementPath(achievement) {
-  return `/static/${achievement.event}/achievements/${achievement.kind}s`
+  return `static/${achievement.event}/achievements/${achievement.kind}s/`
 }
 
 async function uploadAchievementImage(achievement, file) {
