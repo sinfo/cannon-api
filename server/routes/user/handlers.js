@@ -1,11 +1,28 @@
 const Joi = require('joi')
 const render = require('../../views/user')
+const renderMembers = require('../../views/member')
 const log = require('../../helpers/logger')
 const Boom = require('@hapi/boom')
 const dupKeyParser = require('../../helpers/dupKeyParser')
 
 
 exports = module.exports
+
+exports.getMembers = {
+  options: {
+    tags: ['api', 'member'],
+    description: 'Get members'
+  },
+  handler: async (request, h) => {
+    try {
+      const members = await request.server.methods.deck.getMembers()
+      return h.response(renderMembers(members))
+    } catch(err) {
+      log.error({ error: err })
+      throw Boom.boomify(err)
+    }
+  }
+}
 
 exports.create = {
   options: {
