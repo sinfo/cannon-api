@@ -6,33 +6,31 @@ const config = require(path.join(__dirname, '..', '..', 'config'))
 
 
 server.method('deck.getLatestEdition', getLatestEdition, {})
+server.method('deck.getPreviousEdition', getPreviousEdition, {})
+server.method('deck.getEvents', getEvents, {})
 server.method('deck.getCompanies', getCompanies, {})
 server.method('deck.getCompany', getCompany, {})
 server.method('deck.getMembers', getMembers, {})
+server.method('deck.getSessions', getSessions, {})
+server.method('deck.getSession', getSession, {})
+server.method('deck.getSpeakers', getSpeakers, {})
+server.method('deck.getSpeaker', getSpeaker, {})
 
 const DECK_API_URL = `${config.deck.url}/api`
-let LATEST_EVENT
 
 async function getLatestEdition() {
-  if (LATEST_EVENT) {
-    return LATEST_EVENT
-  }
-  
-  const events = await axios.get(`${DECK_API_URL}/events`, { responseType: 'json' })
+  const event = await axios.get(`${DECK_API_URL}/events?sort=-date&limit=1`, { json: true })
+  return event.data[0]
+}
 
-  let latestEvent = events.data.length > 0 ? events.data[0] : null
-  let latestEventDate = events.data.length > 0 ? new Date(events.data[0].date).getTime() : null
+async function getEvents() {
+  const events = await axios.get(`${DECK_API_URL}/events?sort=-date`, { json: true })
+  return events.data
+}
 
-  events.data.forEach(event => {
-      const thisDate = new Date(event.date).getTime()
-      if (thisDate > latestEventDate) {
-          latestEvent = event
-          latestEventDate = thisDate
-      }
-  })
-
-  LATEST_EVENT = latestEvent.id
-  return LATEST_EVENT
+async function getPreviousEdition() {
+  const event = await axios.get(`${DECK_API_URL}/events?sort=-date&limit=1&skip=1`, { json: true })
+  return event.data[0]
 }
 
 async function getCompanies(edition) {
@@ -58,3 +56,23 @@ async function getMembers(edition) {
   const members = await axios.get(`${DECK_API_URL}/members?sort=name&event=${edition}&participations=true`, { json: true })
   return members.data
 }
+
+async function getSessions(edition) {
+  const sessions = await axios.get(`${DECK_API_URL}/sessions?sort=date&event=${edition}`)
+  return sessions.data
+}
+
+async function getSession(sessionId) {
+  const session = await axios.get(`${DECK_API_URL}/sessions/${sessionId}`)
+  return session.data
+} 
+
+async function getSpeakers(edition) {
+  const speakers = await axios.get(`${DECK_API_URL}/speakers?sort=name&event=${edition}&participations=true`)
+  return speakers.data
+}
+
+async function getSpeaker(speakerId) {
+  const speaker = await axios.get(`${DECK_API_URL}/speakers/${speakerId}`)
+  return speaker.data
+} 
