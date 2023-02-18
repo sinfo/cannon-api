@@ -25,11 +25,11 @@ async function get (id, query) {
     let response = await axios.get(url)
     //response.data is the session returned by deck
     if (!response.data || response.data.length == 0) {
-      return Boom.badRequest("Could not find session")
+      throw Boom.badRequest("Could not find session")
     }
     return response.data
   } catch (err) {
-    return Boom.badRequest()
+    throw Boom.badRequest("Error getting session")
   }
 }
 
@@ -42,17 +42,17 @@ async function list (query) {
     let response = await axios.get(url)
     //response.data is the sessions returned by deck
     if (!response.data || response.data.length == 0) {
-      return Boom.badRequest("Could not find sessions")
+      throw Boom.badRequest("Could not find sessions")
     }
     return response.data
   } catch (err) {
-    return Boom.badRequest()
+    throw Boom.badRequest()
   }
 }
 
 function ticketsNeeded (session) {
   if (!session.tickets || !session.tickets.needed) {
-    return Boom.badRequest('this session doesn\'t need tickets')
+    throw Boom.badRequest('this session doesn\'t need tickets')
   }
 
   return true
@@ -72,7 +72,7 @@ function surveyNotNeeded (session) {
 function inRegistrationPeriod (session) {
   const now = Date.now()
   if (now < moment(session.tickets.start) || now > moment(session.tickets.end) || now > moment(session.date)) {
-    return Boom.badRequest('out of registation period')
+    throw Boom.badRequest('out of registation period')
   }
 
   return true
@@ -83,7 +83,7 @@ function inConfirmationPeriod (session) {
   const date = new Date(session.date)
 
   if (date.setHours(0, 0, 0, 0) !== now.setHours(0, 0, 0, 0)) {
-    return Boom.badRequest('out of confirmation period')
+    throw Boom.badRequest('out of confirmation period')
   }
 
   return true

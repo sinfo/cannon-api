@@ -28,3 +28,10 @@ server.route({
   options: handlers.linkedin.options,
   handler: handlers.linkedin.handler
 })
+
+server.route({
+  method: ['POST'],
+  path: '/auth/microsoft',
+  options: handlers.microsoft.options,
+  handler: handlers.microsoft.handler
+})

@@ -30,7 +30,7 @@ exports.create = {
       return h.response(render(comp)).created('/company-endpoint/' + comp.id)
     } catch (err) {
       log.error({ err: err, msg: 'error creating company' }, 'error creating company')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -63,12 +63,12 @@ exports.update = {
       let comp = await request.server.methods.endpoint.update(request.params.companyId, request.query, request.payload)
       if (!comp) {
         log.error({ err: err }, 'error updating company')
-        return Boom.notFound()
+        throw Boom.notFound()
       }
       return h.response(render(comp))
     } catch (err) {
       log.error({ err: err}, 'error updating company')
-      return Boom.internal()
+      throw Boom.internal()
     }
 
   },
@@ -97,7 +97,7 @@ exports.get = {
       return h.response(render(comp))
     } catch (err) {
       log.error({ err: err}, 'error getting company')
-      return Boom.internal()
+      throw Boom.internal()
     }
   },
 }
@@ -126,7 +126,7 @@ exports.list = {
       return h.response(render(endpoint))
     } catch (err) {
       log.error({ err: err }, 'Error finding endpoints')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -153,12 +153,12 @@ exports.remove = {
       let comp = await request.server.methods.endpoint.remove(request.params.companyId, request.query.edition)
       if (!comp) {
         log.error({ id: request.params.id, error: err })
-        return Boom.notFound('company not found')
+        throw Boom.notFound('company not found')
       }
       return h.response(render(comp))
     } catch (err) {
       log.error({ info: request.info, error: err })
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }

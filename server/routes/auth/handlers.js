@@ -27,11 +27,11 @@ exports.facebook = {
     } catch (err) {
       if (err.code === 11000) {
         log.error({ msg: "Could not login user with facebook." })
-        return Boom.unauthorized(`User "${request.payload.id}" could not login with facebook.`)
+        throw Boom.unauthorized(`User "${request.payload.id}" could not login with facebook.`)
       }
 
       log.error({ err: err, msg: 'Error with facebook login.' }, 'Error with facebook login.')
-      return Boom.internal()
+      throw Boom.internal()
     }
   }
 }
@@ -53,21 +53,50 @@ exports.google = {
   },
   handler: async function (request, h) {
     try {
-      log.info({payload: request.payload})
       let member = await request.server.methods.auth.google(request.payload.id, request.payload.token);
-      log.info({member: member, render: render(member)})
       return h.response(render(member))
     } catch (err) {
       if (err.code === 11000) {
         log.error({ msg: "Could not login user with google." })
-        return Boom.unauthorized(`User "${request.payload.id}" could not login with google.`)
+        throw Boom.unauthorized(`User "${request.payload.id}" could not login with google.`)
       }
  
       log.error({ err: err, msg: 'Error with google login.' }, 'Error with google login.')
+      throw Boom.internal()
+    }
+  }
+}
+
+exports.microsoft = {
+  options: {
+    tags: ['api', 'auth'],
+    auth: {
+      strategies: ['default'],
+      mode: 'try'
+    },
+    validate: {
+      payload: Joi.object({
+        code: Joi.string().required().description('microsoft code of the member')
+      })
+    },
+    description: 'Microsoft login'
+  },
+  handler: async function (request, h) {
+    try {
+      let member = await request.server.methods.auth.microsoft(request.payload.code)
+      return h.response(render(member))
+    } catch (err) {
+      if (err.code === 11000) {
+        log.error({ msg: "Could not login user with microsoft." })
+        return Boom.unauthorized(`User with token ${request.payload.code} could not login with microsoft.`)
+      }
+ 
+      log.error({ err: err, msg: 'Error with microsoft login.' }, 'Error with microsoft login.')
       return Boom.internal()
     }
   }
 }
+
 
 exports.fenix = {
   options: {
@@ -90,11 +119,11 @@ exports.fenix = {
     } catch (err) {
       if (err.code === 11000) {
         log.error({ msg: "Could not login user with fenix." })
-        return Boom.unauthorized(`User "${request.payload.id}" could not login with fenix.`)
+        throw Boom.unauthorized(`User "${request.payload.id}" could not login with fenix.`)
       }
 
       log.error({ err: err, msg: 'Error with fenix login.' }, 'Error with fenix login.')
-      return Boom.internal()
+      throw Boom.internal()
     }
   },
 }
@@ -120,11 +149,11 @@ exports.linkedin = {
     } catch (err) {
       if (err.code === 11000) {
         log.error({ msg: "Could not login user with linkedin." })
-        return Boom.unauthorized(`User "${request.payload.id}" could not login with linkedin.`)
+        throw Boom.unauthorized(`User "${request.payload.id}" could not login with linkedin.`)
       }
 
       log.error({ err: err, msg: 'Error with linkedin login.' }, 'Error with linkedin login.')
-      return Boom.internal()
+      throw Boom.internal()
     }
   }
 }

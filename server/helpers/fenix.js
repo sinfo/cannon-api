@@ -91,7 +91,7 @@ fenix.createUser = async function(fenixUser) {
     img: `https://fenix.tecnico.ulisboa.pt/user/photo/${fenixUser.username}`
   }
 
-  log.debug('[Fenix-Auth] Creating ne user', user)
+  log.debug('[Fenix-Auth] Creating a new user', user)
 
   let result = await server.methods.user.create(user).catch((err) => {
     log.error({ user }, '[Fenix-Auth] Error creating user')

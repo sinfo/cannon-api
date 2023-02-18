@@ -33,7 +33,7 @@ exports.create = {
       return h.response(render(user, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {
       log.error({ err: err, msg: 'error creating signature' }, 'error creating signature')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -64,7 +64,7 @@ exports.speed = {
       return h.response(achievement)
     } catch (err) {
       log.error({ err: err, msg: 'error creating signature for speed dating' }, 'error creating signature for speed dating')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -94,7 +94,7 @@ exports.checkIn = {
       return h.response(achievement)
     } catch (err) {
       log.error({ err: err, msg: 'error checking in session for users' }, 'error checking in session for users')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -122,7 +122,7 @@ exports.generate = {
       return h.response(achievement)
     } catch (err) {
       log.error({ err: err, msg: 'error checking in session for users' }, 'error checking in session for users')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }

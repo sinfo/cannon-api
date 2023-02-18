@@ -31,7 +31,7 @@ exports.create = {
       return h.response(render(file)).created('/files/' + file.id)
     } catch (err) {
       log.error({ err: err, msg:'error creating file'}, 'error creating file')
-      return Boom.internal()
+      throw Boom.internal()
     }
   },
 }
@@ -62,12 +62,12 @@ exports.update = {
       let file = await request.server.methods.file.update(request.params.id, request.payload)
       if (!file) {
         log.error({ err: err, file: filter }, 'error updating file')
-        return Boom.notFound()
+        throw Boom.notFound()
       }
       return h.response(render(file))
     } catch (err) {
       log.error({ err: err, file: filter }, 'error updating file')
-      return Boom.internal()
+      throw Boom.internal()
     }
   },
 }
@@ -91,12 +91,12 @@ exports.get = {
       let file = await request.server.methods.file.get(request.params.id)
       if (!file) {
         log.error({ err: err }, 'error getting file')
-        return Boom.notFound()
+        throw Boom.notFound()
       }
       return h.response(render(file))
     } catch (err) {
       log.error({ err: err}, 'error getting file')
-      return Boom.internal()
+      throw Boom.internal()
     }
   },
 }
@@ -116,12 +116,12 @@ exports.getMe = {
       let file = await request.server.methods.file.get(userId, request.query)
       if (!file) {
         log.error({ err: err, userId: userId }, 'error getting file')
-        return Boom.notFound()
+        throw Boom.notFound()
       }
       return h.response(render(file))
     } catch (err) {
       log.error({ err: err, userId: userId }, 'error getting file')
-      return Boom.internal()
+      throw Boom.internal()
     }
   },
 }
@@ -192,7 +192,7 @@ exports.downloadZip = {
       return h.file(configUpload.cvsZipPath, { mode: 'attachment', filename: 'CVs.zip' }) // Return generic zip
     } catch(err){
       log.error({err: err}, 'error downloading file')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   },
 }
@@ -230,7 +230,7 @@ exports.downloadCompany = {
       }
   } catch(err){
     log.error({err: err}, 'error downloading files')
-    return Boom.boomify(err)
+    throw Boom.boomify(err)
   }
 
   function handleZip (zip) {
@@ -269,7 +269,7 @@ exports.list = {
     }
     catch (err) {
       log.error({ err: err, msg: 'error getting file models' }, 'error getting file models')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   }  
 }
@@ -296,7 +296,7 @@ exports.remove = {
     }
     catch (err) {
       log.error({ err: err, msg: 'error removing a file' }, 'error removing a file')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   }
 }
@@ -319,7 +319,7 @@ exports.removeMe = {
     }
     catch (err) {
       log.error({ err: err, msg: 'error removing users file' }, 'error removing users file')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   }
 }
@@ -365,21 +365,23 @@ exports.upload = {
       let user = await request.server.methods.user.get(request.params.id)
       if (!user) {
         log.error({ err: err}, 'user not found')
-        return Boom.notFound()
+        throw Boom.notFound()
       }
 
       let file = await request.server.methods.file.uploadCV(request.payload)
       let oldFile = await request.server.methods.file.get(request.params.id)
 
-      if (oldFile !== -1)
+      if (oldFile !== -1) {
         await request.server.methods.file.delete(oldFile.id)
-
         let fileInfo = await request.server.methods.file.update(oldFile !== -1 ? oldFile.id : file.id, file, request.params.id, request.query)
+        return h.response(render(fileInfo)).created('/api/file/' + fileInfo.id)
+      } else {
+        return h.response(render(file)).created('/api/file/' + file.id)
+      }
       
-      return h.response(render(fileInfo)).created('/api/file/' + fileInfo.id)
     } catch (err) {
       log.error({ err: err, msg: 'error uploading file' }, 'error uploading file')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   }
 }
@@ -431,7 +433,7 @@ exports.uploadMe = {
       return h.response(render(fileInfo)).created('/api/file/' + fileInfo.id)
     } catch (err) {
       log.error({ err: err, msg: 'error uploading file' }, 'error uploading file')
-      return Boom.boomify(err)
+      throw Boom.boomify(err)
     }
   }  
 }
