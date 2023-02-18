@@ -371,17 +371,15 @@ exports.redeemCard = {
     validate: {
       params: Joi.object({
         id: Joi.string().required().description('Id of the user we want to redeem the card from')
-      }),
-      payload: Joi.object({
-        day: Joi.string().required().description('ISO Date of the day you are redeeming the card from'),
-        editionId: Joi.string().required().description('Id of the current edition')
       })
     },
     description: 'Clears Users Card Signatures for the day'
   },
   handler: async (request, h) => {
     try{
-      let user = await request.server.methods.user.redeemCard(request.params.id, request.payload)
+      const edition = await request.server.methods.deck.getLatestEdition()
+      const day = new Date().getDate().toString()
+      let user = await request.server.methods.user.redeemCard(request.params.id, day, edition.id)
       return h.response(render(user, request.auth.credentials && request.auth.credentials.user))
     }catch(err){
       log.error({err: err}, 'error redeeming card')

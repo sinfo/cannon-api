@@ -16,9 +16,6 @@ exports.create = {
       params: Joi.object({
         companyId: Joi.string().required().description('Id of the company we are linking from'),
         attendeeId: Joi.string().required().description('Id of the attendee')
-      }),
-      payload: Joi.object({
-        day: Joi.string().required().description('Day the company is signing the users card')
       })
     },
     description: 'Creates a new signature'
@@ -26,9 +23,10 @@ exports.create = {
   handler: async function (request, h) {
     try {
       const edition = await request.server.methods.deck.getLatestEdition()
+      const day = new Date().getDate().toString()
       await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, edition.id)
       await request.server.methods.achievement.addUserToStandAchievement(request.params.companyId, request.params.attendeeId)
-      let user = await request.server.methods.user.sign(request.params.attendeeId, request.params.companyId, request.payload.day, edition.id)
+      let user = await request.server.methods.user.sign(request.params.attendeeId, request.params.companyId, day, edition.id)
       await request.server.methods.achievement.checkUserStandDay(request.params.attendeeId)
       return h.response(render(user, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {
