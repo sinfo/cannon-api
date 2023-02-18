@@ -18,7 +18,6 @@ exports.create = {
         attendeeId: Joi.string().required().description('Id of the attendee')
       }),
       payload: Joi.object({
-        editionId: Joi.string().required().description('Id of the edition'),
         day: Joi.string().required().description('Day the company is signing the users card')
       })
     },
@@ -26,9 +25,10 @@ exports.create = {
   },
   handler: async function (request, h) {
     try {
-      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.payload.editionId)
+      const edition = await request.server.methods.deck.getLatestEdition()
+      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, edition.id)
       await request.server.methods.achievement.addUserToStandAchievement(request.params.companyId, request.params.attendeeId)
-      let user = await request.server.methods.user.sign(request.params.attendeeId, request.params.companyId, request.payload)
+      let user = await request.server.methods.user.sign(request.params.attendeeId, request.params.companyId, request.payload.day, edition.id)
       await request.server.methods.achievement.checkUserStandDay(request.params.attendeeId)
       return h.response(render(user, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {
@@ -49,16 +49,14 @@ exports.speed = {
       params: Joi.object({
         companyId: Joi.string().required().description('Id of the company '),
         attendeeId: Joi.string().required().description('Id of the attendee')
-      }),
-      payload: Joi.object({
-        editionId: Joi.string().required().description('Id of the edition')
       })
     },
     description: 'Creates a new signature for speed dates'
   },
   handler: async function (request, h) {
     try {
-      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.payload.editionId)
+      const edition = await request.server.methods.deck.getLatestEdition()
+      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, edition.id)
       let happyHours = await request.server.methods.happyHour.get()
       let achievement = await request.server.methods.achievement.addUserToSpeedDateAchievement(request.params.companyId, request.params.attendeeId, happyHours)
       return h.response(achievement)

@@ -17,7 +17,6 @@ exports.create = {
       payload: Joi.object({
         userId: Joi.string().required().description('Id of the user working for the company'),
         attendeeId: Joi.string().required().description('Id of the attendee'),
-        editionId: Joi.string().required().description('Id of the edition'),
         notes: Joi.object().keys({
           contacts: Joi.object().keys({
             email: Joi.string().allow('').description('Email of the attendee'),
@@ -38,7 +37,8 @@ exports.create = {
   },
   handler: async function (request, h) {
     try{
-      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.payload.editionId)
+      const edition = await request.server.methods.deck.getLatestEdition()
+      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, edition.id)
       let link = await request.server.methods.link.create(request.params.companyId, request.payload)
       return h.response(render(link)).created(`/company/${request.params.companyId}/link/${link.attendeeId}`)
     }catch(err){
@@ -57,9 +57,6 @@ exports.update = {
         companyId: Joi.string().required().description(
           'Id of the company we are linking from'),
         attendeeId: Joi.string().required().description('Id of the attendee')
-      }),
-      query: Joi.object({ 
-        editionId: Joi.string().required().description('Id of the edition') 
       }),
       payload: Joi.object({
         userId:
@@ -83,7 +80,8 @@ exports.update = {
   },
   handler: async function (request, h) {
     try{
-      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.query.editionId)
+      const edition = await request.server.methods.deck.getLatestEdition()
+      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, edition.id)
       let link = await request.server.methods.link.update(request.params, request.query.editionId, request.payload)
       return h.response(render(link))
     }catch(err){
@@ -102,16 +100,14 @@ exports.get = {
         companyId: Joi.string().required().description(
           'Id of the company we are linking from'),
         attendeeId: Joi.string().required().description('Id of the attendee')
-      }),
-      query: Joi.object({
-        editionId: Joi.string().required().description('Id of the edition') 
       })
     },
     description: 'Gets a link'
   },
   handler: async function (request, h) {
     try{
-      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.query.editionId)
+      const edition = await request.server.methods.link.getLatestEdition()
+      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, edition.id)
       let link = await request.server.methods.link.get(request.params, request.query.editionId)
       return h.response(render(link))
     }catch(err){
@@ -127,7 +123,6 @@ exports.list = {
     auth: { strategies: ['default'], scope: ['company', 'team', 'admin'] },
     validate: {
       query: Joi.object({
-        editionId: Joi.string().required().description('Id of the edition'),
         fields: Joi.string().description('Fields we want to retrieve'),
         sort: Joi.string().description('Sort fields we want to retrieve'),
         skip: Joi.number().description('Number of documents we want to skip'),
@@ -142,7 +137,8 @@ exports.list = {
   },
   handler: async function (request, h) {
     try{
-      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.query.editionId)
+      const edition = await request.server.methods.link.getLatestEdition()
+      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, edition.id)
       let links = await request.server.methods.link.list(request.params.companyId, request.query)
       return h.response(render(links))
     }catch(err){
@@ -161,17 +157,14 @@ exports.remove = {
       companyId: Joi.string().required().description(
         'Id of the company we are removing the link from'),
       attendeeId: Joi.string().required().description('Id of the attendee')
-    }),
-    query: Joi.object({
-      editionId: Joi.string().required().description('Id of the edition')
     })
   },
   description: 'Removes a link'
 },
   handler: async function (request, h) {
     try{
-      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, request.query.editionId)
-      let link = await request.server.methods.link.remove(request.params, request.query.editionId)
+      const edition = await request.server.methods.link.getLatestEdition()
+      let link = await request.server.methods.link.remove(request.params, edition.id)
       if (!link) {
         log.error({ err: 'not found', link: editionId }, 'error deleting link')
         throw Boom.notFound('link not found')

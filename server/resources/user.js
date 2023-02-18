@@ -193,14 +193,14 @@ async function remove (filter) {
 
 }
 
-async function sign (attendeeId, companyId, payload, cb) {
+async function sign (attendeeId, companyId, day, editionId) {
   // todo verify
   const filter = {
     id: attendeeId,
     signatures: {
       $elemMatch: {
-        day: payload.day,
-        edition: payload.editionId
+        day: day,
+        edition: editionId
       }
     }
   }
@@ -214,7 +214,7 @@ async function sign (attendeeId, companyId, payload, cb) {
   }
 
   let user = await User.findOneAndUpdate(filter, update, {new: true}).catch((err) => {
-    log.error({ err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
+    log.error({ err: err, attendeeId: attendeeId, companyId: companyId, day: day, editionId: editionId }, 'Error signing user')
    throw Boom.boomify(err)
   })
   
