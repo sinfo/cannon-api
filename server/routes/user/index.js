@@ -2,13 +2,6 @@ const server = require('../../').hapi
 const handlers = require('./handlers')
 
 server.route({
-  method: 'GET',
-  path: '/member',
-  options: handlers.getMembers.options,
-  handler: handlers.getMembers.handler
-})
-
-server.route({
   method: 'POST',
   path: '/users',
   options: handlers.create.options,
