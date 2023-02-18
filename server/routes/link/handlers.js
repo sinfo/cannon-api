@@ -273,7 +273,7 @@ exports.listAttendeeLinks = {
   },
   handler: async function (request, h) {
     try{
-      let links = await request.server.methods.link.list(request.params.companyId, request.query, "attendee")
+      let links = await request.server.methods.link.list(request.params.attendeeId, request.query, "attendee")
       return h.response(render(links))
     }catch(err){
       log.error({ err: err }, 'error listing attendee links')

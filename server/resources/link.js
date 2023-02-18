@@ -118,7 +118,8 @@ async function list (filter, query, author) {
     filter = {}
   }
   if (typeof filter === 'string') {
-    filter = { company: filter }
+    if (author === "company")  filter = { company: filter }
+    else filter = { attendee: filter }
   }
 
   if (query && query.editionId) {
