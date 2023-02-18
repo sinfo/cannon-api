@@ -15,7 +15,8 @@ exports.getMembers = {
   },
   handler: async (request, h) => {
     try {
-      const members = await request.server.methods.deck.getMembers()
+      const latestEdition = await request.server.methods.deck.getLatestEdition()
+      const members = await request.server.methods.deck.getMembers(latestEdition)
       return h.response(renderMembers(members))
     } catch(err) {
       log.error({ error: err })

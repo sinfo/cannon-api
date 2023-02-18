@@ -54,7 +54,7 @@ async function getCompany(companyId) {
   return company.data
 }
 
-async function getMembers() {
-  const members = await axios.get(`${DECK_API_URL}/members`, { json: true })
+async function getMembers(edition) {
+  const members = await axios.get(`${DECK_API_URL}/members?sort=name&event=${edition}&participations=true`, { json: true })
   return members.data
 }
