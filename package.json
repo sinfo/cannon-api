@@ -32,6 +32,7 @@
   },
   "homepage": "https://github.com/sinfo/cannon-api",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.272.0",
     "@hapi/basic": "^6.0.0",
     "@hapi/boom": "^9.1.4",
     "@hapi/hapi": "^20.2.1",
