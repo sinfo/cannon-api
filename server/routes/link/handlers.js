@@ -273,7 +273,18 @@ exports.listAttendeeLinks = {
   },
   handler: async function (request, h) {
     try{
+      //let links = []
+      let user = await request.server.methods.user.get(request.params.attendeeId)
+      if (!user) {
+        log.error('user not found')
+        throw Boom.notFound()
+      }      
       let links = await request.server.methods.link.list(request.params.attendeeId, request.query, "attendee")
+      let sharedLinks = user.linkShared
+      for(let i = 0; i < sharedLinks.length; i++){
+        let newLinks = await request.server.methods.link.list(sharedLinks[i], request.query, "attendee")
+        links = links.concat(newLinks)
+      }
       return h.response(render(links))
     }catch(err){
       log.error({ err: err }, 'error listing attendee links')
