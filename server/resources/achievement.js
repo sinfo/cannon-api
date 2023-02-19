@@ -1,6 +1,7 @@
 const Boom = require('@hapi/boom')
-const slug = require('slug')
+const uuid = require('uuid')
 const server = require('../').hapi
+const aws = require('../plugins/aws')
 const log = require('../helpers/logger')
 const fieldsParser = require('../helpers/fieldsParser')
 const Achievement = require('../db/achievement')
@@ -31,10 +32,29 @@ server.method('achievement.createSecret', createSecret, {})
 server.method('achievement.addUserToSecret', addUserToSecret, {})
 server.method('achievement.getAchievementBySession', getAchievementBySession, {})
 
-async function create (achievement) {
-  achievement.id = achievement.id || slug(achievement.name)
+async function create(data) {
+  let achievement = {
+    id: data.id,
+    name: data.name,
+    event: data.event,
+    session: data.session,
+    description: data.description,
+    category: data.category,
+    instructions: data.instructions,
+    validity: data.validity,
+    kind: data.kind
+  }
 
+  achievement.id = achievement.id || uuid.v4()
   achievement.updated = achievement.created = Date.now()
+
+  const imgUrl = await uploadAchievementImage(achievement, data.img)
+  if (!imgUrl) {
+    log.error('Error setting image URL for achievement ' + achievement.id)
+    throw Boom.internal('Error setting image URL for achievement ' + achievement.id)
+  }
+
+  achievement.img = imgUrl
 
   return Achievement.create(achievement).catch((err) =>{
     if (err.code === 11000) {
@@ -107,6 +127,8 @@ async function list (query) {
 }
 
 async function remove (id) {
+  const achievement = await Achievement.findOne({ id: id })
+  await removeAchievementImage(achievement)
   return Achievement.findOneAndRemove({ id: id }) 
 }
 
@@ -743,4 +765,44 @@ async function getAchievementBySession (id) {
   let filter = { session: id }
 
   return Achievement.findOne(filter)
+}
+
+/* Image Functions */
+function getDataFromStream(stream) {
+  return new Promise((resolve, reject) => {
+    let data = []
+
+    stream.on('data', (chunk) => {
+      data.push(chunk)
+    })
+
+    stream.on('end', () => {
+      resolve(Buffer.concat(data))
+    })
+
+    stream.on('error', (err) => {
+      reject(err)
+    })
+  })
+}
+
+function getFileName(achievement) {
+  return achievement.id + '.webp'
+}
+
+function getAchievementPath(achievement) {
+  return `static/${achievement.event}/achievements/${achievement.kind}s/`
+}
+
+async function uploadAchievementImage(achievement, file) {
+  const path = getAchievementPath(achievement)
+  const fileName = getFileName(achievement)
+  const data = await getDataFromStream(file)
+  return aws.upload(path, data, fileName, true)
+}
+
+async function removeAchievementImage(achievement) {
+  const path = getAchievementPath(achievement)
+  const fileName = getFileName(achievement)
+  return aws.delete(path, fileName)
 }

@@ -13,7 +13,7 @@ config.webapp = {
 }
 
 config.deck = {
-  url: process.env.EVENTDECK_URL || 'https://deck.sinfo.org'
+  url: process.env.CANNON_EVENTDECK_URL || 'https://deck.sinfo.org'
 }
 
 config.upload = {
@@ -22,6 +22,15 @@ config.upload = {
   cvsZipPath: process.env.CANNON_UPLOAD_CVSZIP_PATH || join(__dirname, `/CVS.zip`),
   cvsZipAge: process.env.CANNON_UPLOAD_CVSZIP_AGE || 3600 * 1000, // 1 hour in miliseconds
   cvsLinkPath: join(__dirname, `/CVSlink.zip`)
+}
+
+config.aws = {
+  storageRegion: process.env.CANNON_AWS_STORAGE_REGION || 'AWS_STORAGE_REGION',
+  storageDomain: process.env.CANNON_AWS_STORAGE_DOMAIN || 'AWS_STORAGE_DOMAIN',
+  storageKey: process.env.CANNON_AWS_STORAGE_KEY || 'AWS_STORAGE_KEY',
+  storageSecret: process.env.CANNON_AWS_STORAGE_SECRET || 'AWS_STORAGE_SECRET',
+  storageName: process.env.CANNON_AWS_STORAGE_NAME || 'AWS_STORAGE_NAME',
+  storageTest: process.env.CANNON_AWS_STORAGE_TEST || '/cannon/test/'
 }
 
 config.mongo = {
