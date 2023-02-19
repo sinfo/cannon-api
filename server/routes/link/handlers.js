@@ -39,7 +39,7 @@ exports.createCompanyLink = {
     try{
       const edition = await request.server.methods.deck.getLatestEdition()
       await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, edition.id)
-      let link = await request.server.methods.link.create(request.params.companyId, request.payload, "company")
+      let link = await request.server.methods.link.create(request.params.companyId, request.payload, "company", edition.id)
       return h.response(render(link)).created(`/company/${request.params.companyId}/link/${link.attendeeId}`)
     }catch(err){
       log.error({err: err}, 'error creating company link')
@@ -75,8 +75,7 @@ exports.createAttendeeLink = {
     try{
       const edition = await request.server.methods.deck.getLatestEdition()
       await request.server.methods.link.checkCompany(request.payload.userId, request.payload.companyId, edition.id)
-      request.payload.editionId = edition.id
-      let link = await request.server.methods.link.create(request.params.attendeeId, request.payload, "attendee")
+      let link = await request.server.methods.link.create(request.params.attendeeId, request.payload, "attendee", edition.id)
       return h.response(render(link)).created(`/users/${request.params.attendeeId}/link/${link.companyId}`)
     }catch(err){
       log.error({err: err}, 'error creating attendee link')
@@ -179,7 +178,7 @@ exports.getCompanyLink = {
   },
   handler: async function (request, h) {
     try{
-      const edition = await request.server.methods.link.getLatestEdition()
+      const edition = await request.server.methods.deck.getLatestEdition()
       await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, edition.id)
       let link = await request.server.methods.link.get(request.params, edition.id, 'company')
       return h.response(render(link))
@@ -205,7 +204,7 @@ exports.getAttendeeLink = {
   },
   handler: async function (request, h) {
     try{
-      const edition = await request.server.methods.link.getLatestEdition()
+      const edition = await request.server.methods.deck.getLatestEdition()
       await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, edition.id)
       let link = await request.server.methods.link.get(request.params, edition.id, 'attendee')
       return h.response(render(link))
@@ -236,9 +235,9 @@ exports.listCompanyLinks = {
   },
   handler: async function (request, h) {
     try{
-      const edition = await request.server.methods.link.getLatestEdition()
+      const edition = await request.server.methods.deck.getLatestEdition()
       await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, edition.id)
-      let links = await request.server.methods.link.list(request.params.companyId, request.query, 'company')
+      let links = await request.server.methods.link.list(request.params.companyId, request.query, 'company', edition.id)
       return h.response(render(links))
     }catch(err){
       log.error({ err: err }, 'error listing company links')
@@ -267,8 +266,7 @@ exports.listAttendeeLinks = {
   handler: async function (request, h) {
     try{
       const edition = await request.server.methods.deck.getLatestEdition()
-      request.query.editionId = edition.id
-      let links = await request.server.methods.link.list(request.params.attendeeId, request.query, "attendee")
+      let links = await request.server.methods.link.list(request.params.attendeeId, request.query, "attendee", edition.id)
       return h.response(render(links))
     }catch(err){
       log.error({ err: err }, 'error listing attendee links')
@@ -292,7 +290,7 @@ exports.removeCompanyLink = {
 },
   handler: async function (request, h) {
     try{
-      const edition = await request.server.methods.link.getLatestEdition()
+      const edition = await request.server.methods.deck.getLatestEdition()
       await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, edition.id)
       let link = await request.server.methods.link.remove(request.params, edition.id, "company")
       if (!link) {
@@ -321,7 +319,7 @@ exports.removeAttendeeLink = {
 },
   handler: async function (request, h) {
     try{
-      const edition = await request.server.methods.link.getLatestEdition()
+      const edition = await request.server.methods.deck.getLatestEdition()
       let link = await request.server.methods.link.remove(request.params, edition.id, 'attendee')
       if (!link) {
         log.error({ err: 'not found', link: edition.id }, 'error deleting attendee link')
