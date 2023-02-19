@@ -193,7 +193,7 @@ async function remove (filter) {
 
 }
 
-async function sign (attendeeId, companyId, payload, cb) {
+async function sign (attendeeId, companyId, day, editionId) {
   // todo verify
 
   let user = await get({ "id" : attendeeId }).catch((err) => {
@@ -209,8 +209,8 @@ async function sign (attendeeId, companyId, payload, cb) {
     id: attendeeId,
     signatures: {
       $elemMatch: {
-        day: payload.day,
-        edition: payload.editionId
+        day: day,
+        edition: editionId
       }
     }
   }
@@ -258,14 +258,14 @@ async function sign (attendeeId, companyId, payload, cb) {
   }
 }
 
-async function redeemCard (attendeeId, payload) {
+async function redeemCard (attendeeId, day, editionId) {
   // todo verify
   const filter = {
     id: attendeeId,
     signatures: {
       $elemMatch: {
-        day: payload.day,
-        edition: payload.editionId
+        day: day,
+        edition: editionId
       }
     }
   }
@@ -278,18 +278,18 @@ async function redeemCard (attendeeId, payload) {
 
   // this should not be here
   let user = await User.findOne(filter).catch((err) => {
-    log.error({ err: err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId }, 'Error getting user')
+    log.error({ err: err, attendeeId: attendeeId, day: day, editionId: editionId }, 'Error getting user')
     throw Boom.internal()
   })
 
   if (!user) {
     // day,event combination entry did not exist
-    log.error({ attendeeId: attendeeId, day: payload.day, editionId: payload.editionId }, 'Error getting user')
+    log.error({ attendeeId: attendeeId, day: day, editionId: editionId }, 'Error getting user')
     throw Boom.notFound()
   }
 
   // this should not be hardcoded
-  let signatures = user.signatures.filter(s => s.day === payload.day && s.edition === payload.editionId)
+  let signatures = user.signatures.filter(s => s.day === day && s.edition === editionId)
   if (signatures || signatures.length == 0){
     log.error({ user: user }, 'not enough signatures to validate card')
     throw Boom.badData({ user: user }, 'not enough signatures to validate card')
@@ -308,7 +308,7 @@ async function redeemCard (attendeeId, payload) {
   user = await User.findOneAndUpdate(filter, update,{new: true})
   if (!user) {
     // day,event combination entry did not exist
-    log.error({ err: err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
+    log.error({ err: err, attendeeId: attendeeId, day: day, editionId: editionId }, 'Error signing user')
     throw Boom.notFound()
   }
   return user
