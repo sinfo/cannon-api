@@ -13,12 +13,13 @@ server.method('link.list', list, {})
 server.method('link.remove', remove, {})
 server.method('link.checkCompany', checkCompany, {})
 
-async function create (companyId, link) {
+async function create (authorId, link, author) {
   let _link = {
-    company: companyId,
+    author: author,
+    company: author === "company" ? authorId : link.companyId,
     edition: link.editionId,
     user: link.userId,
-    attendee: link.attendeeId,
+    attendee: author === "attendee" ? authorId : link.attendeeId,
     updated: Date.now(),
     created: Date.now(),
     notes: link.notes === undefined ? {
@@ -29,7 +30,8 @@ async function create (companyId, link) {
       interestedIn: undefined,
       degree: undefined,
       availability: undefined,
-      otherObservations: undefined
+      otherObservations: undefined,
+      internships: undefined
     }
       : {
         contacts: {
@@ -38,14 +40,15 @@ async function create (companyId, link) {
             ? link.notes.contacts.email
             : '',
           phone: link.notes.contacts !== undefined &&
-            link.notes.contacts.email !== undefined
+            link.notes.contacts.phone !== undefined
             ? link.notes.contacts.phone
             : ''
         },
         interestedIn: link.notes.interestedIn,
         degree: link.notes.degree,
         availability: link.notes.availability,
-        otherObservations: link.notes.otherObservations
+        otherObservations: link.notes.otherObservations,
+        internships: link.notes.internships
       }
   }
 
@@ -64,17 +67,17 @@ async function create (companyId, link) {
 
 }
 
-async function update (filter, editionId, link) {
+async function update (filter, editionId, link, author) {
   // log.debug({ filter: filter, edition: editionId, link: link }, 'updating link')
 
   filter = {
     company: filter.companyId,
     edition: editionId,
-    attendee: filter.attendeeId
+    attendee: filter.attendeeId,
+    author: author
   }
 
   link.updated = Date.now()
-
 
   let _link = await Link.findOneAndUpdate(filter, link, {new: true}).catch((err) =>{
     log.error({ err: err, link: filter }, 'error updating link')
@@ -88,40 +91,42 @@ async function update (filter, editionId, link) {
   return _link
 }
 
-async function get (filter, editionId) {
+async function get (filter, editionId, author) {
   // log.debug({ filter: filter, edition: editionId }, 'getting link')
 
   filter = {
     company: filter.companyId,
     edition: editionId,
-    attendee: filter.attendeeId
+    attendee: filter.attendeeId,
+    author: author
   }
 
-
-    let link = await Link.findOne(filter).catch((err) =>{
-      log.error({ err: err, link: filter }, 'error getting link')
-      throw Boom.boomify(err)
-    })
-    if (!link) {
-      log.error({ err: 'not found', link: filter }, 'link not found')
-      throw Boom.notFound('link not found')
-    }
-    return link
-
+  let link = await Link.findOne(filter).catch((err) =>{
+    log.error({ err: err, link: filter }, 'error getting link')
+    throw Boom.boomify(err)
+  })
+  if (!link) {
+    log.error({ err: 'not found', link: filter }, 'link not found')
+    throw Boom.notFound('link not found')
+  }
+  return link
 }
 
-async function list (filter, query) {
+async function list (filter, query, author) {
   // log.debug({ filter: filter }, 'list link')
   if(!filter){
     filter = {}
   }
   if (typeof filter === 'string') {
-    filter = { company: filter }
+    if (author === "company")  filter = { company: filter }
+    else filter = { attendee: filter }
   }
 
   if (query && query.editionId) {
     filter.edition = query.editionId
   }
+
+  filter.author = author
 
   const fields = fieldsParser(query.fields)
   const options = {
@@ -131,30 +136,38 @@ async function list (filter, query) {
   }
 
   let links = await Link.find(filter, fields, options)
-  let achFilter = {
-    'validity.to':
-      { '$gt': new Date('January 1, 2021 00:00:00').toISOString() },
-    'kind': 'cv'
-  }
-  let achievement = await Achievement.findOne(achFilter).catch((err) =>{
-    log.error({ err: err, link: filter }, 'link not found')
-    throw Boom.notFound('link not found')
-  })
   
-  let objLinks = Array.from(links, (l) => { return l.toObject() })
- 
-  objLinks.forEach((l) => { l.cv = achievement ? achievement.toObject().users.includes(l.attendee) : false })
- 
-  return objLinks
+  if (author === "company") {
+    let achFilter = {
+      'validity.to':
+        { '$gt': new Date('January 1, 2021 00:00:00').toISOString() },
+      'kind': 'cv'
+    }
+    let achievement = await Achievement.findOne(achFilter).catch((err) =>{
+      log.error({ err: err, link: filter }, 'link not found')
+      throw Boom.notFound('link not found')
+    })
+
+    let objLinks = Array.from(links, (l) => { return l.toObject() })
+  
+    objLinks.forEach((l) => { l.cv = achievement ? achievement.toObject().users.includes(l.attendee) : false })
+    
+    return objLinks
+  }
+  else {
+    let objLinks = Array.from(links, (l) => { return l.toObject() })
+    return objLinks
+  }
 }
 
-async function remove (filter, editionId) {
+async function remove (filter, editionId, author) {
   // log.debug({ filter: filter, edition: editionId }, 'removing link')
 
   filter = {
     company: filter.companyId,
     edition: editionId,
-    attendee: filter.attendeeId
+    attendee: filter.attendeeId,
+    author: author
   }
 
   return Link.findOneAndRemove(filter)
