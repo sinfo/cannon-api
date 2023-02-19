@@ -4,11 +4,13 @@ const handlers = require('./handlers')
 server.route({
   method: 'GET',
   path: '/qrcode/{id}',
-  config: handlers.generate
+  options: handlers.generate.options,
+  handler: handlers.generate.handler
 })
 
 server.route({
   method: 'GET',
   path: '/r/{id}',
-  config: handlers.redirect
+  options: handlers.redirect.options,
+  handler: handlers.redirect.handler
 })

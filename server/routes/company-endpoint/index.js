@@ -4,29 +4,34 @@ const handlers = require('./handlers')
 server.route({
   method: 'POST',
   path: '/company-endpoint',
-  config: handlers.create
+  options: handlers.create.options,
+  handler: handlers.create.handler
 })
 
 server.route({
   method: ['PUT', 'PATCH'],
   path: '/company-endpoint/{companyId}',
-  config: handlers.update
+  options: handlers.update.options,
+  handler: handlers.update.handler
 })
 
 server.route({
   method: 'GET',
   path: '/company-endpoint/{companyId}',
-  config: handlers.get
+  options: handlers.get.options,
+  handler: handlers.get.handler
 })
 
 server.route({
   method: 'GET',
   path: '/company-endpoint',
-  config: handlers.list
+  options: handlers.list.options,
+  handler: handlers.list.handler
 })
 
 server.route({
   method: 'DELETE',
   path: '/company-endpoint/{companyId}',
-  config: handlers.remove
+  options: handlers.remove.options,
+  handler: handlers.remove.handler
 })

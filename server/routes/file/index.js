@@ -4,77 +4,90 @@ const handlers = require('./handlers')
 server.route({
   method: 'GET',
   path: '/files',
-  config: handlers.list
+  options: handlers.list.options,
+  handler: handlers.list.handler
 })
 
 server.route({
   method: 'POST',
   path: '/files',
-  config: handlers.create
+  options: handlers.create.options,
+  handler: handlers.create.handler
 })
 
 server.route({
   method: 'POST',
   path: '/files/{id}',
-  config: handlers.upload
+  options: handlers.upload.options,
+  handler: handlers.upload.handler
 })
 
 server.route({
   method: 'POST',
   path: '/files/me',
-  config: handlers.uploadMe
+  options: handlers.uploadMe.options,
+  handler: handlers.uploadMe.handler
 })
 
 server.route({
   method: 'GET',
   path: '/files/{id}',
-  config: handlers.get
+  options: handlers.get.options,
+  handler: handlers.get.handler
 })
 
 server.route({
   method: 'GET',
   path: '/files/me',
-  config: handlers.getMe
+  options: handlers.getMe.options,
+  handler: handlers.getMe.handler
 })
 
 server.route({
   method: 'GET',
   path: '/files/{id}/download',
-  config: handlers.download
+  options: handlers.download.options,
+  handler: handlers.download.handler
 })
 
 server.route({
   method: 'GET',
   path: '/files/me/download',
-  config: handlers.downloadMe
+  options: handlers.downloadMe.options,
+  handler: handlers.downloadMe.handler
 })
 
 server.route({
   method: 'GET',
   path: '/files/download',
-  config: handlers.downloadZip
+  options: handlers.downloadZip.options,
+  handler: handlers.downloadZip.handler
 })
 
 server.route({
   method: ['PUT', 'PATCH'],
   path: '/files/{id}',
-  config: handlers.update
+  options: handlers.update.options,
+  handler: handlers.update.handler
 })
 
 server.route({
   method: ['DELETE'],
   path: '/files/{id}',
-  config: handlers.remove
+  options: handlers.remove.options,
+  handler: handlers.remove.handler
 })
 
 server.route({
   method: ['DELETE'],
   path: '/files/me',
-  config: handlers.removeMe
+  options: handlers.removeMe.options,
+  handler: handlers.removeMe.handler
 })
 
 server.route({
   method: 'GET',
   path: '/company/{companyId}/files/download',
-  config: handlers.downloadCompany
+  options: handlers.downloadCompany.options,
+  handler: handlers.downloadCompany.handler
 })

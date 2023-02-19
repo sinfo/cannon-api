@@ -4,5 +4,6 @@ const handlers = require('./handlers')
 server.route({
   method: 'GET',
   path: '/promo-code',
-  config: handlers.find
+  options: handlers.find.options,
+  handler: handlers.find.handler
 })

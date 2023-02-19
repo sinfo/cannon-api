@@ -1,5 +1,5 @@
-const Lab = require('lab')
-const Code = require('code')
+const Lab = require('@hapi/lab')
+const Code = require('@hapi/code')
 
 const server = require('../').hapi
 
@@ -44,169 +44,184 @@ const changesToA = {
 }
 
 lab.experiment('File', () => {
-  lab.test('Create as an admin', (done) => {
+  lab.test('Create as an admin',  async () => {
     const options = {
       method: 'POST',
       url: '/files',
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: fileA
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(201)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.id).to.equal(fileA.id)
-      Code.expect(result.name).to.equal(fileA.name)
-      Code.expect(result.extension).to.equal(fileA.extension)
+    Code.expect(response.statusCode).to.equal(201)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.id).to.equal(fileA.id)
+    Code.expect(result.name).to.equal(fileA.name)
+    Code.expect(result.extension).to.equal(fileA.extension)
 
-      done()
-    })
+      
   })
 
-  lab.test('List all as an admin', (done) => {
+  lab.test('List all as an admin',  async () => {
     const options = {
       method: 'GET',
       url: '/files',
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Array)
-      Code.expect(result[0].name).to.be.string
-      done()
-    })
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Array)
+    Code.expect(result[0].name).to.be.string
+      
   })
 
-  lab.test('Get one as an admin', (done) => {
+  lab.test('Get one as an admin',  async () => {
     const options = {
       method: 'GET',
       url: '/files/' + fileA.id,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.id).to.equal(fileA.id)
-      Code.expect(result.name).to.equal(fileA.name)
-      Code.expect(result.extension).to.equal(fileA.extension)
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.id).to.equal(fileA.id)
+    Code.expect(result.name).to.equal(fileA.name)
+    Code.expect(result.extension).to.equal(fileA.extension)
 
-      done()
-    })
+      
   })
 
-  lab.test('List all as a user', (done) => {
+  lab.test('List all as a user',  async () => {
     const options = {
       method: 'GET',
       url: '/files',
-      credentials: credentialsB
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
     }
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(403)
-      done()
-    })
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(403)
+      
   })
 
-  lab.test('Get one as a user', (done) => {
+  lab.test('Get one as a user',  async () => {
     const options = {
       method: 'GET',
       url: '/files/' + fileA.id,
-      credentials: credentialsB
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
     }
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(403)
-      done()
-    })
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(403)
+      
   })
 
-  lab.test('Update as an admin', (done) => {
+  lab.test('Update as an admin',  async () => {
     const options = {
       method: 'PUT',
       url: '/files/' + fileA.id,
-      credentials: credentialsA,
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
       payload: changesToA
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.id).to.equal(fileA.id)
-      Code.expect(result.name).to.equal(changesToA.name)
-      Code.expect(result.extension).to.equal(fileA.extension)
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.id).to.equal(fileA.id)
+    Code.expect(result.name).to.equal(changesToA.name)
+    Code.expect(result.extension).to.equal(fileA.extension)
 
-      done()
-    })
   })
 
-  lab.test('Update as an user', (done) => {
+  lab.test('Update as an user',  async () => {
     const options = {
       method: 'PUT',
       url: '/files/' + fileA.id,
-      credentials: credentialsB,
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
       payload: changesToA
     }
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(403)
-
-      done()
-    })
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(403)
   })
 
-  lab.test('Delete as an admin', (done) => {
+  lab.test('Delete as an admin',  async () => {
     const options = {
       method: 'DELETE',
       url: '/files/' + fileA.id,
-      credentials: credentialsA
+      auth:{
+        credentials: credentialsA,
+        strategy: 'default'
+      },
     }
 
-    server.inject(options, (response) => {
-      const result = response.result
+    let response = await server.inject(options)
+    const result = response.result
 
-      Code.expect(response.statusCode).to.equal(200)
-      Code.expect(result).to.be.instanceof(Object)
-      Code.expect(result.id).to.equal(fileA.id)
-      Code.expect(result.name).to.equal(changesToA.name)
-      Code.expect(result.extension).to.equal(fileA.extension)
-      done()
-    })
+    Code.expect(response.statusCode).to.equal(200)
+    Code.expect(result).to.be.instanceof(Object)
+    Code.expect(result.id).to.equal(fileA.id)
+    Code.expect(result.name).to.equal(changesToA.name)
+    Code.expect(result.extension).to.equal(fileA.extension)
   })
 
-  lab.test('Create as an user', (done) => {
+  lab.test('Create as an user',  async () => {
     const options = {
       method: 'POST',
       url: '/files',
-      credentials: credentialsB,
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
       payload: fileA
     }
-
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(403)
-      done()
-    })
+    
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(403)
+      
   })
 
-  lab.test('Delete as an user', (done) => {
+  lab.test('Delete as an user',  async () => {
     const options = {
       method: 'DELETE',
       url: '/files/' + fileA.id,
-      credentials: credentialsB
+      auth:{
+        credentials: credentialsB,
+        strategy: 'default'
+      },
     }
 
-    server.inject(options, (response) => {
-      Code.expect(response.statusCode).to.equal(403)
-      done()
-    })
+    let response = await server.inject(options)
+    Code.expect(response.statusCode).to.equal(403)
   })
 })

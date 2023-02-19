@@ -25,7 +25,7 @@ config.upload = {
 }
 
 config.mongo = {
-  url: process.env.CANNON_MONGO_URL || 'mongodb://localhost/cannon'
+  url: process.env.CANNON_MONGO_URL || 'mongodb://localhost:27018/cannon'
 }
 
 config.facebook = {
@@ -52,6 +52,14 @@ config.fenix = {
   clientId: process.env.CANNON_FENIX_APP_ID || 'YOUR CLIENT_ID',
   clientSecret: process.env.CANNON_FENIX_APP_SECRET || 'YOUR CLIENT_SECRET',
   redirectUri: process.env.CANNON_FENIX_REDIRECT_URI || 'http://example.com/redirect'
+}
+
+config.microsoft = {
+  url: process.env.CANNON_MICROSOFT_URL || 'https://graph.microsoft.com',
+  authority: process.env.CANNON_MICROSOFT_AUTHORITY || 'https://login.microsoftonline.com/common',
+  clientId: process.env.CANNON_MICROSOFT_CLIENT_ID || 'MICROSOFT_CLIENT_ID',
+  clientSecret: process.env.CANNON_MICROSOFT_CLIENT_SECRET || 'MICROSOFT_APP_SECRET',
+  redirectUri: process.env.CANNON_MICROSOFT_REDIRECT_URI || 'http://localhost:4201/login/microsoft'
 }
 
 config.bunyan = {
@@ -115,7 +123,7 @@ config.mailgun = {
 }
 
 if (process.env.NODE_ENV === 'test') {
-  config.mongo.url = process.env.CANNON_MONGO_TEST_URL || 'mongodb://localhost/cannon_test'
+  config.mongo.url = process.env.CANNON_MONGO_TEST_URL || 'mongodb://localhost:27018/cannon_test'
   config.bunyan.level = process.env.CANNON_LOG_LEVEL_TEST || 'error'
 }
 

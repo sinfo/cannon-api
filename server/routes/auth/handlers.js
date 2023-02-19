@@ -1,86 +1,159 @@
 const Joi = require('joi')
 const render = require('../../views/auth')
+const log = require('../../helpers/logger')
+const Boom = require('@hapi/boom')
 
 exports = module.exports
 
 exports.facebook = {
-  tags: ['api', 'auth'],
-  auth: {
-    strategies: ['default'],
-    mode: 'try'
+  options: {
+    tags: ['api', 'auth'],
+    auth: {
+      strategies: ['default'],
+      mode: 'try'
+    },
+    validate: {
+      payload: Joi.object({
+        id: Joi.string().required().description('facebook id of the member'),
+        token: Joi.string().required().description('facebook token of the member')
+      })
+    },
+    description: 'Facebook login'
   },
-  validate: {
-    payload: {
-      id: Joi.string().required().description('facebook id of the member'),
-      token: Joi.string().required().description('facebook token of the member')
+  handler: async function (request, h) {
+    try {
+      let member = await request.server.methods.auth.facebookAuth(request.payload.id, request.payload.token);
+      return h.response(render(member))
+    } catch (err) {
+      if (err.code === 11000) {
+        log.error({ msg: "Could not login user with facebook." })
+        throw Boom.unauthorized(`User "${request.payload.id}" could not login with facebook.`)
+      }
+
+      log.error({ err: err, msg: 'Error with facebook login.' }, 'Error with facebook login.')
+      throw Boom.internal()
     }
-  },
-  pre: [
-    { method: 'auth.facebook(payload.id, payload.token)', assign: 'member' }
-  ],
-  handler: function (request, reply) {
-    reply(render(request.pre.member))
-  },
-  description: 'Facebook login'
+  }
 }
 
 exports.google = {
-  tags: ['api', 'auth'],
-  auth: {
-    strategies: ['default'],
-    mode: 'try'
+  options: {
+    tags: ['api', 'auth'],
+    auth: {
+      strategies: ['default'],
+      mode: 'try'
+    },
+    validate: {
+      payload: Joi.object({
+        id: Joi.string().required().description('google id of the member'),
+        token: Joi.string().required().description('google token of the member')
+      })
+    },
+    description: 'Google login'
   },
-  validate: {
-    payload: {
-      id: Joi.string().required().description('google id of the member'),
-      token: Joi.string().required().description('google token of the member')
+  handler: async function (request, h) {
+    try {
+      let member = await request.server.methods.auth.google(request.payload.id, request.payload.token);
+      return h.response(render(member))
+    } catch (err) {
+      if (err.code === 11000) {
+        log.error({ msg: "Could not login user with google." })
+        throw Boom.unauthorized(`User "${request.payload.id}" could not login with google.`)
+      }
+ 
+      log.error({ err: err, msg: 'Error with google login.' }, 'Error with google login.')
+      throw Boom.internal()
     }
-  },
-  pre: [
-    { method: 'auth.google(payload.id, payload.token)', assign: 'member' }
-  ],
-  handler: function (request, reply) {
-    reply(render(request.pre.member))
-  },
-  description: 'Google login'
+  }
 }
 
-exports.fenix = {
-  tags: ['api', 'auth'],
-  auth: {
-    strategies: ['default'],
-    mode: 'try'
+exports.microsoft = {
+  options: {
+    tags: ['api', 'auth'],
+    auth: {
+      strategies: ['default'],
+      mode: 'try'
+    },
+    validate: {
+      payload: Joi.object({
+        code: Joi.string().required().description('microsoft code of the member')
+      })
+    },
+    description: 'Microsoft login'
   },
-  validate: {
-    payload: {
-      code: Joi.string().required().description('fenix code of the member')
+  handler: async function (request, h) {
+    try {
+      let member = await request.server.methods.auth.microsoft(request.payload.code)
+      return h.response(render(member))
+    } catch (err) {
+      if (err.code === 11000) {
+        log.error({ msg: "Could not login user with microsoft." })
+        return Boom.unauthorized(`User with token ${request.payload.code} could not login with microsoft.`)
+      }
+ 
+      log.error({ err: err, msg: 'Error with microsoft login.' }, 'Error with microsoft login.')
+      return Boom.internal()
+    }
+  }
+}
+
+
+exports.fenix = {
+  options: {
+    tags: ['api', 'auth'],
+    auth: {
+      strategies: ['default'],
+      mode: 'try'
+    },
+    validate: {
+      payload: Joi.object({
+        code: Joi.string().required().description('fenix code of the member')
+      })
+    },
+    description: 'Fenix login'
+  },
+  handler: async function (request, h) {
+    try {
+      let member = await request.server.methods.auth.fenix(request.payload.code);
+      return h.response(render(member))
+    } catch (err) {
+      if (err.code === 11000) {
+        log.error({ msg: "Could not login user with fenix." })
+        throw Boom.unauthorized(`User "${request.payload.id}" could not login with fenix.`)
+      }
+
+      log.error({ err: err, msg: 'Error with fenix login.' }, 'Error with fenix login.')
+      throw Boom.internal()
     }
   },
-  pre: [
-    { method: 'auth.fenix(payload.code)', assign: 'member' }
-  ],
-  handler: function (request, reply) {
-    reply(render(request.pre.member))
-  },
-  description: 'Fenix login'
 }
 
 exports.linkedin = {
-  tags: ['api', 'auth'],
-  auth: {
-    strategies: ['default'],
-    mode: 'try'
+  options: {
+    tags: ['api', 'auth'],
+    auth: {
+      strategies: ['default'],
+      mode: 'try'
+    },
+    validate: {
+      payload: Joi.object({
+        code: Joi.string().required().description('Linkedin code of the member')
+      })
+    },
+    description: 'Linkedin login'
   },
-  validate: {
-    payload: {
-      code: Joi.string().required().description('Linkedin code of the member')
+  handler: async function (request, h) {
+    try {
+      let member = await request.server.methods.auth.linkedin(request.payload.code);
+      return h.response(render(member))
+    } catch (err) {
+      if (err.code === 11000) {
+        log.error({ msg: "Could not login user with linkedin." })
+        throw Boom.unauthorized(`User "${request.payload.id}" could not login with linkedin.`)
+      }
+
+      log.error({ err: err, msg: 'Error with linkedin login.' }, 'Error with linkedin login.')
+      throw Boom.internal()
     }
-  },
-  pre: [
-    { method: 'auth.linkedin(payload.code)', assign: 'member' }
-  ],
-  handler: function (request, reply) {
-    reply(render(request.pre.member))
-  },
-  description: 'Linkedin login'
+  }
 }

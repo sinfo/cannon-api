@@ -4,23 +4,34 @@ const handlers = require('./handlers')
 server.route({
   method: ['POST'],
   path: '/auth/facebook',
-  config: handlers.facebook
+  options: handlers.facebook.options,
+  handler: handlers.facebook.handler
 })
 
 server.route({
   method: ['POST'],
   path: '/auth/google',
-  config: handlers.google
+  options: handlers.google.options,
+  handler: handlers.google.handler
 })
 
 server.route({
   method: ['POST'],
   path: '/auth/fenix',
-  config: handlers.fenix
+  options: handlers.fenix.options,
+  handler: handlers.fenix.handler
 })
 
 server.route({
   method: ['POST'],
   path: '/auth/linkedin',
-  config: handlers.linkedin
+  options: handlers.linkedin.options,
+  handler: handlers.linkedin.handler
+})
+
+server.route({
+  method: ['POST'],
+  path: '/auth/microsoft',
+  options: handlers.microsoft.options,
+  handler: handlers.microsoft.handler
 })

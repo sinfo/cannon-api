@@ -1,96 +1,101 @@
 const server = require('../').hapi
-const request = require('request')
+const axios = require('axios').default
 const log = require('./logger')
 const linkedinConfig = require('../../config').linkedin
 
 const LI_API_URL = 'https://www.linkedin.com/oauth/v2'
 const linkedin = {}
 
-linkedin.getToken = code => {
-  return new Promise((resolve, reject) => {
-    const url = `${LI_API_URL}/accessToken?grant_type=authorization_code&code=${code}&redirect_uri=${linkedinConfig.redirectUri}&client_id=${linkedinConfig.clientId}&client_secret=${linkedinConfig.clientSecret}`
+linkedin.getToken = async code => {
+  const url = `${LI_API_URL}/accessToken?grant_type=authorization_code&code=${code}&redirect_uri=${linkedinConfig.redirectUri}&client_id=${linkedinConfig.clientId}&client_secret=${linkedinConfig.clientSecret}`
 
-    request.post(url, { json: true }, (error, response, result) => {
-      if (error || response.statusCode !== 200) {
-        log.warn({
-          error,
-          linkedinConfig: {
-            clientId: linkedinConfig.clientId,
-            redirectUri: linkedinConfig.redirectUri
-          },
-          response: response? response.body.error_description : '',
-          where: 'getToken'
-        })
-        return reject('invalid Linkedin token')
-      }
-      return resolve(result.access_token)
+  let response = await axios.post(url,null, { json: true }).catch((error) => {
+      log.warn({
+        error,
+        linkedinConfig: {
+          clientId: linkedinConfig.clientId,
+          redirectUri: linkedinConfig.redirectUri
+        },
+        where: 'getToken'
+      })
+      throw err
     })
-  })
+  if(response.status !== 200){
+    throw new Error('invalid token')
+  }  
+  log.info(response.data)
+  return response.data.access_token
 }
 
-linkedin.getLinkedinUser = linkedinUserToken => {
-  return new Promise((resolve, reject) => {
+linkedin.getLinkedinUser = async linkedinUserToken => {
     const urlProfile = 'https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))'
-    request.get(urlProfile, {
+    log.info(linkedinUserToken)
+    let response = await axios.get(urlProfile, {
       json: true,
-      auth: {
-        'bearer': linkedinUserToken
+      headers: {
+        'Authorization':`Bearer ${linkedinUserToken}`
       }
-    }, (error, response, linkedinJsonUser) => {
-      if (error || response.statusCode !== 200) {
-        log.warn({ error, response: response? response.body.error_description : '' , where: 'getLinkedinUser'})
-        return reject('error getting linkedin user profile')
-      }
-
-      linkedin.getLinkedinUserEmail(linkedinUserToken)
-        .then(linkedinEmail => {
-          let linkedinUser = {
-            id: linkedinJsonUser.id,
-            emailAddress: linkedinEmail,
-            firstName: Object.keys(linkedinJsonUser.firstName.localized).map(key => linkedinJsonUser.firstName.localized[key])[0],
-            lastName: Object.keys(linkedinJsonUser.lastName.localized).map(key => linkedinJsonUser.lastName.localized[key])[0],
-            pictureUrl: linkedinJsonUser.profilePicture['displayImage~'].elements[0].identifiers[0].identifier
-          }
-
-          return resolve(linkedinUser)
-        })
-        .catch(err => {
-          console.log(err)
-          reject(err)
-        })
+    }).catch((error) => {
+        log.warn({ error, where: 'getLinkedinUser'})
+        throw error
     })
-  })
+
+    if (response.status !== 200) {
+      log.error('error fetching linkedin user')
+      throw new Error('error fetching linkedin user')
+    }
+
+    let linkedinJsonUser = response.data
+
+    let linkedinEmail = await  linkedin.getLinkedinUserEmail(linkedinUserToken).catch(err => {
+      log.error(err)
+      throw err
+    })
+    let linkedinUser = {
+      id: linkedinJsonUser.id,
+      emailAddress: linkedinEmail,
+      firstName: Object.keys(linkedinJsonUser.firstName.localized).map(key => linkedinJsonUser.firstName.localized[key])[0],
+      lastName: Object.keys(linkedinJsonUser.lastName.localized).map(key => linkedinJsonUser.lastName.localized[key])[0],
+      pictureUrl: linkedinJsonUser.profilePicture['displayImage~'].elements[0].identifiers[0].identifier
+    }
+
+    return linkedinUser
 }
 
-linkedin.getLinkedinUserEmail = linkedinUserToken => {
-  return new Promise((resolve, reject) => {
-    const emailUrl = 'https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))'
+linkedin.getLinkedinUserEmail = async linkedinUserToken => {
+  const emailUrl = 'https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))'
 
-    request.get(emailUrl, {
-      json: true,
-      auth: {
-        'bearer': linkedinUserToken
-      }
-    }, (error, response, linkedinEmail) => {
-      if (error || response.statusCode !== 200) {
-        log.warn({ error, response: response? response.body.error_description : '' , where: 'getLinkedinUserEmail'})
-        return reject('error getting linkedin user email')
-      }
-
-      if (typeof (linkedinEmail) === 'string') {
-        return resolve(linkedinEmail)
-      }
-
-      if (!linkedinEmail['elements'] ||
-        !linkedinEmail['elements'].length ||
-        !linkedinEmail['elements'][0]['handle~'] ||
-        !linkedinEmail['elements'][0]['handle~']['emailAddress']) {
-        return reject(`Couldn\t find email in ${JSON.stringify(linkedinEmail)}`)
-      }
-
-      return resolve(linkedinEmail['elements'][0]['handle~']['emailAddress'])
-    })
+  let response = await axios.get(emailUrl, {
+    json: true,
+    headers: {
+      'Authorization':`Bearer ${linkedinUserToken}`
+    }
+  }).catch((error) => {
+    if (error) {
+      log.warn({ error, where: 'getLinkedinUserEmail'})
+      throw error
+    }
   })
+
+  if(response.status !== 200){
+    log.error('error fetching linkedin user email')
+    throw new Error('error fetching linkedin user email')
+  }
+
+  let linkedinEmail = response.data
+
+  if (typeof (linkedinEmail) === 'string') {
+    return linkedinEmail
+  }
+
+  if (!linkedinEmail['elements'] ||
+    !linkedinEmail['elements'].length ||
+    !linkedinEmail['elements'][0]['handle~'] ||
+    !linkedinEmail['elements'][0]['handle~']['emailAddress']) {
+    throw new Error(`Couldn\t find email in ${JSON.stringify(linkedinEmail)}`)
+  }
+
+  return linkedinEmail['elements'][0]['handle~']['emailAddress']
 }
 
 /**
@@ -102,47 +107,42 @@ linkedin.getLinkedinUserEmail = linkedinUserToken => {
  * @param {string} linkedinUser.lastName
  * @param {string} linkedinUser.pictureUrl Profile image
  */
-linkedin.getUser = linkedinUser => {
-  return new Promise((resolve, reject) => {
-    server.methods.user.get({ 'mail': linkedinUser.emailAddress }, (err, user) => {
-      if (err) {
-        // If does not find a user with a given linkedin email, we create a new user
-        if (err.output && err.output.statusCode === 404) {
-          return resolve({ createUser: true, linkedinUser })
-        }
-        log.error({ err: err, linkedinUser }, '[linkedin-login] error getting user by linkedin email')
-        return reject(err)
-      }
-      // A user exist with a given linkedin email, we only need to update 'linkedin.id' and 'img' in DB
-      return resolve({ createUser: false, userId: user.id })
-    })
+linkedin.getUser = async linkedinUser => {
+  let user = await server.methods.user.get({ 'mail': linkedinUser.emailAddress }).catch((err) => {
+    log.error({ err: err, linkedinUser }, '[linkedin-login] error getting user by linkedin email')
+    throw err
   })
+
+  if (user) {
+    return { 
+      createUser: false, 
+      userId: user.id
+    }
+  } else {
+    return { 
+      createUser: true
+    }
+  }
 }
 
-linkedin.createUser = linkedinUser => {
-  return new Promise((resolve, reject) => {
-    const user = {
-      linkedin: {
-        id: linkedinUser.id
-      },
-      name: `${linkedinUser.firstName} ${linkedinUser.lastName}`,
-      mail: linkedinUser.emailAddress,
-      img: linkedinUser.pictureUrl
-    }
+linkedin.createUser = async linkedinUser => {
+  const user = {
+    linkedin: {
+      id: linkedinUser.id
+    },
+    name: `${linkedinUser.firstName} ${linkedinUser.lastName}`,
+    mail: linkedinUser.emailAddress,
+    img: linkedinUser.pictureUrl
+  }
 
-    log.debug('[linkedin-login] creating user', user)
+  log.debug('[linkedin-login] creating user', user)
 
-    server.methods.user.create(user, (err, result) => {
-      if (err) {
-        log.error({ user }, '[linkedin-login] error creating user')
-        return reject(err)
-      }
-
-      log.debug({ userId: result.id }, '[linkedin-login] new user created')
-
-      return resolve(result.id)
-    })
+  let result = await server.methods.user.create(user).catch((err) => {
+    log.error({ user }, '[linkedin-login] error creating user')
+    throw err
   })
+  log.debug({ userId: result.id }, '[linkedin-login] new user created')
+  return result.id
 }
 
 module.exports = linkedin

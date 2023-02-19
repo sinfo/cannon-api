@@ -24,7 +24,7 @@ jobs:
         push: true
         tags: orgsinfo/cannon:latest
     
-    - name: Corlief Backend Image Digest
+    - name: Cannon Backend Image Digest
       run: echo ${{ steps.docker_build.outputs.digest }}
 
   deploy:

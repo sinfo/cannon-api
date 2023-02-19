@@ -15,21 +15,21 @@ const google = {}
  * @param {string} googleUserId
  * @param {string} googleUserToken
  */
-google.verifyToken = (googleUserId, googleUserToken) => {
-  return new Promise((resolve, reject) => {
+google.verifyToken = async (googleUserId, googleUserToken) => {
+    log.info('verify')
     const oAuth2Client = new OAuth2Client(googleConfig.clientId, googleConfig.clientSecret)
-    oAuth2Client.verifyIdToken({
+    let login = await oAuth2Client.verifyIdToken({
       idToken: googleUserToken,
       audience: googleConfig.clientId
-    }, (err, login) => {
+    }).catch((err) => {
       if (err) {
         log.warn(err)
-        return reject(err)
+        throw Boom.boomify(err)
       }
-      // If verified we can trust in the login.payload
-      return resolve(login.payload)
     })
-  })
+    // If verified we can trust in the login.payload
+    log.info('verify done')
+    return login.payload
 }
 
 /**
@@ -40,38 +40,34 @@ google.verifyToken = (googleUserId, googleUserToken) => {
  * @param {string} gUser.name
  * @param {string} gUser.picture Profile image
  */
-google.getUser = gUser => {
-  return new Promise((resolve, reject) => {
-    server.methods.user.get({
+google.getUser = async gUser => {
+    log.info('getUser')
+    let user = await server.methods.user.get({
       'mail': gUser.email
-    }, (err, user) => {
-      if (err) {
-        // If does not find a user with a given Google email, we create a new user
-        if (err.output && err.output.statusCode === 404) {
-          return resolve({
-            createUser: true,
-            gUser
-          })
-        }
-
+    }).catch((err) => {
         log.error({
           err: err,
           google: gUser
         }, '[google-login] error getting user by google email')
-        return reject(err)
-      }
+        throw Boom.boomify(err)
+    })
 
-      // A user exist with a given Google email, we only need to update 'google.id' and 'img' in DB
-      return resolve({
+    // A user exist with a given Google email, we only need to update 'google.id' and 'img' in DB
+    if (user) {
+      return {
         createUser: false,
         userId: user.id
-      })
-    })
-  })
+      }
+    } else {
+      return {
+        createUser: true,
+        gUser
+      }
+    }
 }
 
-google.createUser = gUser => {
-  return new Promise((resolve, reject) => {
+google.createUser = async gUser => {
+    log.info('createUser')
     const user = {
       google: {
         id: gUser.sub
@@ -83,21 +79,19 @@ google.createUser = gUser => {
 
     log.debug('[google-login] creating user', user)
 
-    server.methods.user.create(user, (err, result) => {
-      if (err) {
-        log.error({
-          user
-        }, '[google-login] error creating user')
-        return reject(err)
-      }
-
-      log.debug({
-        userId: result.id
-      }, '[google-login] new user created')
-
-      return resolve(result.id)
+    let result = await server.methods.user.create(user).catch((err) => {
+      log.error({
+        user
+      }, '[google-login] error creating user')
+      throw Boom.boomify(err)
     })
-  })
+
+    log.debug({
+      userId: result.id
+    }, '[google-login] new user created')
+
+    log.info('createUser done')
+    return result.id
 }
 
 google.getLiveStream = function (callback) {

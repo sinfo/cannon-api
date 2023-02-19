@@ -1,72 +1,86 @@
 const Joi = require('joi')
 const render = require('../../views/redeem')
 const renderAchievement = require('../../views/achievement')
+const Boom = require('@hapi/boom');
+const log = require('../../helpers/logger')
 
 exports = module.exports
 
 exports.create = {
-  tags: ['api', 'redeem'],
-  auth: {
-    strategies: ['default'],
-    scope: ['team', 'admin']
+  options:{
+    tags: ['api', 'redeem'],
+    auth: {
+      strategies: ['default'],
+      scope: ['team', 'admin']
+    },
+    validate: {
+      payload: Joi.object({
+        id: Joi.string().required().description('Redeem Code id.'),
+        achievement: Joi.string().required().description('Achievement you want to redeem.'),
+        expires: Joi.date().description('Date of redeem code expiration.')
+      })
+    },
+    description: 'Creates a new Redeem Code.'
   },
-  validate: {
-    payload: {
-      id: Joi.string().required().description('Redeem Code id.'),
-      achievement: Joi.string().required().description('Achievement you want to redeem.'),
-      expires: Joi.date().description('Date of redeem code expiration.')
+  handler: async function (request, h) {
+    try {
+      let redeem = await request.server.methods.redeem.create(request.payload)
+      return h.response(render(redeem)).created()
+    } catch (err) {
+      log.error({ err: err, msg:'error creating redeem code'}, 'error creating redeem code')
+      throw Boom.boomify(err)
     }
   },
-  pre: [
-    { method: 'redeem.create(payload)', assign: 'redeem' }
-  ],
-  handler: function (request, reply) {
-    reply(render(request.pre.redeem)).created('/redeem/' + request.pre.redeem.id)
-  },
-  description: 'Creates a new Redeem Code.'
 }
 
 exports.get = {
-  tags: ['api', 'redeem'],
-  auth: {
-    strategies: ['default'],
-    scope: ['user', 'team', 'admin']
+  options:{
+    tags: ['api', 'redeem'],
+    auth: {
+      strategies: ['default'],
+      scope: ['user', 'team', 'admin']
+    },
+    validate: {
+      params: Joi.object({
+        id: Joi.string().required().description('Id of the redeem code we want to retrieve')
+      })
+    },
+    description: 'Uses a redeem code to get an achievement'
   },
-  validate: {
-    params: {
-      id: Joi.string().required().description('Id of the redeem code we want to retrieve')
+  handler: async function (request, h) {
+    try {
+      let redeem = await request.server.methods.redeem.get(request.params.id)
+      await request.server.methods.redeem.use(redeem, request.auth.credentials.user.id)
+      let achievement = await request.server.methods.achievement.addUser(redeem.achievement, request.auth.credentials.user.id)
+      return h.response({ success: true, achievement: renderAchievement(achievement)})
+    } catch (err) {
+      log.error({ err: err, msg:'error getting redeem code'}, 'error getting redeem code')
+      throw Boom.boomify(err)
     }
   },
-  pre: [
-    { method: 'redeem.get(params.id)', assign: 'redeem' },
-    { method: 'redeem.use(pre.redeem, auth.credentials.user.id)' },
-    { method: 'achievement.addUser(pre.redeem.achievement, auth.credentials.user.id)', assign: 'achievement' }
-  ],
-  handler: function (request, reply) {
-    reply({
-      success: true,
-      achievement: renderAchievement(request.pre.achievement)
-    })
-  },
-  description: 'Uses a redeem code to get an achievement'
 }
 
 exports.remove = {
-  tags: ['api', 'redeem'],
-  auth: {
-    strategies: ['default'],
-    scope: ['admin']
+  options:{
+    tags: ['api', 'redeem'],
+    auth: {
+      strategies: ['default'],
+      scope: ['admin']
+    },
+    validate: {
+      params: Joi.object({
+        id: Joi.string().required().description('Id of the redeem code we want to remove')
+      })
+    },
+    description: 'Removes a redeem code'
   },
-  validate: {
-    params: {
-      id: Joi.string().required().description('Id of the redeem code we want to remove')
+  handler: async function (request, h) {
+    try {
+      let redeem = await request.server.methods.redeem.remove(request.params.id)
+      return h.response(redeem)
+    } catch (err) {
+      log.error({ err: err, msg:'error removing redeem code'}, 'error removing redeem code')
+      throw Boom.boomify(err)
     }
   },
-  pre: [
-    { method: 'redeem.remove(params.id)', assign: 'redeem' }
-  ],
-  handler: function (request, reply) {
-    reply(request.pre.redeem)
-  },
-  description: 'Removes a redeem code'
 }
