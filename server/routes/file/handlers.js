@@ -1,7 +1,6 @@
 const Joi = require('joi')
 const render = require('../../views/file')
 const configUpload = require('../../../config').upload
-const server = require('../../').hapi
 const log = require('../../helpers/logger')
 const Boom = require('@hapi/boom')
 

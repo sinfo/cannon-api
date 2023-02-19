@@ -1,5 +1,6 @@
 const Joi = require('joi')
 const render = require('../../views/endpoint')
+const renderCompanies = require('../../views/company')
 const log = require('../../helpers/logger')
 const Boom = require('@hapi/boom')
 
