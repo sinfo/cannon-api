@@ -41,7 +41,10 @@ async function create(data) {
     description: data.description,
     category: data.category,
     instructions: data.instructions,
-    validity: data.validity,
+    validity: {
+      from: data.validFrom,
+      to: data.validTo
+    },
     kind: data.kind
   }
 
