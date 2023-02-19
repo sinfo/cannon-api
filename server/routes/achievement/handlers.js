@@ -11,7 +11,7 @@ exports.create = {
     tags: ['api', 'achievement'],
     auth: {
       strategies: ['default'],
-      scope: ['admin']
+      scope: ['team', 'admin']
     },
     payload: {
       output: 'stream',
