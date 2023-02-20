@@ -765,7 +765,6 @@ async function addUserToSecret(id, code) {
 }
 
 async function getAchievementBySession(id) {
-  log.info("getAchievementBySession")
   let filter = { session: id }
 
   return Achievement.findOne(filter)
