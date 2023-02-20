@@ -13,11 +13,11 @@ server.method('link.list', list, {})
 server.method('link.remove', remove, {})
 server.method('link.checkCompany', checkCompany, {})
 
-async function create (authorId, link, author) {
+async function create (authorId, link, author, editionId) {
   let _link = {
     author: author,
     company: author === "company" ? authorId : link.companyId,
-    edition: link.editionId,
+    edition: editionId,
     user: link.userId,
     attendee: author === "attendee" ? authorId : link.attendeeId,
     updated: Date.now(),
@@ -112,7 +112,7 @@ async function get (filter, editionId, author) {
   return link
 }
 
-async function list (filter, query, author) {
+async function list (filter, query, author, editionId) {
   // log.debug({ filter: filter }, 'list link')
   if(!filter){
     filter = {}
@@ -122,10 +122,7 @@ async function list (filter, query, author) {
     else filter = { attendee: filter }
   }
 
-  if (query && query.editionId) {
-    filter.edition = query.editionId
-  }
-
+  filter.edition = editionId
   filter.author = author
 
   const fields = fieldsParser(query.fields)
