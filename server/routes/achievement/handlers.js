@@ -20,6 +20,13 @@ exports.create = {
       allow: 'multipart/form-data',
       maxBytes: configUpload.maxSize
     },
+    payload: {
+      output: 'stream',
+      multipart: true,
+      parse: true,
+      allow: 'multipart/form-data',
+      maxBytes: configUpload.maxSize
+    },
     validate: {
       payload: Joi.object({
         id: Joi.string().description('Id of the achievement'),

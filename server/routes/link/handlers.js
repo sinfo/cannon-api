@@ -6,7 +6,7 @@ const Boom = require('@hapi/boom')
 exports = module.exports
 
 exports.createCompanyLink = {
-  options:{
+  options: {
     tags: ['api', 'link'],
     auth: { strategies: ['default'], scope: ['company', 'team', 'admin'] },
     validate: {
@@ -36,20 +36,20 @@ exports.createCompanyLink = {
     description: 'Creates a new company link'
   },
   handler: async function (request, h) {
-    try{
+    try {
       const edition = await request.server.methods.deck.getLatestEdition()
       await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, edition.id)
       let link = await request.server.methods.link.create(request.params.companyId, request.payload, "company", edition.id)
       return h.response(render(link)).created(`/company/${request.params.companyId}/link/${link.attendeeId}`)
-    }catch(err){
-      log.error({err: err}, 'error creating company link')
+    } catch (err) {
+      log.error({ err: err }, 'error creating company link')
       return Boom.boomify(err)
     }
   },
 }
 
 exports.createAttendeeLink = {
-  options:{
+  options: {
     tags: ['api', 'link'],
     auth: { strategies: ['default'], scope: ['user', 'team', 'admin'] },
     validate: {
@@ -72,20 +72,20 @@ exports.createAttendeeLink = {
     description: 'Creates a new attendee link'
   },
   handler: async function (request, h) {
-    try{
+    try {
       const edition = await request.server.methods.deck.getLatestEdition()
       await request.server.methods.link.checkCompany(request.payload.userId, request.payload.companyId, edition.id)
       let link = await request.server.methods.link.create(request.params.attendeeId, request.payload, "attendee", edition.id)
       return h.response(render(link)).created(`/users/${request.params.attendeeId}/link/${link.companyId}`)
-    }catch(err){
-      log.error({err: err}, 'error creating attendee link')
+    } catch (err) {
+      log.error({ err: err }, 'error creating attendee link')
       return Boom.boomify(err)
     }
   },
 }
 
 exports.updateCompanyLink = {
-  options:{
+  options: {
     tags: ['api', 'link'],
     auth: { strategies: ['default'], scope: ['company', 'team', 'admin'] },
     validate: {
@@ -115,20 +115,20 @@ exports.updateCompanyLink = {
     description: 'Updates a company link'
   },
   handler: async function (request, h) {
-    try{
+    try {
       const edition = await request.server.methods.deck.getLatestEdition()
       await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, edition.id)
       let link = await request.server.methods.link.update(request.params, edition.id, request.payload, "company")
       return h.response(render(link))
-    }catch(err){
-      log.error({err: err}, 'error creating company link')
+    } catch (err) {
+      log.error({ err: err }, 'error creating company link')
       return Boom.boomify(err)
     }
   },
 }
 
 exports.updateAttendeeLink = {
-  options:{
+  options: {
     tags: ['api', 'link'],
     auth: { strategies: ['default'], scope: ['user', 'team', 'admin'] },
     validate: {
@@ -152,19 +152,19 @@ exports.updateAttendeeLink = {
     description: 'Updates an attendee link'
   },
   handler: async function (request, h) {
-    try{
+    try {
       const edition = await request.server.methods.deck.getLatestEdition()
       let link = await request.server.methods.link.update(request.params, edition.id, request.payload, "attendee")
       return h.response(render(link))
-    }catch(err){
-      log.error({err: err}, 'error creating attendee link')
+    } catch (err) {
+      log.error({ err: err }, 'error creating attendee link')
       return Boom.boomify(err)
     }
   },
 }
 
 exports.getCompanyLink = {
-  options:{
+  options: {
     tags: ['api', 'link'],
     auth: { strategies: ['default'], scope: ['company', 'team', 'admin'] },
     validate: {
@@ -177,20 +177,20 @@ exports.getCompanyLink = {
     description: 'Gets a company link'
   },
   handler: async function (request, h) {
-    try{
+    try {
       const edition = await request.server.methods.deck.getLatestEdition()
       await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, edition.id)
       let link = await request.server.methods.link.get(request.params, edition.id, 'company')
       return h.response(render(link))
-    }catch(err){
-      log.error({err: err}, 'error getting company link')
+    } catch (err) {
+      log.error({ err: err }, 'error getting company link')
       return Boom.boomify(err)
     }
   },
 }
 
 exports.getAttendeeLink = {
-  options:{
+  options: {
     tags: ['api', 'link'],
     auth: { strategies: ['default'], scope: ['user', 'team', 'admin'] },
     validate: {
@@ -203,20 +203,20 @@ exports.getAttendeeLink = {
     description: 'Gets an attendee link'
   },
   handler: async function (request, h) {
-    try{
+    try {
       const edition = await request.server.methods.deck.getLatestEdition()
       await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, edition.id)
       let link = await request.server.methods.link.get(request.params, edition.id, 'attendee')
       return h.response(render(link))
-    }catch(err){
-      log.error({err: err}, 'error getting attendee link')
+    } catch (err) {
+      log.error({ err: err }, 'error getting attendee link')
       return Boom.boomify(err)
     }
   },
 }
 
 exports.listCompanyLinks = {
-  options:{
+  options: {
     tags: ['api', 'link'],
     auth: { strategies: ['default'], scope: ['company', 'team', 'admin'] },
     validate: {
@@ -234,12 +234,12 @@ exports.listCompanyLinks = {
     description: 'Gets all the links of the company'
   },
   handler: async function (request, h) {
-    try{
+    try {
       const edition = await request.server.methods.deck.getLatestEdition()
       await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, edition.id)
       let links = await request.server.methods.link.list(request.params.companyId, request.query, 'company', edition.id)
       return h.response(render(links))
-    }catch(err){
+    } catch (err) {
       log.error({ err: err }, 'error listing company links')
       return Boom.boomify(err)
     }
@@ -247,7 +247,7 @@ exports.listCompanyLinks = {
 }
 
 exports.listAttendeeLinks = {
-  options:{
+  options: {
     tags: ['api', 'link'],
     auth: { strategies: ['default'], scope: ['user', 'team', 'admin'] },
     validate: {
@@ -264,11 +264,11 @@ exports.listAttendeeLinks = {
     description: 'Gets all the links of the attendee'
   },
   handler: async function (request, h) {
-    try{
+    try {
       const edition = await request.server.methods.deck.getLatestEdition()
-      let links = await request.server.methods.link.list(request.params.attendeeId, request.query, "attendee", edition.id)
+      let links = await request.server.methods.link.list(request.params.attendeeId, request.query, 'attendee', edition.id)
       return h.response(render(links))
-    }catch(err){
+    } catch (err) {
       log.error({ err: err }, 'error listing attendee links')
       return Boom.boomify(err)
     }
@@ -276,29 +276,29 @@ exports.listAttendeeLinks = {
 }
 
 exports.removeCompanyLink = {
-  options:{
-  tags: ['api', 'link'],
-  auth: { strategies: ['default'], scope: ['company', 'team', 'admin'] },
-  validate: {
-    params: Joi.object({
-      companyId: Joi.string().required().description(
-        'Id of the company we are removing the link from'),
-      attendeeId: Joi.string().required().description('Id of the attendee')
-    })
+  options: {
+    tags: ['api', 'link'],
+    auth: { strategies: ['default'], scope: ['company', 'team', 'admin'] },
+    validate: {
+      params: Joi.object({
+        companyId: Joi.string().required().description(
+          'Id of the company we are removing the link from'),
+        attendeeId: Joi.string().required().description('Id of the attendee')
+      })
+    },
+    description: 'Removes a company link'
   },
-  description: 'Removes a company link'
-},
   handler: async function (request, h) {
-    try{
+    try {
       const edition = await request.server.methods.deck.getLatestEdition()
       await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, edition.id)
-      let link = await request.server.methods.link.remove(request.params, edition.id, "company")
+      let link = await request.server.methods.link.remove(request.params, edition.id, 'company')
       if (!link) {
         log.error({ err: 'not found' }, 'error deleting company link')
         return Boom.notFound('link not found')
       }
       return h.response(render(link))
-    }catch(err){
+    } catch (err) {
       log.error({ err: err }, 'error deleting company link')
       return Boom.boomify(err)
     }
@@ -306,19 +306,19 @@ exports.removeCompanyLink = {
 }
 
 exports.removeAttendeeLink = {
-  options:{
-  tags: ['api', 'link'],
-  auth: { strategies: ['default'], scope: ['user', 'team', 'admin'] },
-  validate: {
-    params: Joi.object({
-      companyId: Joi.string().required().description('Id of the company'),
-      attendeeId: Joi.string().required().description('Id of the attendee we are removing the link from')
-    })
+  options: {
+    tags: ['api', 'link'],
+    auth: { strategies: ['default'], scope: ['user', 'team', 'admin'] },
+    validate: {
+      params: Joi.object({
+        companyId: Joi.string().required().description('Id of the company'),
+        attendeeId: Joi.string().required().description('Id of the attendee we are removing the link from')
+      })
+    },
+    description: 'Removes a link'
   },
-  description: 'Removes a link'
-},
   handler: async function (request, h) {
-    try{
+    try {
       const edition = await request.server.methods.deck.getLatestEdition()
       let link = await request.server.methods.link.remove(request.params, edition.id, 'attendee')
       if (!link) {
@@ -326,7 +326,7 @@ exports.removeAttendeeLink = {
         return Boom.notFound('link not found')
       }
       return h.response(render(link))
-    }catch(err){
+    } catch (err) {
       log.error({ err: err }, 'error deleting attendee link')
       return Boom.boomify(err)
     }
