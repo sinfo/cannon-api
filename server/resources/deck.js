@@ -57,12 +57,12 @@ async function getMembers(edition) {
   return members.data
 }
 
-async function getSessions(edition, withoutAchievements, request) {
+async function getSessions(edition, withoutAchievements) {
   const sessions = await axios.get(`${DECK_API_URL}/sessions?sort=date&event=${edition}`)
   if (withoutAchievements) {
     filteredSessions = [];
     for(const session of sessions.data) {
-      var achievement = await request.server.methods.achievement.getAchievementBySession(session.id)
+      var achievement = await server.methods.achievement.getAchievementBySession(session.id)
       if (!achievement) {
         filteredSessions.push(session);
       }

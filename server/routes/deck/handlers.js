@@ -109,7 +109,7 @@ exports.getSessions = {
     handler: async (request, h) => {
         try {
             const latestEdition = await request.server.methods.deck.getLatestEdition()
-            const sessions = await request.server.methods.deck.getSessions(latestEdition.id, request.query.withoutAchievements, request)
+            const sessions = await request.server.methods.deck.getSessions(latestEdition.id, request.query.withoutAchievements)
             return h.response(renderSessions(sessions))
         } catch(err) {
             log.error({ error: err })
