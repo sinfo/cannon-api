@@ -46,6 +46,13 @@ server.route({
 })
 
 server.route({
+  method: 'POST',
+  path: '/users/{attendeeId}/link',
+  handler: handlers.shareUserLinks.handler,
+  options: handlers.shareUserLinks.options
+})
+
+server.route({
   method: ['PUT', 'PATCH'],
   path: '/users/{attendeeId}/link/{companyId}',
   options: handlers.updateAttendeeLink.options,

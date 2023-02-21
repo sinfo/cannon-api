@@ -273,7 +273,6 @@ exports.listAttendeeLinks = {
   },
   handler: async function (request, h) {
     try{
-      //let links = []
       let user = await request.server.methods.user.get(request.params.attendeeId)
       if (!user) {
         log.error('user not found')
@@ -288,6 +287,39 @@ exports.listAttendeeLinks = {
       return h.response(render(links))
     }catch(err){
       log.error({ err: err }, 'error listing attendee links')
+      return Boom.boomify(err)
+    }
+  },
+}
+
+exports.shareUserLinks = {
+  options:{
+    tags: ['api', 'link'],
+    auth: { strategies: ['default'], scope: ['user', 'team', 'admin'] },
+    validate: {
+      params: Joi.object({
+        attendeeId: Joi.string().required().description('Id of the sharer')
+      }),
+      payload: Joi.object({
+        me: Joi.string().required().description('Id of the reader')
+      })
+    },
+    description: 'Shares the read user links with the reader'
+  },
+  handler: async function (request, h) {
+    try{
+      let user = await request.server.methods.user.get(request.params.attendeeId)
+      if (!user) {
+        log.error('user not found')
+        throw Boom.notFound()
+      } else if (!user.shareLinks) {
+        log.error('share is not alowed')
+        throw Boom.notFound()
+      }   
+      await request.server.methods.user.linkShared(request.payload.me, request.params.attendeeId)
+      return h.response('OK')
+    }catch(err){
+      log.error({ err: err }, 'error sharing attendee links')
       return Boom.boomify(err)
     }
   },

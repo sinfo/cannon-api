@@ -17,6 +17,7 @@ server.method('user.remove', remove, {})
 server.method('user.removeCompany', removeCompany, {})
 server.method('user.sign', sign, {})
 server.method('user.redeemCard', redeemCard, {})
+server.method('user.linkUsers', linkUsers, {})
 
 
 async function create (user) {
@@ -312,4 +313,26 @@ async function redeemCard (attendeeId, payload) {
     throw Boom.notFound()
   }
   return user
+}
+
+async function linkUsers (filter, newID) {
+  if (typeof filter === 'string') {
+    filter = { id: filter }
+  }
+  let user = await User.findOne(filter)
+  let update
+  if(!user.linkShared){
+    update = {
+        $set: { 
+          linkShared: [newID]
+      }
+    }
+  } else {
+    update = {
+      $addToSet: {
+        linkShared: newID
+      }
+    }
+  }
+  return await User.findOneAndUpdate(filter, update)
 }
