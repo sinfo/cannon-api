@@ -30,7 +30,8 @@ let achievementSchema = mongoose.Schema({
   kind: {
     type: String, // cv, for example
     default: 'session'
-  }
+  },
+  category: String
 })
 
 achievementSchema.index({ id: 1 }, { unique: true })

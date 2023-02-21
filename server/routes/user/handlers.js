@@ -228,6 +228,9 @@ exports.get = {
     validate: {
       params: Joi.object({
         id: Joi.string().required().description('Id of the user we want to retrieve')
+      }),
+      query: Joi.object({
+        editionId: Joi.string().required().description('Id of the edition') 
       })
     },
     description: 'Gets an user'
@@ -239,7 +242,7 @@ exports.get = {
         log.error('user not found')
         throw Boom.notFound()
       }
-      return h.response(render(user, request.auth.credentials && request.auth.credentials.user))
+      return h.response(render(user, request.auth.credentials && request.auth.credentials.user, request.query.editionId))
     } catch (err){
       log.error({ err: err}, 'error getting user')
       throw Boom.boomify(err)
