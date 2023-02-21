@@ -79,7 +79,7 @@ async function addUser (sessionId, userId, sessionObj) {
   return _ticket.toObject({ getters: true })
 }
 
-async function removeUser(sessionId, userId, session) {
+async function removeUser(sessionId, userId) {
   let filter = { session: sessionId }
   
   const changes = {
@@ -90,7 +90,7 @@ async function removeUser(sessionId, userId, session) {
     }
   }
 
-  let _ticket = await Ticket.findOneAndUpdate(filter, changes)
+  let _ticket = await Ticket.findOneAndUpdate(filter, changes, { new: true })
 
   if (!_ticket) {
     throw Boom.notFound('Couldn\'t find session')

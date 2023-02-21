@@ -60,7 +60,7 @@ exports.voidTicket = {
       request.server.methods.session.ticketsNeeded(session)
       
       let ticket = await request.server.methods.ticket.get(request.params.sessionId)
-      let removedTicket = await request.server.methods.ticket.removeUser(session.id, request.auth.credentials.user.id, session)
+      let removedTicket = await request.server.methods.ticket.removeUser(session.id, request.auth.credentials.user.id)
       let user = request.server.methods.ticket.getAcceptedUser(ticket, session, request.auth.credentials.user)
       
       if (user) {
