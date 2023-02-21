@@ -45,9 +45,9 @@ server.route({
   options: handlers.createAttendeeLink.options
 })
 
-server.route({
-  method: 'POST',
-  path: '/users/{attendeeId}/link',
+server.route({ //Share user links
+  method: 'GET',
+  path: '/users/{attendeeId}/shareLinks',
   handler: handlers.shareUserLinks.handler,
   options: handlers.shareUserLinks.options
 })

@@ -264,21 +264,18 @@ exports.listAttendeeLinks = {
         sort: Joi.string().description('Sort fields we want to retrieve'),
         skip: Joi.number().description('Number of documents we want to skip'),
         limit: Joi.number().description('Limit of documents we want to retrieve')
-      }),
-      params: Joi.object({
-        attendeeId: Joi.string().required().description('Id of the attendee')
       })
     },
     description: 'Gets all the links of the attendee'
   },
   handler: async function (request, h) {
     try{
-      let user = await request.server.methods.user.get(request.params.attendeeId)
+      let user = await request.server.methods.user.get(request.auth.credentials.user.id)
       if (!user) {
         log.error('user not found')
         throw Boom.notFound()
       }      
-      let links = await request.server.methods.link.list(request.params.attendeeId, request.query, "attendee")
+      let links = await request.server.methods.link.list(request.auth.credentials.user.id, request.query, "attendee")
       let sharedLinks = user.linkShared
       for(let i = 0; i < sharedLinks.length; i++){
         let newLinks = await request.server.methods.link.list(sharedLinks[i], request.query, "attendee")
@@ -292,32 +289,35 @@ exports.listAttendeeLinks = {
   },
 }
 
-exports.shareUserLinks = {
+exports.shareUserLinks = { //Share user links
   options:{
     tags: ['api', 'link'],
     auth: { strategies: ['default'], scope: ['user', 'team', 'admin'] },
     validate: {
       params: Joi.object({
         attendeeId: Joi.string().required().description('Id of the sharer')
-      }),
-      payload: Joi.object({
-        me: Joi.string().required().description('Id of the reader')
       })
     },
     description: 'Shares the read user links with the reader'
   },
   handler: async function (request, h) {
     try{
+      console.log("Passou 2")
       let user = await request.server.methods.user.get(request.params.attendeeId)
+      console.log("Passou 3")
       if (!user) {
+        console.log("Erro 1")
         log.error('user not found')
         throw Boom.notFound()
       } else if (!user.shareLinks) {
-        log.error('share is not alowed')
+        console.log("Erro 2")
+        log.error('Link sharing is not alowed')
         throw Boom.notFound()
-      }   
-      await request.server.methods.user.linkShared(request.payload.me, request.params.attendeeId)
-      return h.response('OK')
+      }
+      console.log("Passou 4")
+      let me = await request.server.methods.user.linkUsers(request.auth.credentials.user.id, request.params.attendeeId)
+      console.log("Passou 5")
+      return h.response(render(me))
     }catch(err){
       log.error({ err: err }, 'error sharing attendee links')
       return Boom.boomify(err)

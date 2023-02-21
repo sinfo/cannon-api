@@ -315,12 +315,14 @@ async function redeemCard (attendeeId, payload) {
   return user
 }
 
-async function linkUsers (filter, newID) {
+async function linkUsers (filter, newID) { // Share user links
+  console.log("Passou 6")
   if (typeof filter === 'string') {
     filter = { id: filter }
   }
+  console.log("Passou 7")
   let user = await User.findOne(filter)
-  let update
+  console.log("Passou 8")
   if(!user.linkShared){
     update = {
         $set: { 
@@ -334,5 +336,6 @@ async function linkUsers (filter, newID) {
       }
     }
   }
+  console.log("Passou 9")
   return await User.findOneAndUpdate(filter, update)
 }
