@@ -310,27 +310,24 @@ async function zipFiles (links) {
     }
   } else {
     // - see if old exists && verify freshness
-    let stats = await fs.stat(config.upload.cvsZipPath).catch((err) =>{
+    try {
+      let stats = fs.statSync(config.upload.cvsZipPath)
+      let dirStats = fs.statSync(config.upload.path)
+
+      // Prevents Big Zip from being generated on every request. Acts like a cache
+      if (new Date(dirStats.mtime).getTime() < new Date(stats.mtime).getTime()) {
+        return
+      }
+    } catch (err) {
       if (err && err.code !== 'ENOENT') {
-        log.error({err: err, links: links}, '[file] Error reading cvsZipFile')
+        log.error({err: err, links: links}, '[file] Error reading cvsZipFile/uploads dir')
+        throw Boom.internal()
+      } else if (err) {
+        log.error({err: err}, '[file] Error opening cvsZipFile/uploads dir')
         throw Boom.internal()
       }
-      throw Boom.boomify(err)
-    })
-      
-
-    let dirStats = await fs.stat(config.upload.path).catch((err) =>{
-      if (err && err.code !== 'ENOENT') {
-        log.error({err: err}, '[dir] Error reading uploads dir')
-        throw Boom.internal()
-      }
-      throw Boom.boomify(err)
-    })
-
-    // Prevents Big Zip from being generated on every request. Acts like a cache
-    if (!err && !dirErr && new Date(dirStats.mtime).getTime() < new Date(stats.mtime).getTime()) {
-      return
     }
+
 
     // const filter = {
     //   updated: {'$gt': new Date('2021-02-25')}
