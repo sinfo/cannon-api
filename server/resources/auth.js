@@ -102,8 +102,8 @@ async function fenixAuth(code) {
     let res = await fenix.getUser(fenixUser)
     // If user does not exist we create, otherwise we update existing user
     if (res.createUser) {
-      let userId = fenix.createUser(fenixUser)
-      authenticate(userId, null)
+      let userId = await fenix.createUser(fenixUser)
+      return authenticate(userId, null)
     }
 
     const changedAttributes = {
