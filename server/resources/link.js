@@ -13,11 +13,11 @@ server.method('link.list', list, {})
 server.method('link.remove', remove, {})
 server.method('link.checkCompany', checkCompany, {})
 
-async function create (authorId, link, author) {
+async function create(authorId, link, author, editionId) {
   let _link = {
     author: author,
     company: author === "company" ? authorId : link.companyId,
-    edition: link.editionId,
+    edition: editionId,
     user: link.userId,
     attendee: author === "attendee" ? authorId : link.attendeeId,
     updated: Date.now(),
@@ -67,7 +67,7 @@ async function create (authorId, link, author) {
 
 }
 
-async function update (filter, editionId, link, author) {
+async function update(filter, editionId, link, author) {
   // log.debug({ filter: filter, edition: editionId, link: link }, 'updating link')
 
   filter = {
@@ -79,7 +79,7 @@ async function update (filter, editionId, link, author) {
 
   link.updated = Date.now()
 
-  let _link = await Link.findOneAndUpdate(filter, link, {new: true}).catch((err) =>{
+  let _link = await Link.findOneAndUpdate(filter, link, { new: true }).catch((err) => {
     log.error({ err: err, link: filter }, 'error updating link')
     throw Boom.boomify(err)
   })
@@ -91,7 +91,7 @@ async function update (filter, editionId, link, author) {
   return _link
 }
 
-async function get (filter, editionId, author) {
+async function get(filter, editionId, author) {
   // log.debug({ filter: filter, edition: editionId }, 'getting link')
 
   filter = {
@@ -101,7 +101,7 @@ async function get (filter, editionId, author) {
     author: author
   }
 
-  let link = await Link.findOne(filter).catch((err) =>{
+  let link = await Link.findOne(filter).catch((err) => {
     log.error({ err: err, link: filter }, 'error getting link')
     throw Boom.boomify(err)
   })
@@ -112,19 +112,18 @@ async function get (filter, editionId, author) {
   return link
 }
 
-async function list (filter, query, author) {
+async function list(filter, query, author, editionId) {
   // log.debug({ filter: filter }, 'list link')
-  if(!filter){
+  if (!filter) {
     filter = {}
   }
   if (typeof filter === 'string') {
-    if (author === "company")  filter = { company: filter }
+    if (author === "company") filter = { company: filter }
     else filter = { attendee: filter }
   }
 
-  if (query && query.editionId) {
-    filter.edition = query.editionId
-  }
+  filter.edition = editionId
+  filter.author = author
 
   filter.author = author
 
@@ -136,22 +135,22 @@ async function list (filter, query, author) {
   }
 
   let links = await Link.find(filter, fields, options)
-  
+
   if (author === "company") {
     let achFilter = {
       'validity.to':
         { '$gt': new Date('January 1, 2021 00:00:00').toISOString() },
       'kind': 'cv'
     }
-    let achievement = await Achievement.findOne(achFilter).catch((err) =>{
+    let achievement = await Achievement.findOne(achFilter).catch((err) => {
       log.error({ err: err, link: filter }, 'link not found')
       throw Boom.notFound('link not found')
     })
 
     let objLinks = Array.from(links, (l) => { return l.toObject() })
-  
+
     objLinks.forEach((l) => { l.cv = achievement ? achievement.toObject().users.includes(l.attendee) : false })
-    
+
     return objLinks
   }
   else {
@@ -160,7 +159,7 @@ async function list (filter, query, author) {
   }
 }
 
-async function remove (filter, editionId, author) {
+async function remove(filter, editionId, author) {
   // log.debug({ filter: filter, edition: editionId }, 'removing link')
 
   filter = {
@@ -174,14 +173,14 @@ async function remove (filter, editionId, author) {
 }
 
 // Checks if the user is/was part of the company whose link he trying accessing
-async function checkCompany (userId, companyId, editionId) {
+async function checkCompany(userId, companyId, editionId) {
   let user = await server.methods.user.get({ id: userId })
   if (!user) {
     log.error({ err: 'not found', user: userId }, 'error getting user')
     throw Boom.notFound('user not found')
-  }  
+  }
   if (!_.findWhere(user.company, { company: companyId, edition: editionId })) {
-    log.error({company: companyId, user: userId, edition: editionId, userCompany: user.company}, 'company not found')
+    log.error({ company: companyId, user: userId, edition: editionId, userCompany: user.company }, 'company not found')
     throw Boom.notFound('company not found')
   }
 }

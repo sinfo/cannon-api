@@ -20,7 +20,7 @@ server.method('user.redeemCard', redeemCard, {})
 server.method('user.linkUsers', linkUsers, {})
 
 
-async function create (user) {
+async function create(user) {
   user.id = user.id || Math.random().toString(36).substr(2, 20)
   user.role = user.role || config.auth.permissions[0]
   user.resgistered = user.resgistered || Date.now()
@@ -30,7 +30,7 @@ async function create (user) {
 }
 
 
-async function updateMe (filter, user, opts) {
+async function updateMe(filter, user, opts) {
   // if (typeof opts === 'function') {
   //   cb = opts
   //   opts = {}
@@ -45,7 +45,7 @@ async function updateMe (filter, user, opts) {
   return update(filter, user, opts)
 }
 
-async function update (filter, user, opts) {
+async function update(filter, user, opts) {
   user.updated = Date.now()
 
   if (typeof filter === 'string') {
@@ -59,32 +59,32 @@ async function update (filter, user, opts) {
     delete user.company
     delete user2.company
 
-    
-    log.error({filter: filter, user: user, opts: opts})
 
-    await User.findOneAndUpdate(filter, user, opts).catch((err)=> {
+    log.error({ filter: filter, user: user, opts: opts })
+
+    await User.findOneAndUpdate(filter, user, opts).catch((err) => {
       log.error({ err: err }, 'error pulling user.company')
-     throw Boom.boomify(err)
+      throw Boom.boomify(err)
     })
 
-    if(opts){
+    if (opts) {
       opts.new = true
-    }else{
-      opts = {new: true}
+    } else {
+      opts = { new: true }
     }
-    return await User.findOneAndUpdate(filter, user2, opts).catch((err) =>{
+    return await User.findOneAndUpdate(filter, user2, opts).catch((err) => {
       log.error({ err: err }, 'error pushing user.company')
-     throw Boom.boomify(err)
+      throw Boom.boomify(err)
     })
   } else {
-    return await User.findOneAndUpdate(filter, user, {new: true})
+    return await User.findOneAndUpdate(filter, user, { new: true })
   }
 }
 
-async function get (filter, query) {
+async function get(filter, query) {
 
   let fields = {}
-  if(query){
+  if (query) {
     fields = fieldsParser(query.fields)
   }
 
@@ -95,7 +95,7 @@ async function get (filter, query) {
   return User.findOne(filter, fields) //fields is always empty ¯\_(ツ)_/¯
 }
 
-async function getByToken (token) {
+async function getByToken(token) {
   let user = await User.findOne({ 'bearer.token': token })
   if (!user) {
     log.error({ err: err, requestedUser: user }, 'error getting user')
@@ -104,7 +104,7 @@ async function getByToken (token) {
   return user
 }
 
-async function list (activeAchievements) {
+async function list(activeAchievements) {
   const usersToSearch = []
   const points = {}
 
@@ -130,18 +130,18 @@ async function list (activeAchievements) {
   }
 
   let users = await User.find({ id: { $in: usersToSearch } }, fields)
-  
+
   for (var i = 0; i < users.length; i++) {
     users[i]['points'] = points[users[i].id]
   }
-   
+
   // sort by points in descending order
   users.sort(function (a, b) { return b.points - a.points })
 
   return users
 }
 
-async function getMulti (ids, query) {
+async function getMulti(ids, query) {
   const filter = { id: { $in: ids } }
 
   if (query) {
@@ -158,7 +158,7 @@ async function getMulti (ids, query) {
 
 }
 
-async function removeCompany (filter, editionId) {
+async function removeCompany(filter, editionId) {
   if (typeof filter === 'string') {
     filter = { id: filter }
   }
@@ -169,37 +169,37 @@ async function removeCompany (filter, editionId) {
     }
   }
 
-  let user = await User.findOneAndUpdate(filter, update, {new: true})
+  let user = await User.findOneAndUpdate(filter, update, { new: true })
   if (!user) {
     log.error({ err: err, requestedUser: filter, edition: editionId }, 'error deleting user.company')
     return cb(Boom.notFound())
   }
-  return user 
+  return user
 }
 
-async function remove (filter) {
+async function remove(filter) {
   if (typeof filter === 'string') {
     filter = { id: filter }
   }
 
   return await User.findOneAndRemove(filter)
-    // if (err) {
-    //   log.error({ err: err, requestedUser: filter }, 'error deleting user')
-    //   return cb(Boom.internal())
-    // }
-    // if (!user) {
-    //   log.error({ err: err, requestedUser: filter }, 'error deleting user')
-    //   return cb(Boom.notFound())
-    // }
+  // if (err) {
+  //   log.error({ err: err, requestedUser: filter }, 'error deleting user')
+  //   return cb(Boom.internal())
+  // }
+  // if (!user) {
+  //   log.error({ err: err, requestedUser: filter }, 'error deleting user')
+  //   return cb(Boom.notFound())
+  // }
 
 }
 
-async function sign (attendeeId, companyId, payload, cb) {
+async function sign(attendeeId, companyId, day, editionId) {
   // todo verify
 
-  let user = await get({ "id" : attendeeId }).catch((err) => {
-    log.error({ err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
-   throw Boom.boomify(err)
+  let user = await get({ "id": attendeeId }).catch((err) => {
+    log.error({ err: err, attendeeId: attendeeId, companyId: companyId, day: day, editionId: editionId }, 'Error signing user')
+    throw Boom.boomify(err)
   })
 
   if (user.role === "company") {
@@ -210,8 +210,8 @@ async function sign (attendeeId, companyId, payload, cb) {
     id: attendeeId,
     signatures: {
       $elemMatch: {
-        day: payload.day,
-        edition: payload.editionId
+        day: day,
+        edition: editionId
       }
     }
   }
@@ -224,11 +224,11 @@ async function sign (attendeeId, companyId, payload, cb) {
     }
   }
 
-  user = await User.findOneAndUpdate(filter, update, {new: true}).catch((err) => {
+  user = await User.findOneAndUpdate(filter, update, { new: true }).catch((err) => {
     log.error({ err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
-   throw Boom.boomify(err)
+    throw Boom.boomify(err)
   })
-  
+
   if (!user) {
     // day,event combination entry did not exist
     return addNewDayEntry(
@@ -246,8 +246,8 @@ async function sign (attendeeId, companyId, payload, cb) {
   }
   return user
 
-  async function addNewDayEntry (filter, update) {
-    let user = await User.findOneAndUpdate(filter, update, {new: true}).catch((err) =>{
+  async function addNewDayEntry(filter, update) {
+    let user = await User.findOneAndUpdate(filter, update, { new: true }).catch((err) => {
       log.error({ err: err }, 'Error signing user')
       throw Boom.boomify(err)
     })
@@ -259,14 +259,14 @@ async function sign (attendeeId, companyId, payload, cb) {
   }
 }
 
-async function redeemCard (attendeeId, payload) {
+async function redeemCard(attendeeId, day, editionId) {
   // todo verify
   const filter = {
     id: attendeeId,
     signatures: {
       $elemMatch: {
-        day: payload.day,
-        edition: payload.editionId
+        day: day,
+        edition: editionId
       }
     }
   }
@@ -279,19 +279,19 @@ async function redeemCard (attendeeId, payload) {
 
   // this should not be here
   let user = await User.findOne(filter).catch((err) => {
-    log.error({ err: err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId }, 'Error getting user')
+    log.error({ err: err, attendeeId: attendeeId, day: day, editionId: editionId }, 'Error getting user')
     throw Boom.internal()
   })
 
   if (!user) {
     // day,event combination entry did not exist
-    log.error({ attendeeId: attendeeId, day: payload.day, editionId: payload.editionId }, 'Error getting user')
+    log.error({ attendeeId: attendeeId, day: day, editionId: editionId }, 'Error getting user')
     throw Boom.notFound()
   }
 
   // this should not be hardcoded
-  let signatures = user.signatures.filter(s => s.day === payload.day && s.edition === payload.editionId)
-  if (signatures || signatures.length == 0){
+  let signatures = user.signatures.filter(s => s.day === day && s.edition === editionId)
+  if (signatures || signatures.length == 0) {
     log.error({ user: user }, 'not enough signatures to validate card')
     throw Boom.badData({ user: user }, 'not enough signatures to validate card')
   }
@@ -306,16 +306,16 @@ async function redeemCard (attendeeId, payload) {
     throw Boom.conflict({ user: user }, 'card already validated')
   }
 
-  user = await User.findOneAndUpdate(filter, update,{new: true})
+  user = await User.findOneAndUpdate(filter, update, { new: true })
   if (!user) {
     // day,event combination entry did not exist
-    log.error({ err: err, attendeeId: attendeeId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
+    log.error({ err: err, attendeeId: attendeeId, day: day, editionId: editionId }, 'Error signing user')
     throw Boom.notFound()
   }
   return user
 }
 
-async function linkUsers (filter, newID) { // Share user links
+async function linkUsers(filter, newID) { // Share user links
   console.log("Passou 6")
   if (typeof filter === 'string') {
     filter = { id: filter }
@@ -323,10 +323,10 @@ async function linkUsers (filter, newID) { // Share user links
   console.log("Passou 7")
   let user = await User.findOne(filter)
   console.log("Passou 8")
-  if(!user.linkShared){
+  if (!user.linkShared) {
     update = {
-        $set: { 
-          linkShared: [newID]
+      $set: {
+        linkShared: [newID]
       }
     }
   } else {

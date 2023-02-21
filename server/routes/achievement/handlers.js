@@ -2,6 +2,7 @@ const Joi = require('joi')
 const render = require('../../views/achievement')
 const log = require('../../helpers/logger')
 const Boom = require('@hapi/boom')
+const configUpload = require('../../../config').upload
 
 exports = module.exports
 
@@ -10,7 +11,21 @@ exports.create = {
     tags: ['api', 'achievement'],
     auth: {
       strategies: ['default'],
-      scope: ['admin']
+      scope: ['team', 'admin']
+    },
+    payload: {
+      output: 'stream',
+      multipart: true,
+      parse: true,
+      allow: 'multipart/form-data',
+      maxBytes: configUpload.maxSize
+    },
+    payload: {
+      output: 'stream',
+      multipart: true,
+      parse: true,
+      allow: 'multipart/form-data',
+      maxBytes: configUpload.maxSize
     },
     validate: {
       payload: Joi.object({
@@ -18,15 +33,13 @@ exports.create = {
         name: Joi.string().required().description('Name of the achievement'),
         event: Joi.string().default('22').description('Event the achievement is associated to'),
         session: Joi.string().description('Id of a session associated to this achievement'),
-        img: Joi.string().description('Image of the achievement'),
+        img: Joi.any().meta({ swaggerType: 'file' }).description('Image of the achievement'),
         description: Joi.string().description('Description of the achievement'),
         category: Joi.string().description('Category of the achievement'),
         instructions: Joi.string().description('Instructions on how to get the achievement'),
         value: Joi.number().description('Amount of points associated to the achievement'),
-        validity: Joi.object().keys({
-          from: Joi.date().description('Date when the achievement starts being available for grabs'),
-          to: Joi.date().description('Date when the achievement starts stops being available for grabs')
-        }),
+        validFrom: Joi.date().description('Date when the achievement starts being available for grabs'),
+        validTo: Joi.date().description('Date when the achievement starts stops being available for grabs'),
         kind: Joi.string().description('Kind of achievement (cv, for example)')
       })
     },
