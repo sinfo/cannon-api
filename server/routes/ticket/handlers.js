@@ -125,7 +125,11 @@ exports.get = {
     try {
       let session = await request.server.methods.session.get(request.params.sessionId)
       let ticket = await request.server.methods.ticket.get(request.params.sessionId)
-      return h.response(render(ticket, session));
+      if (ticket) {
+        return h.response(render(ticket, session));
+      } else {
+        return h.response();
+      }
     } catch (err) {
       log.error({ err: err, msg:'error getting ticket'}, 'error getting ticket')
       throw Boom.boomify(err)

@@ -47,7 +47,7 @@ async function userRegistered(sessionId, userId) {
   let _ticket = await Ticket.findOne(filter)
 
   if (!_ticket) {
-    log.warn({ err: err, session: sessionId }, 'ticket not found')
+    log.warn({ session: sessionId }, 'ticket not found')
     return false
   }
 
@@ -142,8 +142,7 @@ async function get (filter) {
 
   let ticket = await Ticket.findOne(filter)
   if (!ticket) {
-    log.error({ err: err, requestedTicket: filter }, 'could not find ticket')
-    throw Boom.notFound("Ticket not found")
+    return null
   }
 
   return ticket
