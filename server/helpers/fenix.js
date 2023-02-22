@@ -69,16 +69,21 @@ fenix.getFenixUser = async function(token) {
  */
 fenix.getUser = async function (fenixUser) {
   let user = await server.methods.user.get({ 'mail': fenixUser.email }).catch((err) => {
-    if (err.output && err.output.statusCode === 404) {
-      return { createUser: true, fenixUser }
-    }
-
     log.error({ err, fenixUser }, '[Fenix-Auth] Error getting user')
     throw err
   })
 
   // A user exist with a given Fenix email, we only need to update 'fenix.id' and 'img' in DB
-  return { createUser: false, userId: user.id }
+  if (user) {
+    return { 
+      createUser: false, 
+      userId: user.id
+    }
+  } else {
+    return { 
+      createUser: true
+    }
+  }
 }
 
 fenix.createUser = async function(fenixUser) {
