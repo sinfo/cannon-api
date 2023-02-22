@@ -74,9 +74,12 @@ async function addUser (sessionId, userId, sessionObj) {
     }
   }
 
-  let _ticket = await Ticket.findOneAndUpdate(filter, changes, { new: true, upsert: true }).orFail('error registering ticket')
-
-  return _ticket.toObject({ getters: true })
+  let _ticket = await Ticket.findOneAndUpdate(filter, changes, { new: true, upsert: true }).catch((err) =>{
+    log.error({ err: err }, 'Error finding/updating ticket')
+    throw Boom.boomify(err)
+  })
+  
+  return _ticket;
 }
 
 async function removeUser(sessionId, userId) {
