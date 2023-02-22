@@ -23,7 +23,13 @@ const schema = new mongoose.Schema({
     }]
   }],
   linkShared: {
-    type: [String],
+    type:[{
+      edition: String,
+      links:{
+        type: [String],
+        default: []
+      }
+    }],
     default: []
   },
   company: [{

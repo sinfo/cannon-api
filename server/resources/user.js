@@ -18,6 +18,7 @@ server.method('user.removeCompany', removeCompany, {})
 server.method('user.sign', sign, {})
 server.method('user.redeemCard', redeemCard, {})
 server.method('user.linkUsers', linkUsers, {})
+server.method('user.setSharePermissions', setSharePermissions, {})
 
 
 async function create(user) {
@@ -315,27 +316,59 @@ async function redeemCard(attendeeId, day, editionId) {
   return user
 }
 
-async function linkUsers(filter, newID) { // Share user links
-  console.log("Passou 6")
+async function linkUsers(filter, newID, currEdition) { // Share user links
   if (typeof filter === 'string') {
     filter = { id: filter }
   }
-  console.log("Passou 7")
+  console.log("-----------------------------10")
   let user = await User.findOne(filter)
-  console.log("Passou 8")
-  if (!user.linkShared) {
-    update = {
-      $set: {
-        linkShared: [newID]
-      }
+  console.log(user.linkShared)
+  console.log("-----------------------------11")
+  if(!user.linkShared){
+  console.log("-----------------------------12")
+  user.linkShared = []
+  console.log("-----------------------------13")
+  }
+  console.log("-----------------------------14")
+  let editionLinks = user.linkShared.find((el) => {
+    el.edition === currEdition
+  })
+  console.log("-----------------------------15")
+  if(!editionLinks){
+  console.log("-----------------------------16")
+  editionLinks = {
+      edition: currEdition,
+      links: [newID]
     }
+  console.log("-----------------------------17")
+  console.log(user)
+  user.linkShared.push(editionLinks)
+  console.log("-----------------------------18")
+} else {
+  console.log("-----------------------------19")
+  editionLinks.links.push(newID)
+  console.log("-----------------------------20")
+}
+  console.log("-----------------------------21")
+  
+  return await user.save()
+}
+
+async function setSharePermissions(filter){
+  if (typeof filter === 'string') {
+    filter = { id: filter }
+  }
+  let val
+  let user = await User.findOne(filter)
+  if(!user.shareLinks){
+    val = true
   } else {
-    update = {
-      $addToSet: {
-        linkShared: newID
-      }
+    val = false
+  }
+  const update = {
+    $set: {
+      shareLinks: val
     }
   }
-  console.log("Passou 9")
   return await User.findOneAndUpdate(filter, update)
 }
