@@ -128,7 +128,8 @@ exports.get = {
       if (ticket) {
         return h.response(render(ticket, session));
       } else {
-        return h.response();
+        log.error({ err: err, msg:'ticket not found'}, 'ticket not found')
+        throw Boom.boomify(err)
       }
     } catch (err) {
       log.error({ err: err, msg:'error getting ticket'}, 'error getting ticket')
