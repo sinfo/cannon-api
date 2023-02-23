@@ -320,55 +320,41 @@ async function linkUsers(filter, newID, currEdition) { // Share user links
   if (typeof filter === 'string') {
     filter = { id: filter }
   }
-  console.log("-----------------------------10")
+
   let user = await User.findOne(filter)
-  console.log(user.linkShared)
-  console.log("-----------------------------11")
-  if(!user.linkShared){
-  console.log("-----------------------------12")
-  user.linkShared = []
-  console.log("-----------------------------13")
+  if (!user.linkShared) {
+    user.linkShared = []
   }
-  console.log("-----------------------------14")
+
   let editionLinks = user.linkShared.find((el) => {
     el.edition === currEdition
   })
-  console.log("-----------------------------15")
-  if(!editionLinks){
-  console.log("-----------------------------16")
-  editionLinks = {
+
+  if (!editionLinks) {
+    editionLinks = {
       edition: currEdition,
       links: [newID]
     }
-  console.log("-----------------------------17")
-  console.log(user)
-  user.linkShared.push(editionLinks)
-  console.log("-----------------------------18")
-} else {
-  console.log("-----------------------------19")
-  editionLinks.links.push(newID)
-  console.log("-----------------------------20")
-}
-  console.log("-----------------------------21")
-  
+
+    user.linkShared.push(editionLinks)
+  } else {
+    editionLinks.links.push(newID)
+  }
+
   return await user.save()
 }
 
-async function setSharePermissions(filter){
+async function setSharePermissions(filter) {
   if (typeof filter === 'string') {
     filter = { id: filter }
   }
-  let val
+
   let user = await User.findOne(filter)
-  if(!user.shareLinks){
-    val = true
-  } else {
-    val = false
-  }
   const update = {
     $set: {
-      shareLinks: val
+      shareLinks: !user.shareLinks
     }
   }
+
   return await User.findOneAndUpdate(filter, update)
 }

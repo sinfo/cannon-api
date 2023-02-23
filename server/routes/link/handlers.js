@@ -37,11 +37,10 @@ exports.createCompanyLink = {
   },
   handler: async function (request, h) {
     try {
-      log.info({ info: request.payload })
       const edition = await request.server.methods.deck.getLatestEdition()
       await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, edition.id)
       let link = await request.server.methods.link.create(request.params.companyId, request.payload, "company", edition.id)
-      return h.response(render(link)).created(`/company/${request.params.companyId}/link/${link.attendeeId}`)
+      return h.response(render(link))
     } catch (err) {
       log.error({ err: err }, 'error creating company link')
       return Boom.boomify(err)
@@ -74,11 +73,10 @@ exports.createAttendeeLink = {
   },
   handler: async function (request, h) {
     try {
-      log.info({ info: request.payload })
       const edition = await request.server.methods.deck.getLatestEdition()
       await request.server.methods.link.checkCompany(request.payload.userId, request.payload.companyId, edition.id)
       let link = await request.server.methods.link.create(request.params.attendeeId, request.payload, "attendee", edition.id)
-      return h.response(render(link)).created(`/users/${request.params.attendeeId}/link/${link.companyId}`)
+      return h.response(render(link))
     } catch (err) {
       log.error({ err: err }, 'error creating attendee link')
       return Boom.boomify(err)
@@ -185,6 +183,7 @@ exports.getCompanyLink = {
       let link = await request.server.methods.link.get(request.params, edition.id, 'company')
       return h.response(render(link))
     } catch (err) {
+      f
       log.error({ err: err }, 'error getting company link')
       return Boom.boomify(err)
     }
@@ -207,7 +206,6 @@ exports.getAttendeeLink = {
   handler: async function (request, h) {
     try {
       const edition = await request.server.methods.deck.getLatestEdition()
-      await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, edition.id)
       let link = await request.server.methods.link.get(request.params, edition.id, 'attendee')
       return h.response(render(link))
     } catch (err) {
@@ -276,19 +274,13 @@ exports.listAttendeeLinks = {
       let links = await request.server.methods.link.list(request.params.attendeeId, request.query, 'attendee', edition.id)
       let sharedLinks
       user.linkShared.forEach((el) => {
-        if(el.edition === edition.id){
+        if (el.edition === edition.id) {
           sharedLinks = el.links
-          console.log("here")
         }
       })
-      console.log(user.linkShared)
-      if(sharedLinks){
-        console.log("-----------------------------1234: ")
-        console.log(sharedLinks)
+      if (sharedLinks) {
         for (let i = 0; i < sharedLinks.length; i++) {
-          console.log("-----------------------------9")
           let newLinks = await request.server.methods.link.list(sharedLinks[i], request.query, "attendee", edition.id)
-          console.log("-----------------------------10")
           links = links.concat(newLinks)
         }
       }

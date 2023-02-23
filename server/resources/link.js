@@ -179,8 +179,7 @@ async function checkCompany(userId, companyId, editionId) {
     log.error({ err: 'not found', user: userId }, 'error getting user')
     throw Boom.notFound('user not found')
   }
-  console.log("TESTES: " + user)
-  console.log(!_.findWhere(user.company, { company: companyId, edition: editionId }))
+
   if (!_.findWhere(user.company, { company: companyId, edition: editionId })) {
     log.error({ company: companyId, user: userId, edition: editionId, userCompany: user.company }, 'company not found')
     throw Boom.notFound('company not found')
