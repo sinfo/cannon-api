@@ -7,7 +7,7 @@ const Boom = require('@hapi/boom')
 exports = module.exports
 
 exports.create = {
-  options:{
+  options: {
     tags: ['api', 'file'],
     auth: {
       strategies: ['default'],
@@ -29,14 +29,14 @@ exports.create = {
       let file = await request.server.methods.file.create(request.payload)
       return h.response(render(file)).created('/files/' + file.id)
     } catch (err) {
-      log.error({ err: err, msg:'error creating file'}, 'error creating file')
+      log.error({ err: err, msg: 'error creating file' }, 'error creating file')
       throw Boom.internal()
     }
   },
 }
 
 exports.update = {
-  options:{
+  options: {
     tags: ['api', 'file'],
     auth: {
       strategies: ['default'],
@@ -72,7 +72,7 @@ exports.update = {
 }
 
 exports.get = {
-  options:{
+  options: {
     tags: ['api', 'file'],
     auth: {
       strategies: ['default'],
@@ -94,14 +94,14 @@ exports.get = {
       }
       return h.response(render(file))
     } catch (err) {
-      log.error({ err: err}, 'error getting file')
+      log.error({ err: err }, 'error getting file')
       throw Boom.internal()
     }
   },
 }
 
 exports.getMe = {
-  options:{
+  options: {
     tags: ['api', 'file'],
     auth: {
       strategies: ['default'],
@@ -126,7 +126,7 @@ exports.getMe = {
 }
 
 exports.download = {
-  options:{
+  options: {
     tags: ['api', 'file'],
     auth: {
       strategies: ['default'],
@@ -141,7 +141,7 @@ exports.download = {
   },
   handler: async (request, h) => {
     let file = await request.server.methods.file.get(request.params.id, request.query)
-    
+
     const path = configUpload.path + '/' + file.id
     const options = {
       filename: file.name,
@@ -152,7 +152,7 @@ exports.download = {
 }
 
 exports.downloadMe = {
-  options:{
+  options: {
     tags: ['api', 'file'],
     auth: {
       strategies: ['default'],
@@ -172,7 +172,7 @@ exports.downloadMe = {
 }
 
 exports.downloadZip = {
-  options:{
+  options: {
     tags: ['api', 'file'],
     auth: {
       strategies: ['default'],
@@ -189,15 +189,15 @@ exports.downloadZip = {
     try {
       await request.server.methods.file.zipFiles(null)
       return h.file(configUpload.cvsZipPath, { mode: 'attachment', filename: 'CVs.zip' }) // Return generic zip
-    } catch(err){
-      log.error({err: err}, 'error downloading file')
+    } catch (err) {
+      log.error({ err: err }, 'error downloading file')
       throw Boom.boomify(err)
     }
   },
 }
 
 exports.downloadCompany = {
-  options:{
+  options: {
     tags: ['api', 'file'],
     auth: {
       strategies: ['default'],
@@ -220,19 +220,19 @@ exports.downloadCompany = {
       await request.server.methods.endpoint.isValid(request.params.companyId, request.query.editionId)
       await request.server.methods.endpoint.incrementVisited(request.params.companyId, request.query.editionId)
       if (request.query.links) {
-          let links = await request.server.methods.link.list(request.params.companyId, request.query)
-          await request.server.methods.file.zipFiles(links)
-          return handleZip(true)
+        let links = await request.server.methods.link.list(request.params.companyId, request.query)
+        await request.server.methods.file.zipFiles(links)
+        return handleZip(true)
       } else {
         await request.server.methods.file.zipFiles(null)
         return handleZip(false)
       }
-  } catch(err){
-    log.error({err: err}, 'error downloading files')
-    throw Boom.boomify(err)
-  }
+    } catch (err) {
+      log.error({ err: err }, 'error downloading files')
+      throw Boom.boomify(err)
+    }
 
-  function handleZip (zip) {
+    function handleZip(zip) {
       if (!zip) {
         return h.file(configUpload.cvsZipPath, { mode: 'attachment', filename: 'CVs.zip' }) // Return generic zip
       }
@@ -245,7 +245,7 @@ exports.downloadCompany = {
 }
 
 exports.list = {
-  options:{
+  options: {
     tags: ['api', 'file'],
     auth: {
       strategies: ['default'],
@@ -270,11 +270,11 @@ exports.list = {
       log.error({ err: err, msg: 'error getting file models' }, 'error getting file models')
       throw Boom.boomify(err)
     }
-  }  
+  }
 }
 
 exports.remove = {
-  options:{
+  options: {
     tags: ['api', 'file'],
     auth: {
       strategies: ['default'],
@@ -301,7 +301,7 @@ exports.remove = {
 }
 
 exports.removeMe = {
-  options:{
+  options: {
     tags: ['api', 'file'],
     auth: {
       strategies: ['default'],
@@ -363,7 +363,7 @@ exports.upload = {
     try {
       let user = await request.server.methods.user.get(request.params.id)
       if (!user) {
-        log.error({ err: err}, 'user not found')
+        log.error({ err: err }, 'user not found')
         throw Boom.notFound()
       }
 
@@ -377,7 +377,7 @@ exports.upload = {
       } else {
         return h.response(render(file)).created('/api/file/' + file.id)
       }
-      
+
     } catch (err) {
       log.error({ err: err, msg: 'error uploading file' }, 'error uploading file')
       throw Boom.boomify(err)
@@ -434,5 +434,5 @@ exports.uploadMe = {
       log.error({ err: err, msg: 'error uploading file' }, 'error uploading file')
       throw Boom.boomify(err)
     }
-  }  
+  }
 }

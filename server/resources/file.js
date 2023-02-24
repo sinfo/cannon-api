@@ -24,42 +24,42 @@ server.method('file.upload', upload, {})
 server.method('file.uploadCV', uploadCV, {})
 server.method('file.zipFiles', zipFiles, {})
 
-async function createArray (files) {
+async function createArray(files) {
   if (!files.length) {
     return await create(files)
   }
   async.map(files, create, (err, results) => {
     if (err) {
-      log.error({err: err, files: files}, '[files] error creating files in db')
+      log.error({ err: err, files: files }, '[files] error creating files in db')
     }
     return results
   })
 }
 
-async function create (file) {
+async function create(file) {
   // file.user = (cb && user) || file.user
   // cb = cb || user
 
   file.created = file.updated = Date.now()
 
-  let _file = await File.create(file).catch((err)=>{
+  let _file = await File.create(file).catch((err) => {
     if (err.code === 11000) {
-      log.error({msg: "file is a duplicate" })
+      log.error({ msg: "file is a duplicate" })
       throw Boom.conflict(`file "${file.id}" is a duplicate`)
     }
-    log.error({ err: err, msg:'error creating file'}, 'error creating file')
+    log.error({ err: err, msg: 'error creating file' }, 'error creating file')
     throw Boom.internal()
   })
 
   if (!_file) {
-    log.error({err: err, file: file.id}, 'error creating file')
+    log.error({ err: err, file: file.id }, 'error creating file')
     throw Boom.internal()
   }
 
   return _file.toObject({ getters: true })
 }
 
-async function update (id, file, user, query) {
+async function update(id, file, user, query) {
   //cb = cb || query || user
   query = query || {}
   if (arguments.length === 4) {
@@ -74,7 +74,7 @@ async function update (id, file, user, query) {
   }
 
   file.updated = Date.now()
-  file.$setOnInsert = {created: file.updated}
+  file.$setOnInsert = { created: file.updated }
   file.user = user || file.user || null
 
   let filter = { id: id }
@@ -85,23 +85,23 @@ async function update (id, file, user, query) {
   })
 
   if (!_file) {
-    log.error({file: id}, '[file] error updating file')
+    log.error({ file: id }, '[file] error updating file')
     throw Boom.notFound()
   }
 
   return _file.toObject({ getters: true })
 }
 
-async function get (id, query) {
+async function get(id, query) {
   //cb = cb || query // fields is optional
   if (!id) { // check if file exists use case
     log.warn('[file] tried to get with empty file id')
     throw new Error('[file] tried to get with empty file id')
   }
 
-  const fields = query? fieldsParser(query.fields) : {}
+  const fields = query ? fieldsParser(query.fields) : {}
   const filter = { $or: [{ id: id }, { user: id }] }
-  
+
   let file = await File.findOne(filter, fields)
 
   if (!file) {
@@ -112,12 +112,12 @@ async function get (id, query) {
   return file.toObject({ getters: true })
 }
 
-async function list (query) {
+async function list(query) {
   //cb = cb || query // fields is optional
 
   const filter = {}
-  const fields = query? fieldsParser(query.fields) : {}
-  const options = query? {
+  const fields = query ? fieldsParser(query.fields) : {}
+  const options = query ? {
     skip: query.skip,
     limit: query.limit,
     sort: fieldsParser(query.sort)
@@ -129,12 +129,12 @@ async function list (query) {
 }
 
 async function remove(id) {
-  let filter = {id: id}
+  let filter = { id: id }
 
   let file = await File.findOneAndRemove(filter, { new: false })
 
   if (!file) {
-    log.error({err: 'not found', file: id}, 'error deleting file')
+    log.error({ err: 'not found', file: id }, 'error deleting file')
     throw Boom.notFound()
   }
 
@@ -155,11 +155,11 @@ async function removeFromUser(id) {
   return remove(file.id)
 }
 
-async function uploadCV (data) {
+async function uploadCV(data) {
   return upload('cv', data)
 }
 
-async function upload (kind, data) {
+async function upload(kind, data) {
   const files = []
   await async.each(Object.keys(data), async (prop) => {
     if (data.hasOwnProperty(prop)) {
@@ -167,15 +167,15 @@ async function upload (kind, data) {
     }
   }).catch((err) => {
     if (err) {
-      log.error({err: err, kind: kind, files: files}, '[files] error assigning file keys')
+      log.error({ err: err, kind: kind, files: files }, '[files] error assigning file keys')
       throw Boom.internal()
     }
   })
-  
+
   return saveFiles(kind, files, data)
 }
 
-async function saveFiles (kind, files, data) {
+async function saveFiles(kind, files, data) {
   if (!files) {
     log.error('saveFiles: No files were given')
     throw Boom.badData()
@@ -190,7 +190,7 @@ async function saveFiles (kind, files, data) {
   })
 }
 
-async function deleteFile (file) {
+async function deleteFile(file) {
   // only delete if file defined, doesn't throw err
 
   if (!file || file === '') {
@@ -209,14 +209,14 @@ async function deleteFile (file) {
         return
       }
 
-      log.error({err: err, path: path}, '[file] error deleting file')
+      log.error({ err: err, path: path }, '[file] error deleting file')
       throw Boom.boomify(err)
     }
-    log.info({path: path}, '[file] successfully deleted file')
+    log.info({ path: path }, '[file] successfully deleted file')
   });
 }
 
-async function saveFile (kind, data) {
+async function saveFile(kind, data) {
   const mimeType = data.hapi.headers['content-type']
   const fileInfo = {
     id: kind + '_' + Math.random().toString(36).substring(2, 20),
@@ -233,7 +233,7 @@ async function saveFile (kind, data) {
       if (err && err.errno === 34) {
         log.error('[file] issue with file path')
       }
-      log.error({err: err}, '[file] error uploading file')
+      log.error({ err: err }, '[file] error uploading file')
       throw Boom.internal()
     })
 
@@ -241,7 +241,7 @@ async function saveFile (kind, data) {
 
     file.on('end', async (err) => {
       if (err) {
-        log.error({err: err}, '[file] error uploading file')
+        log.error({ err: err }, '[file] error uploading file')
         throw Boom.badData(err)
       }
 
@@ -253,28 +253,28 @@ async function saveFile (kind, data) {
         }
       }).catch((err) => {
         if (err) {
-          log.error({err: err}, '[file] error running through options')
+          log.error({ err: err }, '[file] error running through options')
           throw Boom.internal(err)
         }
       })
       if (index === -1) {
-        log.error({err: err}, '[file] invalid file type for requested kind')
+        log.error({ err: err }, '[file] invalid file type for requested kind')
         throw Boom.badData(err)
       }
-      
+
       fileInfo.extension = Mime.getExtension(mimeType)
       resolve(fileInfo)
     })
   })
 }
 
-async function zipFiles (links) {
+async function zipFiles(links) {
   if (links) {
     // Generate new zip with links
     const linksIds = links.map((link) => { return link.attendee })
     const filter = {
       user: { '$in': linksIds },
-      updated: {'$gt': new Date('2020-01-01')}
+      updated: { '$gt': new Date('2020-01-01') }
     }
     const zip = new Zip()
 
@@ -282,95 +282,52 @@ async function zipFiles (links) {
     if (files) {
       await async.eachSeries(files, async (file) => {
         let link = links.find((link) => { return link.attendee === file.user })
-
-        let user = await server.methods.user.get({'id': file.user})
-        let fileData = await fs.readFile(`${config.upload.path}/${file.id}`)
+        let user = await server.methods.user.get({ 'id': file.user })
+        let fileData = fs.readFileSync(`${config.upload.path}/${file.id}`)
         zip.addFile(`${user.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}.pdf`, fileData, `Notes: ${link.notes}`, 644)
-            if (link.notes) {
-              let note = '\nEmail: ' + link.notes.contacts.email ? link.notes.contacts.email : '-' +
-              '\nPhone: ' + link.notes.contacts.phone ? link.notes.contacts.phone : '-' +
+        if (link.notes) {
+          let note = '\nEmail: ' + link.notes.contacts.email ? link.notes.contacts.email : '-' +
+            '\nPhone: ' + link.notes.contacts.phone ? link.notes.contacts.phone : '-' +
               '\nInterests: ' + link.notes.interestedIn ? link.notes.interestedIn : '-' +
-              '\nDegree: ' + link.notes.degree ? link.notes.degree : '-' +
-              '\nAvailability: ' + link.notes.availability ? link.notes.availability : '-' +
-              '\nOther obserbations: ' + link.notes.otherObservations ? link.notes.otherObservations : '-'
-
-              zip.addFile(`${user.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}.txt`, new Buffer(`Your notes, taken on ${new Date(link.created).toUTCString()}: ${note}`), `Notes: ${note}`, 644)
-            }
+                '\nDegree: ' + link.notes.degree ? link.notes.degree : '-' +
+                  '\nAvailability: ' + link.notes.availability ? link.notes.availability : '-' +
+                    '\nOther obserbations: ' + link.notes.otherObservations ? link.notes.otherObservations : '-'
+          zip.addFile(`${user.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}.txt`, new Buffer(`Your notes, taken on ${new Date(link.created).toUTCString()}: ${note}`), `Notes: ${note}`, 644)
+        }
       }).catch((err) => {
         if (err) {
-          throw Boom.internal()
+          throw Boom.internal(err)
         }
       })
 
       zip.writeZip(config.upload.cvsLinkPath)
       return true
-    }else{
+    } else {
       log.error('No files')
       throw Boom.notFound()
     }
   } else {
-    // - see if old exists && verify freshness
     try {
       let stats = fs.statSync(config.upload.cvsZipPath)
       let dirStats = fs.statSync(config.upload.path)
 
       // Prevents Big Zip from being generated on every request. Acts like a cache
-      if (new Date(dirStats.mtime).getTime() < new Date(stats.mtime).getTime()) {
+      if (stats && (new Date(dirStats.mtime).getTime() < new Date(stats.mtime).getTime())) {
         return
       }
     } catch (err) {
       if (err && err.code !== 'ENOENT') {
-        log.error({err: err, links: links}, '[file] Error reading cvsZipFile/uploads dir')
-        throw Boom.internal()
-      } else if (err) {
-        log.error({err: err}, '[file] Error opening cvsZipFile/uploads dir')
+        log.error({ err: err, links: links }, '[file] Error reading cvsZipFile/uploads dir')
         throw Boom.internal()
       }
     }
 
-
-    // const filter = {
-    //   updated: {'$gt': new Date('2021-02-25')}
-    // }
-
     let zip = new Zip()
     log.info('Zipping...')
-    // File.find(filter, (err, files) => {
-    //   if (err) {
-    //     return cb(Boom.internal())
-    //   }
 
-    //   log.info(`Found ${files.length} files to zip`)
-
-    //   async.eachSeries(files, (file, cbAsync) => {
-    //     fs.readFile(`${config.upload.path}/${file.id}`, (err, fileData) => {
-    //       if (err) {
-    //         log.error(`File ${file.id} not found`)
-    //         return cbAsync()
-    //       }
-    //       zip.addFile(`${file.id}.pdf`, fileData, '', 644) // .pdf hardcoded ¯\_(ツ)_/¯
-    //       return cbAsync()
-    //     })
-    //   }, (err) => {
-    //     if (err) {
-    //       return cb(Boom.internal())
-    //     }
-
-    //     log.info('writing zip')
-    //     zip.toBuffer(buffer => {
-    //       fs.writeFile(config.upload.cvsZipPath, buffer, (err) => {
-    //         if (err) {
-    //           return (Boom.internal())
-    //         }
-    //         return cb()
-    //       })
-    //     })
-    //   })
-    // })
-
-    let files = await fs.readdir(config.upload.path)
+    let files = fs.readdirSync(config.upload.path)
     await async.eachSeries(files, async (file) => {
-      let fileData = await fs.readFile(`${config.upload.path}/${file}`)
+      let fileData = fs.readFileSync(`${config.upload.path}/${file}`)
       zip.addFile(`${file}.pdf`, fileData, '', 644) // .pdf hardcoded ¯\_(ツ)_/¯
     })
 
