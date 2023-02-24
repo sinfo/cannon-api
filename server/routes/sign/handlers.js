@@ -7,7 +7,7 @@ exports = module.exports
 
 exports.create = {
   tags: ['api', 'sign'],
-  options:{
+  options: {
     auth: {
       strategies: ['default'],
       scope: ['company']
@@ -37,7 +37,7 @@ exports.create = {
 }
 
 exports.speed = {
-  options:{
+  options: {
     tags: ['api', 'sign'],
     auth: {
       strategies: ['default'],
@@ -66,7 +66,7 @@ exports.speed = {
 }
 
 exports.checkIn = {
-  options:{
+  options: {
     tags: ['api', 'survey'],
     auth: {
       strategies: ['default'],
@@ -96,7 +96,7 @@ exports.checkIn = {
 }
 
 exports.generate = {
-  options:{
+  options: {
     tags: ['api', 'survey'],
     auth: {
       strategies: ['default'],
