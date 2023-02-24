@@ -226,7 +226,7 @@ async function sign(attendeeId, companyId, day, editionId) {
   }
 
   user = await User.findOneAndUpdate(filter, update, { new: true }).catch((err) => {
-    log.error({ err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
+    log.error({ err: err, attendeeId: attendeeId, companyId: companyId, day: day, editionId: editionId }, 'Error signing user')
     throw Boom.boomify(err)
   })
 
@@ -237,8 +237,8 @@ async function sign(attendeeId, companyId, day, editionId) {
       {
         $push: {
           signatures: {
-            day: payload.day,
-            edition: payload.editionId,
+            day: day,
+            edition: editionId,
             signatures: [sig]
           }
         }
@@ -246,18 +246,18 @@ async function sign(attendeeId, companyId, day, editionId) {
     )
   }
   return user
+}
 
-  async function addNewDayEntry(filter, update) {
-    let user = await User.findOneAndUpdate(filter, update, { new: true }).catch((err) => {
-      log.error({ err: err }, 'Error signing user')
-      throw Boom.boomify(err)
-    })
-    if (!user) {
-      log.error({ err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
-      throw Boom.notFound()
-    }
-    return user
+async function addNewDayEntry(filter, update) {
+  let user = await User.findOneAndUpdate(filter, update, { new: true }).catch((err) => {
+    log.error({ err: err }, 'Error signing user')
+    throw Boom.boomify(err)
+  })
+  if (!user) {
+    log.error({ err: err, msg: 'error signing user' }, 'Error signing user')
+    throw Boom.notFound()
   }
+  return user
 }
 
 async function redeemCard(attendeeId, day, editionId) {

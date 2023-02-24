@@ -21,7 +21,7 @@ exports.create = {
     description: 'Creates a new signature'
   },
   handler: async function (request, h) {
-    try {
+    // try {
       const edition = await request.server.methods.deck.getLatestEdition()
       const day = new Date().getDate().toString()
       await request.server.methods.link.checkCompany(request.auth.credentials.user.id, request.params.companyId, edition.id)
@@ -29,10 +29,10 @@ exports.create = {
       let user = await request.server.methods.user.sign(request.params.attendeeId, request.params.companyId, day, edition.id)
       await request.server.methods.achievement.checkUserStandDay(request.params.attendeeId)
       return h.response(render(user, request.auth.credentials && request.auth.credentials.user))
-    } catch (err) {
-      log.error({ err: err, msg: 'error creating signature' }, 'error creating signature')
-      throw Boom.boomify(err)
-    }
+    // } catch (err) {
+    //   log.error({ err: err, msg: 'error creating signature' }, 'error creating signature')
+    //   throw Boom.boomify(err)
+    // }
   },
 }
 
