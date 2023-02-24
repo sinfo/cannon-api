@@ -20,21 +20,21 @@ exports.registerTicket = {
     },
     description: "Registers a ticket for the current user."
   },
-  handler: async function (request, h) { 
+  handler: async function (request, h) {
     try {
       let session = await request.server.methods.session.get(request.params.sessionId)
       request.server.methods.session.ticketsNeeded(session)
       request.server.methods.session.inRegistrationPeriod(session)
-      
+
       await request.server.methods.ticket.userRegistered(request.params.sessionId, request.auth.credentials.user.id)
 
       let ticket = await request.server.methods.ticket.addUser(request.params.sessionId, request.auth.credentials.user.id, session)
-    
+
       request.server.methods.ticket.registrationEmail(ticket, session, request.auth.credentials.user)
-    
+
       return h.response(render(ticket, session))
     } catch (err) {
-      log.error({ err: err, msg:'error registering ticket'}, 'error registering ticket')
+      log.error({ err: err, msg: 'error registering ticket' }, 'error registering ticket')
       throw Boom.boomify(err)
     }
   }
@@ -58,18 +58,18 @@ exports.voidTicket = {
     try {
       let session = await request.server.methods.session.get(request.params.sessionId)
       request.server.methods.session.ticketsNeeded(session)
-      
+
       let ticket = await request.server.methods.ticket.get(request.params.sessionId)
       let removedTicket = await request.server.methods.ticket.removeUser(session.id, request.auth.credentials.user.id)
       let user = request.server.methods.ticket.getAcceptedUser(ticket, session, request.auth.credentials.user)
-      
+
       if (user) {
         request.server.methods.ticket.registrationAcceptedEmail(ticket, session, user)
       }
 
       return h.response(render(removedTicket, session))
     } catch (err) {
-      log.error({ err: err, msg:'error voiding ticket for current user'}, 'error voiding ticket for current user')
+      log.error({ err: err, msg: 'error voiding ticket for current user' }, 'error voiding ticket for current user')
       throw Boom.boomify(err)
     }
   },
@@ -95,12 +95,12 @@ exports.confirmTicket = {
       request.server.methods.session.ticketsNeeded(session)
       request.server.methods.session.inConfirmationPeriod(session)
       await request.server.methods.ticket.userConfirmed(request.params.sessionId, auth.credentials.user.id)
-      
+
       let ticket = await request.server.methods.ticket.confirmUser(request.params.sessionId, request.auth.credentials.user.id, session)
       request.server.methods.ticket.confirmationEmail(ticket, session, request.auth.credentials.user)
       return h.response(render(ticket, session))
     } catch (err) {
-      log.error({ err: err, msg:'error confirming ticket for user'}, 'error confirming ticket for user')
+      log.error({ err: err, msg: 'error confirming ticket for user' }, 'error confirming ticket for user')
       throw Boom.boomify(err)
     }
   },
@@ -128,11 +128,11 @@ exports.get = {
       if (ticket) {
         return h.response(render(ticket, session));
       } else {
-        log.error({ err: err, msg:'ticket not found'}, 'ticket not found')
+        log.error({ err: err, msg: 'ticket not found' }, 'ticket not found')
         throw Boom.boomify(err)
       }
     } catch (err) {
-      log.error({ err: err, msg:'error getting ticket'}, 'error getting ticket')
+      log.error({ err: err, msg: 'error getting ticket' }, 'error getting ticket')
       throw Boom.boomify(err)
     }
   },
@@ -160,7 +160,7 @@ exports.list = {
       let tickets = await request.server.methods.ticket.list(request.query)
       return h.response(render(tickets));
     } catch (err) {
-      log.error({ err: err, msg:'error getting all tickets'}, 'error getting all tickets')
+      log.error({ err: err, msg: 'error getting all tickets' }, 'error getting all tickets')
       throw Boom.boomify(err)
     }
   },
@@ -187,7 +187,7 @@ exports.registerPresence = {
       let ticket = await request.server.methods.ticket.registerUserPresence(request.params.sessionId, request.params.userId)
       return h.response(render(ticket, session))
     } catch (err) {
-      log.error({ err: err, msg:'error registering presence'}, 'error registering presence')
+      log.error({ err: err, msg: 'error registering presence' }, 'error registering presence')
       throw Boom.boomify(err)
     }
   },
@@ -215,7 +215,7 @@ exports.getUsers = {
       let users = await request.server.methods.user.getMulti(userIds)
       return h.response(renderUsers(users, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {
-      log.error({ err: err, msg:'error getting users'}, 'error getting users')
+      log.error({ err: err, msg: 'error getting users' }, 'error getting users')
       throw Boom.boomify(err)
     }
   },
@@ -243,7 +243,7 @@ exports.getWaiting = {
       let users = await request.server.methods.user.getMulti(userIds)
       return h.response(renderUsers(users, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {
-      log.error({ err: err, msg:'error getting waiting users'}, 'error getting waiting users')
+      log.error({ err: err, msg: 'error getting waiting users' }, 'error getting waiting users')
       throw Boom.boomify(err)
     }
   },
@@ -271,7 +271,7 @@ exports.getConfirmed = {
       let users = await request.server.methods.user.getMulti(userIds)
       return h.response(renderUsers(users, request.auth.credentials && request.auth.credentials.user))
     } catch (err) {
-      log.error({ err: err, msg:'error getting confirmed users'}, 'error getting confirmed users')
+      log.error({ err: err, msg: 'error getting confirmed users' }, 'error getting confirmed users')
       throw Boom.boomify(err)
     }
   },
@@ -297,7 +297,7 @@ exports.getUserSessions = {
       let tickets = await request.server.methods.ticket.getUserSessions(request.params.userId)
       return h.response(tickets);
     } catch (err) {
-      log.error({ err: err, msg:'error getting user sessions'}, 'error getting user sessions')
+      log.error({ err: err, msg: 'error getting user sessions' }, 'error getting user sessions')
       throw Boom.boomify(err)
     }
   },

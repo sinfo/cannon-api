@@ -183,7 +183,6 @@ exports.getCompanyLink = {
       let link = await request.server.methods.link.get(request.params, edition.id, 'company')
       return h.response(render(link))
     } catch (err) {
-      f
       log.error({ err: err }, 'error getting company link')
       return Boom.boomify(err)
     }

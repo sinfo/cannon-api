@@ -125,8 +125,6 @@ async function list(filter, query, author, editionId) {
   filter.edition = editionId
   filter.author = author
 
-  filter.author = author
-
   const fields = fieldsParser(query.fields)
   const options = {
     skip: query.skip,
@@ -135,13 +133,13 @@ async function list(filter, query, author, editionId) {
   }
 
   let links = await Link.find(filter, fields, options)
-
   if (author === "company") {
     let achFilter = {
       'validity.to':
         { '$gt': new Date('January 1, 2021 00:00:00').toISOString() },
       'kind': 'cv'
     }
+
     let achievement = await Achievement.findOne(achFilter).catch((err) => {
       log.error({ err: err, link: filter }, 'link not found')
       throw Boom.notFound('link not found')
