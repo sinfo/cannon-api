@@ -15,6 +15,7 @@ function renderObject (model, user, editionId) {
   result.name = model.name
   result.img = model.img || 'https://sinfo.ams3.cdn.digitaloceanspaces.com/static/26-sinfo/hacky/hacky.png'
   result.role = model.role
+  result.shareLinks = model.shareLinks
   result.points = model.points !== undefined && typeof model.points === 'number'
     ? model.points : undefined
   result.registered = model.registered

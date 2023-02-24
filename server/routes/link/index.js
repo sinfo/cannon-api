@@ -45,6 +45,20 @@ server.route({
   options: handlers.createAttendeeLink.options
 })
 
+server.route({ //Share user links
+  method: 'GET',
+  path: '/users/{attendeeId}/shareLinks',
+  handler: handlers.shareUserLinks.handler,
+  options: handlers.shareUserLinks.options
+})
+
+server.route({ //Change link sharing permissions
+  method: 'GET',
+  path: '/users/shareLinksPermissions',
+  handler: handlers.toggleSharePermission.handler,
+  options: handlers.toggleSharePermission.options
+})
+
 server.route({
   method: ['PUT', 'PATCH'],
   path: '/users/{attendeeId}/link/{companyId}',

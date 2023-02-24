@@ -6,6 +6,7 @@ const schema = new mongoose.Schema({
   img: String,
   role: { type: String, default: 'user' },
   mail: { type: String, unique: true, sparse: true },
+  shareLinks: {type: Boolean, default: false},
   bearer: [{
     token: { type: String, unique: true, sparse: true },
     refreshToken: { type: String, unique: true, sparse: true },
@@ -21,6 +22,16 @@ const schema = new mongoose.Schema({
       date: Date
     }]
   }],
+  linkShared: {
+    type:[{
+      edition: String,
+      links:{
+        type: [String],
+        default: []
+      }
+    }],
+    default: []
+  },
   company: [{
     edition: String,
     company: String

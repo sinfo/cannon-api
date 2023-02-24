@@ -17,6 +17,8 @@ server.method('user.remove', remove, {})
 server.method('user.removeCompany', removeCompany, {})
 server.method('user.sign', sign, {})
 server.method('user.redeemCard', redeemCard, {})
+server.method('user.linkUsers', linkUsers, {})
+server.method('user.setSharePermissions', setSharePermissions, {})
 
 
 async function create(user) {
@@ -197,7 +199,7 @@ async function sign(attendeeId, companyId, day, editionId) {
   // todo verify
 
   let user = await get({ "id": attendeeId }).catch((err) => {
-    log.error({ err: err, attendeeId: attendeeId, companyId: companyId, day: payload.day, editionId: payload.editionId }, 'Error signing user')
+    log.error({ err: err, attendeeId: attendeeId, companyId: companyId, day: day, editionId: editionId }, 'Error signing user')
     throw Boom.boomify(err)
   })
 
@@ -312,4 +314,47 @@ async function redeemCard(attendeeId, day, editionId) {
     throw Boom.notFound()
   }
   return user
+}
+
+async function linkUsers(filter, newID, currEdition) { // Share user links
+  if (typeof filter === 'string') {
+    filter = { id: filter }
+  }
+
+  let user = await User.findOne(filter)
+  if (!user.linkShared) {
+    user.linkShared = []
+  }
+
+  let editionLinks = user.linkShared.find((el) => {
+    el.edition === currEdition
+  })
+
+  if (!editionLinks) {
+    editionLinks = {
+      edition: currEdition,
+      links: [newID]
+    }
+
+    user.linkShared.push(editionLinks)
+  } else {
+    editionLinks.links.push(newID)
+  }
+
+  return await user.save()
+}
+
+async function setSharePermissions(filter) {
+  if (typeof filter === 'string') {
+    filter = { id: filter }
+  }
+
+  let user = await User.findOne(filter)
+  const update = {
+    $set: {
+      shareLinks: !user.shareLinks
+    }
+  }
+
+  return await User.findOneAndUpdate(filter, update)
 }
