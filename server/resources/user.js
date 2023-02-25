@@ -292,12 +292,18 @@ async function redeemCard(attendeeId, day, editionId) {
 
   // this should not be hardcoded
   let signatures = user.signatures.filter(s => s.day === day && s.edition === editionId)
-  if (signatures || signatures.length == 0) {
-    log.error({ user: user }, 'not enough signatures to validate card')
-    throw Boom.badData({ user: user }, 'not enough signatures to validate card')
+  log.info("SIGNATURES:", signatures)
+  log.info("SIGNATURES 0:", signatures[0])
+  log.info("SIGNATURES 1:", signatures[0].signatures)
+  log.info("SIGNATURES 2:", signatures[0].signatures.length)
+
+
+  if (signatures.length != 1) {
+    log.error({ user: user }, 'user signatures length is different from 1')
+    throw Boom.preconditionFailed("user signatures length is different from 1")
   }
 
-  if (signatures[0].signatures.length < 10) {
+  if (signatures && signatures[0].signatures.length < 10) {
     log.error({ user: user }, 'not enough signatures to validate card')
     throw Boom.badData({ user: user }, 'not enough signatures to validate card')
   }
