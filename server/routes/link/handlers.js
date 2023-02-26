@@ -329,7 +329,10 @@ exports.toggleSharePermission = { //Change slink share permissions
   },
   handler: async function (request, h) {
     try {
-      let me = await request.server.methods.user.setSharePermissions(request.auth.credentials.user.id)
+      const edition = await request.server.methods.deck.getLatestEdition()
+      // console.log(edition)
+      // let unixEvent = Math.floor(edition.getTime() / 1000)
+      let me = await request.server.methods.user.setSharePermissions(request.auth.credentials.user.id, edition)
       return h.response(render(me))
     } catch (err) {
       log.error({ err: err }, 'error changing sharing permissions')
