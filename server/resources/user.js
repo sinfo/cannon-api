@@ -292,12 +292,18 @@ async function redeemCard(attendeeId, day, editionId) {
 
   // this should not be hardcoded
   let signatures = user.signatures.filter(s => s.day === day && s.edition === editionId)
-  if (signatures || signatures.length == 0) {
-    log.error({ user: user }, 'not enough signatures to validate card')
-    throw Boom.badData({ user: user }, 'not enough signatures to validate card')
+  log.info("SIGNATURES:", signatures)
+  log.info("SIGNATURES 0:", signatures[0])
+  log.info("SIGNATURES 1:", signatures[0].signatures)
+  log.info("SIGNATURES 2:", signatures[0].signatures.length)
+
+
+  if (signatures.length != 1) {
+    log.error({ user: user }, 'user signatures length is different from 1')
+    throw Boom.preconditionFailed("user signatures length is different from 1")
   }
 
-  if (signatures[0].signatures.length < 10) {
+  if (signatures && signatures[0].signatures.length < 10) {
     log.error({ user: user }, 'not enough signatures to validate card')
     throw Boom.badData({ user: user }, 'not enough signatures to validate card')
   }
@@ -344,15 +350,33 @@ async function linkUsers(filter, newID, currEdition) { // Share user links
   return await user.save()
 }
 
-async function setSharePermissions(filter) {
+async function setSharePermissions(filter, edition) {
+
+  let eventEnd = new Date(new Date(edition.date).getTime() + new Date(edition.duration).getTime())
+
+  let unixEvent = Math.floor(eventEnd.getTime() / 1000)
+
   if (typeof filter === 'string') {
     filter = { id: filter }
   }
-
   let user = await User.findOne(filter)
-  const update = {
-    $set: {
-      shareLinks: !user.shareLinks
+
+  let now = new Date()
+  let unixNow = Math.floor(now.getTime() / 1000)
+
+  let update
+
+  if (unixNow <= unixEvent) {
+    update = {
+      $set: {
+        shareLinks: false
+      }
+    }
+  } else {
+    update = {
+      $set: {
+        shareLinks: !user.shareLinks
+      }
     }
   }
 
