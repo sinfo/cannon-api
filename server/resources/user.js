@@ -360,13 +360,13 @@ async function setSharePermissions(filter, edition) {
     filter = { id: filter }
   }
   let user = await User.findOne(filter)
-  
+
   let now = new Date()
   let unixNow = Math.floor(now.getTime() / 1000)
-  
+
   let update
 
-  if(unixNow <= unixEvent){
+  if (unixNow <= unixEvent) {
     update = {
       $set: {
         shareLinks: false
@@ -379,11 +379,6 @@ async function setSharePermissions(filter, edition) {
       }
     }
   }
-  // const update = {
-  //         $set: {
-  //           shareLinks: !user.shareLinks
-  //         }
-  //       }
 
   return await User.findOneAndUpdate(filter, update)
 }
