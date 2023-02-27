@@ -45,7 +45,7 @@ server.route({
 
 server.route({
     method: 'GET',
-    path: '/session/${sessionId}',
+    path: '/session/{sessionId}',
     options: handlers.getSession.options,
     handler: handlers.getSession.handler
 })
