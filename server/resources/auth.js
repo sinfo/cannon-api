@@ -60,7 +60,7 @@ async function googleAuth(id, token) {
     name: gUser.name,
     img: gUser.picture
   }
-  
+
   return await authenticate(res.userId, changedAttributes)
 }
 
@@ -73,8 +73,8 @@ async function microsoftAuth(code) {
     const res = await microsoft.getUser(microsoftUser)
     // If the user does not exist we create, otherwise we update the existing user
     if (res.createUser) {
-      const userId = microsoft.createUser(microsoftUser)
-      authenticate(userId, null)
+      const userId = await microsoft.createUser(microsoftUser)
+      return authenticate(userId, null)
     }
 
     const changedAttributes = {
@@ -86,10 +86,10 @@ async function microsoftAuth(code) {
     }
 
     return await authenticate(res.userId, changedAttributes)
-  } catch(err) {
+  } catch (err) {
     Boom.unauthorized(err)
   }
-  
+
 }
 
 async function fenixAuth(code) {
@@ -113,7 +113,7 @@ async function fenixAuth(code) {
       name: fenixUser.name,
       img: `https://fenix.tecnico.ulisboa.pt/user/photo/${fenixUser.username}`
     }
-    
+
     return authenticate(res.userId, changedAttributes)
   } catch (err) {
     Boom.unauthorized(err)

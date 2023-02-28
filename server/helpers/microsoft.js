@@ -26,7 +26,7 @@ async function fetch(endpoint, accessToken) {
         }
 
         return response.data
-    } catch(error) {
+    } catch (error) {
         throw new Error(error)
     }
 }
@@ -48,10 +48,10 @@ microsoft.getToken = async (code) => {
         client_secret: microsoftConfig.clientSecret
     }
 
-   const response = await axios.post(`${microsoftConfig.authority}/oauth2/v2.0/token`, qs.stringify(params), options)
-   .catch((error) => log.error(error))
-   
-   return response.data.access_token
+    const response = await axios.post(`${microsoftConfig.authority}/oauth2/v2.0/token`, qs.stringify(params), options)
+        .catch((error) => log.error(error))
+
+    return response.data.access_token
 }
 
 microsoft.getEmail = (microsoftUser) => {
@@ -74,33 +74,33 @@ microsoft.getUser = async (microsoftUser) => {
     })
 
     if (user) {
-        return { 
-            createUser: false, 
+        return {
+            createUser: false,
             userId: user.id
         }
     } else {
-        return { 
+        return {
             createUser: true
         }
     }
 }
 
-microsoft.createUser = async function(microsoftUser) {
+microsoft.createUser = async function (microsoftUser) {
     const user = {
-      microsoft: {
-        id: microsoftUser.id
-      },
-      name: microsoftUser.displayName,
-      mail: microsoft.getEmail(microsoftUser)
+        microsoft: {
+            id: microsoftUser.id
+        },
+        name: microsoftUser.displayName,
+        mail: microsoft.getEmail(microsoftUser)
     }
-  
+
     log.debug('[Microsoft-Auth] Creating a new user', user)
-  
+
     let result = await server.methods.user.create(user).catch((err) => {
-      log.error({ user }, '[Microsoft-Auth] Error creating user')
-      throw err
+        log.error({ user }, '[Microsoft-Auth] Error creating user')
+        throw err
     })
-  
+
     log.debug({ userId: result.id }, '[Microsoft-Auth] New user created')
     return result.id
 }
