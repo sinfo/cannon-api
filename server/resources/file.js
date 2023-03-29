@@ -295,7 +295,7 @@ async function zipFiles(links) {
           zip.addFile(`${user.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}.txt`, new Buffer(`Your notes, taken on ${new Date(link.created).toUTCString()}: ${note}`), `Notes: ${note}`, 644)
         }
       }).catch((err) => {
-        if (err) {
+        if (err && err.code !== 'ENOENT') {
           throw Boom.internal(err)
         }
       })
