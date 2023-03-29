@@ -220,7 +220,7 @@ exports.downloadCompany = {
       await request.server.methods.endpoint.isValid(request.params.companyId, request.query.editionId)
       await request.server.methods.endpoint.incrementVisited(request.params.companyId, request.query.editionId)
       if (request.query.links) {
-        let links = await request.server.methods.link.list(request.params.companyId, request.query)
+        let links = await request.server.methods.link.list(request.params.companyId, request.query, 'company', request.query.editionId)
         await request.server.methods.file.zipFiles(links)
         return handleZip(true)
       } else {
