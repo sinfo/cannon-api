@@ -284,7 +284,7 @@ async function zipFiles(links) {
         let link = links.find((link) => { return link.attendee === file.user })
         let user = await server.methods.user.get({ 'id': file.user })
         let fileData = fs.readFileSync(`${config.upload.path}/${file.id}`)
-        zip.addFile(`${user.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}.pdf`, fileData, `Notes: ${link.notes}`, 666)
+        zip.addFile(`${user.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}.pdf`, fileData, `Notes: ${link.notes}`)
         if (link.notes) {
           let note = '\nEmail: ' + link.notes.contacts.email ? link.notes.contacts.email : '-' +
             '\nPhone: ' + link.notes.contacts.phone ? link.notes.contacts.phone : '-' +
@@ -328,7 +328,7 @@ async function zipFiles(links) {
     let files = fs.readdirSync(config.upload.path)
     await async.eachSeries(files, async (file) => {
       let fileData = fs.readFileSync(`${config.upload.path}/${file}`)
-      zip.addFile(`${file}.pdf`, fileData, '', 666) // .pdf hardcoded ¯\_(ツ)_/¯
+      zip.addFile(`${file}.pdf`, fileData, '') // .pdf hardcoded ¯\_(ツ)_/¯
     })
 
     zip.writeZip(config.upload.cvsZipPath)
