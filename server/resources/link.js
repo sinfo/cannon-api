@@ -136,7 +136,7 @@ async function list(filter, query, author, editionId) {
   if (author === "company") {
     let achFilter = {
       'validity.to':
-        { '$gt': new Date('January 1, 2021 00:00:00') },
+        { '$gt': new Date('January 1, 2023 00:00:00') },
       'kind': 'cv'
     }
 
