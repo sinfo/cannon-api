@@ -113,7 +113,6 @@ async function get(filter, editionId, author) {
 }
 
 async function list(filter, query, author, editionId) {
-  // log.debug({ filter: filter }, 'list link')
   if (!filter) {
     filter = {}
   }
@@ -158,8 +157,6 @@ async function list(filter, query, author, editionId) {
 }
 
 async function remove(filter, editionId, author) {
-  // log.debug({ filter: filter, edition: editionId }, 'removing link')
-
   filter = {
     company: filter.companyId,
     edition: editionId,

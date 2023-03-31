@@ -272,6 +272,7 @@ async function zipFiles(links) {
   if (links) {
     // Generate new zip with links
     const linksIds = links.map((link) => { return link.attendee })
+    log.info({ links: linksIds })
     const filter = {
       user: { '$in': linksIds },
       updated: { '$gt': new Date('2020-01-01') }
@@ -279,6 +280,7 @@ async function zipFiles(links) {
     const zip = new Zip()
 
     let files = await File.find(filter)
+    log.info({ files: files })
     if (files) {
       await async.eachSeries(files, async (file) => {
         let link = links.find((link) => { return link.attendee === file.user })
@@ -292,7 +294,7 @@ async function zipFiles(links) {
                 '\nDegree: ' + link.notes.degree ? link.notes.degree : '-' +
                   '\nAvailability: ' + link.notes.availability ? link.notes.availability : '-' +
                     '\nOther obserbations: ' + link.notes.otherObservations ? link.notes.otherObservations : '-'
-          zip.addFile(`${user.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}.txt`, new Buffer(`Your notes, taken on ${new Date(link.created).toUTCString()}: ${note}`), `Notes: ${note}`, 644)
+          zip.addFile(`${user.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}.txt`, new Buffer(`Your notes, taken on ${new Date(link.created).toUTCString()}: ${note}`), `Notes: ${note}`)
         }
       }).catch((err) => {
         if (err && err.code !== 'ENOENT') {
