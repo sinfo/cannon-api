@@ -282,6 +282,11 @@ async function zipFiles(links) {
     if (files) {
       await async.eachSeries(files, async (file) => {
         log.info({ file: `Processing CV file: ${file.id}` })
+        const fileExists = fs.existsSync(`${config.upload.path}/${file.id}`)
+        if (!fileExists) {
+          return
+        }
+
         let link = links.find((link) => { return link.attendee === file.user })
         let user = await server.methods.user.get({ 'id': file.user })
         let fileData = fs.readFileSync(`${config.upload.path}/${file.id}`)
