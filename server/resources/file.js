@@ -292,7 +292,7 @@ async function zipFiles(links) {
                 '\nDegree: ' + link.notes.degree ? link.notes.degree : '-' +
                   '\nAvailability: ' + link.notes.availability ? link.notes.availability : '-' +
                     '\nOther obserbations: ' + link.notes.otherObservations ? link.notes.otherObservations : '-'
-          zip.addFile(`${user.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}.txt`, new Buffer(`Your notes, taken on ${new Date(link.created).toUTCString()}: ${note}`), `Notes: ${note}`)
+          zip.addFile(`${user.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}.txt`, Buffer.from(`Your notes, taken on ${new Date(link.created).toUTCString()}: ${note}`), `Notes: ${note}`)
         }
       }).catch((err) => {
         if (err && err.code !== 'ENOENT') {
