@@ -2,7 +2,6 @@ const server = require('../').hapi
 const axios = require('axios').default
 const log = require('./logger')
 const microsoftConfig = require('../../config').microsoft
-const qs = require('qs')
 
 const microsoft = {}
 
@@ -31,39 +30,16 @@ async function fetch(endpoint, accessToken) {
     }
 }
 
-microsoft.getToken = async (code) => {
-    const options = {
-        json: false,
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    }
-
-    const params = {
-        client_id: microsoftConfig.clientId,
-        scope: 'user.read',
-        code: code,
-        redirect_uri: microsoftConfig.redirectUri,
-        grant_type: 'authorization_code',
-        client_secret: microsoftConfig.clientSecret
-    }
-
-    const response = await axios.post(`${microsoftConfig.authority}/oauth2/v2.0/token`, qs.stringify(params), options)
-        .catch((error) => log.error(error))
-
-    return response.data.access_token
-}
-
 microsoft.getEmail = (microsoftUser) => {
     return microsoftUser.mail ? microsoftUser.mail : microsoftUser.userPrincipalName;
 }
 
-microsoft.getProfilePicture = async (token) => {
-    return fetch('/v1.0/me/photo/$value', token)
+microsoft.getProfilePicture = async (accessToken) => {
+    return fetch('/v1.0/me/photo/$value', accessToken)
 }
 
-microsoft.getMicrosoftUser = async (token) => {
-    return fetch('/v1.0/me', token)
+microsoft.getMicrosoftUser = async (accessToken) => {
+    return fetch('/v1.0/me', accessToken)
 }
 
 microsoft.getUser = async (microsoftUser) => {
