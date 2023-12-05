@@ -18,15 +18,19 @@ async function facebookAuth(id, token) {
   try {
     // Check with Facebook if token is valid
     await facebook.verifyToken(id, token)
+
     // Get user profile information from Facebook
     let fbUser = await facebook.getFacebookUser(token)
+    
     // Get user in cannon by Facebook User email
     let res = await facebook.getUser(fbUser)
+    
     // If user does not exist we create, otherwise we update existing user
     if (res.createUser) {
       let userId = await facebook.createUser(fbUser)
       await authenticate(userId, null)
     }
+    
     const changedAttributes = {
       facebook: {
         id: fbUser.id
@@ -41,36 +45,42 @@ async function facebookAuth(id, token) {
   }
 }
 
-async function googleAuth(id, token) {
-  // Check with Google if token is valid
-  let gUser = await google.verifyToken(id, token)
-  // Get user in cannon by Google User email
-  let res = await google.getUser(gUser)
+async function googleAuth(accessToken) {
+  try {
+    // Get user profile information from Google
+    let googleUser = await google.getGoogleUser(accessToken)
 
-  // If user does not exist we create, otherwise we update existing user
-  if (res.createUser) {
-    let userId = await google.createUser(gUser)
-    return await authenticate(userId, null)
+    // Get user in cannon by Google User email
+    let res = await google.getUser(googleUser)
+    
+    // If user does not exist we create, otherwise we update existing user
+    if (res.createUser) {
+      let userId = await google.createUser(googleUser)
+      return await authenticate(userId, null)
+    }
+
+    const changedAttributes = {
+      google: {
+        id: googleUser.sub
+      },
+      name: googleUser.name,
+      img: googleUser.picture
+    }
+
+    return await authenticate(res.userId, changedAttributes)
+  } catch (err) {
+    Boom.unauthorized(err)
   }
-
-  const changedAttributes = {
-    google: {
-      id: gUser.sub
-    },
-    name: gUser.name,
-    img: gUser.picture
-  }
-
-  return await authenticate(res.userId, changedAttributes)
 }
 
-async function microsoftAuth(code) {
+async function microsoftAuth(accessToken) {
   try {
-    const token = await microsoft.getToken(code)
-    // Get Microsoft User
-    const microsoftUser = await microsoft.getMicrosoftUser(token)
+    // Get user profile information from Microsoft
+    const microsoftUser = await microsoft.getMicrosoftUser(accessToken)
+    
     // Get user in cannon by Microsoft User mail
     const res = await microsoft.getUser(microsoftUser)
+    
     // If the user does not exist we create, otherwise we update the existing user
     if (res.createUser) {
       const userId = await microsoft.createUser(microsoftUser)
@@ -92,14 +102,14 @@ async function microsoftAuth(code) {
 
 }
 
-async function fenixAuth(code) {
+async function fenixAuth(accessToken) {
   try {
-    // Exchange the code given by the user by a token from Fenix
-    let token = await fenix.getToken(code)
     // Get user profile information from Fenix
-    let fenixUser = await fenix.getFenixUser(token)
+    let fenixUser = await fenix.getFenixUser(accessToken)
+    
     // Get user in cannon by Fenix User email
     let res = await fenix.getUser(fenixUser)
+    
     // If user does not exist we create, otherwise we update existing user
     if (res.createUser) {
       let userId = await fenix.createUser(fenixUser)
@@ -120,27 +130,32 @@ async function fenixAuth(code) {
   }
 }
 
-async function linkedinAuth(code) {
-  // Exchange the code given by the user by a token from Linkedin
-  let token = await linkedin.getToken(code)
-  // Get user profile information from Linkedin
-  let linkedinUser = await linkedin.getLinkedinUser(token)
-  // Get user in cannon by Linkedin User email
-  let res = await linkedin.getUser(linkedinUser)
-  // If user does not exist we create, otherwise we update existing user
-  if (res.createUser) {
-    let userId = await linkedin.createUser(linkedinUser)
-    return await authenticate(userId, null)
+async function linkedinAuth(accessToken) {
+  try {
+    // Get user profile information from Linkedin
+    let linkedinUser = await linkedin.getLinkedinUser(accessToken)
+    
+    // Get user in cannon by Linkedin User email
+    let res = await linkedin.getUser(linkedinUser)
+    
+    // If user does not exist we create, otherwise we update existing user
+    if (res.createUser) {
+      let userId = await linkedin.createUser(linkedinUser)
+      return await authenticate(userId, null)
+    }
+    
+    const changedAttributes = {
+      linkedin: {
+        id: linkedinUser.id
+      },
+      name: `${linkedinUser.firstName} ${linkedinUser.lastName}`,
+      mail: linkedinUser.emailAddress,
+      img: linkedinUser.pictureUrl
+    }
+    return authenticate(res.userId, changedAttributes)
+  } catch (err) {
+    Boom.unauthorized(err)
   }
-  const changedAttributes = {
-    linkedin: {
-      id: linkedinUser.id
-    },
-    name: `${linkedinUser.firstName} ${linkedinUser.lastName}`,
-    mail: linkedinUser.emailAddress,
-    img: linkedinUser.pictureUrl
-  }
-  return authenticate(res.userId, changedAttributes)
 }
 
 async function authenticate(userId, changedAttributes) {
