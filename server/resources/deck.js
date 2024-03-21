@@ -19,46 +19,42 @@ server.method('deck.getSpeaker', getSpeaker, {})
 const DECK_API_URL = `${config.deck.url}/api`
 
 async function getLatestEdition() {
-  const event = await axios.get(`${DECK_API_URL}/events?sort=-date&limit=1`, { json: true })
-  return event.data[0]
+  const event = await axios.get(`${DECK_API_URL}/public/events?current=true`, { json: true })
+  return transformEvent(event.data[0])
 }
 
 async function getEvents() {
-  const events = await axios.get(`${DECK_API_URL}/events?sort=-date`, { json: true })
-  return events.data
+  const events = await axios.get(`${DECK_API_URL}/public/events`, { json: true })
+  events.data.sort((a, b) => b.id - a.id) // Sort by id in descending order
+  return events.data.map(event => transformEvent(event))
 }
 
 async function getPreviousEdition() {
-  const event = await axios.get(`${DECK_API_URL}/events?sort=-date&limit=1&skip=1`, { json: true })
-  return event.data[0]
+  const events = await axios.get(`${DECK_API_URL}/public/events?pastEvents=true`, { json: true })
+  events.data.sort((a, b) => b.id - a.id) // Sort by id in descending order
+  return transformEvent(events.data[0])
 }
 
 async function getCompanies(edition) {
-  const companies = await axios.get(`${DECK_API_URL}/companies?event=${edition}`, { json: true })
-  
-
-  return companies.data.map(company => {
-    return {
-      id: company.id,
-      name: company.name,
-      advertisementLvl: company.advertisementLvl,
-      img: company.img
-    }
-  })
+  const companies = await axios.get(`${DECK_API_URL}/public/companies?event=${edition}`, { json: true })
+  return companies.data.map(company => transformCompany(company, { compact: true }))
 }
 
 async function getCompany(companyId) {
-  const company = await axios.get(`${DECK_API_URL}/companies/${companyId}`, { json: true })
-  return company.data
+  const company = await axios.get(`${DECK_API_URL}/public/companies/${companyId}`, { json: true })
+  company.data.participation.sort((a, b) => b.event - a.event) // Sort by event in descending order
+  return transformCompany(company.data)
 }
 
 async function getMembers(edition) {
-  const members = await axios.get(`${DECK_API_URL}/members?sort=name&event=${edition}&participations=true`, { json: true })
-  return members.data
+  const members = await axios.get(`${DECK_API_URL}/public/members?event=${edition}`, { json: true })
+  members.data.sort((a, b) => a.name.localeCompare(b.name)) // Sort by name in ascending order
+  return members.data.map(member => transformMember(member))
 }
 
 async function getSessions(edition, withoutAchievements) {
-  const sessions = await axios.get(`${DECK_API_URL}/sessions?sort=date&event=${edition}`)
+  const sessions = await axios.get(`${DECK_API_URL}/public/sessions?event=${edition}`)
+  sessions.data.sort((a, b) => new Date(a.begin) - new Date(b.begin)) // Sort by date in ascending order
   if (withoutAchievements) {
     filteredSessions = [];
     for(const session of sessions.data) {
@@ -67,23 +63,114 @@ async function getSessions(edition, withoutAchievements) {
         filteredSessions.push(session);
       }
     }
-    return filteredSessions;
+    return filteredSessions.map(session => transformSession(session, {event: edition}))
   } else {
-    return sessions.data
+    return sessions.data.map(session => transformSession(session, {event: edition}))
   }
 }
 
 async function getSession(sessionId) {
-  const session = await axios.get(`${DECK_API_URL}/sessions/${sessionId}`)
-  return session.data
-} 
+  const session = await axios.get(`${DECK_API_URL}/public/sessions/${sessionId}`)
+  session.data.company.participation?.sort((a, b) => b.event - a.event) // Sort by event in descending order
+  session.data.speaker.forEach(speaker => speaker.participation?.sort((a, b) => b.event - a.event)) // Sort by event in descending order
+  return transformSession(session.data)
+}
 
 async function getSpeakers(edition) {
-  const speakers = await axios.get(`${DECK_API_URL}/speakers?sort=name&event=${edition}&participations=true`)
-  return speakers.data
+  const speakers = await axios.get(`${DECK_API_URL}/public/speakers?event=${edition}`)
+  speakers.data.sort((a, b) => a.name.localeCompare(b.name)) // Sort by name in ascending order
+  return speakers.data.map(speaker => transformSpeaker(speaker))
 }
 
 async function getSpeaker(speakerId) {
-  const speaker = await axios.get(`${DECK_API_URL}/speakers/${speakerId}`)
-  return speaker.data
-} 
+  const speaker = await axios.get(`${DECK_API_URL}/public/speakers/${speakerId}`)
+  return transformSpeaker(speaker.data)
+}
+
+
+// Translate Deck's event object to old format
+function transformEvent(event, options) {
+  return {
+    id: event.id,
+    name: event.name,
+    kind: options?.kind || "Main Event",
+    public: options?.public || true,
+    date: event.begin,
+    duration: new Date(new Date(event.end) - new Date(event.begin)),
+  }
+}
+
+// Translate Deck's company object to old format
+function transformCompany(company, options) {
+  const advertisementLevels = {
+    "Diamond": "exclusive",
+    "Platinum": "max",
+    "Gold": "med",
+    "Gold NPE": "med",
+    "Silver": "min",
+    "Silver NPE": "min",
+  };
+  const participation = company.participation?.length > 0 && company.participation[0]; // Get the latest participation
+  const advertisementLvl = advertisementLevels[participation?.package.name] || (participation?.partner && "other") || "none";
+
+  return {
+    id: company.id,
+    name: company.name,
+    img: company.img,
+    description: company.description,
+    advertisementLvl: options?.compact ? advertisementLvl : {
+      advertisementLvl,
+      kind: participation?.package.name || (participation?.partner && "Partner"),
+      items: participation?.package.items,
+    }
+  }
+}
+
+// Translate Deck's member object to old format
+function transformMember(member) {
+  return {
+    name: member.name,
+    img: member.img,
+  }
+}
+
+// Translate Deck's session object to old format
+function transformSession(session, options) {
+  const sessionKinds = {
+    "TALK": "Keynote",
+    "WORKSHOP": "Workshop",
+    "PRESENTATION": "Presentation"
+  }
+
+  return {
+    id: session.id,
+    name: session.title,
+    description: session.description,
+    kind: sessionKinds[session.kind] || session.kind,
+    event: options?.event || (session.company?.participation?.length > 0 && session.company.participation[0].event),
+    date: session.begin,
+    duration: new Date(new Date(session.end) - new Date(session.begin)),
+    place: session.place,
+    img: session.img || session.company?.img || (session.speaker.length > 0 && session.speaker[0].imgs.speaker),
+    companies: session.company && [ session.company?.id ] || [],
+    speakers: session.speaker && session.speaker.map(speaker => ({ id: speaker.id })) || [],
+    tickets: session.tickets && {
+      needed: !!session.tickets,
+      start: session.tickets?.start,
+      end: session.tickets?.end,
+      max: session.tickets?.max,
+    } || {},
+  }
+}
+
+// Translate Deck's speaker object to old format
+function transformSpeaker(speaker) {
+  return {
+    id: speaker.id,
+    description: speaker.bio,
+    name: speaker.name,
+    title: speaker.title,
+    img: speaker.imgs.speaker,
+    feedback: speaker.participation[0].feedback
+  }
+}

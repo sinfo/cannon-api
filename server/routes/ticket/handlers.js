@@ -123,14 +123,13 @@ exports.get = {
   },
   handler: async function (request, h) {
     try {
-      let session = await request.server.methods.session.get(request.params.sessionId)
-      let ticket = await request.server.methods.ticket.get(request.params.sessionId)
-      if (ticket) {
-        return h.response(render(ticket, session));
-      } else {
-        log.error({ err: err, msg: 'ticket not found' }, 'ticket not found')
-        throw Boom.boomify(err)
+      const session = await request.server.methods.session.get(request.params.sessionId)
+      const ticket = await request.server.methods.ticket.get(request.params.sessionId)
+      if (!ticket) {
+        log.error({ msg: `Ticket not found: ${request.params.sessionId}` }, 'Ticket not found')
+        throw Boom.notFound(`Ticket not found: ${request.params.sessionId}`)
       }
+      return h.response(render(ticket, session));
     } catch (err) {
       log.error({ err: err, msg: 'error getting ticket' }, 'error getting ticket')
       throw Boom.boomify(err)

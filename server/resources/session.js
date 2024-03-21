@@ -1,10 +1,5 @@
 const Boom = require('@hapi/boom')
 const server = require('../').hapi
-const log = require('../helpers/logger')
-const axios = require('axios')
-const config = require('../../config')
-const qs = require('qs')
-const parseBody = require('../helpers/parseBody')
 const moment = require('moment')
 
 server.method('session.get', get, {})
@@ -14,37 +9,25 @@ server.method('session.surveyNotNeeded', surveyNotNeeded, {})
 server.method('session.inRegistrationPeriod', inRegistrationPeriod, {})
 server.method('session.inConfirmationPeriod', inConfirmationPeriod, {})
 
-async function get (id, query) {
+async function get (id) {
   //cb = cb || query // fields is optional
 
-  query = (arguments.length === 2) ? {} : query
-
-  const url = `${config.deck.url}/api/sessions/${id}?${qs.stringify(query)}`
-
   try {
-    let response = await axios.get(url)
-    //response.data is the session returned by deck
-    if (!response.data || response.data.length == 0) {
-      throw Boom.badRequest("Could not find session")
-    }
-    return response.data
+    const session = await server.methods.deck.getSession(id)
+    if (!session) throw Boom.badRequest("Could not find session")
+    return session
   } catch (err) {
     throw Boom.badRequest("Error getting session")
   }
 }
 
-async function list (query) {
+async function list () {
   //cb = cb || query // fields is optional
 
-  const url = `${config.deck.url}/api/sessions?${qs.stringify(query)}`
-
   try {
-    let response = await axios.get(url)
-    //response.data is the sessions returned by deck
-    if (!response.data || response.data.length == 0) {
-      throw Boom.badRequest("Could not find sessions")
-    }
-    return response.data
+    const sessions = await server.methods.deck.getSessions()
+    if (!sessions) throw Boom.badRequest("Could not find sessions")
+    return sessions
   } catch (err) {
     throw Boom.badRequest()
   }
