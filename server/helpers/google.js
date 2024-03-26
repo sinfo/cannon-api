@@ -1,35 +1,27 @@
-const {
-  OAuth2Client
-} = require('google-auth-library')
 const server = require('../').hapi
 const log = require('./logger')
 const render = require('../views/google')
 const googleConfig = require('../../config').google
 const config = require('../../config')
 const request = require('request')
+const axios = require('axios').default
 
 const google = {}
 
-/**
- * Verifies the JWT signature, the aud claim, the exp claim, and the iss claim.
- * @param {string} googleUserId
- * @param {string} googleUserToken
- */
-google.verifyToken = async (googleUserId, googleUserToken) => {
-    log.info('verify')
-    const oAuth2Client = new OAuth2Client(googleConfig.clientId, googleConfig.clientSecret)
-    let login = await oAuth2Client.verifyIdToken({
-      idToken: googleUserToken,
-      audience: googleConfig.clientId
-    }).catch((err) => {
-      if (err) {
-        log.warn(err)
-        throw Boom.boomify(err)
-      }
-    })
-    // If verified we can trust in the login.payload
-    log.info('verify done')
-    return login.payload
+google.getGoogleUser = async accessToken => {
+  const url = 'https://openidconnect.googleapis.com/v1/userinfo?access_token=' + encodeURIComponent(accessToken)
+
+  let response = await axios.get(url).catch((error) => {
+    log.warn({ error, where: 'getGoogleUser'})
+    throw error
+  })
+  
+  if (response.status !== 200) {
+    log.error('error fetching google user')
+    throw new Error('error fetching google user')
+  }
+
+  return response.data
 }
 
 /**

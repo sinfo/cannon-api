@@ -45,15 +45,14 @@ exports.google = {
     },
     validate: {
       payload: Joi.object({
-        id: Joi.string().required().description('google id of the member'),
-        token: Joi.string().required().description('google token of the member')
+        accessToken: Joi.string().required().description('google access token of the member')
       })
     },
     description: 'Google login'
   },
   handler: async function (request, h) {
     try {
-      let member = await request.server.methods.auth.google(request.payload.id, request.payload.token);
+      let member = await request.server.methods.auth.google(request.payload.accessToken);
       return h.response(render(member))
     } catch (err) {
       if (err.code === 11000) {
@@ -76,14 +75,14 @@ exports.microsoft = {
     },
     validate: {
       payload: Joi.object({
-        code: Joi.string().required().description('microsoft code of the member')
+        accessToken: Joi.string().required().description('microsoft access token of the member')
       })
     },
     description: 'Microsoft login'
   },
   handler: async function (request, h) {
     try {
-      let member = await request.server.methods.auth.microsoft(request.payload.code)
+      let member = await request.server.methods.auth.microsoft(request.payload.accessToken)
       return h.response(render(member))
     } catch (err) {
       if (err.code === 11000) {
@@ -107,14 +106,14 @@ exports.fenix = {
     },
     validate: {
       payload: Joi.object({
-        code: Joi.string().required().description('fenix code of the member')
+        accessToken: Joi.string().required().description('fenix access token of the member')
       })
     },
     description: 'Fenix login'
   },
   handler: async function (request, h) {
     try {
-      let member = await request.server.methods.auth.fenix(request.payload.code);
+      let member = await request.server.methods.auth.fenix(request.payload.accessToken);
       return h.response(render(member))
     } catch (err) {
       if (err.code === 11000) {
@@ -137,14 +136,14 @@ exports.linkedin = {
     },
     validate: {
       payload: Joi.object({
-        code: Joi.string().required().description('Linkedin code of the member')
+        accessToken: Joi.string().required().description('linkedin access token of the member')
       })
     },
     description: 'Linkedin login'
   },
   handler: async function (request, h) {
     try {
-      let member = await request.server.methods.auth.linkedin(request.payload.code);
+      let member = await request.server.methods.auth.linkedin(request.payload.accessToken);
       return h.response(render(member))
     } catch (err) {
       if (err.code === 11000) {
