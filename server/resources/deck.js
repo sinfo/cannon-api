@@ -118,6 +118,7 @@ function transformCompany(company, options) {
     name: company.name,
     img: company.img,
     site: company.site,
+    description: company.description,
     advertisementLvl: options?.compact ? advertisementLvl : {
       advertisementLvl,
       kind: participation?.package.name || (participation?.partner && "Partner"),
