@@ -19,46 +19,42 @@ server.method('deck.getSpeaker', getSpeaker, {})
 const DECK_API_URL = `${config.deck.url}/api`
 
 async function getLatestEdition() {
-  const event = await axios.get(`${DECK_API_URL}/events?sort=-date&limit=1`, { json: true })
-  return event.data[0]
+  const event = await axios.get(`${DECK_API_URL}/public/events?current=true`, { json: true })
+  return transformEvent(event.data[0])
 }
 
 async function getEvents() {
-  const events = await axios.get(`${DECK_API_URL}/events?sort=-date`, { json: true })
-  return events.data
+  const events = await axios.get(`${DECK_API_URL}/public/events`, { json: true })
+  events.data.sort((a, b) => b.id - a.id) // Sort by id in descending order
+  return events.data.map(event => transformEvent(event))
 }
 
 async function getPreviousEdition() {
-  const event = await axios.get(`${DECK_API_URL}/events?sort=-date&limit=1&skip=1`, { json: true })
-  return event.data[0]
+  const events = await axios.get(`${DECK_API_URL}/public/events?pastEvents=true`, { json: true })
+  events.data.sort((a, b) => b.id - a.id) // Sort by id in descending order
+  return transformEvent(events.data[0])
 }
 
 async function getCompanies(edition) {
-  const companies = await axios.get(`${DECK_API_URL}/companies?event=${edition}`, { json: true })
-  
-
-  return companies.data.map(company => {
-    return {
-      id: company.id,
-      name: company.name,
-      advertisementLvl: company.advertisementLvl,
-      img: company.img
-    }
-  })
+  const companies = await axios.get(`${DECK_API_URL}/public/companies?event=${edition}`, { json: true })
+  return companies.data.map(company => transformCompany(company, { compact: true }))
 }
 
 async function getCompany(companyId) {
-  const company = await axios.get(`${DECK_API_URL}/companies/${companyId}`, { json: true })
-  return company.data
+  const company = await axios.get(`${DECK_API_URL}/public/companies/${companyId}`, { json: true })
+  company.data.participation.sort((a, b) => b.event - a.event) // Sort by event in descending order
+  return transformCompany(company.data)
 }
 
 async function getMembers(edition) {
-  const members = await axios.get(`${DECK_API_URL}/members?sort=name&event=${edition}&participations=true`, { json: true })
-  return members.data
+  const members = await axios.get(`${DECK_API_URL}/public/members?event=${edition}`, { json: true })
+  members.data.sort((a, b) => a.name.localeCompare(b.name)) // Sort by name in ascending order
+  return members.data.map(member => transformMember(member))
 }
 
 async function getSessions(edition, withoutAchievements) {
-  const sessions = await axios.get(`${DECK_API_URL}/sessions?sort=date&event=${edition}`)
+  const sessions = await axios.get(`${DECK_API_URL}/public/sessions?event=${edition}`)
+  sessions.data.sort((a, b) => new Date(a.begin) - new Date(b.begin)) // Sort by date in ascending order
   if (withoutAchievements) {
     filteredSessions = [];
     for(const session of sessions.data) {
@@ -67,20 +63,23 @@ async function getSessions(edition, withoutAchievements) {
         filteredSessions.push(session);
       }
     }
-    return filteredSessions;
+    return filteredSessions.map(session => transformSession(session, {event: edition}))
   } else {
-    return sessions.data
+    return sessions.data.map(session => transformSession(session, {event: edition}))
   }
 }
 
 async function getSession(sessionId) {
-  const session = await axios.get(`${DECK_API_URL}/sessions/${sessionId}`)
-  return session.data
-} 
+  const session = await axios.get(`${DECK_API_URL}/public/sessions/${sessionId}`)
+  session.data.company.participation?.sort((a, b) => b.event - a.event) // Sort by event in descending order
+  session.data.speaker.forEach(speaker => speaker.participation?.sort((a, b) => b.event - a.event)) // Sort by event in descending order
+  return transformSession(session.data)
+}
 
 async function getSpeakers(edition) {
-  const speakers = await axios.get(`${DECK_API_URL}/speakers?sort=name&event=${edition}&participations=true`)
-  return speakers.data
+  const speakers = await axios.get(`${DECK_API_URL}/public/speakers?event=${edition}`)
+  speakers.data.sort((a, b) => a.name.localeCompare(b.name)) // Sort by name in ascending order
+  return speakers.data.map(speaker => transformSpeaker(speaker))
 }
 
 async function getSpeaker(speakerId) {
@@ -119,6 +118,7 @@ function transformCompany(company, options) {
     id: company.id,
     name: company.name,
     img: company.img,
+    site: company.site,
     description: company.description,
     advertisementLvl: options?.compact ? advertisementLvl : {
       advertisementLvl,
