@@ -63,3 +63,10 @@ server.route({
     options: handlers.getSpeaker.options,
     handler: handlers.getSpeaker.handler
 })
+
+server.route({
+    method: 'GET',
+    path: '/calendar',
+    options: handlers.getCalendarUrl.options,
+    handler: handlers.getCalendarUrl.handler
+})

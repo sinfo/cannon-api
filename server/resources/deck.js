@@ -84,6 +84,95 @@ async function getSpeakers(edition) {
 }
 
 async function getSpeaker(speakerId) {
-  const speaker = await axios.get(`${DECK_API_URL}/speakers/${speakerId}`)
-  return speaker.data
-} 
+  const speaker = await axios.get(`${DECK_API_URL}/public/speakers/${speakerId}`)
+  return transformSpeaker(speaker.data)
+}
+
+
+// Translate Deck's event object to old format
+function transformEvent(event, options) {
+  return {
+    id: event.id,
+    name: event.name,
+    kind: options?.kind || "Main Event",
+    public: options?.public || true,
+    date: event.begin,
+    duration: new Date(new Date(event.end) - new Date(event.begin)),
+    calendarUrl: event.calendarUrl,
+  }
+}
+
+// Translate Deck's company object to old format
+function transformCompany(company, options) {
+  const advertisementLevels = {
+    "Diamond": "exclusive",
+    "Platinum": "max",
+    "Gold": "med",
+    "Gold NPE": "med",
+    "Silver": "min",
+    "Silver NPE": "min",
+  };
+  const participation = company.participation?.length > 0 && company.participation[0]; // Get the latest participation
+  const advertisementLvl = advertisementLevels[participation?.package.name] || (participation?.partner && "other") || "none";
+
+  return {
+    id: company.id,
+    name: company.name,
+    img: company.img,
+    description: company.description,
+    advertisementLvl: options?.compact ? advertisementLvl : {
+      advertisementLvl,
+      kind: participation?.package.name || (participation?.partner && "Partner"),
+      items: participation?.package.items,
+    }
+  }
+}
+
+// Translate Deck's member object to old format
+function transformMember(member) {
+  return {
+    name: member.name,
+    img: member.img,
+  }
+}
+
+// Translate Deck's session object to old format
+function transformSession(session, options) {
+  const sessionKinds = {
+    "TALK": "Keynote",
+    "WORKSHOP": "Workshop",
+    "PRESENTATION": "Presentation"
+  }
+
+  return {
+    id: session.id,
+    name: session.title,
+    description: session.description,
+    kind: sessionKinds[session.kind] || session.kind,
+    event: options?.event || (session.company?.participation?.length > 0 && session.company.participation[0].event),
+    date: session.begin,
+    duration: new Date(new Date(session.end) - new Date(session.begin)),
+    place: session.place,
+    img: session.img || session.company?.img || (session.speaker.length > 0 && session.speaker[0].imgs.speaker),
+    companies: session.company && [ session.company?.id ] || [],
+    speakers: session.speaker && session.speaker.map(speaker => ({ id: speaker.id })) || [],
+    tickets: session.tickets && {
+      needed: !!session.tickets,
+      start: session.tickets?.start,
+      end: session.tickets?.end,
+      max: session.tickets?.max,
+    } || {},
+  }
+}
+
+// Translate Deck's speaker object to old format
+function transformSpeaker(speaker) {
+  return {
+    id: speaker.id,
+    description: speaker.bio,
+    name: speaker.name,
+    title: speaker.title,
+    img: speaker.imgs.speaker,
+    feedback: speaker.participation[0].feedback
+  }
+}

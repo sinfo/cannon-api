@@ -190,3 +190,19 @@ exports.getSpeaker = {
         }
     }
 }
+
+exports.getCalendarUrl = {
+    options: {
+        tags: ['api', 'calendar'],
+        description: 'Get the calendar url for the current edition'
+    },
+    handler: async (request, h) => {
+        try {
+            const edition = await request.server.methods.deck.getLatestEdition()
+            return h.response(edition.calendarUrl)
+        } catch(err) {
+            log.error({ error: err })
+            throw Boom.boomify(err)
+        }
+    }
+}
