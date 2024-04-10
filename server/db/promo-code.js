@@ -3,7 +3,10 @@ const mongoose = require('mongoose')
 const schema = new mongoose.Schema({
   company: String,
   edition: String,
-  expire: Date,
+  validity: {
+    from: Date,
+    to: Date
+  },
   description: String,
   code: String
 })

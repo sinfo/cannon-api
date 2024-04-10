@@ -10,7 +10,7 @@ function renderObject (model) {
   return {
     company: model.company,
     edition: model.edition,
-    expire: model.expire,
+    expire: model.validity.to,
     description: model.description,
     code: model.code
   }

@@ -8,8 +8,13 @@ server.method('promoCode.get', get, {})
 async function get () {
   let now = new Date()
 
+  filter = {
+    'validity.from': { $lte: now },
+    'validity.to': { $gte: now }
+  }
+
   try {
-    let codes = await PromoCode.find({ expire: { '$gt': now.toISOString() } }, {}, {})
+    let codes = await PromoCode.find(filter)
     if (!codes) {
       log.warn({ err: err }, 'could not find promo code')
       return cb(Boom.notFound())
