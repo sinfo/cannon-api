@@ -97,6 +97,7 @@ function transformEvent(event, options) {
     public: options?.public || true,
     date: event.begin,
     duration: new Date(new Date(event.end) - new Date(event.begin)),
+    calendarUrl: event.calendarUrl
   }
 }
 
@@ -117,6 +118,7 @@ function transformCompany(company, options) {
     id: company.id,
     name: company.name,
     img: company.img,
+    site: company.site,
     description: company.description,
     advertisementLvl: options?.compact ? advertisementLvl : {
       advertisementLvl,
