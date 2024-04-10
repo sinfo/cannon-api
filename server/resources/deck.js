@@ -97,6 +97,7 @@ function transformEvent(event, options) {
     public: options?.public || true,
     date: event.begin,
     duration: new Date(new Date(event.end) - new Date(event.begin)),
+    calendarUrl: event.calendarUrl,
   }
 }
 

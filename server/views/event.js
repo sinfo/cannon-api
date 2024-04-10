@@ -16,7 +16,8 @@ module.exports = function render (content) {
         duration: model.duration,
         begin: model.begin,
         end: model.end,
-        isOcurring: model.isOcurring
+        isOcurring: model.isOcurring,
+        calendarUrl: model.calendarUrl,
     }
   }
     
