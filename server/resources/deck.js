@@ -16,7 +16,7 @@ server.method('deck.getSession', getSession, {})
 server.method('deck.getSpeakers', getSpeakers, {})
 server.method('deck.getSpeaker', getSpeaker, {})
 
-const DECK_API_URL = `${config.deck.url}/api`
+const DECK_API_URL = `${config.deck.url}`
 
 async function getLatestEdition() {
   const event = await axios.get(`${DECK_API_URL}/public/events?current=true`, { json: true })
