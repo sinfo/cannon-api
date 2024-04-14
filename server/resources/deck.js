@@ -16,7 +16,7 @@ server.method('deck.getSession', getSession, {})
 server.method('deck.getSpeakers', getSpeakers, {})
 server.method('deck.getSpeaker', getSpeaker, {})
 
-const DECK_API_URL = `${config.deck.url}`
+const DECK_API_URL = `${config.deck.url}/api`
 
 async function getLatestEdition() {
   const event = await axios.get(`${DECK_API_URL}/public/events?current=true`, { json: true })
@@ -36,7 +36,7 @@ async function getPreviousEdition() {
 }
 
 async function getCompanies(edition) {
-  const companies = await axios.get(`${DECK_API_URL}/public/companies?event=${parseInt(edition)}`, { json: true })
+  const companies = await axios.get(`${DECK_API_URL}/public/companies?event=${edition}`, { json: true })
   return companies.data.map(company => transformCompany(company, { compact: true }))
 }
 
@@ -47,13 +47,13 @@ async function getCompany(companyId) {
 }
 
 async function getMembers(edition) {
-  const members = await axios.get(`${DECK_API_URL}/public/members?event=${parseInt(edition)}`, { json: true })
+  const members = await axios.get(`${DECK_API_URL}/public/members?event=${edition}`, { json: true })
   members.data.sort((a, b) => a.name.localeCompare(b.name)) // Sort by name in ascending order
   return members.data.map(member => transformMember(member))
 }
 
 async function getSessions(edition, withoutAchievements) {
-  const sessions = await axios.get(`${DECK_API_URL}/public/sessions?event=${parseInt(edition)}`)
+  const sessions = await axios.get(`${DECK_API_URL}/public/sessions?event=${edition}`)
   sessions.data.sort((a, b) => new Date(a.begin) - new Date(b.begin)) // Sort by date in ascending order
   if (withoutAchievements) {
     filteredSessions = [];
@@ -149,7 +149,7 @@ function transformSession(session, options) {
     name: session.title,
     description: session.description,
     kind: sessionKinds[session.kind] || session.kind,
-    event: options?.event || (session.company?.participation?.length > 0 && session.company.participation[0].event),
+    event: String(options?.event || (session.company?.participation?.length > 0 && session.company.participation[0].event)),
     date: session.begin,
     duration: new Date(new Date(session.end) - new Date(session.begin)),
     place: session.place,
