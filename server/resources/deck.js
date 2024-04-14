@@ -16,7 +16,7 @@ server.method('deck.getSession', getSession, {})
 server.method('deck.getSpeakers', getSpeakers, {})
 server.method('deck.getSpeaker', getSpeaker, {})
 
-const DECK_API_URL = `${config.deck.url}/api`
+const DECK_API_URL = `${config.deck.url}`
 
 async function getLatestEdition() {
   const event = await axios.get(`${DECK_API_URL}/public/events?current=true`, { json: true })
@@ -36,7 +36,7 @@ async function getPreviousEdition() {
 }
 
 async function getCompanies(edition) {
-  const companies = await axios.get(`${DECK_API_URL}/public/companies?event=${edition}`, { json: true })
+  const companies = await axios.get(`${DECK_API_URL}/public/companies?event=${parseInt(edition)}`, { json: true })
   return companies.data.map(company => transformCompany(company, { compact: true }))
 }
 
@@ -47,13 +47,13 @@ async function getCompany(companyId) {
 }
 
 async function getMembers(edition) {
-  const members = await axios.get(`${DECK_API_URL}/public/members?event=${edition}`, { json: true })
+  const members = await axios.get(`${DECK_API_URL}/public/members?event=${parseInt(edition)}`, { json: true })
   members.data.sort((a, b) => a.name.localeCompare(b.name)) // Sort by name in ascending order
   return members.data.map(member => transformMember(member))
 }
 
 async function getSessions(edition, withoutAchievements) {
-  const sessions = await axios.get(`${DECK_API_URL}/public/sessions?event=${edition}`)
+  const sessions = await axios.get(`${DECK_API_URL}/public/sessions?event=${parseInt(edition)}`)
   sessions.data.sort((a, b) => new Date(a.begin) - new Date(b.begin)) // Sort by date in ascending order
   if (withoutAchievements) {
     filteredSessions = [];
@@ -77,7 +77,7 @@ async function getSession(sessionId) {
 }
 
 async function getSpeakers(edition) {
-  const speakers = await axios.get(`${DECK_API_URL}/public/speakers?event=${edition}`)
+  const speakers = await axios.get(`${DECK_API_URL}/public/speakers?event=${parseInt(edition)}`)
   speakers.data.sort((a, b) => a.name.localeCompare(b.name)) // Sort by name in ascending order
   return speakers.data.map(speaker => transformSpeaker(speaker))
 }
@@ -91,7 +91,7 @@ async function getSpeaker(speakerId) {
 // Translate Deck's event object to old format
 function transformEvent(event, options) {
   return {
-    id: event.id,
+    id: String(event.id),
     name: event.name,
     kind: options?.kind || "Main Event",
     public: options?.public || true,
