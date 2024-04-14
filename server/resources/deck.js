@@ -149,7 +149,7 @@ function transformSession(session, options) {
     name: session.title,
     description: session.description,
     kind: sessionKinds[session.kind] || session.kind,
-    event: options?.event || (session.company?.participation?.length > 0 && session.company.participation[0].event),
+    event: String(options?.event || (session.company?.participation?.length > 0 && session.company.participation[0].event)),
     date: session.begin,
     duration: new Date(new Date(session.end) - new Date(session.begin)),
     place: session.place,
