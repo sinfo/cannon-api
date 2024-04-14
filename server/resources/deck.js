@@ -16,7 +16,7 @@ server.method('deck.getSession', getSession, {})
 server.method('deck.getSpeakers', getSpeakers, {})
 server.method('deck.getSpeaker', getSpeaker, {})
 
-const DECK_API_URL = `${config.deck.url}/api`
+const DECK_API_URL = `${config.deck.url}`
 
 async function getLatestEdition() {
   const event = await axios.get(`${DECK_API_URL}/public/events?current=true`, { json: true })
@@ -91,7 +91,7 @@ async function getSpeaker(speakerId) {
 // Translate Deck's event object to old format
 function transformEvent(event, options) {
   return {
-    id: event.id,
+    id: String(event.id),
     name: event.name,
     kind: options?.kind || "Main Event",
     public: options?.public || true,
@@ -149,7 +149,7 @@ function transformSession(session, options) {
     name: session.title,
     description: session.description,
     kind: sessionKinds[session.kind] || session.kind,
-    event: options?.event || (session.company?.participation?.length > 0 && session.company.participation[0].event),
+    event: String(options?.event || (session.company?.participation?.length > 0 && session.company.participation[0].event)),
     date: session.begin,
     duration: new Date(new Date(session.end) - new Date(session.begin)),
     place: session.place,

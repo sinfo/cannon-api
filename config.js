@@ -13,7 +13,7 @@ config.webapp = {
 }
 
 config.deck = {
-  url: process.env.CANNON_EVENTDECK_URL || 'https://deck.sinfo.org'
+  url: process.env.CANNON_EVENTDECK_URL || 'https://deck.sinfo.org/api'
 }
 
 config.upload = {
