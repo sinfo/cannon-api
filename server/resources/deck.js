@@ -77,7 +77,7 @@ async function getSession(sessionId) {
 }
 
 async function getSpeakers(edition) {
-  const speakers = await axios.get(`${DECK_API_URL}/public/speakers?event=${parseInt(edition)}`)
+  const speakers = await axios.get(`${DECK_API_URL}/public/speakers?event=${edition}`)
   speakers.data.sort((a, b) => a.name.localeCompare(b.name)) // Sort by name in ascending order
   return speakers.data.map(speaker => transformSpeaker(speaker))
 }
