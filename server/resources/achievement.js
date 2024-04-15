@@ -38,6 +38,7 @@ async function create(data) {
     name: data.name,
     event: data.event,
     session: data.session,
+    company: data.company,
     description: data.description,
     category: data.category,
     instructions: data.instructions,
@@ -531,7 +532,7 @@ async function addUserToStandAchievement(companyId, userId) {
   const now = new Date()
 
   return Achievement.findOneAndUpdate({
-    id: { $regex: `stand-${companyId}-` },
+    'company': companyId,
     'kind': 'stand',
     'validity.from': { $lte: now },
     'validity.to': { $gte: now }
