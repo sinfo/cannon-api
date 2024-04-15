@@ -3,6 +3,7 @@ let mongoose = require('mongoose')
 let achievementSchema = mongoose.Schema({
   id: { type: String, unique: true },
   session: String,
+  company: String,
   name: String,
   description: String,
   instructions: String,

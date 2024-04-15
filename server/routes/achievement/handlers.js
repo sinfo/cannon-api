@@ -33,6 +33,7 @@ exports.create = {
         name: Joi.string().required().description('Name of the achievement'),
         event: Joi.string().default('22').description('Event the achievement is associated to'),
         session: Joi.string().description('Id of a session associated to this achievement'),
+        company: Joi.string().description('Company associated to this achievement'),
         img: Joi.any().meta({ swaggerType: 'file' }).description('Image of the achievement'),
         description: Joi.string().description('Description of the achievement'),
         category: Joi.string().description('Category of the achievement'),
