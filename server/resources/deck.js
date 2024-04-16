@@ -71,8 +71,8 @@ async function getSessions(edition, withoutAchievements) {
 
 async function getSession(sessionId) {
   const session = await axios.get(`${DECK_API_URL}/public/sessions/${sessionId}`)
-  session.data.company.participation?.sort((a, b) => b.event - a.event) // Sort by event in descending order
-  session.data.speaker.forEach(speaker => speaker.participation?.sort((a, b) => b.event - a.event)) // Sort by event in descending order
+  session.data.company?.participation?.sort((a, b) => b.event - a.event) // Sort by event in descending order
+  session.data.speaker?.forEach(speaker => speaker.participation?.sort((a, b) => b.event - a.event)) // Sort by event in descending order
   return transformSession(session.data)
 }
 
