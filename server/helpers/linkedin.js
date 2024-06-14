@@ -1,39 +1,16 @@
 const server = require('../').hapi
 const axios = require('axios').default
 const log = require('./logger')
-const linkedinConfig = require('../../config').linkedin
 
-const LI_API_URL = 'https://www.linkedin.com/oauth/v2'
 const linkedin = {}
 
-linkedin.getToken = async code => {
-  const url = `${LI_API_URL}/accessToken?grant_type=authorization_code&code=${code}&redirect_uri=${linkedinConfig.redirectUri}&client_id=${linkedinConfig.clientId}&client_secret=${linkedinConfig.clientSecret}`
-
-  let response = await axios.post(url,null, { json: true }).catch((error) => {
-      log.warn({
-        error,
-        linkedinConfig: {
-          clientId: linkedinConfig.clientId,
-          redirectUri: linkedinConfig.redirectUri
-        },
-        where: 'getToken'
-      })
-      throw err
-    })
-  if(response.status !== 200){
-    throw new Error('invalid token')
-  }  
-  log.info(response.data)
-  return response.data.access_token
-}
-
-linkedin.getLinkedinUser = async linkedinUserToken => {
+linkedin.getLinkedinUser = async accessToken => {
     const urlProfile = 'https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))'
-    log.info(linkedinUserToken)
+
     let response = await axios.get(urlProfile, {
       json: true,
       headers: {
-        'Authorization':`Bearer ${linkedinUserToken}`
+        'Authorization':`Bearer ${accessToken}`
       }
     }).catch((error) => {
         log.warn({ error, where: 'getLinkedinUser'})
@@ -47,7 +24,7 @@ linkedin.getLinkedinUser = async linkedinUserToken => {
 
     let linkedinJsonUser = response.data
 
-    let linkedinEmail = await  linkedin.getLinkedinUserEmail(linkedinUserToken).catch(err => {
+    let linkedinEmail = await  linkedin.getLinkedinUserEmail(accessToken).catch(err => {
       log.error(err)
       throw err
     })
@@ -62,13 +39,13 @@ linkedin.getLinkedinUser = async linkedinUserToken => {
     return linkedinUser
 }
 
-linkedin.getLinkedinUserEmail = async linkedinUserToken => {
+linkedin.getLinkedinUserEmail = async accessToken => {
   const emailUrl = 'https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))'
 
   let response = await axios.get(emailUrl, {
     json: true,
     headers: {
-      'Authorization':`Bearer ${linkedinUserToken}`
+      'Authorization':`Bearer ${accessToken}`
     }
   }).catch((error) => {
     if (error) {
