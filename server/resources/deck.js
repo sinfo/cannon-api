@@ -132,7 +132,7 @@ function transformCompany(company, options) {
 function transformMember(member) {
   return {
     name: member.name,
-    img: member.img,
+    img: member.img || "/static/default-profile.png",
   }
 }
 
