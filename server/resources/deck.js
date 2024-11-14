@@ -173,6 +173,7 @@ function transformSpeaker(speaker) {
     name: speaker.name,
     title: speaker.title,
     img: speaker.imgs.speaker,
+    companyImg: speaker.imgs.company,
     feedback: speaker.participation[0].feedback
   }
 }

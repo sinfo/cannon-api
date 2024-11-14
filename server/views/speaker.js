@@ -13,6 +13,7 @@ module.exports = function render (content) {
         description: model.description,
         title: model.title,
         img: model.img,
+        companyImg: model.companyImg,
         updated: model.updated
     }
   }
