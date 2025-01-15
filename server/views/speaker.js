@@ -14,6 +14,7 @@ module.exports = function render (content) {
         title: model.title,
         img: model.img,
         company: model.company,
+        sessions: model.sessions,
         updated: model.updated
     }
   }
