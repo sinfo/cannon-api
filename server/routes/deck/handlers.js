@@ -149,9 +149,8 @@ exports.getSpeakers = {
         try {
             let previousEdition = false
             let edition = await request.server.methods.deck.getLatestEdition()
-            let speakers
-            
-            speakers = await request.server.methods.deck.getSpeakers(edition.id)
+            let speakers = await request.server.methods.deck.getSpeakers(edition.id)
+
             if (speakers.length === 0) {
                 edition = await request.server.methods.deck.getPreviousEdition()
                 speakers = await request.server.methods.deck.getSpeakers(edition.id)
