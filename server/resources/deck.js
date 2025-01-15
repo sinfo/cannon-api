@@ -85,7 +85,8 @@ async function getSpeakers(edition) {
 
 async function getSpeaker(speakerId) {
   const speaker = await axios.get(`${DECK_API_URL}/public/speakers/${speakerId}`)
-  return transformSpeaker(speaker.data)
+  const speakerSessions = await axios.get(`${DECK_API_URL}/public/sessions?speaker=${speakerId}`, { json: true })
+  return transformSpeaker({ ...speaker.data, sessions: speakerSessions.data })
 }
 
 
@@ -179,6 +180,7 @@ function transformSpeaker(speaker) {
       name: speaker.companyName,
       img: speaker.imgs.company,
     },
+    sessions: speaker.sessions?.map(s => transformSession(s)),
     feedback: speaker.participation[0].feedback
   }
 }
