@@ -5,14 +5,15 @@ module.exports = function render (content) {
 
   return renderObject(content)
 }
-  
+
 function renderObject (model) {
   return {
       id: model.id,
       name: model.name,
       site: model.site,
       advertisementLvl: model.advertisementLvl,
-      img: model.img
+      img: model.img,
+      sessions: model.sessions
   }
 }
-  
+
