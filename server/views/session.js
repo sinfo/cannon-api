@@ -15,7 +15,7 @@ module.exports = function render (content) {
         place: model.place,
         description: model.description,
         speakers: model.speakers,
-        companies: model.companies,
+        company: model.company,
         date: model.date,
         duration: model.duration,
         updated: model.updated,
