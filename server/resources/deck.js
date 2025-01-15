@@ -43,7 +43,8 @@ async function getCompanies(edition) {
 async function getCompany(companyId) {
   const company = await axios.get(`${DECK_API_URL}/public/companies/${companyId}`, { json: true })
   company.data.participation.sort((a, b) => b.event - a.event) // Sort by event in descending order
-  return transformCompany(company.data)
+  const companySessions = await axios.get(`${DECK_API_URL}/public/sessions?company=${companyId}`, { json: true })
+  return transformCompany({ ...company.data, sessions: companySessions.data })
 }
 
 async function getMembers(edition) {
@@ -124,7 +125,8 @@ function transformCompany(company, options) {
       advertisementLvl,
       kind: participation?.package.name || (participation?.partner && "Partner"),
       items: participation?.package.items,
-    }
+    },
+    sessions: company.sessions?.map(s => transformSession(s))
   }
 }
 
@@ -151,17 +153,17 @@ function transformSession(session, options) {
     kind: sessionKinds[session.kind] || session.kind,
     event: String(options?.event || (session.company?.participation?.length > 0 && session.company.participation[0].event)),
     date: session.begin,
-    duration: new Date(new Date(session.end) - new Date(session.begin)),
+    duration: new Date(new Date(session.end) - new Date(session.begin)).getTime() / (1000 * 60),
     place: session.place,
     img: session.img || session.company?.img || (session.speaker.length > 0 && session.speaker[0].imgs.speaker),
-    companies: session.company && [ session.company?.id ] || [],
-    speakers: session.speaker && session.speaker.map(speaker => ({ id: speaker.id })) || [],
+    company: session.company && transformCompany(session.company, { compact: true }),
+    speakers: session.speaker?.length ? session.speaker.map(s => transformSpeaker(s)) : undefined,
     tickets: session.tickets && {
       needed: !!session.tickets,
       start: session.tickets?.start,
       end: session.tickets?.end,
       max: session.tickets?.max,
-    } || {},
+    },
   }
 }
 
