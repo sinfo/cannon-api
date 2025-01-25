@@ -19,6 +19,7 @@ server.method('user.sign', sign, {})
 server.method('user.redeemCard', redeemCard, {})
 server.method('user.linkUsers', linkUsers, {})
 server.method('user.setSharePermissions', setSharePermissions, {})
+server.method('user.getQRCode', getQRCode, {})
 
 
 async function create(user) {
@@ -56,7 +57,7 @@ async function update(filter, user, opts) {
   if (user && user.company) {
     const user2 = Object.assign({}, user)
     if (!user.company.edition) {
-      const latestEdition = await request.server.methods.deck.getLatestEdition()
+      const latestEdition = await server.methods.deck.getLatestEdition()
       user.company.edition = latestEdition.id;
     }
     user.$pull = { 'company': { 'edition': user.company.edition } }
@@ -380,4 +381,9 @@ async function setSharePermissions(filter, edition) {
   }
 
   return await User.findOneAndUpdate(filter, update)
+}
+
+async function getQRCode(user) {
+  // FIXME: Implement this in a secure way using JWT
+  return `sinfo://${btoa(JSON.stringify({ kind: "user", user: { id: user.id, name: user.name, img: user.img, role: user.role } }))}`
 }

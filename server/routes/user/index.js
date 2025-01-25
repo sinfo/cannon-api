@@ -77,3 +77,10 @@ server.route({
   options: handlers.removeMe.options,
   handler: handlers.removeMe.handler
 })
+
+server.route({
+  method: 'GET',
+  path: '/users/qr-code',
+  options: handlers.getQRCode.options,
+  handler: handlers.getQRCode.handler
+})
