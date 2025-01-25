@@ -230,7 +230,7 @@ exports.get = {
         id: Joi.string().required().description('Id of the user we want to retrieve')
       }),
       query: Joi.object({
-        editionId: Joi.string().required().description('Id of the edition') 
+        editionId: Joi.string().description('Id of the edition')
       })
     },
     description: 'Gets an user'
@@ -238,11 +238,12 @@ exports.get = {
   handler: async (request, h) => {
     try {
       let user = await request.server.methods.user.get(request.params.id)
+      const latestEdition = await request.server.methods.deck.getLatestEdition()
       if (!user) {
         log.error('user not found')
         throw Boom.notFound()
       }
-      return h.response(render(user, request.auth.credentials && request.auth.credentials.user, request.query.editionId))
+      return h.response(render(user, request.auth.credentials && request.auth.credentials.user, request.query.editionId || latestEdition.id))
     } catch (err){
       log.error({ err: err}, 'error getting user')
       throw Boom.boomify(err)
@@ -388,5 +389,22 @@ exports.redeemCard = {
       log.error({err: err}, 'error redeeming card')
       throw Boom.boomify(err)
     }
+  },
+}
+
+exports.getQRCode = {
+  options:{
+    tags: ['api', 'user'],
+    auth: {
+      strategies: ['default'],
+      access:{
+        scope: ['user', 'company', 'team', 'admin']
+      }
+    },
+    description: 'Gets the user QR-Code token'
+  },
+  handler: async (request, h) => {
+    const qrCodeToken = await request.server.methods.user.getQRCode(request.auth.credentials.user);
+    return h.response({ token: qrCodeToken })
   },
 }
