@@ -2,10 +2,21 @@ let mongoose = require('mongoose')
 
 let prizeSchema = mongoose.Schema({
   id: { type: String, unique: true },
-  name: String,
-  img: String,
+  name: {
+    type: String,
+    required: true
+  },
+  img: {
+    type: String,
+    required: true
+  },
+  edition: {
+    type: String,
+    required: true
+  },
   sessions: [String],
-  edition: String,
+  days: [Date],
+  cv: Boolean,
   created: Date,
   updated: Date,
 })

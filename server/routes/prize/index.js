@@ -11,7 +11,7 @@ server.route({
 
 server.route({
   method: 'GET',
-  path: '/prizes/session/{id}',
-  options: handlers.getPrizeBySession.options,
-  handler: handlers.getPrizeBySession.handler
+  path: '/prizes',
+  options: handlers.list.options,
+  handler: handlers.list.handler
 })
