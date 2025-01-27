@@ -64,7 +64,7 @@ exports.create = {
   handler: async (request, h) =>{
     try {
       let user = await request.server.methods.user.create(request.payload)
-  
+
       return h.response(render(user, request.auth.credentials && request.auth.credentials.user)).created('/user/' + user.id)
     } catch (err) {
       if (err.code === 11000) {

@@ -26,6 +26,8 @@ exports.create = {
         name: Joi.string().required().description('Name of the prize'),
         img: Joi.any().meta({ swaggerType: 'file' }).required().description('Image of the prize'),
         sessions: Joi.array().items(Joi.string()).description('Id of a session associated to this prize'),
+        days: Joi.array().items(Joi.string()).description('Days when this prize will be drawn'),
+        cv: Joi.boolean().description('Is this prize to CV')
       })
     },
     description: 'Creates a new prize'
@@ -33,7 +35,7 @@ exports.create = {
   handler: async (request, h) => {
     try {
       const edition = await request.server.methods.deck.getLatestEdition()
-      let prize = await request.server.methods.prize.create(request.payload, edition.id)
+      const prize = await request.server.methods.prize.create(request.payload, edition.id)
       return h.response(render(prize)).created('/prize/' + prize.id)
     } catch (err) {
       log.error({ err: err, msg: 'error creating prize' }, 'error creating prize')
@@ -42,32 +44,29 @@ exports.create = {
   }
 }
 
-exports.getPrizeBySession = {
+exports.list = {
   options: {
-    tags: ['api', 'prize', 'session'],
+    tags: ['api', 'prize'],
     auth: {
       strategies: ['default'],
-      scope: ['team', 'admin']
+      scope: ['user', 'company', 'team', 'admin'],
+      mode: 'try'
     },
     validate: {
-      params: Joi.object({
-        id: Joi.string().description('ID of the session associated with the prize')
+      query: Joi.object({
+        edition: Joi.string().description('id of the event edition'),
       })
     },
-    description: 'Gets an prize by session ID'
+    description: 'Gets all the prizes by edition'
   },
   handler: async function (request, h) {
-    const sessionId = request.params.id
     try {
-      let prize = await request.server.methods.prize.getPrizeBySession(sessionId)
-      if (!prize) {
-        log.error({ err: 'not found', session: sessionId }, 'prize not found')
-        throw Boom.notFound('prize not found')
-      }
-      return h.response(render(prize))
-    } catch (err) {
-      log.error({ err: err, session: sessionId }, 'error getting prize')
-      throw Boom.internal('error getting prize')
+      const editionId = request.query.edition || (await request.server.methods.deck.getLatestEdition()).id
+      const prizes = await request.server.methods.prize.list(editionId)
+      return h.response(render(prizes))
+    }catch(err){
+      log.error({err: err}, 'Error finding prizes')
+      throw Boom.boomify(err)
     }
-  }
+  },
 }

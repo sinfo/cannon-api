@@ -21,7 +21,9 @@ module.exports = function render (content) {
         updated: model.updated,
         event: model.event,
         tickets: model.tickets,
-        prize: model.prize
+        prize: model.prize,
+        users: model.users,
+        unregisteredUsers: model.unregisteredUsers
     }
   }
 

@@ -6,6 +6,7 @@ const log = require('../helpers/logger')
 const Prize = require('../db/prize')
 
 server.method('prize.create', create, {})
+server.method('prize.list', list, {})
 server.method('prize.getPrizeBySession', getPrizeBySession, {})
 
 async function create(data, editionId) {
@@ -14,7 +15,9 @@ async function create(data, editionId) {
     name: data.name,
     img: data.img,
     edition: editionId,
-    sessions: data.sessions
+    sessions: data.sessions,
+    days: data.days,
+    cv: data.cv
   }
 
   prize.id = prize.id || uuid.v4()
@@ -38,8 +41,15 @@ async function create(data, editionId) {
 
 }
 
+async function list(editionId) {
+  const filter = { edition: editionId }
+
+  return Prize.find(filter)
+}
+
+
 async function getPrizeBySession(id) {
-  let filter = { sessions: id }
+  const filter = { sessions: id }
 
   return Prize.findOne(filter)
 }
