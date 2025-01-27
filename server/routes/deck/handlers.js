@@ -4,6 +4,7 @@ const renderMembers = require('../../views/member')
 const renderSessions = require('../../views/session')
 const renderSpeakers = require('../../views/speaker')
 const renderEvents = require('../../views/event')
+const renderPrize = require('../../views/prize')
 const log = require('../../helpers/logger')
 const Boom = require('@hapi/boom')
 
@@ -130,8 +131,16 @@ exports.getSession = {
     },
     handler: async (request, h) => {
         try {
-            const session = await request.server.methods.deck.getSession(request.params.sessionId)
-            return h.response(renderSessions(session))
+            let session = await request.server.methods.deck.getSession(request.params.sessionId)
+            if (!session) { throw Boom.notFound() }
+            const sessionPrize = await request.server.methods.prize.getPrizeBySession(request.params.sessionId)
+            const achievement = await request.server.methods.achievement.getAchievementBySession(request.params.sessionId)
+            return h.response({
+              ...renderSessions(session),
+              prize: sessionPrize ? renderPrize(sessionPrize) : undefined,
+              users: achievement ? achievement.users : undefined,
+              unregisteredUsers: achievement ? achievement.unregisteredUsers : undefined,
+            })
         } catch(err) {
             log.error({ error: err })
             throw Boom.boomify(err)

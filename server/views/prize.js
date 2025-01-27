@@ -13,6 +13,8 @@ function renderObject (model) {
     name: model.name,
     img: model.img,
     sessions: model.sessions,
+    days: model.days,
+    cv: model.cv,
     created: model.created,
     updated: model.updated
   }
