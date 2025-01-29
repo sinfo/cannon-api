@@ -30,7 +30,6 @@ cannon_uploads
 *.zip
 
 scripts/output
-package-lock.json
 
 scripts/
 
