@@ -8,6 +8,7 @@ let achievementSchema = mongoose.Schema({
   description: String,
   instructions: String,
   img: String,
+  event: String,
   code: {
     created: Date,
     expiration: Date,

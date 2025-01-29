@@ -306,14 +306,16 @@ exports.list = {
         fields: Joi.string().description('Fields we want to retrieve'),
         sort: Joi.string().description('Sort fields we want to retrieve'),
         skip: Joi.number().description('Number of documents we want to skip'),
-        limit: Joi.number().description('Limit of documents we want to retrieve')
+        limit: Joi.number().description('Limit of documents we want to retrieve'),
+        latestEdition: Joi.boolean().description('Filter by latest edition').default(true)
       })
     },
     description: 'Gets all the achievements'
   },
   handler: async function (request, h) {
     try {
-      let achievements = await request.server.methods.achievement.list(request.query)
+      const latestEdition = await request.server.methods.deck.getLatestEdition()
+      let achievements = await request.server.methods.achievement.list(request.query, latestEdition.id)
       return h.response(render(achievements))
     }catch(err){
       log.error({err: err}, 'Error finding achievements')
