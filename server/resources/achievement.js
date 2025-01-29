@@ -119,8 +119,8 @@ async function removeAllFromUser(userId) {
 
 }
 
-async function list(query) {
-  const filter = {}
+async function list(query, editionId) {
+  const filter = { event: query.latestEdition ? editionId : undefined }
   const fields = fieldsParser(query.fields)
   const options = {
     skip: query.skip,
