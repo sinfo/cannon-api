@@ -155,7 +155,7 @@ exports.download = {
     tags: ['api', 'file'],
     auth: {
       strategies: ['default'],
-      scope: ['admin']
+      scope: ['company', 'team', 'admin']
     },
     validate: {
       params: Joi.object({
