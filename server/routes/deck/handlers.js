@@ -5,6 +5,7 @@ const renderSessions = require('../../views/session')
 const renderSpeakers = require('../../views/speaker')
 const renderEvents = require('../../views/event')
 const renderPrize = require('../../views/prize')
+const renderUser = require('../../views/user')
 const log = require('../../helpers/logger')
 const Boom = require('@hapi/boom')
 
@@ -40,7 +41,12 @@ exports.getCompany = {
     handler: async (request, h) => {
         try {
             const company = await request.server.methods.deck.getCompany(request.params.companyId)
-            return h.response(renderCompanies(company))
+            const latestEdition = await request.server.methods.deck.getLatestEdition()
+            const members = await request.server.methods.user.getCompanyUsers(company.id, latestEdition.id)
+            return h.response(renderCompanies({
+              ...company,
+              members: renderUser(members, null, latestEdition.id)
+            }))
         } catch (err) {
             log.error({ err: err}, 'error getting company')
             throw Boom.internal()
