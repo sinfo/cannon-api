@@ -125,6 +125,31 @@ exports.getMe = {
   },
 }
 
+exports.getUserFile = {
+  options: {
+    tags: ['api', 'file'],
+    auth: {
+      strategies: ['default'],
+      scope: ['company', 'team', 'admin']
+    },
+    description: 'Gets the file model of another user'
+  },
+  handler: async (request, h) => {
+    const userId = request.params.id;
+    try {
+      let file = await request.server.methods.file.get(userId, request.query)
+      if (!file) {
+        log.error({ err: err, userId: userId }, 'error getting file')
+        throw Boom.notFound()
+      }
+      return h.response(render(file))
+    } catch (err) {
+      log.error({ err: err, userId: userId }, 'error getting file')
+      throw Boom.internal()
+    }
+  },
+}
+
 exports.download = {
   options: {
     tags: ['api', 'file'],

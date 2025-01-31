@@ -45,6 +45,13 @@ server.route({
 
 server.route({
   method: 'GET',
+  path: '/files/users/{id}',
+  options: handlers.getUserFile.options,
+  handler: handlers.getUserFile.handler
+})
+
+server.route({
+  method: 'GET',
   path: '/files/{id}/download',
   options: handlers.download.options,
   handler: handlers.download.handler
