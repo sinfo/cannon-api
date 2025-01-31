@@ -15,7 +15,8 @@ function renderObject (model) {
       img: model.img,
       sessions: model.sessions,
       standDetails: model.standDetails,
-      stands: model.stands
+      stands: model.stands,
+      members: model.members
   }
 }
 

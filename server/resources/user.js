@@ -19,6 +19,7 @@ server.method('user.sign', sign, {})
 server.method('user.redeemCard', redeemCard, {})
 server.method('user.linkUsers', linkUsers, {})
 server.method('user.setSharePermissions', setSharePermissions, {})
+server.method('user.getCompanyUsers', getCompanyUsers, {})
 server.method('user.getQRCode', getQRCode, {})
 
 
@@ -381,6 +382,22 @@ async function setSharePermissions(filter, edition) {
   }
 
   return await User.findOneAndUpdate(filter, update)
+}
+
+async function getCompanyUsers(companyId, editionId) {
+  const filter = {
+    role: 'company',
+    company: {
+      $elemMatch: {
+        'company': companyId,
+        'edition': editionId
+      }
+    }
+  }
+
+  const users = User.find(filter);
+
+  return users;
 }
 
 async function getQRCode(user) {
