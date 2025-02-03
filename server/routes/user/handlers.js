@@ -48,13 +48,18 @@ exports.create = {
           id: Joi.string().description('id of the earned achievement'),
           date: Joi.date().description('date of its receipt')
         })),
-        area: Joi.string().description('Work field of the user'),
+        title: Joi.string().description('Current role of the user'),
         skills: Joi.array().description('Skills of the user'),
-        job: Joi.object().keys({
-          startup: Joi.boolean().description('Interested in a startup'),
-          internship: Joi.boolean().description('Interested in internship'),
-          start: Joi.date().description('Available for hire')
-        }),
+        interestedIn: Joi.array().description('Interestes of the user'),
+        lookingFor: Joi.array().description('What user is looking for'),
+        academicInformation: Joi.array().items(Joi.object({
+          school: Joi.string().required().description('School'),
+          degree: Joi.string().required().description('Degree'),
+          field: Joi.string().required().description('Field of study'),
+          grade: Joi.string().required().description('Grade'),
+          start: Joi.string().required().description('Start date'),
+          end: Joi.string().required().description('End date or expected'),
+        })).description('Id of the companies'),
         registered: Joi.date().description('Date of register'),
         updated: Joi.date().description('Last update')
       })
@@ -92,12 +97,18 @@ exports.updateMe = {
         mail: Joi.string().email().description('Mail of the user'),
         area: Joi.string().description('Work field of the user'),
         role: Joi.string().description('Use to demote self to user'),
-        skills: Joi.array().description('Skills of the user'),
-        job: Joi.object().keys({
-          startup: Joi.boolean().description('Interested in a startup'),
-          internship: Joi.boolean().description('Interested in internship'),
-          start: Joi.date().description('Available for hire')
-        })
+        title: Joi.string().max(50).description('Current role of the user'),
+        skills: Joi.array().max(15).unique().description('Skills of the user'),
+        interestedIn: Joi.array().max(15).unique().description('Interests of the user'),
+        lookingFor: Joi.array().unique().items(Joi.string().valid('Internship', 'Summer internship', 'Full-time', 'Part-time')).description('What user is looking for'),
+        academicInformation: Joi.array().max(3).items(Joi.object({
+          school: Joi.string().required().description('School'),
+          degree: Joi.string().required().description('Degree'),
+          field: Joi.string().required().description('Field of study'),
+          grade: Joi.string().required().description('Grade'),
+          start: Joi.string().required().description('Start date'),
+          end: Joi.string().required().description('End date or expected'),
+        })).description('Id of the companies'),
       })
     },
     description: 'Updates the user'
@@ -189,13 +200,18 @@ exports.update = {
           id: Joi.string().description('id of the earned achievement'),
           date: Joi.date().description('date of its receipt')
         })),
-        area: Joi.string().description('Work field of the user'),
+        title: Joi.string().description('Current role of the user'),
         skills: Joi.array().description('Skills of the user'),
-        job: Joi.object().keys({
-          startup: Joi.boolean().description('Interested in a startup'),
-          internship: Joi.boolean().description('Interested in internship'),
-          start: Joi.date().description('Available for hire')
-        }),
+        interestedIn: Joi.array().description('Interestes of the user'),
+        lookingFor: Joi.array().description('What user is looking for'),
+        academicInformation: Joi.array().items(Joi.object({
+          school: Joi.string().required().description('School'),
+          degree: Joi.string().required().description('Degree'),
+          field: Joi.string().required().description('Field of study'),
+          grade: Joi.string().required().description('Grade'),
+          start: Joi.string().required().description('Start date'),
+          end: Joi.string().required().description('End date or expected'),
+        })).description('Id of the companies'),
         registered: Joi.date().description('Date of register'),
         updated: Joi.date().description('Last update')
       })
@@ -243,7 +259,7 @@ exports.get = {
         log.error('user not found')
         throw Boom.notFound()
       }
-      return h.response(render(user, request.auth.credentials && request.auth.credentials.user, request.query.editionId || latestEdition.id))
+      return h.response(render(user, request.auth.credentials && request.auth.credentials.user, request.query.editionId || latestEdition.id, true))
     } catch (err){
       log.error({ err: err}, 'error getting user')
       throw Boom.boomify(err)
@@ -289,7 +305,7 @@ exports.getMe = {
     description: 'Gets the user'
   },
   handler: async (request, h) => {
-    return h.response(render(request.auth.credentials && request.auth.credentials.user, request.auth.credentials && request.auth.credentials.user))
+    return h.response(render(request.auth.credentials && request.auth.credentials.user, request.auth.credentials && request.auth.credentials.user, undefined, true))
   },
 }
 
