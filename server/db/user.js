@@ -62,6 +62,12 @@ const schema = new mongoose.Schema({
     start: Date,
     end: Date
   }],
+  contacts: {
+    _id: false,
+    linkedin: String,
+    email: String,
+    github: String
+  },
   registered: Date,
   updated: Date
 })
