@@ -1,12 +1,12 @@
-module.exports = function render (content, user, editionId) {
+module.exports = function render (content, user, editionId, expand) {
   if (content instanceof Array) {
-    return content.map(model => renderObject(model, user, editionId))
+    return content.map(model => renderObject(model, user, editionId, expand))
   }
 
-  return renderObject(content, user, editionId)
+  return renderObject(content, user, editionId, expand)
 }
 
-function renderObject (model, user, editionId) {
+function renderObject (model, user, editionId, expand = false) {
   const result = {}
   const isAdmin = user && (user.role === 'admin' || model.id === user.id)
   const isTeam = user && (user.role === 'team' || isAdmin)
@@ -25,6 +25,14 @@ function renderObject (model, user, editionId) {
     redeemed: signature && signature.redeemed,
     signatures: signature && signature.signatures
   }))
+
+  if (expand) {
+    result.title = model.title
+    result.skills = model.skills
+    result.interestedIn = model.interestedIn
+    result.lookingFor = model.lookingFor
+    result.academicInformation = model.academicInformation
+  }
 
   if (isAdmin || isTeam) {
     result.mail = model.mail

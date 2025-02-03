@@ -48,13 +48,20 @@ const schema = new mongoose.Schema({
   fenix: {
     id: String
   },
-  area: String,
-  skills: Array,
-  job: {
-    startup: Boolean,
-    internship: Boolean,
-    start: Date
-  },
+  // Profile information
+  title: String,
+  skills: [String],
+  interestedIn: [String],
+  lookingFor: [String],
+  academicInformation: [{
+    _id: false,
+    school: String,
+    degree: String,
+    field: String,
+    grade: String,
+    start: Date,
+    end: Date
+  }],
   registered: Date,
   updated: Date
 })
