@@ -105,10 +105,15 @@ exports.updateMe = {
           school: Joi.string().required().description('School'),
           degree: Joi.string().required().description('Degree'),
           field: Joi.string().required().description('Field of study'),
-          grade: Joi.string().required().description('Grade'),
-          start: Joi.string().required().description('Start date'),
-          end: Joi.string().required().description('End date or expected'),
-        })).description('Id of the companies'),
+          grade: Joi.string().description('Grade'),
+          start: Joi.string().description('Start date'),
+          end: Joi.string().description('End date or expected'),
+        })).description('Academic informations of user'),
+        contacts: Joi.object({
+          linkedin: Joi.string().description('Linkedin id'),
+          email: Joi.string().email().description('Email'),
+          github: Joi.string().description('Github username'),
+        }).description('User contacts')
       })
     },
     description: 'Updates the user'
@@ -212,6 +217,11 @@ exports.update = {
           start: Joi.string().required().description('Start date'),
           end: Joi.string().required().description('End date or expected'),
         })).description('Id of the companies'),
+        contacts: Joi.object({
+          linkedin: Joi.string().description('Linkedin id'),
+          email: Joi.string().email().description('Email'),
+          github: Joi.string().description('Github username'),
+        }).description('User contacts'),
         registered: Joi.date().description('Date of register'),
         updated: Joi.date().description('Last update')
       })

@@ -32,6 +32,7 @@ function renderObject (model, user, editionId, expand = false) {
     result.interestedIn = model.interestedIn
     result.lookingFor = model.lookingFor
     result.academicInformation = model.academicInformation
+    result.contacts = model.contacts
   }
 
   if (isAdmin || isTeam) {
