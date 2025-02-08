@@ -28,6 +28,7 @@ function renderObject (model, user, editionId, expand = false) {
 
   if (expand) {
     result.title = model.title
+    result.nationality = model.nationality
     result.skills = model.skills
     result.interestedIn = model.interestedIn
     result.lookingFor = model.lookingFor
