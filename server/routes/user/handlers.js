@@ -94,10 +94,9 @@ exports.updateMe = {
       payload: Joi.object({
         name: Joi.string().description('Name of the user'),
         img: Joi.string().uri().description('Image of the user'),
-        mail: Joi.string().email().description('Mail of the user'),
-        area: Joi.string().description('Work field of the user'),
         role: Joi.string().description('Use to demote self to user'),
-        title: Joi.string().max(50).description('Current role of the user'),
+        nationality: Joi.string().allow("").description('User nationality'),
+        title: Joi.string().allow("").max(50).description('Current role of the user'),
         skills: Joi.array().max(15).unique().description('Skills of the user'),
         interestedIn: Joi.array().max(15).unique().description('Interests of the user'),
         lookingFor: Joi.array().unique().items(Joi.string().valid('Internship', 'Summer internship', 'Full-time', 'Part-time')).description('What user is looking for'),
@@ -106,13 +105,13 @@ exports.updateMe = {
           degree: Joi.string().required().description('Degree'),
           field: Joi.string().required().description('Field of study'),
           grade: Joi.string().description('Grade'),
-          start: Joi.string().description('Start date'),
-          end: Joi.string().description('End date or expected'),
+          start: Joi.string().required().description('Start date'),
+          end: Joi.string().required().description('End date or expected'),
         })).description('Academic informations of user'),
         contacts: Joi.object({
-          linkedin: Joi.string().description('Linkedin id'),
-          email: Joi.string().email().description('Email'),
-          github: Joi.string().description('Github username'),
+          linkedin: Joi.string().allow("").description('Linkedin id'),
+          email: Joi.string().allow("").email().description('Email'),
+          github: Joi.string().allow("").description('Github username'),
         }).description('User contacts')
       })
     },
@@ -206,6 +205,7 @@ exports.update = {
           date: Joi.date().description('date of its receipt')
         })),
         title: Joi.string().description('Current role of the user'),
+        nationality: Joi.string().description('User nationality'),
         skills: Joi.array().description('Skills of the user'),
         interestedIn: Joi.array().description('Interestes of the user'),
         lookingFor: Joi.array().description('What user is looking for'),
