@@ -21,22 +21,23 @@ async function facebookAuth(id, token) {
 
     // Get user profile information from Facebook
     let fbUser = await facebook.getFacebookUser(token)
-    
+
     // Get user in cannon by Facebook User email
     let res = await facebook.getUser(fbUser)
-    
+
     // If user does not exist we create, otherwise we update existing user
     if (res.createUser) {
       let userId = await facebook.createUser(fbUser)
-      await authenticate(userId, null)
+      await authenticate(userId, {
+        name: fbUser.name,
+        img: fbUser.picture
+      })
     }
-    
+
     const changedAttributes = {
       facebook: {
         id: fbUser.id
-      },
-      name: fbUser.name,
-      img: fbUser.picture
+      }
     }
     return await authenticate(res.userId, changedAttributes)
   }
@@ -52,19 +53,20 @@ async function googleAuth(accessToken) {
 
     // Get user in cannon by Google User email
     let res = await google.getUser(googleUser)
-    
+
     // If user does not exist we create, otherwise we update existing user
     if (res.createUser) {
       let userId = await google.createUser(googleUser)
-      return await authenticate(userId, null)
+      return await authenticate(userId, {
+        name: googleUser.name,
+        img: googleUser.picture
+      })
     }
 
     const changedAttributes = {
       google: {
         id: googleUser.sub
-      },
-      name: googleUser.name,
-      img: googleUser.picture
+      }
     }
 
     return await authenticate(res.userId, changedAttributes)
@@ -77,22 +79,23 @@ async function microsoftAuth(accessToken) {
   try {
     // Get user profile information from Microsoft
     const microsoftUser = await microsoft.getMicrosoftUser(accessToken)
-    
+
     // Get user in cannon by Microsoft User mail
     const res = await microsoft.getUser(microsoftUser)
-    
+
     // If the user does not exist we create, otherwise we update the existing user
     if (res.createUser) {
       const userId = await microsoft.createUser(microsoftUser)
-      return authenticate(userId, null)
+      return authenticate(userId, {
+        name: microsoftUser.displayName,
+        mail: microsoft.getEmail(microsoftUser)
+      })
     }
 
     const changedAttributes = {
       microsoft: {
         id: microsoftUser.id
-      },
-      name: microsoftUser.displayName,
-      mail: microsoft.getEmail(microsoftUser)
+      }
     }
 
     return await authenticate(res.userId, changedAttributes)
@@ -106,22 +109,23 @@ async function fenixAuth(accessToken) {
   try {
     // Get user profile information from Fenix
     let fenixUser = await fenix.getFenixUser(accessToken)
-    
+
     // Get user in cannon by Fenix User email
     let res = await fenix.getUser(fenixUser)
-    
+
     // If user does not exist we create, otherwise we update existing user
     if (res.createUser) {
       let userId = await fenix.createUser(fenixUser)
-      return authenticate(userId, null)
+      return authenticate(userId, {
+        name: fenixUser.name,
+        img: `https://fenix.tecnico.ulisboa.pt/user/photo/${fenixUser.username}`
+      })
     }
 
     const changedAttributes = {
       fenix: {
         id: fenixUser.username
-      },
-      name: fenixUser.name,
-      img: `https://fenix.tecnico.ulisboa.pt/user/photo/${fenixUser.username}`
+      }
     }
 
     return authenticate(res.userId, changedAttributes)
@@ -134,23 +138,24 @@ async function linkedinAuth(accessToken) {
   try {
     // Get user profile information from Linkedin
     let linkedinUser = await linkedin.getLinkedinUser(accessToken)
-    
+
     // Get user in cannon by Linkedin User email
     let res = await linkedin.getUser(linkedinUser)
-    
+
     // If user does not exist we create, otherwise we update existing user
     if (res.createUser) {
       let userId = await linkedin.createUser(linkedinUser)
-      return await authenticate(userId, null)
+      return await authenticate(userId, {
+        name: `${linkedinUser.firstName} ${linkedinUser.lastName}`,
+        mail: linkedinUser.emailAddress,
+        img: linkedinUser.pictureUrl
+      })
     }
-    
+
     const changedAttributes = {
       linkedin: {
         id: linkedinUser.id
       },
-      name: `${linkedinUser.firstName} ${linkedinUser.lastName}`,
-      mail: linkedinUser.emailAddress,
-      img: linkedinUser.pictureUrl
     }
     return authenticate(res.userId, changedAttributes)
   } catch (err) {
