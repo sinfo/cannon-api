@@ -5,7 +5,7 @@ const log = require('./logger')
 const linkedin = {}
 
 linkedin.getLinkedinUser = async accessToken => {
-    const urlProfile = 'https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))'
+    const urlProfile = 'https://api.linkedin.com/v2/userinfo'
 
     let response = await axios.get(urlProfile, {
       json: true,
@@ -24,55 +24,15 @@ linkedin.getLinkedinUser = async accessToken => {
 
     let linkedinJsonUser = response.data
 
-    let linkedinEmail = await  linkedin.getLinkedinUserEmail(accessToken).catch(err => {
-      log.error(err)
-      throw err
-    })
     let linkedinUser = {
-      id: linkedinJsonUser.id,
-      emailAddress: linkedinEmail,
-      firstName: Object.keys(linkedinJsonUser.firstName.localized).map(key => linkedinJsonUser.firstName.localized[key])[0],
-      lastName: Object.keys(linkedinJsonUser.lastName.localized).map(key => linkedinJsonUser.lastName.localized[key])[0],
-      pictureUrl: linkedinJsonUser.profilePicture['displayImage~'].elements[0].identifiers[0].identifier
+      id: linkedinJsonUser.sub,
+      emailAddress: linkedinJsonUser.email,
+      firstName: linkedinJsonUser.given_name,
+      lastName: linkedinJsonUser.family_name,
+      pictureUrl: linkedinJsonUser.picture
     }
 
     return linkedinUser
-}
-
-linkedin.getLinkedinUserEmail = async accessToken => {
-  const emailUrl = 'https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))'
-
-  let response = await axios.get(emailUrl, {
-    json: true,
-    headers: {
-      'Authorization':`Bearer ${accessToken}`
-    }
-  }).catch((error) => {
-    if (error) {
-      log.warn({ error, where: 'getLinkedinUserEmail'})
-      throw error
-    }
-  })
-
-  if(response.status !== 200){
-    log.error('error fetching linkedin user email')
-    throw new Error('error fetching linkedin user email')
-  }
-
-  let linkedinEmail = response.data
-
-  if (typeof (linkedinEmail) === 'string') {
-    return linkedinEmail
-  }
-
-  if (!linkedinEmail['elements'] ||
-    !linkedinEmail['elements'].length ||
-    !linkedinEmail['elements'][0]['handle~'] ||
-    !linkedinEmail['elements'][0]['handle~']['emailAddress']) {
-    throw new Error(`Couldn\t find email in ${JSON.stringify(linkedinEmail)}`)
-  }
-
-  return linkedinEmail['elements'][0]['handle~']['emailAddress']
 }
 
 /**
@@ -91,12 +51,12 @@ linkedin.getUser = async linkedinUser => {
   })
 
   if (user) {
-    return { 
-      createUser: false, 
+    return {
+      createUser: false,
       userId: user.id
     }
   } else {
-    return { 
+    return {
       createUser: true
     }
   }
