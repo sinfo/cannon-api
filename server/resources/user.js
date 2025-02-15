@@ -1,10 +1,13 @@
+const { Readable } = require('node:stream')
 const Boom = require('@hapi/boom')
 const server = require('../').hapi
 const log = require('../helpers/logger')
+const aws = require('../plugins/aws')
 
 const fieldsParser = require('../helpers/fieldsParser')
 const config = require('../../config')
 const User = require('../db/user')
+
 
 server.method('user.create', create, {})
 server.method('user.update', update, {})
@@ -53,6 +56,19 @@ async function update(filter, user, opts) {
 
   if (typeof filter === 'string') {
     filter = { id: filter }
+  }
+
+  if (user && user.img?.startsWith("data:image/jpeg;base64,")) {
+    const base64Data = user.img.replace(/^data:image\/\w+;base64,/, "");
+    const buffer = Readable.from(Buffer.from(base64Data, "base64"));
+
+    const imgUrl = await uploadUserImage(filter.id, buffer)
+    if (!imgUrl) {
+      log.error('Error setting image URL for user ' + filter.id)
+      throw Boom.internal('Error setting image URL for user ' + filter.id)
+    }
+
+    user.img = imgUrl
   }
 
   if (user && user.company) {
@@ -403,4 +419,38 @@ async function getCompanyUsers(companyId, editionId) {
 async function getQRCode(user) {
   // FIXME: Implement this in a secure way using JWT
   return `sinfo://${btoa(JSON.stringify({ kind: "user", user: { id: user.id, name: user.name, img: user.img, role: user.role } }))}`
+}
+
+/* Image Functions */
+function getDataFromStream(stream) {
+  return new Promise((resolve, reject) => {
+    let data = []
+
+    stream.on('data', (chunk) => {
+      data.push(chunk)
+    })
+
+    stream.on('end', () => {
+      resolve(Buffer.concat(data))
+    })
+
+    stream.on('error', (err) => {
+      reject(err)
+    })
+  })
+}
+
+function getFileName(userId) {
+  return userId + '.jpg'
+}
+
+function getUserPath() {
+  return `static/users/`
+}
+
+async function uploadUserImage(userId, file) {
+  const path = getUserPath()
+  const fileName = getFileName(userId)
+  const data = await getDataFromStream(file)
+  return aws.upload(path, data, fileName, true)
 }
