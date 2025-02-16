@@ -87,14 +87,14 @@ async function microsoftAuth(accessToken) {
     if (res.createUser) {
       const userId = await microsoft.createUser(microsoftUser)
       return authenticate(userId, {
-        name: microsoftUser.displayName,
-        mail: microsoft.getEmail(microsoftUser)
+        name: microsoftUser.name,
+        mail: microsoftUser.email,
       })
     }
 
     const changedAttributes = {
       microsoft: {
-        id: microsoftUser.id
+        id: microsoftUser.sub
       }
     }
 

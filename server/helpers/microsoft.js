@@ -30,20 +30,12 @@ async function fetch(endpoint, accessToken) {
     }
 }
 
-microsoft.getEmail = (microsoftUser) => {
-    return microsoftUser.mail ? microsoftUser.mail : microsoftUser.userPrincipalName;
-}
-
-microsoft.getProfilePicture = async (accessToken) => {
-    return fetch('/v1.0/me/photo/$value', accessToken)
-}
-
 microsoft.getMicrosoftUser = async (accessToken) => {
-    return fetch('/v1.0/me', accessToken)
+    return fetch('/oidc/userinfo', accessToken)
 }
 
 microsoft.getUser = async (microsoftUser) => {
-    const mail = microsoft.getEmail(microsoftUser)
+    const mail = microsoftUser.email
     let user = await server.methods.user.get({ 'mail': mail }).catch((err) => {
         log.error({ err: err, microsoftUser }, '[Microsoft-Auth] Error getting user by Microsoft email')
         throw err
@@ -64,10 +56,12 @@ microsoft.getUser = async (microsoftUser) => {
 microsoft.createUser = async function (microsoftUser) {
     const user = {
         microsoft: {
-            id: microsoftUser.id
+            id: microsoftUser.sub
         },
-        name: microsoftUser.displayName,
-        mail: microsoft.getEmail(microsoftUser)
+        name: microsoftUser.name,
+        mail: microsoftUser.email,
+        // Default image since Microsoft needs authentication to retrieve user's image
+        img: 'https://static.sinfo.org/static/25-sinfo/speakers/hacky.png'
     }
 
     log.debug('[Microsoft-Auth] Creating a new user', user)
