@@ -36,7 +36,7 @@ function renderObject (model, user, editionId, expand = false) {
     result.contacts = model.contacts
 
     if (user && model.id === user.id) {
-      if (editionId) {
+      if (editionId && model.connections) {
         result.connections = model.connections[editionId]
       }
     }

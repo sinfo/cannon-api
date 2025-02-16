@@ -59,9 +59,7 @@ microsoft.createUser = async function (microsoftUser) {
             id: microsoftUser.sub
         },
         name: microsoftUser.name,
-        mail: microsoftUser.email,
-        // Default image since Microsoft needs authentication to retrieve user's image
-        img: 'https://static.sinfo.org/static/25-sinfo/speakers/hacky.png'
+        mail: microsoftUser.email
     }
 
     log.debug('[Microsoft-Auth] Creating a new user', user)
