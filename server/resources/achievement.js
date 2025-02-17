@@ -755,7 +755,6 @@ async function addUserToSecret(id, code) {
   }
 
   const query = {
-    kind: AchievementKind.SECRET,
     'validity.from': { $lte: now },
     'validity.to': { $gte: now },
     'code.created': { $lte: now },
