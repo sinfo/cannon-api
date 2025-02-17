@@ -315,7 +315,8 @@ exports.getMe = {
     description: 'Gets the user'
   },
   handler: async (request, h) => {
-    return h.response(render(request.auth.credentials && request.auth.credentials.user, request.auth.credentials && request.auth.credentials.user, undefined, true))
+    const edition = await request.server.methods.deck.getLatestEdition()
+    return h.response(render(request.auth.credentials && request.auth.credentials.user, request.auth.credentials && request.auth.credentials.user, edition.id, true))
   },
 }
 
