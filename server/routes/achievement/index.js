@@ -80,6 +80,13 @@ server.route({
 })
 
 server.route({
+  method: 'DELETE',
+  path: '/achievements/{id}/users/{userId}',
+  options: handlers.removeUser.options,
+  handler: handlers.removeUser.handler
+})
+
+server.route({
   method: 'GET',
   path: '/achievements/code',
   options: handlers.listWithCode.options,

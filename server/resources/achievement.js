@@ -15,6 +15,7 @@ server.method('achievement.getByUser', getByUser, {})
 server.method('achievement.removeAllFromUser', removeAllFromUser, {})
 server.method('achievement.list', list, {})
 server.method('achievement.remove', remove, {})
+server.method('achievement.removeUser', removeUser, {})
 server.method('achievement.addUser', addUser, {})
 server.method('achievement.addMultiUsers', addMultiUsers, {})
 server.method('achievement.addMultiUsersBySession', addMultiUsersBySession, {})
@@ -135,6 +136,10 @@ async function remove(id) {
   const achievement = await Achievement.findOne({ id: id })
   await removeAchievementImage(achievement)
   return Achievement.findOneAndRemove({ id: id })
+}
+
+async function removeUser(id, userId) {
+  return Achievement.updateOne({ id: id }, { $pull: { users: userId }})
 }
 
 // 500, 404

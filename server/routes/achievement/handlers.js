@@ -184,6 +184,36 @@ exports.removeMe = {
   }
 }
 
+exports.removeUser = {
+  options: {
+    tags: ['api', 'achievement'],
+    auth: {
+      strategies: ['default'],
+      scope: ['team', 'admin']
+    },
+    description: 'Removes user from achievement',
+    validate: {
+      params: Joi.object({
+        id: Joi.string().required().description('Id of the achievement'),
+        userId: Joi.string().required().description('Id of the user')
+      })
+    },
+  },
+  handler: async (request, h) => {
+    try {
+      let ach = await request.server.methods.achievement.removeUser(request.params.id, request.params.userId)
+      if (!ach) {
+        log.error({ err: 'not found', id: request.params.id }, 'achievement not found')
+        throw Boom.notFound('achievement not found')
+      }
+      return h.response(render(ach))
+    } catch (err) {
+      log.error({ err: err, id: request }, 'error removing user from achievement')
+      throw Boom.internal('error getting achievement')
+    }
+  }
+}
+
 exports.getActive = {
   options: {
     tags: ['api', 'achievement'],
