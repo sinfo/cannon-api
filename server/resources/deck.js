@@ -128,8 +128,8 @@ function transformCompany(company, options) {
       items: participation?.package.items,
     },
     sessions: company.sessions?.map(s => transformSession(s)),
-    standDetails: options?.compact ? undefined : participation.standDetails,
-    stands: options?.compact ? undefined : participation.stands
+    standDetails: participation.standDetails,
+    stands: participation.stands
   }
 }
 
