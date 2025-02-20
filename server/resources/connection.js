@@ -5,6 +5,7 @@ const Connection = require('../db/connection')
 server.method('connection.create', create, {})
 server.method('connection.update', update, {})
 server.method('connection.list', list, {})
+server.method('connection.getSuggestions', getSuggestions, {})
 server.method('connection.remove', remove, {})
 
 async function create(connection) {
@@ -61,6 +62,15 @@ async function list(filter = {}) {
   }
 
   return Connection.find(filter)
+}
+
+async function getSuggestions(userId, editionId) {
+  const connections = await Connection.aggregate([
+    { $match: { to: userId, edition: editionId }},
+    { $sample: { size: 5 }}
+  ])
+
+  return server.methods.user.getMulti(connections.map(c => c.from))
 }
 
 async function remove(filter) {

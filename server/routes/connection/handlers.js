@@ -1,5 +1,6 @@
 const Joi = require('joi')
 const render = require('../../views/connection')
+const renderUser = require('../../views/user')
 const log = require('../../helpers/logger')
 const Boom = require('@hapi/boom')
 
@@ -111,11 +112,13 @@ exports.getUserConnections = {
   handler: async function (request, h) {
     try {
       const edition = await request.server.methods.deck.getLatestEdition()
+      const userId = request.auth.credentials.user.id
       const connections = await request.server.methods.connection.list({
-        from: request.auth.credentials.user.id,
+        from: userId,
         edition: edition.id
       })
-      return h.response(render(connections))
+      const sugestions = await request.server.methods.connection.getSuggestions(userId, edition.id)
+      return h.response({connections: render( connections), suggestions: renderUser(sugestions)})
     } catch (err) {
       log.error({ err: err }, 'error getting user connections')
       return Boom.boomify(err)
