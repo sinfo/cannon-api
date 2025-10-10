@@ -34,7 +34,7 @@ config.aws = {
 }
 
 config.mongo = {
-  url: process.env.CANNON_MONGO_URL || 'mongodb://localhost:27018/cannon'
+  url: process.env.CANNON_MONGO_URL || 'mongodb://localhost:27017/cannon'
 }
 
 config.facebook = {
@@ -81,10 +81,17 @@ config.logs = {
 }
 
 config.swagger = {
-  pathPrefixSize: 1,
-  apiVersion: pack.version,
-  basePath: config.url
+  info: {
+    title: 'Cannon API',
+    description: pack.description,
+    version: '1.0.0'
+  },
+  grouping: 'tags',
+  jsonPath: '/swagger.json',
+  documentationPath: '/documentation'
 }
+
+
 
 // order lesser permissions to greater
 config.auth = {
