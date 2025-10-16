@@ -81,10 +81,16 @@ config.logs = {
 }
 
 config.swagger = {
-  pathPrefixSize: 1,
-  apiVersion: pack.version,
-  basePath: config.url
+  info: {
+    title: 'Cannon API',
+    description: pack.description,
+    version: '1.0.0'
+  },
+  grouping: 'tags',
+  jsonPath: '/swagger.json',
+  documentationPath: '/documentation'
 }
+
 
 // order lesser permissions to greater
 config.auth = {

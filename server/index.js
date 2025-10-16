@@ -25,12 +25,8 @@ server.register(
     require('@hapi/basic'),
     require('@hapi/vision'),
     require('@hapi/inert')
-  ]).then(
-    (err) => {
-      if (err) {
-        log.error({ err: err }, '[hapi-plugins] problem registering hapi plugins')
-        return
-      }
+  ]).then(() => {
+
 
       server.auth.strategy('default', 'bearer-access-token', options.auth.default)
       server.auth.strategy('internal', 'basic', options.auth.internal)
@@ -41,8 +37,7 @@ server.register(
       // Register secondary plugins
       server.register(
         { plugin: require('./plugins/templates'), options: config.templates }).then(
-        (err) => {
-        if (err) throw err
+        () => {        
         if (!module.parent) {
           server.start().then(() => {
             log.info('### Server started at: ' + server.info.uri + ' ###')
