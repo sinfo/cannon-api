@@ -14,12 +14,17 @@ exports = module.exports
 exports.getAll = {
     options: {
         tags: ['api', 'company'],
-        description: 'Gets all companies for the latest edition'
+        validate: {
+            query: Joi.object({
+                edition: Joi.string().description('Event edition id (defaults to latest)')
+            })
+        },
+        description: 'Gets all companies for a specific edition (defaults to latest)'
     },
     handler: async (request, h) => {
         try {
-            const latestEdition = await request.server.methods.deck.getLatestEdition()
-            const companies = await request.server.methods.deck.getCompanies(latestEdition.id)
+            const edition = request.query && request.query.edition ? request.query.edition : (await request.server.methods.deck.getLatestEdition()).id
+            const companies = await request.server.methods.deck.getCompanies(edition)
             return h.response(renderCompanies(companies))
         } catch (err) {
             log.error({ err: err}, 'error getting company')
