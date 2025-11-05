@@ -113,8 +113,19 @@ function transformCompany(company, options) {
     "Silver": "min",
     "Silver NPE": "min",
   };
-  const participation = company.participation?.length > 0 && company.participation[0]; // Get the latest participation
-  const advertisementLvl = advertisementLevels[participation?.package.name] || (participation?.partner && "other") || "none";
+
+  // Package name is "SINFO XX Package name" where XX is the edition year and Package name can have one or two words
+  const packageName = (() => {
+    const name = participation?.package?.name;
+    if (!name) return name;
+    const parts = name.split(' ');
+    // Example: "SINFO XX Silver NPE" (4 words)
+    if (parts.length === 4) return parts.slice(-2).join(' ');
+    // Example: "SINFO XX Silver" (3 words)
+    if (parts.length === 3) return parts.slice(-1)[0];
+    return name;
+  })();
+  const advertisementLvl = advertisementLevels[packageName] || (participation?.partner && "other") || "none";
 
   return {
     id: company.id,
