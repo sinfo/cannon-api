@@ -8,13 +8,11 @@ module.exports = function render (content) {
   
   function renderObject (model) {
     return {
-        id: model.id,
         name: model.name,
         img: model.img,
-        github: model.github,
-        facebook: model.facebook,
-        mail: model.mail,
-        twitter: model.witter
+        socials: model.socials,
+        team: model.team,
+        sinfo_email: model.sinfo_email
     }
   }
   
