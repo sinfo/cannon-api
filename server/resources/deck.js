@@ -50,7 +50,7 @@ async function getCompany(companyId) {
 async function getMembers(edition) {
   const members = await axios.get(`${DECK_API_URL}/public/members?event=${edition}`, { json: true })
   members.data.sort((a, b) => a.name.localeCompare(b.name)) // Sort by name in ascending order
-  return members.data.map(member => transformMember(member))
+  return members.data;
 }
 
 async function getSessions(edition, withoutAchievements) {
@@ -142,14 +142,6 @@ function transformCompany(company, options) {
     sessions: company.sessions?.map(s => transformSession(s)),
     standDetails: participation.standDetails,
     stands: participation.stands
-  }
-}
-
-// Translate Deck's member object to old format
-function transformMember(member) {
-  return {
-    name: member.name,
-    img: member.img || "/static/default-profile.png",
   }
 }
 
