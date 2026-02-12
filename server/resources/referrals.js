@@ -5,11 +5,11 @@ const Referral = require('../db/referral')
 const deviceFromUA = require('../helpers/deviceDetector')
 const hashIp = require('../helpers/hashIp')
 
-server.method('referrals.create', createReferral, {})
+server.method('referrals.hit', hitReferral, {})
 server.method('referrals.stats', statsGlobal, {})
 server.method('referrals.statsCode', statsByCode, {})
 
-async function createReferral (payload, request) {
+async function hitReferral (payload, request) {
 	try {
 		const ua = request.headers['user-agent'] || ''
 		const device = deviceFromUA(ua)

@@ -24,7 +24,7 @@ exports.create = {
 	},
 		handler: async function (request, h) {
 			// Fire-and-forget to keep response fast
-			request.server.methods.referrals.create(request.payload, request)
+			request.server.methods.referrals.hit(request.payload, request)
 				.catch(err => log.error({ err }, 'error creating referral visit'))
 			return h.response({ success: true }).code(202)
 		}
