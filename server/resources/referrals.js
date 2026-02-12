@@ -4,6 +4,7 @@ const log = require('../helpers/logger')
 const Referral = require('../db/referral')
 const deviceFromUA = require('../helpers/deviceDetector')
 const hashIp = require('../helpers/hashIp')
+const getClientIp = require('../helpers/clientIp')
 
 server.method('referrals.hit', hitReferral, {})
 server.method('referrals.stats', statsGlobal, {})
@@ -80,13 +81,4 @@ async function statsByCode (code) {
 		log.error({ err, code }, 'error computing referrals stats by code')
 		throw Boom.boomify(err)
 	}
-}
-
-function getClientIp (request) {
-	const xff = request.headers['x-forwarded-for']
-	if (xff) {
-		const parts = xff.split(',').map(s => s.trim()).filter(Boolean)
-		if (parts.length) return parts[0]
-	}
-	return (request.info && request.info.remoteAddress) || '0.0.0.0'
 }
