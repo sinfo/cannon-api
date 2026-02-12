@@ -47,9 +47,9 @@ async function statsGlobal () {
 			{ $group: { _id: '$code', visits: { $sum: 1 }, converted: { $sum: { $cond: [{ $eq: ['$converted', true] }, 1, 0] } } } },
 			{ $sort: { visits: -1 } }
 		])
-		const topCodes = codesAgg.map(c => ({ code: c._id, visits: c.visits, converted: c.converted }))
+		const allCodes = codesAgg.map(c => ({ code: c._id, visits: c.visits, converted: c.converted }))
 
-		return { totalVisits, totalConverted, devices, topCodes }
+		return { totalVisits, totalConverted, devices, allCodes }
 	} catch (err) {
 		log.error({ err }, 'error computing referrals stats')
 		throw Boom.boomify(err)
