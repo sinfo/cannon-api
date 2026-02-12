@@ -1,3 +1,5 @@
+const getClientIp = require('./clientIp')
+
 function createRateLimiter (opts = {}) {
 	const limit = opts.limit || parseInt(process.env.CANNON_REFERRAL_RATE_LIMIT || '60', 10)
 	const windowMs = opts.windowMs || parseInt(process.env.CANNON_REFERRAL_RATE_WINDOW_MS || '60000', 10)
@@ -23,15 +25,6 @@ function createRateLimiter (opts = {}) {
 
 		return h.continue
 	}
-}
-
-function getClientIp (request) {
-	const xff = request.headers['x-forwarded-for']
-	if (xff) {
-		const parts = xff.split(',').map(s => s.trim()).filter(Boolean)
-		if (parts.length) return parts[0]
-	}
-	return (request.info && request.info.remoteAddress) || '0.0.0.0'
 }
 
 module.exports = createRateLimiter
