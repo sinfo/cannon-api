@@ -163,15 +163,31 @@ exports.getSession = {
 exports.getSpeakers = {
     options: {
         tags: ['api', 'speaker'],
-        description: 'Get speakers for the current or previous edition'
+        description: 'Get speakers for the current or previous edition',
+        validate: {
+            query: Joi.object({
+                previousEdition: Joi.boolean().default(false).description('Force returning speakers from the previous edition')
+            })
+        }
     },
     handler: async (request, h) => {
         try {
             let previousEdition = false
-            let edition = await request.server.methods.deck.getLatestEdition()
+
+            // If the caller explicitly requested the previous edition, honor it.
+            let edition
+            if (request.query && request.query.previousEdition) {
+                edition = await request.server.methods.deck.getPreviousEdition()
+                previousEdition = true
+            } else {
+                edition = await request.server.methods.deck.getLatestEdition()
+            }
+
             let speakers = await request.server.methods.deck.getSpeakers(edition.id)
 
-            if (speakers.length === 0) {
+            // If no speakers were found for the latest edition and the caller
+            // didn't explicitly request previous, fall back to previous edition.
+            if (!(request.query && request.query.previousEdition) && speakers.length === 0) {
                 edition = await request.server.methods.deck.getPreviousEdition()
                 speakers = await request.server.methods.deck.getSpeakers(edition.id)
                 previousEdition = true
