@@ -150,7 +150,8 @@ function transformSession(session, options) {
   const sessionKinds = {
     "TALK": "Keynote",
     "WORKSHOP": "Workshop",
-    "PRESENTATION": "Presentation"
+    "PRESENTATION": "Presentation",
+    "QA": "Q&A",
   }
 
   return {
