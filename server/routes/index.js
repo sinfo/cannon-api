@@ -1,5 +1,6 @@
 require('./achievement')
 require('./deck')
+require('./sponsors')
 require('./file')
 require('./redeem')
 require('./auth')
