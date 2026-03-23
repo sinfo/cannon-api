@@ -3,7 +3,7 @@ const handlers = require('./handlers')
 
 server.route({
     method: 'GET',
-    path: '/sponsor',
-    options: handlers.getSponsors.options,
-    handler: handlers.getSponsors.handler
+    path: '/partner',
+    options: handlers.getPartners.options,
+    handler: handlers.getPartners.handler
 })
