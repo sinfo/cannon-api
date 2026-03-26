@@ -5,8 +5,8 @@ server.route({
   path: '/health',
   config: {
     tags: ['health'],
-    handler: function (request, reply) {
-      reply('OK')
+    handler: function (request, h) {
+      return 'OK'
     },
     description: 'Health check'
   }
