@@ -2,6 +2,7 @@ const Boom = require('@hapi/boom')
 const server = require('../').hapi
 const log = require('../helpers/logger')
 const Referral = require('../db/referral')
+const mongoose = require('mongoose')
 const deviceFromUA = require('../helpers/deviceDetector')
 const hashIp = require('../helpers/hashIp')
 const getClientIp = require('../helpers/clientIp')
@@ -36,6 +37,11 @@ async function hitReferral (payload, request) {
 
 async function statsGlobal () {
 	try {
+		// Ensure DB is connected before running heavy aggregation queries
+		if (mongoose.connection.readyState !== 1) {
+			log.error({ readyState: mongoose.connection.readyState }, 'database not connected for referrals stats')
+			throw Boom.serverUnavailable('Database not connected')
+		}
 		const totalVisits = await Referral.countDocuments({})
 		const totalConverted = await Referral.countDocuments({ converted: true })
 
@@ -59,6 +65,11 @@ async function statsGlobal () {
 
 async function statsByCode (code) {
 	try {
+		// Ensure DB is connected before running queries
+		if (mongoose.connection.readyState !== 1) {
+			log.error({ readyState: mongoose.connection.readyState }, 'database not connected for referrals stats by code')
+			throw Boom.serverUnavailable('Database not connected')
+		}
 		const visits = await Referral.countDocuments({ code })
 		const converted = await Referral.countDocuments({ code, converted: true })
 		const first = await Referral.findOne({ code }).sort({ timestamp: 1 }).lean()
