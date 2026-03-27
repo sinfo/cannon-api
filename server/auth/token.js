@@ -20,7 +20,14 @@ async function verify (request, token, h) {
   let credentials = {}
   let isValid = false
 
-  decoded = jwt.verify(token, tokenConfig.publicKey, { issuer: tokenConfig.issuer })
+  let decoded
+  try {
+    decoded = jwt.verify(token, tokenConfig.publicKey, { issuer: tokenConfig.issuer })
+  } catch (err) {
+    // Invalid token (malformed/expired/invalid signature)
+    log.error({ err, token }, '[Auth] token verification failed')
+    throw Boom.unauthorized('Invalid token')
+  }
 
   let user = await User.findOne({ id: decoded.userId })
 
