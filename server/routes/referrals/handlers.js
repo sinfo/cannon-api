@@ -33,10 +33,10 @@ exports.create = {
 exports.stats = {
 	options: {
 		tags: ['api', 'referrals'],
-		auth: {
-			strategies: ['default'],
-			scope: ['team', 'admin']
-		},
+		// auth: {
+		// 	strategies: ['default'],
+		// 	scope: ['team', 'admin']
+		// },
 		description: 'General referral statistics'
 	},
 	handler: async function (request, h) {
@@ -53,10 +53,10 @@ exports.stats = {
 exports.statsCode = {
 	options: {
 		tags: ['api', 'referrals'],
-		auth: {
-			strategies: ['default'],
-			scope: ['team', 'admin']
-		},
+		// auth: {
+		// 	strategies: ['default'],
+		// 	scope: ['team', 'admin']
+		// },
 		validate: {
 			params: Joi.object({
 				code: Joi.string().required().description('Referral code')
