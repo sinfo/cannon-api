@@ -153,6 +153,7 @@ function transformSession(session, options) {
     "WORKSHOP": "Workshop",
     "PRESENTATION": "Presentation",
     "QA": "Q&A",
+    "PANEL": "Panel",
   }
 
   return {
