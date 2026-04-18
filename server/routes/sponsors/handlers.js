@@ -19,7 +19,7 @@ exports.getSponsors = {
         try {
             const edition = request.query && request.query.edition ? request.query.edition : (await request.server.methods.deck.getLatestEdition()).id
             const companies = await request.server.methods.deck.getCompanies(edition)
-            console.log(companies)
+
             const sponsors = companies.filter(c => c.partner !== true && c.partner !== 'true' && c.advertisementLvl !== 'other')
             return h.response(renderCompanies(sponsors))
         } catch (err) {
