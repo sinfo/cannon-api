@@ -115,7 +115,8 @@ function transformCompany(company, options) {
     "Silver NPE": "min",
   };
 
-  const participation = companyFulfillment.addFulfillmentDefaults(companyFulfillment.getLatestParticipation(company?.participation))
+  const latestParticipation = companyFulfillment.getLatestParticipation(company?.participation)
+  const participation = latestParticipation && companyFulfillment.addFulfillmentDefaults(latestParticipation)
   // Package name is "SINFO XX Package name" where XX is the edition year and Package name can have one or two words
   const packageName = (() => {
     const name = participation?.package?.name;

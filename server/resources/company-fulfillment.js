@@ -5,13 +5,16 @@ function getLatestParticipation (participations) {
 
   return participations.reduce((latest, current) => {
     if (!latest) return current
-    const currentEvent = Number(current?.event)
-    const latestEvent = Number(latest?.event)
-    const normalizedCurrentEvent = Number.isFinite(currentEvent) ? currentEvent : -Infinity
-    const normalizedLatestEvent = Number.isFinite(latestEvent) ? latestEvent : -Infinity
+    const normalizedCurrentEvent = normalizeEventNumber(current?.event)
+    const normalizedLatestEvent = normalizeEventNumber(latest?.event)
 
     return normalizedCurrentEvent > normalizedLatestEvent ? current : latest
   }, undefined)
+}
+
+function normalizeEventNumber (event) {
+  const eventNumber = Number(event)
+  return Number.isFinite(eventNumber) ? eventNumber : -Infinity
 }
 
 function addFulfillmentDefaults (participation) {
