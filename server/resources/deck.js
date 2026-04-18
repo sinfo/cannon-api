@@ -3,6 +3,7 @@ const axios = require('axios').default
 const path = require('path')
 const log = require('../helpers/logger')
 const config = require(path.join(__dirname, '..', '..', 'config'))
+const companyFulfillment = require('./company-fulfillment')
 
 
 server.method('deck.getLatestEdition', getLatestEdition, {})
@@ -114,7 +115,7 @@ function transformCompany(company, options) {
     "Silver NPE": "min",
   };
 
-  const participation = company.participation?.length > 0 && company.participation[0]; // Get the latest participation
+  const participation = companyFulfillment.addFulfillmentDefaults(companyFulfillment.getLatestParticipation(company.participation))
   // Package name is "SINFO XX Package name" where XX is the edition year and Package name can have one or two words
   const packageName = (() => {
     const name = participation?.package?.name;
