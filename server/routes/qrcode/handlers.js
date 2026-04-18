@@ -32,7 +32,34 @@ exports.redirect = {
     },
     description: 'Redirect a request from QRCode to somewhere'
   },
-  handler: function (request, h) {
-    h.response().redirect(config.webapp.url + '/survey/' + request.params.id)
+  handler: async function (request, h) {
+    // Try to be smart: if the id matches an achievement id, redirect to its survey.
+    // Otherwise, if it matches a session-backed achievement (session id), try to find that
+    // achievement and redirect to its survey. Log details to help debug 'file not found' issues.
+    const Achievement = require('../../db/achievement')
+    const id = request.params.id
+    try {
+      // 1) direct achievement id
+      let ach = await Achievement.findOne({ id: id }).lean()
+      if (ach) {
+        request.log(['qrcode', 'redirect'], { id, found: 'achievement', achievementId: ach.id })
+        return h.redirect(config.webapp.url + '/survey/' + ach.id)
+      }
+
+      // 2) session id -> find achievement by session
+      ach = await Achievement.findOne({ session: id }).lean()
+      if (ach) {
+        request.log(['qrcode', 'redirect'], { id, found: 'session', achievementId: ach.id })
+        return h.redirect(config.webapp.url + '/survey/' + ach.id)
+      }
+
+      // fallback: redirect to survey with id (previous behavior) but log for investigation
+      request.log(['qrcode', 'redirect', 'miss'], { id, msg: 'no matching achievement or session found' })
+      return h.redirect(config.webapp.url + '/survey/' + id)
+    } catch (err) {
+      request.log(['qrcode', 'redirect', 'error'], { err, id })
+      // Return a plain 404 page to avoid endless redirects to webapp for missing resources
+      return h.response('Not found').code(404)
+    }
   },
 }
