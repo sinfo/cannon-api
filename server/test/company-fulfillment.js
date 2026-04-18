@@ -38,4 +38,16 @@ lab.experiment('Company fulfillment', () => {
     Code.expect(filled.kit).to.not.exist()
     Code.expect(filled.stands[0].lunch_ticket).to.not.exist()
   })
+
+  lab.test('selects latest participation even when some events are missing', async () => {
+    const participations = [
+      { status: 'ANNOUNCED' },
+      { event: 33, status: 'ANNOUNCED' },
+      { event: 24, status: 'ANNOUNCED' }
+    ]
+
+    const latest = companyFulfillment.getLatestParticipation(participations)
+
+    Code.expect(latest.event).to.equal(33)
+  })
 })

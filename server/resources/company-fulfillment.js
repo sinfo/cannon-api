@@ -5,7 +5,12 @@ function getLatestParticipation (participations) {
 
   return participations.reduce((latest, current) => {
     if (!latest) return current
-    return Number(current?.event) > Number(latest?.event) ? current : latest
+    const currentEvent = Number(current?.event)
+    const latestEvent = Number(latest?.event)
+    const normalizedCurrentEvent = Number.isFinite(currentEvent) ? currentEvent : -Infinity
+    const normalizedLatestEvent = Number.isFinite(latestEvent) ? latestEvent : -Infinity
+
+    return normalizedCurrentEvent > normalizedLatestEvent ? current : latest
   }, undefined)
 }
 
