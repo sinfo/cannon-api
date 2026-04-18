@@ -20,6 +20,7 @@ lab.experiment('Company fulfillment', () => {
     Code.expect(filled.kit).to.equal(false)
     Code.expect(filled.stands[0].lunch_ticket).to.equal(false)
 
+    // Ensure only the returned latest participation gets defaults.
     Code.expect(participations[0].check_in).to.not.exist()
     Code.expect(participations[2].stands[0].lunch_ticket).to.not.exist()
     Code.expect(participations[1].check_in).to.not.exist()
@@ -39,7 +40,7 @@ lab.experiment('Company fulfillment', () => {
     Code.expect(filled.stands[0].lunch_ticket).to.not.exist()
   })
 
-  lab.test('selects latest participation even when some events are missing', async () => {
+  lab.test('selects latest participation ignoring entries without event numbers', async () => {
     const participations = [
       { status: 'ANNOUNCED' },
       { event: 33, status: 'ANNOUNCED' },
