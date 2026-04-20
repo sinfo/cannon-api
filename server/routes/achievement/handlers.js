@@ -388,8 +388,7 @@ exports.listWithCode = {
     tags: ['api', 'achievement'],
     auth: {
       strategies: ['default'],
-      scope: ['team', 'admin'],
-      mode: 'try'
+      scope: ['team', 'admin']
     },
     validate: {
       query: Joi.object({
@@ -415,8 +414,7 @@ exports.getWithCode = {
     tags: ['api', 'achievement'],
     auth: {
       strategies: ['default'],
-      scope: ['team', 'admin'],
-      mode: 'try'
+      scope: ['team', 'admin']
     },
     validate: {
       query: Joi.object({
