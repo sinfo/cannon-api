@@ -27,7 +27,7 @@ exports.getAll = {
             const companies = await request.server.methods.deck.getCompanies(edition)
             return h.response(renderCompanies(companies))
         } catch (err) {
-            log.error({ err: err}, 'error getting company')
+            log.error({ err: err}, 'error getting companies from deck')
             throw Boom.internal()
         }
     }
@@ -53,7 +53,7 @@ exports.getCompany = {
               members: renderUser(members, null, latestEdition.id)
             }))
         } catch (err) {
-            log.error({ err: err}, 'error getting company')
+            log.error({ err: err}, 'error getting specific company from deck')
             throw Boom.internal()
         }
     }

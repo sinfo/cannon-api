@@ -25,7 +25,7 @@ exports.get = {
       const downloadLinks = await request.server.methods.url.get(request.params.companyId, latestEdition.id)
       return h.response(render(downloadLinks))
     } catch (err) {
-      log.error({ err: err}, 'error getting company')
+      log.error({ err: err}, 'error getting company download urls')
       throw Boom.internal()
     }
   },

@@ -97,7 +97,7 @@ exports.get = {
       let comp = await request.server.methods.endpoint.get(request.params.companyId, request.query)
       return h.response(render(comp))
     } catch (err) {
-      log.error({ err: err}, 'error getting company')
+      log.error({ err: err}, 'error getting company endpoint')
       throw Boom.internal()
     }
   },
