@@ -18,16 +18,17 @@ async function get(companyId, editionId) {
 
   log.info({ companyId, editionId, filterAll, filterCompanyConnections }, 'Attempting to fetch download urls')
   const all = await Url.findOne(filterAll)
-  if (!all) {
-    log.error({
-      err: 'not found all',
-      companyId,
-      editionId,
-      filter: filterAll
-    }, 'Error getting download url: no "all" url found')
-    throw Boom.notFound('url not found')
-  }
   const companyConnections = await Url.findOne(filterCompanyConnections)
+
+  if (!all && !companyConnections) {
+    log.error({
+      err: 'not found any urls',
+      companyId,
+      editionId
+    }, 'Error getting download url: no urls found')
+    // throw Boom.notFound('u1rl not found')
+    return { all: undefined, companyConnections: undefined }
+  }
 
   log.info({
     companyId,
