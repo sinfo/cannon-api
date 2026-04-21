@@ -188,7 +188,11 @@ async function checkCompany(userId, companyId, editionId) {
 // to be passed in the first place... but i won't refactor the frontend lol
 async function checkAttendeeAccess(credentials, attendeeId) {
   if (!credentials || !credentials.user || !credentials.user.id) {
-    log.error({ credentials: credentials, attendeeId: attendeeId }, 'missing credentials for attendee access check')
+    log.error({
+      requester: credentials && credentials.user ? credentials.user.id : undefined,
+      scope: credentials ? credentials.scope : undefined,
+      attendeeId: attendeeId
+    }, 'missing credentials for attendee access check')
     throw Boom.unauthorized('missing credentials')
   }
 
