@@ -74,6 +74,7 @@ exports.createAttendeeLink = {
   handler: async function (request, h) {
     try {
       const edition = await request.server.methods.deck.getLatestEdition()
+      await request.server.methods.link.checkAttendeeAccess(request.auth.credentials, request.params.attendeeId)
       await request.server.methods.link.checkCompany(request.payload.userId, request.payload.companyId, edition.id)
       let link = await request.server.methods.link.create(request.params.attendeeId, request.payload, "attendee", edition.id)
       return h.response(render(link))
@@ -154,6 +155,7 @@ exports.updateAttendeeLink = {
   handler: async function (request, h) {
     try {
       const edition = await request.server.methods.deck.getLatestEdition()
+      await request.server.methods.link.checkAttendeeAccess(request.auth.credentials, request.params.attendeeId)
       let link = await request.server.methods.link.update(request.params, edition.id, request.payload, "attendee")
       return h.response(render(link))
     } catch (err) {
@@ -205,6 +207,7 @@ exports.getAttendeeLink = {
   handler: async function (request, h) {
     try {
       const edition = await request.server.methods.deck.getLatestEdition()
+      await request.server.methods.link.checkAttendeeAccess(request.auth.credentials, request.params.attendeeId)
       let link = await request.server.methods.link.get(request.params, edition.id, 'attendee')
       return h.response(render(link))
     } catch (err) {
@@ -264,6 +267,7 @@ exports.listAttendeeLinks = {
   },
   handler: async function (request, h) {
     try {
+      await request.server.methods.link.checkAttendeeAccess(request.auth.credentials, request.params.attendeeId)
       let user = await request.server.methods.user.get(request.auth.credentials.user.id)
       if (!user) {
         log.error('user not found')
@@ -384,6 +388,7 @@ exports.removeAttendeeLink = {
   handler: async function (request, h) {
     try {
       const edition = await request.server.methods.deck.getLatestEdition()
+      await request.server.methods.link.checkAttendeeAccess(request.auth.credentials, request.params.attendeeId)
       let link = await request.server.methods.link.remove(request.params, edition.id, "attendee")
       if (!link) {
         log.error({ err: 'not found', link: edition.id }, 'error deleting attendee link')
