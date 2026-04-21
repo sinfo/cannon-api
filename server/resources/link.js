@@ -12,6 +12,7 @@ server.method('link.get', get, {})
 server.method('link.list', list, {})
 server.method('link.remove', remove, {})
 server.method('link.checkCompany', checkCompany, {})
+server.method('link.checkAttendeeAccess', checkAttendeeAccess, {})
 
 async function create(authorId, link, author, editionId) {
   let _link = {
@@ -178,5 +179,29 @@ async function checkCompany(userId, companyId, editionId) {
   if (!_.findWhere(user.company, { company: companyId, edition: editionId })) {
     log.error({ company: companyId, user: userId, edition: editionId, userCompany: user.company }, 'company not found')
     throw Boom.notFound('company not found')
+  }
+}
+
+// Restrict user-scoped calls to the authenticated attendee.
+// Team/admin scopes keep their existing elevated access.
+// this should not be even necessary if the call didnt need the attendeeId 
+// to be passed in the first place... but i won't refactor the frontend lol
+async function checkAttendeeAccess(credentials, attendeeId) {
+  if (!credentials || !credentials.user || !credentials.user.id) {
+    log.error({
+      requester: credentials && credentials.user ? credentials.user.id : undefined,
+      scope: credentials ? credentials.scope : undefined,
+      attendeeId: attendeeId
+    }, 'missing credentials for attendee access check')
+    throw Boom.unauthorized('missing credentials')
+  }
+
+  if (credentials.scope !== 'user') {
+    return
+  }
+
+  if (credentials.user.id !== attendeeId) {
+    log.error({ requester: credentials.user.id, attendeeId: attendeeId }, 'forbidden attendee link access')
+    throw Boom.forbidden('forbidden attendee link access')
   }
 }
