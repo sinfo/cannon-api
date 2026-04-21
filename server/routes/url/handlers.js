@@ -22,10 +22,19 @@ exports.get = {
   handler: async (request, h) => {
     try {
       const latestEdition = await request.server.methods.deck.getLatestEdition()
-      const downloadLinks = await request.server.methods.url.get(request.params.companyId, latestEdition.id)
+      const companyId = request.params.companyId
+      log.info({ companyId, edition: latestEdition.id }, 'Fetching company download urls')
+      const downloadLinks = await request.server.methods.url.get(companyId, latestEdition.id)
       return h.response(render(downloadLinks))
     } catch (err) {
-      log.error({ err: err}, 'error getting company download urls')
+      log.error({
+        err,
+        companyId: request.params.companyId,
+        edition: (typeof latestEdition !== 'undefined' && latestEdition.id) ? latestEdition.id : undefined,
+        message: err && err.message,
+        stack: err && err.stack,
+        boom: err && err.isBoom ? err : undefined
+      }, 'Error getting company download urls')
       throw Boom.internal()
     }
   },
