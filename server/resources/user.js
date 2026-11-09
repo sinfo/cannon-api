@@ -29,7 +29,7 @@ server.method('user.getQRCode', getQRCode, {})
 async function create(user) {
   user.id = user.id || Math.random().toString(36).substr(2, 20)
   user.role = user.role || config.auth.permissions[0]
-  user.resgistered = user.resgistered || Date.now()
+  user.registered = user.registered || user.resgistered || Date.now()
   user.updated = user.updated || Date.now()
 
   return User.create(user)
@@ -43,7 +43,6 @@ async function updateMe(filter, user, opts) {
   // }
 
   // role can only be user
-  log.error('here')
   if (user.role && user.role !== 'user') {
     throw Boom.unauthorized('Can only demote self, not promte')
   }
@@ -418,7 +417,7 @@ async function getCompanyUsers(companyId, editionId) {
 
 async function getQRCode(user) {
   // FIXME: Implement this in a secure way using JWT
-  return `sinfo://${btoa(JSON.stringify({ kind: "user", user: { id: user.id, name: user.name, img: user.img, role: user.role } }))}`
+  return `sinfo://${btoa(JSON.stringify({ kind: "user", user: { id: user.id, name: user.name || '', img: user.img, role: user.role } }))}`
 }
 
 /* Image Functions */

@@ -67,49 +67,46 @@ facebook.getFacebookUser = facebookUserToken => {
  * @param {string} fbUser.name
  * @param {string} fbUser.picture Profile image
  */
-facebook.getUser = fbUser => {
-  return new Promise((resolve, reject) => {
-    server.methods.user.get({ 'mail': fbUser.email }, (err, user) => {
-      if (err) {
-        // If does not find a user with a given facebook email, we create a new user (KEEP IT SIMPLE)
-        if (err.output && err.output.statusCode === 404) {
-          return resolve({ createUser: true, fbUser })
-        }
-
-        log.error({ err: err, facebook: fbUser }, '[facebook-login] error getting user by facebook email')
-        return reject(err)
-      }
-
-      // A user exist with a given Facebook email, we only need to update 'facebook.id' and 'img' in DB
-      return resolve({ createUser: false, userId: user.id })
-    })
+facebook.getUser = async fbUser => {
+  let user = await server.methods.user.get({ 'mail': fbUser.email }).catch((err) => {
+    log.error({ err: err, facebook: fbUser }, '[facebook-login] error getting user by facebook email')
+    throw err
   })
+
+  if (user) {
+    return {
+      createUser: false,
+      userId: user.id,
+      user
+    }
+  } else {
+    return {
+      createUser: true,
+      fbUser
+    }
+  }
 }
 
-facebook.createUser = fbUser => {
-  return new Promise((resolve, reject) => {
-    const user = {
-      facebook: {
-        id: fbUser.id
-      },
-      name: fbUser.name,
-      mail: fbUser.email,
-      img: fbUser.picture
-    }
+facebook.createUser = async fbUser => {
+  const user = {
+    facebook: {
+      id: fbUser.id
+    },
+    name: fbUser.name,
+    mail: fbUser.email,
+    img: fbUser.picture
+  }
 
-    log.debug('[facebook-login] creating user', user)
+  log.debug('[facebook-login] creating user', user)
 
-    server.methods.user.create(user, (err, result) => {
-      if (err) {
-        log.error({ user }, '[facebook-login] error creating user')
-        return reject(err)
-      }
-
-      log.debug({ userId: result.id }, '[facebook-login] new user created')
-
-      return resolve(result.id)
-    })
+  let result = await server.methods.user.create(user).catch((err) => {
+    log.error({ user }, '[facebook-login] error creating user')
+    throw err
   })
+
+  log.debug({ userId: result.id }, '[facebook-login] new user created')
+
+  return result.id
 }
 
 module.exports = facebook

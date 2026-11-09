@@ -12,7 +12,7 @@ function renderObject (model, user, editionId, expand = false) {
   const isTeam = user && (user.role === 'team' || isAdmin)
 
   result.id = model.id
-  result.name = model.name
+  result.name = model.name || ''
   result.img = model.img || 'https://sinfo.ams3.cdn.digitaloceanspaces.com/static/26-sinfo/hacky/hacky.png'
   result.role = model.role
   result.shareLinks = model.shareLinks
@@ -56,6 +56,9 @@ function renderObject (model, user, editionId, expand = false) {
     }
     result.fenix = model.fenix && {
       id: model.fenix && model.fenix.id
+    }
+    result.microsoft = model.microsoft && {
+      id: model.microsoft && model.microsoft.id
     }
     result.job = model.job && {
       startup: model.job && model.job.startup,

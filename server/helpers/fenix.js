@@ -40,7 +40,8 @@ fenix.getUser = async function (fenixUser) {
   if (user) {
     return { 
       createUser: false, 
-      userId: user.id
+      userId: user.id,
+      user
     }
   } else {
     return { 
@@ -50,11 +51,12 @@ fenix.getUser = async function (fenixUser) {
 }
 
 fenix.createUser = async function(fenixUser) {
+  const name = fenixUser.name || fenixUser.displayName || undefined
   const user = {
     fenix: {
       id: fenixUser.username
     },
-    name: fenixUser.name,
+    name: name,
     mail: fenixUser.email,
     img: `https://fenix.tecnico.ulisboa.pt/user/photo/${fenixUser.username}`
   }

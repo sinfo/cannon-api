@@ -22,7 +22,7 @@ exports.facebook = {
   },
   handler: async function (request, h) {
     try {
-      let member = await request.server.methods.auth.facebookAuth(request.payload.id, request.payload.token);
+      let member = await request.server.methods.auth.facebook(request.payload.id, request.payload.token)
       return h.response(render(member))
     } catch (err) {
       if (err.code === 11000) {

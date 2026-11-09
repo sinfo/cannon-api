@@ -33,41 +33,43 @@ google.getGoogleUser = async accessToken => {
  * @param {string} gUser.picture Profile image
  */
 google.getUser = async gUser => {
-    log.info('getUser')
-    let user = await server.methods.user.get({
-      'mail': gUser.email
-    }).catch((err) => {
-        log.error({
-          err: err,
-          google: gUser
-        }, '[google-login] error getting user by google email')
-        throw Boom.boomify(err)
-    })
+  log.info('getUser')
+  let user = await server.methods.user.get({
+    'mail': gUser.email
+  }).catch((err) => {
+    log.error({
+      err: err,
+      google: gUser
+    }, '[google-login] error getting user by google email')
+    throw Boom.boomify(err)
+  })
 
-    // A user exist with a given Google email, we only need to update 'google.id' and 'img' in DB
-    if (user) {
-      return {
-        createUser: false,
-        userId: user.id
-      }
-    } else {
-      return {
-        createUser: true,
-        gUser
-      }
+  // A user exist with a given Google email, we only need to update 'google.id' and 'img' in DB
+  if (user) {
+    return {
+      createUser: false,
+      userId: user.id,
+      user
     }
+  } else {
+    return {
+      createUser: true,
+      gUser
+    }
+  }
 }
 
 google.createUser = async gUser => {
-    log.info('createUser')
-    const user = {
-      google: {
-        id: gUser.sub
-      },
-      name: gUser.name,
-      mail: gUser.email,
-      img: gUser.picture
-    }
+  log.info('createUser')
+  const name = gUser.name || [gUser.given_name, gUser.family_name].filter(Boolean).join(' ') || undefined
+  const user = {
+    google: {
+      id: gUser.sub
+    },
+    name: name,
+    mail: gUser.email,
+    img: gUser.picture
+  }
 
     log.debug('[google-login] creating user', user)
 
