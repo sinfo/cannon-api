@@ -29,7 +29,7 @@ server.method('user.getQRCode', getQRCode, {})
 async function create(user) {
   user.id = user.id || Math.random().toString(36).substr(2, 20)
   user.role = user.role || config.auth.permissions[0]
-  user.registered = user.registered || user.resgistered || Date.now()
+  user.registered = user.registered || Date.now()
   user.updated = user.updated || Date.now()
 
   return User.create(user)
