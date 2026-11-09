@@ -51,7 +51,13 @@ async function updateMe(filter, user, opts) {
 }
 
 async function update(filter, user, opts) {
-  user.updated = Date.now()
+  const updated = Date.now()
+  const hasUpdateOperators = Object.keys(user).some(key => key.startsWith('$'))
+  if (hasUpdateOperators) {
+    user.$set = Object.assign({}, user.$set, { updated })
+  } else {
+    user.updated = updated
+  }
 
   if (typeof filter === 'string') {
     filter = { id: filter }

@@ -3,6 +3,7 @@ const Code = require('@hapi/code')
 const uuid = require('uuid')
 
 const server = require('../').hapi
+const renderUser = require('../views/user')
 
 const lab = exports.lab = Lab.script()
 const token = require('../auth/token')
@@ -233,6 +234,36 @@ lab.experiment('User', () => {
     Code.expect(result.id).to.equal(userA.id)
     Code.expect(result.name).to.equal(userA.name)
 
+  })
+
+  lab.test('Apply authentication updates to user', async () => {
+    const recoveredName = 'Recovered User Name'
+    await server.methods.user.update({ id: userA.id }, {
+      $set: {
+        name: recoveredName,
+        google: { id: 'google-user-id' }
+      }
+    })
+
+    const user = await server.methods.user.get(userA.id)
+    Code.expect(user.name).to.equal(recoveredName)
+    Code.expect(user.google.id).to.equal('google-user-id')
+
+    await server.methods.user.update({ id: userA.id }, { name: userA.name })
+  })
+
+  lab.test('Only render company participation for requested edition', async () => {
+    const user = renderUser({
+      id: 'member',
+      company: [
+        { edition: 'previous-edition', company: 'old-company' },
+        { edition: 'current-edition', company: 'current-company' }
+      ]
+    }, { id: 'viewer', role: 'user' }, 'current-edition')
+
+    Code.expect(user.company).to.equal([
+      { edition: 'current-edition', company: 'current-company' }
+    ])
   })
 
   lab.test('Block double concurrent workshop',  async () => {

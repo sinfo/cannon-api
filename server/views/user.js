@@ -73,14 +73,12 @@ function renderObject (model, user, editionId, expand = false) {
   } else {
     //a normal user should only be allowed to view the employee's current company
     //TODO: fetch editionID from deck instead of receiving it from the webapp
-    result.company = model.company && model.company.map(participation => {
-      if(participation.edition === editionId) {
-        return ({
-          edition: participation && participation.edition,
-          company: participation && participation.company
-        })
-      }
-    })
+    result.company = model.company && model.company
+      .filter(participation => participation && participation.edition === editionId)
+      .map(participation => ({
+        edition: participation.edition,
+        company: participation.company
+      }))
   }
 
   return result
