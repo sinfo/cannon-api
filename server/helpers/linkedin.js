@@ -23,12 +23,14 @@ linkedin.getLinkedinUser = async accessToken => {
     }
 
     let linkedinJsonUser = response.data
+    const name = linkedinJsonUser.name || [linkedinJsonUser.given_name, linkedinJsonUser.family_name].filter(Boolean).join(' ') || undefined
 
     let linkedinUser = {
       id: linkedinJsonUser.sub,
       emailAddress: linkedinJsonUser.email,
       firstName: linkedinJsonUser.given_name,
       lastName: linkedinJsonUser.family_name,
+      name: name,
       pictureUrl: linkedinJsonUser.picture
     }
 
@@ -53,7 +55,8 @@ linkedin.getUser = async linkedinUser => {
   if (user) {
     return {
       createUser: false,
-      userId: user.id
+      userId: user.id,
+      user
     }
   } else {
     return {
@@ -63,11 +66,12 @@ linkedin.getUser = async linkedinUser => {
 }
 
 linkedin.createUser = async linkedinUser => {
+  const name = linkedinUser.name || [linkedinUser.firstName, linkedinUser.lastName].filter(Boolean).join(' ') || undefined
   const user = {
     linkedin: {
       id: linkedinUser.id
     },
-    name: `${linkedinUser.firstName} ${linkedinUser.lastName}`,
+    name: name,
     mail: linkedinUser.emailAddress,
     img: linkedinUser.pictureUrl
   }

@@ -48,6 +48,9 @@ const schema = new mongoose.Schema({
   fenix: {
     id: String
   },
+  microsoft: {
+    id: String
+  },
   // Profile information
   title: String,
   nationality: String,

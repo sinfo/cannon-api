@@ -12,7 +12,7 @@ function renderObject (model, user, editionId, expand = false) {
   const isTeam = user && (user.role === 'team' || isAdmin)
 
   result.id = model.id
-  result.name = model.name
+  result.name = model.name || ''
   result.img = model.img || 'https://sinfo.ams3.cdn.digitaloceanspaces.com/static/26-sinfo/hacky/hacky.png'
   result.role = model.role
   result.shareLinks = model.shareLinks
@@ -57,6 +57,9 @@ function renderObject (model, user, editionId, expand = false) {
     result.fenix = model.fenix && {
       id: model.fenix && model.fenix.id
     }
+    result.microsoft = model.microsoft && {
+      id: model.microsoft && model.microsoft.id
+    }
     result.job = model.job && {
       startup: model.job && model.job.startup,
       internship: model.job && model.job.internship,
@@ -70,14 +73,12 @@ function renderObject (model, user, editionId, expand = false) {
   } else {
     //a normal user should only be allowed to view the employee's current company
     //TODO: fetch editionID from deck instead of receiving it from the webapp
-    result.company = model.company && model.company.map(participation => {
-      if(participation.edition === editionId) {
-        return ({
-          edition: participation && participation.edition,
-          company: participation && participation.company
-        })
-      }
-    })
+    result.company = model.company && model.company
+      .filter(participation => participation && participation.edition === editionId)
+      .map(participation => ({
+        edition: participation.edition,
+        company: participation.company
+      }))
   }
 
   return result

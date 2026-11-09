@@ -322,7 +322,7 @@ function registrationEmail (ticket, session, user) {
   if (index >= session.tickets.max) {
     return server.methods.email.send(getWaitingListEmail(session, user))
   }
-  server.methods.email.send(getResgisteredListEmail(session, user))
+  server.methods.email.send(getRegisteredListEmail(session, user))
 }
 
 function getWaitingListEmail (session, user) {
@@ -335,7 +335,7 @@ function getWaitingListEmail (session, user) {
   }
 }
 
-function getResgisteredListEmail (session, user) {
+function getRegisteredListEmail (session, user) {
   return {
     to: user.mail,
     name: user.name,
